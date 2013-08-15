@@ -1,30 +1,4 @@
 
-/*
- * Copyright (c) 2012, RII-UTHSCSA
- * All rights reserved.
-
- * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
- * following conditions are met:
- *
- *	- Redistributions of source code must retain the above copyright notice, this list of conditions and the following 
- *		disclaimer.
- *
- *	- Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the 
- *		following disclaimer in the documentation and/or other materials provided with the distribution.
- *
- *	- Neither the name of the RII-UTHSCSA nor the names of its contributors may be used to endorse or promote products 
- *		derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-
 PAPAYA_VIEWER_ID  = "papayaViewer";
 PAPAYA_CANVAS = null;
 PAPAYA_DEFAULT_HEIGHT = 400;
@@ -72,19 +46,11 @@ function getKeyCode(ev) {
 }
 
 function getMousePositionX(ev) {
-	if (ev.layerX || (ev.layerX == 0)) { // Firefox
-		return ev.layerX - MARGIN_HORIZONTAL_SIZE - BORDER_RADIUS;
-	} else if (ev.offsetX || (ev.offsetX == 0)) { // Opera
-		return ev.offsetX - MARGIN_HORIZONTAL_SIZE - BORDER_RADIUS;
-	}
+	return ev.pageX - MARGIN_HORIZONTAL_SIZE - BORDER_RADIUS;
 }
 
 function getMousePositionY(ev) {
-	if (ev.layerY || ev.layerY == 0) { // Firefox
-		return ev.layerY - MARGIN_VERTICAL_SIZE - BORDER_RADIUS;
-	} else if (ev.offsetY || ev.offsetY == 0) { // Opera
-		return ev.offsetY - MARGIN_VERTICAL_SIZE - BORDER_RADIUS;
-	}
+	return ev.pageY - MARGIN_VERTICAL_SIZE - BORDER_RADIUS;
 }
 
 // https://gist.github.com/912082/c6a61eb804e554a7e30e6eb4d6eb59906670a0e0
@@ -311,3 +277,12 @@ var makeSlice = function(file, start, length) {
 	}
 
 }(this));
+
+
+
+function isPlatformLittleEndian() {
+	var buffer = new ArrayBuffer(2);
+	new DataView(buffer).setInt16(0, 256, true);
+	return new Int16Array(buffer)[0] === 256;
+};
+

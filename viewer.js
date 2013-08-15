@@ -1,30 +1,4 @@
 
-/*
- * Copyright (c) 2012, RII-UTHSCSA
- * All rights reserved.
-
- * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
- * following conditions are met:
- *
- *	- Redistributions of source code must retain the above copyright notice, this list of conditions and the following 
- *		disclaimer.
- *
- *	- Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the 
- *		following disclaimer in the documentation and/or other materials provided with the distribution.
- *
- *	- Neither the name of the RII-UTHSCSA nor the names of its contributors may be used to endorse or promote products 
- *		derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-
 /**
  * @classDescription	An orthogonal viewer.
  */
@@ -157,10 +131,10 @@ papaya.viewer.Viewer.prototype.updatePosition = function(viewer, xLoc, yLoc) {
  * @param {Numeric} yBound	the Y dimension limit
  */
 papaya.viewer.Viewer.prototype.insideScreenSlice = function(screenSlice, xLoc, yLoc, xBound, yBound) {
-	var xStart = Math.round(screenSlice.xformTransX);
-	var xEnd = Math.round(screenSlice.xformTransX + xBound*screenSlice.xformScaleX);
-	var yStart = Math.round(screenSlice.xformTransY);
-	var yEnd = Math.round(screenSlice.xformTransY + yBound*screenSlice.xformScaleY);
+	var xStart = round(screenSlice.xformTransX);
+	var xEnd = round(screenSlice.xformTransX + xBound*screenSlice.xformScaleX);
+	var yStart = round(screenSlice.xformTransY);
+	var yEnd = round(screenSlice.xformTransY + yBound*screenSlice.xformScaleY);
 	return ((xLoc >= xStart) && (xLoc < xEnd) && (yLoc >= yStart) && (yLoc < yEnd));
 }
 
@@ -202,41 +176,41 @@ papaya.viewer.Viewer.prototype.drawViewer = function() {
 	this.context.beginPath();
 
 	// draw axial crosshairs
-	var xLoc = Math.floor(this.axialSlice.xformTransX + (this.currentCoord.x)*this.axialSlice.xformScaleX);
-	var yStart = Math.floor(this.axialSlice.xformTransY);
-	var yEnd = Math.floor(this.axialSlice.xformTransY + this.axialSlice.yDim*this.axialSlice.xformScaleY);
+	var xLoc = floor(this.axialSlice.xformTransX + (this.currentCoord.x)*this.axialSlice.xformScaleX);
+	var yStart = floor(this.axialSlice.xformTransY);
+	var yEnd = floor(this.axialSlice.xformTransY + this.axialSlice.yDim*this.axialSlice.xformScaleY);
 	this.context.moveTo(xLoc+.5, yStart);
 	this.context.lineTo(xLoc+.5, yEnd);
 
-	var yLoc = Math.floor(this.axialSlice.xformTransY + (this.currentCoord.y)*this.axialSlice.xformScaleY);
-	var xStart = Math.floor(this.axialSlice.xformTransX);
-	var xEnd = Math.floor(this.axialSlice.xformTransX + this.axialSlice.xDim*this.axialSlice.xformScaleX);
+	var yLoc = floor(this.axialSlice.xformTransY + (this.currentCoord.y)*this.axialSlice.xformScaleY);
+	var xStart = floor(this.axialSlice.xformTransX);
+	var xEnd = floor(this.axialSlice.xformTransX + this.axialSlice.xDim*this.axialSlice.xformScaleX);
 	this.context.moveTo(xStart, yLoc+.5);
 	this.context.lineTo(xEnd, yLoc+.5);
 
 	// draw coronal crosshairs
-	xLoc = Math.floor(this.coronalSlice.xformTransX + this.currentCoord.x*this.coronalSlice.xformScaleX);
-	yStart = Math.floor(this.coronalSlice.xformTransY);
-	yEnd = Math.floor(this.coronalSlice.xformTransY + this.coronalSlice.yDim*this.coronalSlice.xformScaleY);
+	xLoc = floor(this.coronalSlice.xformTransX + this.currentCoord.x*this.coronalSlice.xformScaleX);
+	yStart = floor(this.coronalSlice.xformTransY);
+	yEnd = floor(this.coronalSlice.xformTransY + this.coronalSlice.yDim*this.coronalSlice.xformScaleY);
 	this.context.moveTo(xLoc+.5, yStart);
 	this.context.lineTo(xLoc+.5, yEnd);
 
-	yLoc = Math.floor(this.coronalSlice.xformTransY + this.currentCoord.z*this.coronalSlice.xformScaleY);
-	xStart = Math.floor(this.coronalSlice.xformTransX);
-	xEnd = Math.floor(this.coronalSlice.xformTransX + this.coronalSlice.xDim*this.coronalSlice.xformScaleX);
+	yLoc = floor(this.coronalSlice.xformTransY + this.currentCoord.z*this.coronalSlice.xformScaleY);
+	xStart = floor(this.coronalSlice.xformTransX);
+	xEnd = floor(this.coronalSlice.xformTransX + this.coronalSlice.xDim*this.coronalSlice.xformScaleX);
 	this.context.moveTo(xStart, yLoc+.5);
 	this.context.lineTo(xEnd, yLoc+.5);
 
 	// draw sagittal crosshairs
-	xLoc = Math.floor(this.sagittalSlice.xformTransX + this.currentCoord.y*this.sagittalSlice.xformScaleX);
-	yStart = Math.floor(this.sagittalSlice.xformTransY);
-	yEnd = Math.floor(this.sagittalSlice.xformTransY + this.sagittalSlice.yDim*this.sagittalSlice.xformScaleY);
+	xLoc = floor(this.sagittalSlice.xformTransX + this.currentCoord.y*this.sagittalSlice.xformScaleX);
+	yStart = floor(this.sagittalSlice.xformTransY);
+	yEnd = floor(this.sagittalSlice.xformTransY + this.sagittalSlice.yDim*this.sagittalSlice.xformScaleY);
 	this.context.moveTo(xLoc+.5, yStart);
 	this.context.lineTo(xLoc+.5, yEnd);
 
-	yLoc = Math.floor(this.sagittalSlice.xformTransY + this.currentCoord.z*this.sagittalSlice.xformScaleY);
-	xStart = Math.floor(this.sagittalSlice.xformTransX);
-	xEnd = Math.floor(this.sagittalSlice.xformTransX + this.sagittalSlice.xDim*this.sagittalSlice.xformScaleX);
+	yLoc = floor(this.sagittalSlice.xformTransY + this.currentCoord.z*this.sagittalSlice.xformScaleY);
+	xStart = floor(this.sagittalSlice.xformTransX);
+	xEnd = floor(this.sagittalSlice.xformTransX + this.sagittalSlice.xDim*this.sagittalSlice.xformScaleX);
 	this.context.moveTo(xStart, yLoc+.5);
 	this.context.lineTo(xEnd, yLoc+.5);
 

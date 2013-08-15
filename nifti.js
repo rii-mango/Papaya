@@ -1,30 +1,4 @@
 
-/*
- * Copyright (c) 2012, RII-UTHSCSA
- * All rights reserved.
-
- * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
- * following conditions are met:
- *
- *	- Redistributions of source code must retain the above copyright notice, this list of conditions and the following 
- *		disclaimer.
- *
- *	- Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the 
- *		following disclaimer in the documentation and/or other materials provided with the distribution.
- *
- *	- Neither the name of the RII-UTHSCSA nor the names of its contributors may be used to endorse or promote products 
- *		derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-
 /**
  * @classDescription	NIFTI header data type.  See http://nifti.nimh.nih.gov/nifti-1/ for more information.
  */
@@ -55,15 +29,15 @@ gov.nih.nifti.NIFTI = gov.nih.nifti.NIFTI || function() {
 	this.description; this.aux_file; this.intent_name;
 	this.qform_code; this.sform_code;
 	this.quatern_b; this.quatern_c; this.quatern_d; this.qoffset_x; this.qoffset_y; this.qoffset_z;
-	this.srow_x = new Array();
-	this.srow_y = new Array();
-	this.srow_z = new Array();
+	this.affine = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
 	this.magic;
 }
 
 
 // Public constants
 gov.nih.nifti.MAGIC_COOKIE = 348;
+gov.nih.nifti.NII_HDR_SIZE = 352;
+
 gov.nih.nifti.DT_NONE                    = 0;
 gov.nih.nifti.DT_BINARY                  = 1;
 gov.nih.nifti.NIFTI_TYPE_UINT8           = 2;
@@ -155,20 +129,17 @@ gov.nih.nifti.NIFTI.prototype.readData = function(data) {
 	this.qoffset_y = this.getFloatAt(rawData, 272, this.littleEndian);
 	this.qoffset_z = this.getFloatAt(rawData, 276, this.littleEndian);
 
-	for (var ctr = 0; ctr < 4; ctr++) {
-		var index = 280 + (ctr * 4);
-		this.srow_x[ctr] = this.getFloatAt(rawData, index, this.littleEndian);
+	for (var ctrOut = 0; ctrOut < 3; ctrOut++) {
+		for (var ctrIn = 0; ctrIn < 4; ctrIn++) {
+			var index = 280 + (((ctrOut * 4) + ctrIn) * 4);
+			this.affine[ctrOut][ctrIn] = this.getFloatAt(rawData, index, this.littleEndian);
+		}
 	}
 
-	for (var ctr = 0; ctr < 4; ctr++) {
-		var index = 296 + (ctr * 4);
-		this.srow_y[ctr] = this.getFloatAt(rawData, index, this.littleEndian);
-	}
-
-	for (var ctr = 0; ctr < 4; ctr++) {
-		var index = 312 + (ctr * 4);
-		this.srow_z[ctr] = this.getFloatAt(rawData, index, this.littleEndian);
-	}
+	this.affine[3][0] = 0;
+	this.affine[3][1] = 0;
+	this.affine[3][2] = 0;
+	this.affine[3][3] = 1;
 
 	this.intent_name = this.getStringAt(rawData, 328, 344);
 	this.magic = this.getStringAt(rawData, 344, 348);

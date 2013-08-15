@@ -1,52 +1,23 @@
-
-/*
- * Copyright (c) 2012, RII-UTHSCSA
- * All rights reserved.
-
- * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
- * following conditions are met:
- *
- *	- Redistributions of source code must retain the above copyright notice, this list of conditions and the following 
- *		disclaimer.
- *
- *	- Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the 
- *		following disclaimer in the documentation and/or other materials provided with the distribution.
- *
- *	- Neither the name of the RII-UTHSCSA nor the names of its contributors may be used to endorse or promote products 
- *		derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-
 /**
  * @classDescription	Contains special methods that deal with the image orientation.
  */
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
-
 /**
  * Constructor.
  * @param {String} str	The data orientation of the image (e.g., XYZ+--).
  */
-papaya.volume.Orientation = papaya.volume.Orientation || function(str) {
+papaya.volume.Orientation = papaya.volume.Orientation ||
+function(str) {
 	// Public properties
 	this.orientation = str;
-	this.orientMat;
+	this.orientMat
 	this.xIncrement, this.yIncrement, this.zIncrement;
 }
 
-
 // Public constants
 papaya.volume.Orientation.DEFAULT = "XYZ+--";
-
 
 // Public methods
 
@@ -58,14 +29,12 @@ papaya.volume.Orientation.DEFAULT = "XYZ+--";
  * @return {Numeric}	the corresponding offset into the voxel array
  */
 papaya.volume.Orientation.prototype.convertIndexToOffset = function(xLoc, yLoc, zLoc) {
-	xLoc = Math.round((xLoc * this.orientMat[0][0]) + (yLoc * this.orientMat[0][1]) + (zLoc * this.orientMat[0][2]) + (this.orientMat[0][3]));
-	yLoc = Math.round((xLoc * this.orientMat[1][0]) + (yLoc * this.orientMat[1][1]) + (zLoc * this.orientMat[1][2]) + (this.orientMat[1][3]));
-	zLoc = Math.round((xLoc * this.orientMat[2][0]) + (yLoc * this.orientMat[2][1]) + (zLoc * this.orientMat[2][2]) + (this.orientMat[2][3]));
+	xLoc = round((xLoc * this.orientMat[0][0]) + (yLoc * this.orientMat[0][1]) + (zLoc * this.orientMat[0][2]) + (this.orientMat[0][3]));
+	yLoc = round((xLoc * this.orientMat[1][0]) + (yLoc * this.orientMat[1][1]) + (zLoc * this.orientMat[1][2]) + (this.orientMat[1][3]));
+	zLoc = round((xLoc * this.orientMat[2][0]) + (yLoc * this.orientMat[2][1]) + (zLoc * this.orientMat[2][2]) + (this.orientMat[2][3]));
 
 	return (xLoc * this.xIncrement) + (yLoc * this.yIncrement) + (zLoc * this.zIncrement);
 }
-
-
 /**
  * Populate ImageDimensions and VoxelDimensions objects with XYZ data.
  * @param {ImageDimensions} imageDimensions	the ImageDimensions object
@@ -316,7 +285,7 @@ papaya.volume.Orientation.prototype.createInfo = function(imageDimensions, voxel
 		}
 	}
 
-	this.orientMat = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]];
+	this.orientMat = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
 
 	this.orientMat[0][0] = xMultiply;
 	this.orientMat[0][1] = 0;
@@ -339,40 +308,43 @@ papaya.volume.Orientation.prototype.createInfo = function(imageDimensions, voxel
 	this.orientMat[3][3] = 1;
 }
 
+papaya.volume.Orientation.prototype.isValid = function() {
+	return papaya.volume.Orientation.prototype.isValidOrientationString(this.orientation);
 
+}
 /**
  * Tests wheter this object has a valid state.
  * @return {Boolean}	true if state is valid
  */
-papaya.volume.Orientation.prototype.isValid = function() {
-	if (this.orientation == null || (this.orientation.length != 6)) {
+papaya.volume.Orientation.prototype.isValidOrientationString = function(orientationStr) {
+	if (orientationStr == null || (orientationStr.length != 6)) {
 		return false;
 	}
 
-	var temp = this.orientation.toUpperCase().indexOf("X");
-	if (temp == -1 || temp > 2 || (this.orientation.toUpperCase().lastIndexOf("X") != temp)) {
+	var temp = orientationStr.toUpperCase().indexOf("X");
+	if (temp == -1 || temp > 2 || (orientationStr.toUpperCase().lastIndexOf("X") != temp)) {
 		return false;
 	}
 
-	temp = this.orientation.toUpperCase().indexOf("Y");
-	if (temp == -1 || temp > 2 || (this.orientation.toUpperCase().lastIndexOf("Y") != temp)) {
+	temp = orientationStr.toUpperCase().indexOf("Y");
+	if (temp == -1 || temp > 2 || (orientationStr.toUpperCase().lastIndexOf("Y") != temp)) {
 		return false;
 	}
 
-	temp = this.orientation.toUpperCase().indexOf("Z");
-	if (temp == -1 || temp > 2 || (this.orientation.toUpperCase().lastIndexOf("Z") != temp)) {
+	temp = orientationStr.toUpperCase().indexOf("Z");
+	if (temp == -1 || temp > 2 || (orientationStr.toUpperCase().lastIndexOf("Z") != temp)) {
 		return false;
 	}
 
-	if ((this.orientation.charAt(3) != '+') && (this.orientation.charAt(3) != '-')) {
+	if ((orientationStr.charAt(3) != '+') && (orientationStr.charAt(3) != '-')) {
 		return false;
 	}
 
-	if ((this.orientation.charAt(4) != '+') && (this.orientation.charAt(4) != '-')) {
+	if ((orientationStr.charAt(4) != '+') && (orientationStr.charAt(4) != '-')) {
 		return false;
 	}
 
-	if ((this.orientation.charAt(5) != '+') && (this.orientation.charAt(5) != '-')) {
+	if ((orientationStr.charAt(5) != '+') && (orientationStr.charAt(5) != '-')) {
 		return false;
 	}
 
