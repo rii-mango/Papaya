@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script type="text/javascript" src="platform.js"></script>
+    <script type="text/javascript" src="gunzip.js"></script>
+    <script type="text/javascript" src="header.js"></script>
+    <script type="text/javascript" src="orientation.js"></script>
+    <script type="text/javascript" src="utilities.js"></script>
+    <script type="text/javascript" src="nifti.js"></script>
+    <script type="text/javascript" src="volume.js"></script>
+    <script type="text/javascript" src="imagedimensions.js"></script>
+    <script type="text/javascript" src="voxeldimensions.js"></script>
+    <script type="text/javascript" src="imagetype.js"></script>
+    <script type="text/javascript" src="imagedata.js"></script>
+    <script type="text/javascript" src="header-nifti.js"></script>
+    <script type="text/javascript" src="viewer.js"></script>
+    <script type="text/javascript" src="screenslice.js"></script>
+    <script type="text/javascript" src="coordinate.js"></script>
+    <script type="text/javascript" src="imagerange.js"></script>
+
+    <title>index</title>
+
+    <script type="text/javascript">
+        function readBlob() {
+            var files = document.getElementById('files').files;
+            if (!files.length) {
+                alert('Please select a file!');
+                return;
+            }
+
+            var viewer = new papaya.viewer.Viewer(files[0]);
+        }
+    </script>
+</head>
+
+<body>
+<div id="papayaViewer"></div>
+
+<input type="file" id="files" name="files" />
+<button onclick="readBlob()">Go!</button>
+
+</body>
+</html>
