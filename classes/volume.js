@@ -12,6 +12,7 @@ papaya.volume = papaya.volume || {};
 papaya.volume.Volume = papaya.volume.Volume || function() {
 	// Public properties
 	this.file = null;
+    this.url = null;
 	this.fileName = null;
 	this.compressed = false;
 	this.headerType = papaya.volume.Volume.TYPE_UNKNOWN;
@@ -71,8 +72,38 @@ papaya.volume.Volume.prototype.readFile = function(file, callback) {
 
 	fileLength = this.file.size;
 
-	this.readData(this);
+    var blob = makeSlice(this.file, 0, this.file.size);
+	this.readData(this, blob);
 }
+
+
+
+
+papaya.volume.Volume.prototype.readURL = function(url, callback) {
+    this.url = url;
+    this.fileName = url.substr(url.lastIndexOf("/")+1, url.length);
+    this.onFinishedRead = callback;
+
+    this.headerType = this.findFileType(this.fileName);
+    this.compressed = this.fileIsCompressed(this.fileName);
+
+    var vol = this;
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            vol.rawData = xhr.response;
+            fileLength = vol.rawData.byteLength;
+            vol.decompress(vol);
+        }
+    };
+    xhr.send(null);
+}
+
+
 
 
 /**
@@ -162,7 +193,7 @@ papaya.volume.Volume.prototype.getZSize = function() {
  * Read file data into volume.
  * @param {Volume} vol	the volume
  */
-papaya.volume.Volume.prototype.readData = function(vol) {
+papaya.volume.Volume.prototype.readData = function(vol, blob) {
 	var reader = new FileReader();
 
 	reader.onloadend = bind(vol, function(evt) {
@@ -172,7 +203,6 @@ papaya.volume.Volume.prototype.readData = function(vol) {
 		}
 	});
 	
-	var blob = makeSlice(vol.file, 0, vol.file.size);
 	reader.readAsArrayBuffer(blob);
 }
 

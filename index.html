@@ -5,27 +5,15 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
     <script type="text/javascript" src="papaya.js"></script>
-
-    <title>index</title>
-
-    <script type="text/javascript">
-        function readBlob() {
-            var files = document.getElementById('files').files;
-            if (!files.length) {
-                alert('Please select a file!');
-                return;
-            }
-
-            var viewer = new papaya.viewer.Viewer(files[0]);
-        }
-    </script>
+    <title>Papaya Viewer</title>
 </head>
 
 <body>
-<div id="papayaViewer"></div>
-
-<input type="file" id="files" name="files" />
-<button onclick="readBlob()">Go!</button>
-
+    <div id="papayaViewer"></div>
+    <script type="text/javascript">
+        $(window).load(function(){
+            var viewer = new papaya.viewer.Viewer("http://129.111.247.193/~michaelmartinez/papaya/sample_image.nii.gz");
+        });
+    </script>
 </body>
 </html>

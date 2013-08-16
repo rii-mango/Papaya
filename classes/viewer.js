@@ -10,7 +10,7 @@ papaya.viewer = papaya.viewer || {};
  * Constructor.
  * @param {File} file	The file to read and display.
  */
-papaya.viewer.Viewer = papaya.viewer.Viewer || function(file) {
+papaya.viewer.Viewer = papaya.viewer.Viewer || function(location) {
 	// Public properties
 	this.volume = new papaya.volume.Volume();
 	this.axialSlice; this.coronalSlice; this.sagittalSlice;
@@ -21,8 +21,12 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(file) {
     this.currentCoord = new papaya.volume.Coordinate(0, 0, 0);
 	this.longestDim; this.longestDimSize; this.draggingSliceDir;
     this.isDragging = false;
-    
-	this.volume.readFile(file, bind(this, this.initializeViewer));
+
+    if (location instanceof File) {
+        this.volume.readFile(location, bind(this, this.initializeViewer));
+    } else {
+        this.volume.readURL(location, bind(this, this.initializeViewer));
+    }
 }
 
 
