@@ -6,7 +6,7 @@ A pure JavaScript medical image viewer.  Current features:
 * Orthogonal viewer controlled by mouse and keyboard (press spacebar to cycle main slice direction).
 * Supported browsers: Firefox, Chrome, Safari, IE, Opera.
 
-![alt tag](https://github.com/rii-mango/Papaya/blob/master/README-img.png)
+![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)
 
 Installation
 ------
