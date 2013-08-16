@@ -12,7 +12,7 @@ Installation
 ------
 Development: Use debug.html.
 
-Production: Run build.sh to create compressed papaya.js(requires yuicompressor.jar).  See index.html (or usage below) as an example.
+Production: Run build.sh to create compressed papaya.js (requires yuicompressor.jar).  See index.html (or usage below) as an example.
 
 
 Usage
