@@ -1,7 +1,7 @@
 Papaya
 ======
 
-A pure JavaScript medical image viewer.  Current features:
+A pure JavaScript medical image viewer.  Current list of features:
 * NIFTI (.nii and .nii.gz) reader.
 * Orthogonal viewer controlled by mouse and keyboard (press spacebar to cycle main slice direction).
 * Supported browsers: Firefox, Chrome, Safari, IE, Opera.
@@ -12,7 +12,7 @@ Installation
 ------
 Development: Use debug.html.
 
-Production: Run build.sh to create compressed papaya.sh (requires yuicompressor.jar).  See index.html (or usage below) as an example.
+Production: Run build.sh to create compressed papaya.js (requires yuicompressor.jar).  See index.html (or usage below) as an example.
 
 
 Usage
@@ -40,7 +40,7 @@ To load an image URL automatically when the page loads:
 </html>
 ```
 
-To let the user user select a local image file, for example:
+To let the user select a local image file, for example:
 ```html
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
