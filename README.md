@@ -65,11 +65,9 @@ To let the user select a local image file, for example:
 </head>
 
 <body>
-<div id="papayaViewer"></div>
-
-<input type="file" id="files" name="files" />
-<button onclick="readFile()">Go!</button>
-
+    <div id="papayaViewer"></div>
+    <input type="file" id="files" name="files" />
+    <button onclick="readFile()">Go!</button>
 </body>
 </html>
 ```
