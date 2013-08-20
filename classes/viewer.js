@@ -1,4 +1,12 @@
 
+PAPAYA_VIEWER_ID  = "papayaViewer";
+PAPAYA_CANVAS = null;
+PAPAYA_DEFAULT_HEIGHT = 400;
+PAPAYA_SPACING = 2;  // padding between slice views
+BORDER_RADIUS = 10;
+MARGIN_VERTICAL_SIZE = 30;
+MARGIN_HORIZONTAL_SIZE = 10;
+
 /**
  * @classDescription	An orthogonal viewer.
  */
@@ -358,3 +366,48 @@ papaya.viewer.Viewer.prototype.updateScreenRange = function() {
 	this.lowerImageTop.setScreenRange(min, max, ratio);
 	this.mainImage.setScreenRange(min, max, ratio);
 }
+
+
+
+$(document).ready(function() {
+    var width = (PAPAYA_DEFAULT_HEIGHT - (4 * PAPAYA_SPACING)) * 1.5 + (4 * PAPAYA_SPACING);
+    var height = PAPAYA_DEFAULT_HEIGHT;
+
+    PAPAYA_CANVAS = $('<canvas></canvas>').attr("id", PAPAYA_VIEWER_ID+"Canvas");
+    PAPAYA_CANVAS.css({'padding':'0', 'margin':'0', 'border':'none', 'background-color':'black'});
+    PAPAYA_CANVAS.width(width);
+    PAPAYA_CANVAS.height(height);
+
+    var viewerDiv = $("#"+PAPAYA_VIEWER_ID);
+    viewerDiv.css({'border-top':MARGIN_VERTICAL_SIZE+'px solid grey', 'border-bottom':MARGIN_VERTICAL_SIZE+'px solid grey',
+        'border-right':MARGIN_HORIZONTAL_SIZE+'px solid grey',
+        'border-left':MARGIN_HORIZONTAL_SIZE+'px solid grey', /*'margin':'20px auto',*/ 'border-radius':BORDER_RADIUS+'px', 'padding':'2px'});
+    viewerDiv.append(PAPAYA_CANVAS);
+    viewerDiv.width(width);
+    viewerDiv.height(height);
+
+    $('*').css({'-webkit-user-select':'none', '-khtml-user-select':'none', '-moz-user-select':'none', '-o-user-select':'none',
+        'user-select':'none'});
+
+    if (BrowserDetect.browser == "Firefox") {
+        if (BrowserDetect.version < BROWSER_MIN_FIREFOX) {
+            showCompatibilityWarning();
+        }
+    } else if (BrowserDetect.browser == "Chrome") {
+        if (BrowserDetect.version < BROWSER_MIN_CHROME) {
+            showCompatibilityWarning();
+        }
+    } else if (BrowserDetect.browser == "Explorer") {
+        if (BrowserDetect.version < BROWSER_MIN_IE) {
+            showCompatibilityWarning();
+        }
+    } else if (BrowserDetect.browser == "Safari") {
+        if (BrowserDetect.version < BROWSER_MIN_SAFARI) {
+            showCompatibilityWarning();
+        }
+    } else if (BrowserDetect.browser == "Opera") {
+        if (BrowserDetect.version < BROWSER_MIN_OPERA) {
+            showCompatibilityWarning();
+        }
+    }
+});
