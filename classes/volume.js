@@ -89,22 +89,31 @@ papaya.volume.Volume.prototype.readURL = function(url, callback) {
         this.compressed = this.fileIsCompressed(this.fileName);
 
         var vol = this;
-        var xhr = new XMLHttpRequest();
 
-        xhr.open('GET', url, true);
-        xhr.responseType = 'arraybuffer';
+        var supported = typeof new XMLHttpRequest().responseType === 'string';
+        if (supported) {
+            var xhr = new XMLHttpRequest();
 
-        xhr.onreadystatechange = function() {
-            if ((xhr.readyState == 4) && (xhr.status == 200)) {
-                vol.rawData = xhr.response;
-                fileLength = vol.rawData.byteLength;
-                vol.decompress(vol);
-            } else {
-                vol.errorMessage = "There was a problem reading that file:\n\n" + xhr.responseText;
-                vol.finishedLoad();
-            }
-        };
-        xhr.send(null);
+            xhr.open('GET', url, true);
+            xhr.responseType = 'arraybuffer';
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        vol.rawData = xhr.response;
+                        fileLength = vol.rawData.byteLength;
+                        vol.decompress(vol);
+                    } else {
+                        vol.errorMessage = "There was a problem reading that file:\n\nResponse status = " + xhr.status;
+                        vol.finishedLoad();
+                    }
+                }
+            };
+            xhr.send(null);
+        } else {
+            vol.errorMessage = "There was a problem reading that file:\n\nResponse type is not supported.";
+            vol.finishedLoad();
+        }
     } catch (err) {
         vol.errorMessage = "There was a problem reading that file:\n\n" + err.message;
         vol.finishedLoad();

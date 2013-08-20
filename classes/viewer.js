@@ -22,10 +22,10 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(location) {
 	this.longestDim; this.longestDimSize; this.draggingSliceDir;
     this.isDragging = false;
 
-    if (location instanceof File) {
-        this.volume.readFile(location, bind(this, this.initializeViewer));
-    } else {
+    if (isString(location)) {
         this.volume.readURL(location, bind(this, this.initializeViewer));
+    } else {
+        this.volume.readFile(location, bind(this, this.initializeViewer));
     }
 }
 

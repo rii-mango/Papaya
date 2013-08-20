@@ -19,3 +19,8 @@ function round(val) {
 function floor(val) {
 	return val | 0;
 }
+
+
+function isString(obj) {
+    return (typeof obj == 'string' || obj instanceof String);
+}
