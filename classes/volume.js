@@ -80,27 +80,35 @@ papaya.volume.Volume.prototype.readFile = function(file, callback) {
 
 
 papaya.volume.Volume.prototype.readURL = function(url, callback) {
-    this.url = url;
-    this.fileName = url.substr(url.lastIndexOf("/")+1, url.length);
-    this.onFinishedRead = callback;
+    try {
+        this.url = url;
+        this.fileName = url.substr(url.lastIndexOf("/")+1, url.length);
+        this.onFinishedRead = callback;
 
-    this.headerType = this.findFileType(this.fileName);
-    this.compressed = this.fileIsCompressed(this.fileName);
+        this.headerType = this.findFileType(this.fileName);
+        this.compressed = this.fileIsCompressed(this.fileName);
 
-    var vol = this;
-    var xhr = new XMLHttpRequest();
+        var vol = this;
+        var xhr = new XMLHttpRequest();
 
-    xhr.open('GET', url, true);
-    xhr.responseType = 'arraybuffer';
+        xhr.open('GET', url, true);
+        xhr.responseType = 'arraybuffer';
 
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            vol.rawData = xhr.response;
-            fileLength = vol.rawData.byteLength;
-            vol.decompress(vol);
-        }
-    };
-    xhr.send(null);
+        xhr.onreadystatechange = function() {
+            if ((xhr.readyState == 4) && (xhr.status == 200)) {
+                vol.rawData = xhr.response;
+                fileLength = vol.rawData.byteLength;
+                vol.decompress(vol);
+            } else {
+                vol.errorMessage = "There was a problem reading that file:\n\n" + xhr.responseText;
+                vol.finishedLoad();
+            }
+        };
+        xhr.send(null);
+    } catch (err) {
+        vol.errorMessage = "There was a problem reading that file:\n\n" + err.message;
+        vol.finishedLoad();
+    }
 }
 
 
@@ -194,16 +202,26 @@ papaya.volume.Volume.prototype.getZSize = function() {
  * @param {Volume} vol	the volume
  */
 papaya.volume.Volume.prototype.readData = function(vol, blob) {
-	var reader = new FileReader();
+    try {
+        var reader = new FileReader();
 
-	reader.onloadend = bind(vol, function(evt) {
-		if (evt.target.readyState == FileReader.DONE) {
-			vol.rawData = evt.target.result;
-			setTimeout(function(){vol.decompress(vol)}, 0);
-		}
-	});
-	
-	reader.readAsArrayBuffer(blob);
+	    reader.onloadend = bind(vol, function(evt) {
+		    if (evt.target.readyState == FileReader.DONE) {
+		    	vol.rawData = evt.target.result;
+		    	setTimeout(function(){vol.decompress(vol)}, 0);
+		    }
+	    });
+
+        reader.onerror = bind(vol, function(evt) {
+            vol.errorMessage = "There was a problem reading that file:\n\n" + evt.getMessage();
+            vol.finishedLoad();
+        });
+
+        reader.readAsArrayBuffer(blob);
+   } catch (err) {
+        vol.errorMessage = "There was a problem reading that file:\n\n" + err.message;
+        vol.finishedLoad();
+   }
 }
 
 
