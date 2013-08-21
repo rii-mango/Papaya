@@ -1,7 +1,7 @@
 
 PAPAYA_VIEWER_ID  = "papayaViewer";
 PAPAYA_CANVAS = null;
-PAPAYA_DEFAULT_HEIGHT = 400;
+PAPAYA_DEFAULT_HEIGHT = 565;
 PAPAYA_SPACING = 2;  // padding between slice views
 BORDER_RADIUS = 10;
 MARGIN_VERTICAL_SIZE = 30;
@@ -24,6 +24,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(location) {
 	this.axialSlice; this.coronalSlice; this.sagittalSlice;
 	this.mainImage; this.lowerImageBot; this.lowerImageTop;
 	this.canvas = document.getElementById(PAPAYA_VIEWER_ID+"Canvas");
+    this.canvasRect = this.canvas.getBoundingClientRect();
     this.context = this.canvas.getContext("2d");
     this.viewerDim = 0;
     this.currentCoord = new papaya.volume.Coordinate(0, 0, 0);
@@ -86,6 +87,9 @@ papaya.viewer.Viewer.prototype.initializeViewer = function() {
  * @param {Numeric} yLoc	the new Y location 
  */
 papaya.viewer.Viewer.prototype.updatePosition = function(viewer, xLoc, yLoc) {
+    xLoc = xLoc - this.canvasRect.left;
+    yLoc = yLoc - this.canvasRect.top;
+
 	if (this.insideScreenSlice(viewer.axialSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getYDim())) {
 		if (!this.isDragging || (this.draggingSliceDir == papaya.viewer.ScreenSlice.DIRECTION_AXIAL)) {
 			var xImageLoc = (xLoc - viewer.axialSlice.xformTransX) / viewer.axialSlice.xformScaleX;

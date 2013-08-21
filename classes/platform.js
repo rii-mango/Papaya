@@ -128,15 +128,15 @@ BrowserDetect.init();
 
 function showCompatibilityWarning() {
     if (BrowserDetect.browser == "Firefox") {
-        alert("This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_FIREFOX+" or higher is required.\n\nPlease consider upgrading or using a different browser.")
+        $("#papayaWarnings").append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_FIREFOX+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
     } else if (BrowserDetect.browser == "Chrome") {
-        alert("This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_CHROME+" or higher is required.\n\nPlease consider upgrading or using a different browser.")
+        $("#papayaWarnings").append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_CHROME+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
     } else if (BrowserDetect.browser == "Explorer") {
-        alert("This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_IE+" or higher is required.\n\nPlease consider upgrading or using a different browser.")
+        $("#papayaWarnings").append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_IE+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
     } else if (BrowserDetect.browser == "Safari") {
-        alert("This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_SAFARI+" or higher is required.\n\nPlease consider upgrading or using a different browser.")
+        $("#papayaWarnings").append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_SAFARI+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
     } else if (BrowserDetect.browser == "Opera") {
-        alert("This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_OPERA+" or higher is required.\n\nPlease consider upgrading or using a different browser.")
+        $("#papayaWarnings").append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_OPERA+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
     }
 }
 
@@ -157,11 +157,11 @@ function getKeyCode(ev) {
 }
 
 function getMousePositionX(ev) {
-	return ev.pageX - MARGIN_HORIZONTAL_SIZE - BORDER_RADIUS;
+	return ev.pageX;
 }
 
 function getMousePositionY(ev) {
-	return ev.pageY - MARGIN_VERTICAL_SIZE - BORDER_RADIUS;
+	return ev.pageY;
 }
 
 
