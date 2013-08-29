@@ -2,6 +2,7 @@ Papaya
 ======
 
 A pure JavaScript medical image viewer.  Current list of features:
+- Requires no browser plugin.  Runs in desktop and mobile browsers (iPhone and iPad supported).
 - NIFTI (.nii and .nii.gz) reader.
 - Orthogonal viewer controlled by mouse and keyboard (press spacebar to cycle main slice direction).
 - Supported browsers (min version requirement): Firefox (7), Chrome (7), Safari (6), MobileSafari (iOS 6), IE (10), Opera (12)
