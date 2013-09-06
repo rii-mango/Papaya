@@ -3,17 +3,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="papaya.css" />
     <script type="text/javascript" src="papaya.js"></script>
     <title>Papaya Viewer</title>
 </head>
 
 <body>
-    <div style="color:red;text-align:center;" id='papayaWarnings'></div>
+    <div id="papayaToolbar"></div>
     <div id="papayaViewer"></div>
+    <div id="papayaDisplay"></div>
+    <div id="papayaWarnings"></div>
+
     <script type="text/javascript">
         $(window).load(function(){
-            new papaya.viewer.Viewer("http://129.111.247.193/~michaelmartinez/papaya/sample_image.nii.gz");
+            papayaMain.papayaViewer.loadImage("http://127.0.0.1/~michaelmartinez/papaya/sample_image.nii.gz");
         });
     </script>
 </body>

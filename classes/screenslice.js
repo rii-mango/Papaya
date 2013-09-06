@@ -15,7 +15,7 @@ papaya.viewer = papaya.viewer || {};
  * @param {Nuermic} widthSize	real world width of pixel
  * @param {Nuermic} heightSize	real world height of pixel
  */
-papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function(vol, dir, width, height, widthSize, heightSize) {
+papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function(vol, dir, width, height, widthSize, heightSize, lut) {
 	// Public properties
 	this.volume = vol;
 	this.sliceDirection = dir;
@@ -36,6 +36,7 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function(vol, dir, widt
 	this.xformScaleY = 1;
 	this.xformTransX = 0;
 	this.xformTransY = 0;
+    this.colorTable = lut;
 	this.screenRatio = 1;
 	this.screenMin = 0;
 	this.screenMax = 0;
@@ -47,6 +48,7 @@ papaya.viewer.ScreenSlice.DIRECTION_UNKNOWN = 0;
 papaya.viewer.ScreenSlice.DIRECTION_AXIAL = 1;
 papaya.viewer.ScreenSlice.DIRECTION_CORONAL = 2;
 papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL = 3;
+
 papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX = 255;
 papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN = 0;
 
@@ -57,10 +59,10 @@ papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN = 0;
  * Update the screen slice.
  * @param {Numeric} slice	the new slice index
  */
-papaya.viewer.ScreenSlice.prototype.updateSlice = function(slice) {
+papaya.viewer.ScreenSlice.prototype.updateSlice = function(slice, force) {
 	slice = round(slice);
 
-	if (this.currentSlice != slice) {
+	if (force || (this.currentSlice != slice)) {
 		this.currentSlice = slice;
 		
 		var scale = this.volume.header.imageRange.globalScale;
@@ -88,9 +90,9 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function(slice) {
 				}
 
 				var index = ((ctrY * this.xDim) + ctrX) * 4;
-				this.imageData.data[index+0] = value;
-				this.imageData.data[index+1] = value;
-				this.imageData.data[index+2] = value;
+				this.imageData.data[index+0] = this.colorTable.lookupRed(value);
+				this.imageData.data[index+1] = this.colorTable.lookupGreen(value);
+				this.imageData.data[index+2] = this.colorTable.lookupBlue(value);
 				this.imageData.data[index+3] = 255;
 			}
 		}

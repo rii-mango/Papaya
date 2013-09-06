@@ -1,46 +1,43 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-    <script type="text/javascript" src="classes/platform.js"></script>
-    <script type="text/javascript" src="classes/gunzip.js"></script>
-    <script type="text/javascript" src="classes/header.js"></script>
-    <script type="text/javascript" src="classes/orientation.js"></script>
-    <script type="text/javascript" src="classes/utilities.js"></script>
-    <script type="text/javascript" src="classes/nifti.js"></script>
-    <script type="text/javascript" src="classes/volume.js"></script>
-    <script type="text/javascript" src="classes/imagedimensions.js"></script>
-    <script type="text/javascript" src="classes/voxeldimensions.js"></script>
-    <script type="text/javascript" src="classes/imagetype.js"></script>
-    <script type="text/javascript" src="classes/imagedata.js"></script>
-    <script type="text/javascript" src="classes/header-nifti.js"></script>
-    <script type="text/javascript" src="classes/screenslice.js"></script>
-    <script type="text/javascript" src="classes/coordinate.js"></script>
-    <script type="text/javascript" src="classes/imagerange.js"></script>
-    <script type="text/javascript" src="classes/viewer.js"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-    <title>index</title>
+        <link rel="stylesheet" href="css/ui-darkness/jquery-ui.custom.css" />
+        <link rel="stylesheet" type="text/css" href="css/main.css" />
 
-    <script type="text/javascript">
-        function readBlob() {
-            var files = document.getElementById('files').files;
-            if (!files.length) {
-                alert('Please select a file!');
-                return;
-            }
+        <script type="text/javascript" src="classes/constants.js"></script>
+        <script src="jquery/jquery.js"></script>
+        <script src="jquery/jquery-ui.custom.js"></script>
+        <script type="text/javascript" src="classes/platform.js"></script>
+        <script type="text/javascript" src="classes/gunzip.js"></script>
+        <script type="text/javascript" src="classes/header.js"></script>
+        <script type="text/javascript" src="classes/orientation.js"></script>
+        <script type="text/javascript" src="classes/colortable.js"></script>
+        <script type="text/javascript" src="classes/utilities.js"></script>
+        <script type="text/javascript" src="classes/point.js"></script>
+        <script type="text/javascript" src="classes/nifti.js"></script>
+        <script type="text/javascript" src="classes/volume.js"></script>
+        <script type="text/javascript" src="classes/imagedimensions.js"></script>
+        <script type="text/javascript" src="classes/voxeldimensions.js"></script>
+        <script type="text/javascript" src="classes/imagetype.js"></script>
+        <script type="text/javascript" src="classes/imagedata.js"></script>
+        <script type="text/javascript" src="classes/header-nifti.js"></script>
+        <script type="text/javascript" src="classes/screenslice.js"></script>
+        <script type="text/javascript" src="classes/coordinate.js"></script>
+        <script type="text/javascript" src="classes/imagerange.js"></script>
+        <script type="text/javascript" src="classes/viewer.js"></script>
+        <script type="text/javascript" src="classes/display.js"></script>
+        <script type="text/javascript" src="classes/main.js"></script>
 
-            var viewer = new papaya.viewer.Viewer(files[0]);
-        }
-    </script>
-</head>
+        <title>Papaya</title>
+    </head>
 
-<body>
-    <div style="color:red;text-align:center" id='papayaWarnings'></div>
-    <div id="papayaViewer"></div>
-    <input type="file" id="files" name="files" />
-    <button onclick="readBlob()">Go!</button>
-
-</body>
+    <body>
+        <div id="papayaToolbar"></div>
+        <div id="papayaViewer"></div>
+        <div id="papayaDisplay"></div>
+        <div id="papayaWarnings"></div>
+    </body>
 </html>

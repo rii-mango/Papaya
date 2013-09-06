@@ -126,19 +126,30 @@ BrowserDetect.init();
 
 
 
-function showCompatibilityWarning() {
+function checkForBrowserCompatibility() {
     if (BrowserDetect.browser == "Firefox") {
-        $("#papayaWarnings").append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_FIREFOX+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+        if (BrowserDetect.version < BROWSER_MIN_FIREFOX) {
+            $("#"+PAPAYA_WARNINGS_ID).append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_FIREFOX+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+        }
     } else if (BrowserDetect.browser == "Chrome") {
-        $("#papayaWarnings").append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_CHROME+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+        if (BrowserDetect.version < BROWSER_MIN_CHROME) {
+            $("#"+PAPAYA_WARNINGS_ID).append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_CHROME+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+        }
     } else if (BrowserDetect.browser == "Explorer") {
-        $("#papayaWarnings").append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_IE+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+        if (BrowserDetect.version < BROWSER_MIN_IE) {
+            $("#"+PAPAYA_WARNINGS_ID).append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_IE+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+        }
     } else if (BrowserDetect.browser == "Safari") {
-        $("#papayaWarnings").append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_SAFARI+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+        if (BrowserDetect.version < BROWSER_MIN_SAFARI) {
+            $("#"+PAPAYA_WARNINGS_ID).append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_SAFARI+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+        }
     } else if (BrowserDetect.browser == "Opera") {
-        $("#papayaWarnings").append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_OPERA+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+        if (BrowserDetect.version < BROWSER_MIN_OPERA) {
+            $("#"+PAPAYA_WARNINGS_ID).append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_OPERA+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+        }
     }
 }
+
 
 
 

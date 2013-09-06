@@ -24,3 +24,8 @@ function floor(val) {
 function isString(obj) {
     return (typeof obj == 'string' || obj instanceof String);
 }
+
+
+function signum(val) {
+    return val?val<0?-1:1:0
+}
