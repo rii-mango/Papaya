@@ -30,8 +30,14 @@ papaya.volume.Coordinate = papaya.volume.Coordinate || function (xLoc, yLoc, zLo
  * @param yLoc
  * @param zLoc
  */
-papaya.volume.Coordinate.prototype.setCoordinate = function (xLoc, yLoc, zLoc) {
-    this.x = xLoc;
-    this.y = yLoc;
-    this.z = zLoc;
+papaya.volume.Coordinate.prototype.setCoordinate = function (xLoc, yLoc, zLoc, round) {
+    if (round) {
+        this.x = Math.round(xLoc);
+        this.y = Math.round(yLoc);
+        this.z = Math.round(zLoc);
+    } else {
+        this.x = xLoc;
+        this.y = yLoc;
+        this.z = zLoc;
+    }
 }

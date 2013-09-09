@@ -18,6 +18,7 @@ papaya.volume.Header = papaya.volume.Header || function() {
 	this.orientation = null;
 	this.imageRange = null;
 	this.errorMessage = null;
+    this.origin = null;
 }
 
 
@@ -69,7 +70,9 @@ papaya.volume.Header.prototype.readData = function(headerType, data) {
 			this.orientation = new papaya.volume.Orientation(papaya.volume.Orientation.DEFAULT);
 		}
 		this.orientation.createInfo(this.imageDimensions, this.voxelDimensions);
-		
+
+        this.origin = this.fileFormat.getOrigin();
+
 		this.imageRange = this.fileFormat.getImageRange();
 		if (!this.imageRange.isValid()) {
 			this.errorMessage = papaya.volume.Header.INVALID_IMAGE_RANGE;

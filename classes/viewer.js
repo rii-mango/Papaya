@@ -52,6 +52,8 @@ papaya.viewer.Viewer.GAP = PAPAYA_SPACING;  // padding between slice views
 papaya.viewer.Viewer.BACKGROUND_COLOR = "rgba(0, 0, 0, 255)";
 papaya.viewer.Viewer.CROSSHAIRS_COLOR = "rgba(28, 134, 238, 255)";
 papaya.viewer.Viewer.KEYCODE_ROTATE_VIEWS = 32;
+papaya.viewer.Viewer.KEYCODE_CENTER = 67;
+papaya.viewer.Viewer.KEYCODE_ORIGIN = 79;
 
 
 // Public methods
@@ -383,7 +385,12 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function(ke) {
 		this.mainImage = temp;
 		this.calculateScreenSliceTransforms(this);
 		this.drawViewer();
-	}
+	} else if (keyCode == papaya.viewer.Viewer.KEYCODE_CENTER) {
+        var center = new papaya.volume.Coordinate(this.volume.header.imageDimensions.xDim / 2, this.volume.header.imageDimensions.yDim / 2, this.volume.header.imageDimensions.zDim / 2);
+        this.gotoCoordinate(center);
+    } else if (keyCode == papaya.viewer.Viewer.KEYCODE_ORIGIN) {
+        this.gotoCoordinate(this.volume.header.origin);
+    }
 }
 
 
@@ -414,6 +421,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function(me) {
 	this.isDragging = false;
     this.isWindowControl = false;
 }
+
 
 
 /**
@@ -495,5 +503,15 @@ papaya.viewer.Viewer.prototype.windowLevelChanged = function(contrastChange, bri
 papaya.viewer.Viewer.prototype.colorTableChanged = function(name) {
     this.colorTable = new papaya.viewer.ColorTable(papaya.viewer.ColorTable.MAP[name], true, true);
     this.axialSlice.colorTable = this.coronalSlice.colorTable = this.sagittalSlice.colorTable = this.colorTable;
+    this.drawViewer(true);
+}
+
+
+
+papaya.viewer.Viewer.prototype.gotoCoordinate = function(coor) {
+    this.currentCoord.x = coor.x;
+    this.currentCoord.y = coor.y;
+    this.currentCoord.z = coor.z;
+
     this.drawViewer(true);
 }
