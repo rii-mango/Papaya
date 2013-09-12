@@ -7,7 +7,7 @@ papaya.viewer.Display = papaya.viewer.Display || function(width, height) {
     // Public properties
     this.canvas = document.createElement("canvas");
     this.canvas.width = width;
-    this.canvas.height = PAPAYA_DISPLAY_HEIGHT;
+    this.canvas.height = PAPAYA_SECTION_HEIGHT;
     this.context = this.canvas.getContext("2d");
 
     this.canvas.style.padding = 0;
@@ -40,6 +40,8 @@ papaya.viewer.Display.prototype.drawEmptyDisplay = function() {
 
 
 papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc, val) {
+    var sizeRatio = papayaMain.papayaViewer.canvas.width / 400.0;
+
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.context.fillStyle = "#000000";
@@ -54,22 +56,22 @@ papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc, val) {
 
     this.context.font = papaya.viewer.Display.TEXT_LABEL_SIZE+"px Arial";
 
-    this.context.fillText("x", 2*papaya.viewer.Display.TEXT_SPACING, labelLoc);
-    this.context.fillText("y", 3*papaya.viewer.Display.TEXT_SPACING + textWidth, labelLoc);
-    this.context.fillText("z", 4*papaya.viewer.Display.TEXT_SPACING + 2*textWidth, labelLoc);
+    this.context.fillText("x", 2*sizeRatio*papaya.viewer.Display.TEXT_SPACING, labelLoc);
+    this.context.fillText("y", 3*sizeRatio*papaya.viewer.Display.TEXT_SPACING + textWidth, labelLoc);
+    this.context.fillText("z", 4*sizeRatio*papaya.viewer.Display.TEXT_SPACING + 2*textWidth, labelLoc);
 
     var coordValueLoc = labelLoc + papaya.viewer.Display.TEXT_CORRD_VALUE_SIZE + papaya.viewer.Display.TEXT_SPACING/2;
 
     this.context.fillStyle = "rgb(182, 59, 0)";
     this.context.font = "bold " + papaya.viewer.Display.TEXT_CORRD_VALUE_SIZE+"px Arial";
 
-    this.context.fillText(Math.round(xLoc), 2*papaya.viewer.Display.TEXT_SPACING, coordValueLoc);
-    this.context.fillText(Math.round(yLoc), 3*papaya.viewer.Display.TEXT_SPACING + textWidth, coordValueLoc);
-    this.context.fillText(Math.round(zLoc), 4*papaya.viewer.Display.TEXT_SPACING + 2*textWidth, coordValueLoc);
+    this.context.fillText(Math.round(xLoc), 2*sizeRatio*papaya.viewer.Display.TEXT_SPACING, coordValueLoc);
+    this.context.fillText(Math.round(yLoc), 3*sizeRatio*papaya.viewer.Display.TEXT_SPACING + textWidth, coordValueLoc);
+    this.context.fillText(Math.round(zLoc), 4*sizeRatio*papaya.viewer.Display.TEXT_SPACING + 2*textWidth, coordValueLoc);
 
     var valueLoc = labelLoc + 1.5*papaya.viewer.Display.TEXT_SPACING;
     this.context.fillStyle = "white";
     this.context.font = papaya.viewer.Display.TEXT_VALUE_SIZE+"px Arial";
 
-    this.context.fillText(val, 4*papaya.viewer.Display.TEXT_SPACING + 3*textWidth, valueLoc);
+    this.context.fillText(val, 5*sizeRatio*papaya.viewer.Display.TEXT_SPACING + 3*textWidth, valueLoc);
 }

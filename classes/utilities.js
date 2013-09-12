@@ -10,7 +10,6 @@ function bind(scope, fn) {
 }
 
 
-
 function round(val) {
 	return (0.5 + val) | 0;
 }

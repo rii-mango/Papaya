@@ -1,6 +1,4 @@
 
-PAPAYA_DEFAULT_HEIGHT = 565;
-
 /**
  * @classDescription	An orthogonal viewer.
  */
@@ -31,6 +29,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(width, height) {
     this.canvas.style.border = "none";
     this.colorTable = new papaya.viewer.ColorTable(papaya.viewer.ColorTable.TABLE_SPECTRUM, true, true);
     this.previousMousePosition = new papaya.viewer.Point();
+    this.initialized = false;
 
     this.drawEmptyViewer();
 }
@@ -54,6 +53,12 @@ papaya.viewer.Viewer.CROSSHAIRS_COLOR = "rgba(28, 134, 238, 255)";
 papaya.viewer.Viewer.KEYCODE_ROTATE_VIEWS = 32;
 papaya.viewer.Viewer.KEYCODE_CENTER = 67;
 papaya.viewer.Viewer.KEYCODE_ORIGIN = 79;
+papaya.viewer.Viewer.KEYCODE_ARROW_UP = 38;
+papaya.viewer.Viewer.KEYCODE_ARROW_DOWN = 40;
+papaya.viewer.Viewer.KEYCODE_ARROW_RIGHT = 39;
+papaya.viewer.Viewer.KEYCODE_ARROW_LEFT = 37;
+papaya.viewer.Viewer.KEYCODE_PAGE_UP = 33;
+papaya.viewer.Viewer.KEYCODE_PAGE_DOWN = 34;
 
 
 // Public methods
@@ -93,7 +98,8 @@ papaya.viewer.Viewer.prototype.initializeViewer = function() {
     this.context.fillStyle = "white";
     this.context.fillRect(0, 0, this.canvasRect.right, this.canvasRect.bottom);
 
-	this.drawViewer();
+    this.initialized = true;
+    this.drawViewer();
 }
 
 
@@ -390,6 +396,24 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function(ke) {
         this.gotoCoordinate(center);
     } else if (keyCode == papaya.viewer.Viewer.KEYCODE_ORIGIN) {
         this.gotoCoordinate(this.volume.header.origin);
+    } else if (keyCode == papaya.viewer.Viewer.KEYCODE_ARROW_UP) {
+        this.currentCoord.y--;
+        this.gotoCoordinate(this.currentCoord);
+    } else if (keyCode == papaya.viewer.Viewer.KEYCODE_ARROW_DOWN) {
+        this.currentCoord.y++;
+        this.gotoCoordinate(this.currentCoord);
+    } else if (keyCode == papaya.viewer.Viewer.KEYCODE_ARROW_LEFT) {
+        this.currentCoord.x--;
+        this.gotoCoordinate(this.currentCoord);
+    } else if (keyCode == papaya.viewer.Viewer.KEYCODE_ARROW_RIGHT) {
+        this.currentCoord.x++;
+        this.gotoCoordinate(this.currentCoord);
+    } else if (keyCode == papaya.viewer.Viewer.KEYCODE_PAGE_UP) {
+        this.currentCoord.z--;
+        this.gotoCoordinate(this.currentCoord);
+    } else if (keyCode == papaya.viewer.Viewer.KEYCODE_PAGE_DOWN) {
+        this.currentCoord.z++;
+        this.gotoCoordinate(this.currentCoord);
     }
 }
 
@@ -470,7 +494,6 @@ papaya.viewer.Viewer.prototype.updateScreenRange = function() {
 
 
 
-
 papaya.viewer.Viewer.prototype.windowLevelChanged = function(contrastChange, brightnessChange) {
     var range = this.volume.header.imageRange.imageMax - this.volume.header.imageRange.imageMin;
     var step = range * .01;
@@ -514,4 +537,17 @@ papaya.viewer.Viewer.prototype.gotoCoordinate = function(coor) {
     this.currentCoord.z = coor.z;
 
     this.drawViewer(true);
+}
+
+
+
+papaya.viewer.Viewer.prototype.resizeViewer = function(dims) {
+    this.canvas.width = dims.width;
+    this.canvas.height = dims.height;
+
+    if (this.initialized) {
+        this.calculateScreenSliceTransforms(this);
+        this.canvasRect = this.canvas.getBoundingClientRect();
+        this.drawViewer(true);
+    }
 }
