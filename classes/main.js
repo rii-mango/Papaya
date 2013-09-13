@@ -286,8 +286,12 @@ function main() {
     papayaMain = new papaya.viewer.Main();
 
     var loadUrl = $("#"+PAPAYA_VIEWER_ID).data("load-url");
+    var loadEncoded = $("#"+PAPAYA_VIEWER_ID).data("load-encoded");
+
     if (loadUrl) {
-        papayaMain.papayaViewer.loadImage(loadUrl);
+        papayaMain.papayaViewer.loadImage(loadUrl, true, false);
+    } else if (loadEncoded) {
+        papayaMain.papayaViewer.loadImage(window[loadEncoded], false, true);
     }
 
     resizeViewerComponents(false);

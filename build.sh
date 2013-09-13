@@ -9,7 +9,7 @@ cat build.properties classes/constants.js jquery/jquery.js jquery/jquery-ui.cust
 classes/gunzip.js classes/header.js classes/orientation.js classes/colortable.js classes/utilities.js classes/point.js \
 classes/dimensions.js classes/nifti.js classes/volume.js classes/imagedimensions.js classes/voxeldimensions.js \
 classes/imagetype.js classes/imagedata.js classes/header-nifti.js classes/screenslice.js classes/coordinate.js \
-classes/imagerange.js classes/viewer.js classes/display.js classes/main.js | java -jar yuicompressor.jar --type js -o \
-papaya.js
+classes/imagerange.js classes/preferences.js classes/viewer.js classes/display.js classes/main.js | java -jar \
+yuicompressor.jar --type js -o papaya.js
 
 cat css/ui-darkness/jquery-ui.custom.css css/main.css | java -jar yuicompressor.jar --type css -o papaya.css

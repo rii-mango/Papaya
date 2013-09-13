@@ -11,7 +11,8 @@ papaya.viewer = papaya.viewer || {};
  * @param {File} file	The file to read and display.
  */
 papaya.viewer.Viewer = papaya.viewer.Viewer || function(width, height) {
-	// Public properties
+    this.initialized = false;
+
 	this.volume = new papaya.volume.Volume();
 	this.axialSlice; this.coronalSlice; this.sagittalSlice;
 	this.mainImage; this.lowerImageBot; this.lowerImageTop;
@@ -29,14 +30,16 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(width, height) {
     this.canvas.style.border = "none";
     this.colorTable = new papaya.viewer.ColorTable(papaya.viewer.ColorTable.TABLE_SPECTRUM, true, true);
     this.previousMousePosition = new papaya.viewer.Point();
-    this.initialized = false;
-
+    this.preferences = new papaya.viewer.Preferences();
+    this.atlas = new papaya.viewer.Atlas(TalairachAtlas.data, TalairachAtlas.labels);
     this.drawEmptyViewer();
 }
 
 
-papaya.viewer.Viewer.prototype.loadImage = function(location) {
-    if (isString(location)) {
+papaya.viewer.Viewer.prototype.loadImage = function(location, url, encoded) {
+    if (encoded) {
+        this.volume.readEncodedData(location, bind(this, this.initializeViewer));
+    } else if (url || isString(location)) {
         this.volume.readURL(location, bind(this, this.initializeViewer));
     } else {
         this.volume.readFile(location, bind(this, this.initializeViewer));
@@ -59,6 +62,11 @@ papaya.viewer.Viewer.KEYCODE_ARROW_RIGHT = 39;
 papaya.viewer.Viewer.KEYCODE_ARROW_LEFT = 37;
 papaya.viewer.Viewer.KEYCODE_PAGE_UP = 33;
 papaya.viewer.Viewer.KEYCODE_PAGE_DOWN = 34;
+papaya.viewer.Viewer.KEYCODE_SINGLE_QUOTE = 222;
+papaya.viewer.Viewer.KEYCODE_FORWARD_SLASH = 191;
+papaya.viewer.Viewer.KEYCODE_INCREMENT_MAIN = 71;
+papaya.viewer.Viewer.KEYCODE_DECREMENT_MAIN = 86;
+papaya.viewer.Viewer.KEYCODE_TOGGLE_CROSSHAIRS = 65;
 
 
 // Public methods
@@ -249,55 +257,63 @@ papaya.viewer.Viewer.prototype.drawViewer = function(force) {
 	this.context.setTransform(this.lowerImageTop.xformScaleX, 0, 0, this.lowerImageTop.xformScaleY, this.lowerImageTop.xformTransX, this.lowerImageTop.xformTransY);
 	this.context.drawImage(this.lowerImageTop.canvas, 0, 0);
 
-	// initialize crosshairs
-	this.context.setTransform(1, 0, 0, 1, 0, 0);
-	this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR;
-	this.context.lineWidth = 1.0;
-	this.context.beginPath();
+    if (this.preferences.showCrosshairs) {
+        // initialize crosshairs
+        this.context.setTransform(1, 0, 0, 1, 0, 0);
+        this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR;
+        this.context.lineWidth = 1.0;
+        this.context.beginPath();
 
-	// draw axial crosshairs
-	var xLoc = floor(this.axialSlice.xformTransX + (this.currentCoord.x)*this.axialSlice.xformScaleX);
-	var yStart = floor(this.axialSlice.xformTransY);
-	var yEnd = floor(this.axialSlice.xformTransY + this.axialSlice.yDim*this.axialSlice.xformScaleY);
-	this.context.moveTo(xLoc+.5, yStart);
-	this.context.lineTo(xLoc+.5, yEnd);
+        if ((this.mainImage != this.axialSlice) || this.preferences.showMainCrosshairs) {
+            // draw axial crosshairs
+            var xLoc = floor(this.axialSlice.xformTransX + (this.currentCoord.x)*this.axialSlice.xformScaleX);
+            var yStart = floor(this.axialSlice.xformTransY);
+            var yEnd = floor(this.axialSlice.xformTransY + this.axialSlice.yDim*this.axialSlice.xformScaleY);
+            this.context.moveTo(xLoc+.5, yStart);
+            this.context.lineTo(xLoc+.5, yEnd);
 
-	var yLoc = floor(this.axialSlice.xformTransY + (this.currentCoord.y)*this.axialSlice.xformScaleY);
-	var xStart = floor(this.axialSlice.xformTransX);
-	var xEnd = floor(this.axialSlice.xformTransX + this.axialSlice.xDim*this.axialSlice.xformScaleX);
-	this.context.moveTo(xStart, yLoc+.5);
-	this.context.lineTo(xEnd, yLoc+.5);
+            var yLoc = floor(this.axialSlice.xformTransY + (this.currentCoord.y)*this.axialSlice.xformScaleY);
+            var xStart = floor(this.axialSlice.xformTransX);
+            var xEnd = floor(this.axialSlice.xformTransX + this.axialSlice.xDim*this.axialSlice.xformScaleX);
+            this.context.moveTo(xStart, yLoc+.5);
+            this.context.lineTo(xEnd, yLoc+.5);
+        }
 
-	// draw coronal crosshairs
-	xLoc = floor(this.coronalSlice.xformTransX + this.currentCoord.x*this.coronalSlice.xformScaleX);
-	yStart = floor(this.coronalSlice.xformTransY);
-	yEnd = floor(this.coronalSlice.xformTransY + this.coronalSlice.yDim*this.coronalSlice.xformScaleY);
-	this.context.moveTo(xLoc+.5, yStart);
-	this.context.lineTo(xLoc+.5, yEnd);
+        if ((this.mainImage != this.coronalSlice) || this.preferences.showMainCrosshairs) {
+            // draw coronal crosshairs
+            xLoc = floor(this.coronalSlice.xformTransX + this.currentCoord.x*this.coronalSlice.xformScaleX);
+            yStart = floor(this.coronalSlice.xformTransY);
+            yEnd = floor(this.coronalSlice.xformTransY + this.coronalSlice.yDim*this.coronalSlice.xformScaleY);
+            this.context.moveTo(xLoc+.5, yStart);
+            this.context.lineTo(xLoc+.5, yEnd);
 
-	yLoc = floor(this.coronalSlice.xformTransY + this.currentCoord.z*this.coronalSlice.xformScaleY);
-	xStart = floor(this.coronalSlice.xformTransX);
-	xEnd = floor(this.coronalSlice.xformTransX + this.coronalSlice.xDim*this.coronalSlice.xformScaleX);
-	this.context.moveTo(xStart, yLoc+.5);
-	this.context.lineTo(xEnd, yLoc+.5);
+            yLoc = floor(this.coronalSlice.xformTransY + this.currentCoord.z*this.coronalSlice.xformScaleY);
+            xStart = floor(this.coronalSlice.xformTransX);
+            xEnd = floor(this.coronalSlice.xformTransX + this.coronalSlice.xDim*this.coronalSlice.xformScaleX);
+            this.context.moveTo(xStart, yLoc+.5);
+            this.context.lineTo(xEnd, yLoc+.5);
+        }
 
-	// draw sagittal crosshairs
-	xLoc = floor(this.sagittalSlice.xformTransX + this.currentCoord.y*this.sagittalSlice.xformScaleX);
-	yStart = floor(this.sagittalSlice.xformTransY);
-	yEnd = floor(this.sagittalSlice.xformTransY + this.sagittalSlice.yDim*this.sagittalSlice.xformScaleY);
-	this.context.moveTo(xLoc+.5, yStart);
-	this.context.lineTo(xLoc+.5, yEnd);
+        if ((this.mainImage != this.sagittalSlice) || this.preferences.showMainCrosshairs) {
+            // draw sagittal crosshairs
+            xLoc = floor(this.sagittalSlice.xformTransX + this.currentCoord.y*this.sagittalSlice.xformScaleX);
+            yStart = floor(this.sagittalSlice.xformTransY);
+            yEnd = floor(this.sagittalSlice.xformTransY + this.sagittalSlice.yDim*this.sagittalSlice.xformScaleY);
+            this.context.moveTo(xLoc+.5, yStart);
+            this.context.lineTo(xLoc+.5, yEnd);
 
-	yLoc = floor(this.sagittalSlice.xformTransY + this.currentCoord.z*this.sagittalSlice.xformScaleY);
-	xStart = floor(this.sagittalSlice.xformTransX);
-	xEnd = floor(this.sagittalSlice.xformTransX + this.sagittalSlice.xDim*this.sagittalSlice.xformScaleX);
-	this.context.moveTo(xStart, yLoc+.5);
-	this.context.lineTo(xEnd, yLoc+.5);
+            yLoc = floor(this.sagittalSlice.xformTransY + this.currentCoord.z*this.sagittalSlice.xformScaleY);
+            xStart = floor(this.sagittalSlice.xformTransX);
+            xEnd = floor(this.sagittalSlice.xformTransX + this.sagittalSlice.xDim*this.sagittalSlice.xformScaleX);
+            this.context.moveTo(xStart, yLoc+.5);
+            this.context.lineTo(xEnd, yLoc+.5);
+        }
 
-	// finish crosshairs drawing
-	this.context.closePath();
-	this.context.stroke();
-	this.context.restore();
+        // finish crosshairs drawing
+        this.context.closePath();
+        this.context.stroke();
+        this.context.restore();
+    }
 
     if (papayaMain.papayaDisplay) {
         papayaMain.papayaDisplay.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z, this.volume.getVoxelAtIndex(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z));
@@ -408,12 +424,38 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function(ke) {
     } else if (keyCode == papaya.viewer.Viewer.KEYCODE_ARROW_RIGHT) {
         this.currentCoord.x++;
         this.gotoCoordinate(this.currentCoord);
-    } else if (keyCode == papaya.viewer.Viewer.KEYCODE_PAGE_UP) {
-        this.currentCoord.z--;
-        this.gotoCoordinate(this.currentCoord);
-    } else if (keyCode == papaya.viewer.Viewer.KEYCODE_PAGE_DOWN) {
+    } else if ((keyCode == papaya.viewer.Viewer.KEYCODE_PAGE_DOWN) || (keyCode == papaya.viewer.Viewer.KEYCODE_FORWARD_SLASH)) {
         this.currentCoord.z++;
         this.gotoCoordinate(this.currentCoord);
+    } else if ((keyCode == papaya.viewer.Viewer.KEYCODE_PAGE_UP) || (keyCode == papaya.viewer.Viewer.KEYCODE_SINGLE_QUOTE)) {
+        this.currentCoord.z--;
+        this.gotoCoordinate(this.currentCoord);
+    } else if ((keyCode == papaya.viewer.Viewer.KEYCODE_PAGE_DOWN) || (keyCode == papaya.viewer.Viewer.KEYCODE_FORWARD_SLASH)) {
+        this.currentCoord.z++;
+        this.gotoCoordinate(this.currentCoord);
+    } else if (keyCode == papaya.viewer.Viewer.KEYCODE_INCREMENT_MAIN) {
+        if (this.mainImage.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+            this.currentCoord.z--;
+        } else if (this.mainImage.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+            this.currentCoord.y--;
+        } else if (this.mainImage.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+            this.currentCoord.x++;
+        }
+
+        this.gotoCoordinate(this.currentCoord);
+    } else if (keyCode == papaya.viewer.Viewer.KEYCODE_DECREMENT_MAIN) {
+        if (this.mainImage.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+            this.currentCoord.z++;
+        } else if (this.mainImage.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+            this.currentCoord.y++;
+        } else if (this.mainImage.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+            this.currentCoord.x--;
+        }
+
+        this.gotoCoordinate(this.currentCoord);
+    } else if (keyCode == papaya.viewer.Viewer.KEYCODE_TOGGLE_CROSSHAIRS) {
+        this.preferences.showMainCrosshairs = !this.preferences.showMainCrosshairs;
+        this.drawViewer(true);
     }
 }
 

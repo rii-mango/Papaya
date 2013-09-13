@@ -123,6 +123,26 @@ papaya.volume.Volume.prototype.readURL = function(url, callback) {
 
 
 
+papaya.volume.Volume.prototype.readEncodedData = function(data, callback) {
+   // try {
+        this.fileName = "encoded.nii.gz";
+        this.onFinishedRead = callback;
+
+        this.headerType = this.findFileType(this.fileName);
+        this.compressed = this.fileIsCompressed(this.fileName);
+
+        var vol = this;
+
+        vol.rawData = Base64Binary.decodeArrayBuffer(data);
+
+        fileLength = vol.rawData.length;
+
+        vol.decompress(vol);
+   // }
+}
+
+
+
 /**
  * Return a voxel value at a specified coordinate index.
  * @param {Numeric} ctrX	The X location.
@@ -270,7 +290,7 @@ papaya.volume.Volume.prototype.finishedDecompress = function(vol, data) {
  */
 papaya.volume.Volume.prototype.finishedReadData = function(vol) {
 	vol.header.readData(vol.headerType, vol.rawData);
-	
+
 	this.swap16 = (this.header.imageType.numBytes == 2) && (this.header.imageType.littleEndian != isPlatformLittleEndian());
 	this.swap32 = (this.header.imageType.numBytes == 4) && (this.header.imageType.littleEndian != isPlatformLittleEndian());
 	
