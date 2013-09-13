@@ -1,9 +1,9 @@
 
 var papaya = papaya || {};
-papaya.viewer = papaya.viewer || {};
+papaya.core = papaya.core || {};
 
 
-papaya.viewer.Dimensions = papaya.viewer.Dimensions || function(width, height) {
+papaya.core.Dimensions = papaya.core.Dimensions || function(width, height) {
     this.width = width;
     this.height = height;
     this.widthPadding = 0;

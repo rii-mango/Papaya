@@ -39,7 +39,7 @@ papaya.volume.Header.INVALID_IMAGE_RANGE = "Image range is not valid!";
  */
 papaya.volume.Header.prototype.readData = function(headerType, data) {
 	if (headerType == papaya.volume.Volume.TYPE_NIFTI) {
-		this.fileFormat = new papaya.volume.HeaderNIFTI();
+		this.fileFormat = new papaya.volume.nifti.HeaderNIFTI();
 		this.fileFormat.readData(data);
 
 		if (this.fileFormat.hasError()) {

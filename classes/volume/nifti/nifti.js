@@ -1,16 +1,13 @@
 
-/**
- * @classDescription	NIFTI header data type.  See http://nifti.nimh.nih.gov/nifti-1/ for more information.
- */
-var gov = gov || {};
-gov.nih = gov.nih || {};
-gov.nih.nifti = gov.nih.nifti || {};
+var papaya = papaya || {};
+papaya.volume = papaya.volume || {};
+papaya.volume.nifti = papaya.volume.nifti || {};
 
 
 /**
  * Constructor.
  */
-gov.nih.nifti.NIFTI = gov.nih.nifti.NIFTI || function() {
+papaya.volume.nifti.NIFTI = papaya.volume.nifti.NIFTI || function() {
 	// Public properties
 	this.errorMessage = null;
 	this.littleEndian = false;
@@ -35,27 +32,27 @@ gov.nih.nifti.NIFTI = gov.nih.nifti.NIFTI || function() {
 
 
 // Public constants
-gov.nih.nifti.MAGIC_COOKIE = 348;
-gov.nih.nifti.NII_HDR_SIZE = 352;
+papaya.volume.nifti.MAGIC_COOKIE = 348;
+papaya.volume.nifti.NII_HDR_SIZE = 352;
 
-gov.nih.nifti.DT_NONE                    = 0;
-gov.nih.nifti.DT_BINARY                  = 1;
-gov.nih.nifti.NIFTI_TYPE_UINT8           = 2;
-gov.nih.nifti.NIFTI_TYPE_INT16           = 4;
-gov.nih.nifti.NIFTI_TYPE_INT32           = 8;
-gov.nih.nifti.NIFTI_TYPE_FLOAT32        = 16;
-gov.nih.nifti.NIFTI_TYPE_COMPLEX64      = 32;
-gov.nih.nifti.NIFTI_TYPE_FLOAT64        = 64;
-gov.nih.nifti.NIFTI_TYPE_RGB24         = 128;
-gov.nih.nifti.DT_ALL                   = 255;
-gov.nih.nifti.NIFTI_TYPE_INT8          = 256;
-gov.nih.nifti.NIFTI_TYPE_UINT16        = 512;
-gov.nih.nifti.NIFTI_TYPE_UINT32        = 768;
-gov.nih.nifti.NIFTI_TYPE_INT64        = 1024;
-gov.nih.nifti.NIFTI_TYPE_UINT64       = 1280;
-gov.nih.nifti.NIFTI_TYPE_FLOAT128     = 1536;
-gov.nih.nifti.NIFTI_TYPE_COMPLEX128   = 1792;
-gov.nih.nifti.NIFTI_TYPE_COMPLEX256   = 2048;
+papaya.volume.nifti.DT_NONE                    = 0;
+papaya.volume.nifti.DT_BINARY                  = 1;
+papaya.volume.nifti.NIFTI_TYPE_UINT8           = 2;
+papaya.volume.nifti.NIFTI_TYPE_INT16           = 4;
+papaya.volume.nifti.NIFTI_TYPE_INT32           = 8;
+papaya.volume.nifti.NIFTI_TYPE_FLOAT32        = 16;
+papaya.volume.nifti.NIFTI_TYPE_COMPLEX64      = 32;
+papaya.volume.nifti.NIFTI_TYPE_FLOAT64        = 64;
+papaya.volume.nifti.NIFTI_TYPE_RGB24         = 128;
+papaya.volume.nifti.DT_ALL                   = 255;
+papaya.volume.nifti.NIFTI_TYPE_INT8          = 256;
+papaya.volume.nifti.NIFTI_TYPE_UINT16        = 512;
+papaya.volume.nifti.NIFTI_TYPE_UINT32        = 768;
+papaya.volume.nifti.NIFTI_TYPE_INT64        = 1024;
+papaya.volume.nifti.NIFTI_TYPE_UINT64       = 1280;
+papaya.volume.nifti.NIFTI_TYPE_FLOAT128     = 1536;
+papaya.volume.nifti.NIFTI_TYPE_COMPLEX128   = 1792;
+papaya.volume.nifti.NIFTI_TYPE_COMPLEX256   = 2048;
 
 
 // Public methods
@@ -65,16 +62,16 @@ gov.nih.nifti.NIFTI_TYPE_COMPLEX256   = 2048;
  * @param {String} data	The binary string containing header data.
  * @param {Boolean} compressed	True if the data is compressed, false otherwise.
  */
-gov.nih.nifti.NIFTI.prototype.readData = function(data) {
+papaya.volume.nifti.NIFTI.prototype.readData = function(data) {
 	var rawData = new DataView(data);
 	var magicCookieVal = this.getIntAt(rawData, 0, this.littleEndian);
 
-	if (magicCookieVal != gov.nih.nifti.MAGIC_COOKIE) {  // try as little endian
+	if (magicCookieVal != papaya.volume.nifti.MAGIC_COOKIE) {  // try as little endian
 		this.littleEndian = true;
 		magicCookieVal = this.getIntAt(rawData, 0, this.littleEndian);
 	}
 
-	if (magicCookieVal != gov.nih.nifti.MAGIC_COOKIE) {
+	if (magicCookieVal != papaya.volume.nifti.MAGIC_COOKIE) {
 		this.errorMessage = "This does not appear to be a NIFTI file!";
 		return;
 	}
@@ -159,7 +156,7 @@ gov.nih.nifti.NIFTI.prototype.readData = function(data) {
  * @param {Numeric} dz
  * @param {Numeric} qfac
  */
-gov.nih.nifti.NIFTI.prototype.convertNiftiQFormToNiftiSForm = function(qb, qc, qd, qx, qy, qz, dx, dy, dz, qfac) {
+papaya.volume.nifti.NIFTI.prototype.convertNiftiQFormToNiftiSForm = function(qb, qc, qd, qx, qy, qz, dx, dy, dz, qfac) {
 	var R = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 	var a, b, c, d, xd, yd, zd;
 	b = qb;
@@ -215,7 +212,7 @@ gov.nih.nifti.NIFTI.prototype.convertNiftiQFormToNiftiSForm = function(qb, qc, q
  * Convert NIFTI Sform orientation to NEMA style orientation (e.g., XYZ+--).  Adapted from nifti1_io.c function nifti_mat44_to_orientation().
  * @param {Array} R
  */
-gov.nih.nifti.NIFTI.prototype.convertNiftiSFormToNEMA = function(R) {
+papaya.volume.nifti.NIFTI.prototype.convertNiftiSFormToNEMA = function(R) {
     var xi, xj, xk, yi, yj, yk, zi, zj, zk, val, detQ, detP;
     var i, j, k, p, q, r, ibest, jbest, kbest, pbest, qbest, rbest;
     k = 0;
@@ -384,7 +381,7 @@ gov.nih.nifti.NIFTI.prototype.convertNiftiSFormToNEMA = function(R) {
  * @param {Array} B	second matrix
  * @return {Array}	result
  */
-gov.nih.nifti.NIFTI.prototype.nifti_mat33_mul = function(A, B) {
+papaya.volume.nifti.NIFTI.prototype.nifti_mat33_mul = function(A, B) {
     var C = [[0,0,0],[0,0,0],[0,0,0]];
     var i,j;
     
@@ -402,7 +399,7 @@ gov.nih.nifti.NIFTI.prototype.nifti_mat33_mul = function(A, B) {
  * @param {Array} R	matrix
  * @return {Numeric}	result
  */
-gov.nih.nifti.NIFTI.prototype.nifti_mat33_determ = function(R) {
+papaya.volume.nifti.NIFTI.prototype.nifti_mat33_determ = function(R) {
     var r11,r12,r13,r21,r22,r23,r31,r32,r33;
     /*  INPUT MATRIX:  */
     r11 = R[0][0]; r12 = R[0][1]; r13 = R[0][2];		/* [ r11 r12 r13 ] */
@@ -420,7 +417,7 @@ gov.nih.nifti.NIFTI.prototype.nifti_mat33_determ = function(R) {
  * @param {Numeric} end	ending index
  * @return {String}	the resulting string
  */
-gov.nih.nifti.NIFTI.prototype.getStringAt = function(data, start, end) {
+papaya.volume.nifti.NIFTI.prototype.getStringAt = function(data, start, end) {
 	var str = "";
 
 	for (var ctr = start; ctr < end; ctr++) {
@@ -437,7 +434,7 @@ gov.nih.nifti.NIFTI.prototype.getStringAt = function(data, start, end) {
  * @param {Numeric} start	index
  * @return {Numeric}	the byte value
  */
-gov.nih.nifti.NIFTI.prototype.getByteAt = function(data, start) { 
+papaya.volume.nifti.NIFTI.prototype.getByteAt = function(data, start) {
 	return data.getInt8(start); 
 }
 
@@ -449,7 +446,7 @@ gov.nih.nifti.NIFTI.prototype.getByteAt = function(data, start) {
  * @param {Boolean} littleEndian	true if data is in little endian order
  * @return {Numeric}	the 2-byte integer value
  */
-gov.nih.nifti.NIFTI.prototype.getShortAt = function(data, start, littleEndian) { 
+papaya.volume.nifti.NIFTI.prototype.getShortAt = function(data, start, littleEndian) {
 	return data.getInt16(start, littleEndian); 
 }
 
@@ -461,7 +458,7 @@ gov.nih.nifti.NIFTI.prototype.getShortAt = function(data, start, littleEndian) {
  * @param {Boolean} littleEndian	true if data is in little endian order
  * @return {Numeric}	the 4-byte integer value
  */
-gov.nih.nifti.NIFTI.prototype.getIntAt = function(data, start, littleEndian) { 
+papaya.volume.nifti.NIFTI.prototype.getIntAt = function(data, start, littleEndian) {
 	return data.getInt32(start, littleEndian); 
 }
 	
@@ -473,7 +470,7 @@ gov.nih.nifti.NIFTI.prototype.getIntAt = function(data, start, littleEndian) {
  * @param {Boolean} littleEndian	true if data is in little endian order
  * @return {Numeric}	the 4-byte float value
  */
-gov.nih.nifti.NIFTI.prototype.getFloatAt = function(data, start, littleEndian) { 
+papaya.volume.nifti.NIFTI.prototype.getFloatAt = function(data, start, littleEndian) {
 	return data.getFloat32(start, littleEndian); 
 }
 	
@@ -482,6 +479,6 @@ gov.nih.nifti.NIFTI.prototype.getFloatAt = function(data, start, littleEndian) {
  * Test whether this object is in error state.
  * @param {Boolean}	True if this object is in error state.
  */
-gov.nih.nifti.NIFTI.prototype.hasError = function() {
+papaya.volume.nifti.NIFTI.prototype.hasError = function() {
 	return (this.errorMessage != null);
 }

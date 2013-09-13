@@ -17,7 +17,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(width, height) {
 	this.axialSlice; this.coronalSlice; this.sagittalSlice;
 	this.mainImage; this.lowerImageBot; this.lowerImageTop;
     this.viewerDim = 0;
-    this.currentCoord = new papaya.volume.Coordinate(0, 0, 0);
+    this.currentCoord = new papaya.core.Coordinate(0, 0, 0);
 	this.longestDim; this.longestDimSize; this.draggingSliceDir;
     this.isDragging = false;
     this.isWindowControl = false;
@@ -29,9 +29,9 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(width, height) {
     this.canvas.style.margin = 0;
     this.canvas.style.border = "none";
     this.colorTable = new papaya.viewer.ColorTable(papaya.viewer.ColorTable.TABLE_SPECTRUM, true, true);
-    this.previousMousePosition = new papaya.viewer.Point();
+    this.previousMousePosition = new papaya.core.Point();
     this.preferences = new papaya.viewer.Preferences();
-    this.atlas = new papaya.viewer.Atlas(TalairachAtlas.data, TalairachAtlas.labels);
+    this.atlas = new papaya.viewer.Atlas(papaya.data.TalairachAtlas.data, papaya.data.TalairachAtlas.labels);
     this.drawEmptyViewer();
 }
 
@@ -408,7 +408,7 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function(ke) {
 		this.calculateScreenSliceTransforms(this);
 		this.drawViewer();
 	} else if (keyCode == papaya.viewer.Viewer.KEYCODE_CENTER) {
-        var center = new papaya.volume.Coordinate(this.volume.header.imageDimensions.xDim / 2, this.volume.header.imageDimensions.yDim / 2, this.volume.header.imageDimensions.zDim / 2);
+        var center = new papaya.core.Coordinate(this.volume.header.imageDimensions.xDim / 2, this.volume.header.imageDimensions.yDim / 2, this.volume.header.imageDimensions.zDim / 2);
         this.gotoCoordinate(center);
     } else if (keyCode == papaya.viewer.Viewer.KEYCODE_ORIGIN) {
         this.gotoCoordinate(this.volume.header.origin);

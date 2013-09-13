@@ -1,5 +1,5 @@
 .idea/
 .DS_Store
-*.jar
 papaya.js
 deploy.sh
+build/

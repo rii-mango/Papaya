@@ -133,7 +133,7 @@ papaya.volume.Volume.prototype.readEncodedData = function(data, callback) {
 
         var vol = this;
 
-        vol.rawData = Base64Binary.decodeArrayBuffer(data);
+        vol.rawData = papaya.utilities.Base64Binary.decodeArrayBuffer(data);
 
         fileLength = vol.rawData.length;
 
@@ -260,7 +260,7 @@ papaya.volume.Volume.prototype.readData = function(vol, blob) {
  */
 papaya.volume.Volume.prototype.decompress = function(vol) {
 	if (vol.compressed) {
-		var gunzip = new papaya.utils.Gunzip();
+		var gunzip = new papaya.utilities.Gunzip();
 		gunzip.gunzip(vol.rawData, function(data){vol.finishedDecompress(vol, data)});
 
 		if (gunzip.hasError()) {

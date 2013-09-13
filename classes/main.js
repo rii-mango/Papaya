@@ -83,7 +83,7 @@ function getViewerDimensions() {
     }
 
     var widthPadding = (parentWidth - width) / 2;
-    var dims = new papaya.viewer.Dimensions(width, height);
+    var dims = new papaya.core.Dimensions(width, height);
     dims.widthPadding = widthPadding;
     dims.heightPadding = PAPAYA_CONTAINER_PADDING_TOP;
 

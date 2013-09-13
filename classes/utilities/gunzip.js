@@ -9,10 +9,10 @@
  */
 
 var papaya = papaya || {};
-papaya.utils = papaya.utils || {};
+papaya.utilities = papaya.utilities || {};
 
 
-papaya.utils.Gunzip = papaya.utils.Gunzip || function() {
+papaya.utilities.Gunzip = papaya.utilities.Gunzip || function() {
 	var GUNZIP_FLAG_NOT_SUPPORTED = "GZIP flag not supported!";
 	var GUNZIP_INCORRECT_MAGIC_COOKIE = "Not a GZIP file!";
 	var START_OFFSET_DEFAULT = 10;
