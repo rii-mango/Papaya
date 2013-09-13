@@ -482,3 +482,9 @@ papaya.volume.nifti.NIFTI.prototype.getFloatAt = function(data, start, littleEnd
 papaya.volume.nifti.NIFTI.prototype.hasError = function() {
 	return (this.errorMessage != null);
 }
+
+
+
+papaya.volume.nifti.NIFTI.prototype.getQformMat = function() {
+    return this.convertNiftiQFormToNiftiSForm(this.quatern_b, this.quatern_c, this.quatern_d, this.qoffset_x, this.qoffset_y, this.qoffset_z, this.pixDims[1], this.pixDims[2], this.pixDims[3], this.pixDims[0]);
+}

@@ -40,7 +40,6 @@ papaya.viewer.Atlas.prototype.readFinished = function () {
     }
 
     this.numLabels = index;
-
     this.name = this.atlasLabels.atlas.header.name;
 }
 

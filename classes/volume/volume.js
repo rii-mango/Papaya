@@ -21,8 +21,7 @@ papaya.volume.Volume = papaya.volume.Volume || function() {
 	this.rawData = null;
 	this.onFinishedRead = null;
 	this.errorMessage = null;
-	this.swap16 = false;
-	this.swap32 = false;
+    this.transform = null;
 }
 
 
@@ -133,7 +132,7 @@ papaya.volume.Volume.prototype.readEncodedData = function(data, callback) {
 
         var vol = this;
 
-        vol.rawData = papaya.utilities.Base64Binary.decodeArrayBuffer(data);
+        vol.rawData = Base64Binary.decodeArrayBuffer(data);
 
         fileLength = vol.rawData.length;
 
@@ -151,16 +150,9 @@ papaya.volume.Volume.prototype.readEncodedData = function(data, callback) {
  * @return {Numeric}	The value at that coordinate index.
  */
 papaya.volume.Volume.prototype.getVoxelAtIndex = function(ctrX, ctrY, ctrZ) {
-	var val = this.imageData.data[this.header.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ)];
-	
-	if (this.swap16) {
-		return ((val & 0xFF) << 8) | ((val >> 8) & 0xFF);
-	} else if (this.swap32) {
-		return ((val & 0xFF) << 24) | ((val & 0xFF00) << 8) | ((val >> 8) & 0xFF00) | ((val >> 24) & 0xFF);
-	} else {
-		return val;
-	}      
+	return this.transform.getVoxelAtIndex(ctrX, ctrY, ctrZ);
 }
+
 
 
 /**
@@ -260,7 +252,7 @@ papaya.volume.Volume.prototype.readData = function(vol, blob) {
  */
 papaya.volume.Volume.prototype.decompress = function(vol) {
 	if (vol.compressed) {
-		var gunzip = new papaya.utilities.Gunzip();
+		var gunzip = new Gunzip();
 		gunzip.gunzip(vol.rawData, function(data){vol.finishedDecompress(vol, data)});
 
 		if (gunzip.hasError()) {
@@ -290,10 +282,8 @@ papaya.volume.Volume.prototype.finishedDecompress = function(vol, data) {
  */
 papaya.volume.Volume.prototype.finishedReadData = function(vol) {
 	vol.header.readData(vol.headerType, vol.rawData);
+    vol.header.imageType.swapped = (this.header.imageType.littleEndian != isPlatformLittleEndian());
 
-	this.swap16 = (this.header.imageType.numBytes == 2) && (this.header.imageType.littleEndian != isPlatformLittleEndian());
-	this.swap32 = (this.header.imageType.numBytes == 4) && (this.header.imageType.littleEndian != isPlatformLittleEndian());
-	
 	if (vol.header.hasError()) {
 		vol.errorMessage = vol.header.errorMessage;
 		vol.onFinishedRead(vol);
@@ -310,6 +300,7 @@ papaya.volume.Volume.prototype.finishedReadData = function(vol) {
 papaya.volume.Volume.prototype.finishedLoad = function() {
 	if (this.onFinishedRead) {
 		this.rawData = null;
+        this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
 		this.onFinishedRead(this);
 	}
 }

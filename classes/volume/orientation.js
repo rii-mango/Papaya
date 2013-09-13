@@ -35,6 +35,8 @@ papaya.volume.Orientation.prototype.convertIndexToOffset = function(xLoc, yLoc, 
 
 	return (xLoc * this.xIncrement) + (yLoc * this.yIncrement) + (zLoc * this.zIncrement);
 }
+
+
 /**
  * Populate ImageDimensions and VoxelDimensions objects with XYZ data.
  * @param {ImageDimensions} imageDimensions	the ImageDimensions object
