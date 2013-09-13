@@ -157,7 +157,7 @@ papaya.viewer.Main.prototype.buildWarnings = function() {
 papaya.viewer.Main.prototype.buildToolbar = function() {
     if (isShowingToolbar()) {
         $("#"+PAPAYA_TOOLBAR_ID).append(
-            '<button id="addImage">Add Images</button>\
+            '<button id="addImage">Open Image</button>\
             <button id="colorTable">Color Table</button>\
             \
             <div id="dialog">\
@@ -194,7 +194,11 @@ papaya.viewer.Main.prototype.buildToolbar = function() {
                     $("#selectFilesWarning").css({"visibility": "hidden"});
                     $(this).dialog("close");
                 },
-                Load: function() {
+                "Open Sample Image": function() {
+                    loadSampleImage();
+                    $(this).dialog("close");
+                },
+                "Open Images": function() {
                     if (hasSelectedFiles()) {
                         papayaMain.papayaViewer.loadImage(document.getElementById('files1').files[0]);
                         $(this).dialog("close");
@@ -278,6 +282,13 @@ function hasSelectedFiles() {
     hasFiles |= (document.getElementById('files3').files.length > 0);
     hasFiles |= (document.getElementById('files4').files.length > 0);
     return hasFiles;
+}
+
+
+
+function loadSampleImage() {
+    papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.data, false, true);
+    $("#dialog").dialog("close");
 }
 
 

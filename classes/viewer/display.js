@@ -20,11 +20,12 @@ papaya.viewer.Display = papaya.viewer.Display || function(width, height) {
 
 
 papaya.viewer.Display.PROTOTYPE_TEXT = "000.00";
-papaya.viewer.Display.PROTOTYPE_ATLAS_TEXT = "XXXXXXXXXXXX";
+papaya.viewer.Display.MINI_LABELS_THRESH = 500;
 papaya.viewer.Display.TEXT_SPACING = 8;
 papaya.viewer.Display.TEXT_LABEL_SIZE = 12;
 papaya.viewer.Display.TEXT_CORRD_VALUE_SIZE = 16;
 papaya.viewer.Display.TEXT_VALUE_SIZE = 18;
+papaya.viewer.Display.TEXT_MINI_VALUE_SIZE = 13;
 
 
 papaya.viewer.Display.prototype.drawUninitializedDisplay = function() {
@@ -83,18 +84,60 @@ papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc, val) {
 
 
     // atlas labels
-    var metricsAtlas = this.context.measureText(papaya.viewer.Display.PROTOTYPE_ATLAS_TEXT);
-    var textWidthAtlas = metricsAtlas.width;
-    var atlasStartX = this.canvas.width / 2;
-    var atlasLabel = papayaMain.papayaViewer.atlas.getLabelAt(xLoc, yLoc, zLoc);
+    var atlasLabelsStartPos = 7*sizeRatio*papaya.viewer.Display.TEXT_SPACING + 5*textWidth;
+    var atlasLabelsTotalWidth = this.canvas.width - atlasLabelsStartPos;
 
-    this.context.fillStyle = "rgb(182, 59, 0)";
-    this.context.font = "bold " + papaya.viewer.Display.TEXT_VALUE_SIZE+"px Arial";
-    this.context.fillText(atlasLabel[0], atlasStartX+1*sizeRatio*papaya.viewer.Display.TEXT_SPACING, valueLoc);
-    this.context.fillText(atlasLabel[1], atlasStartX+2*sizeRatio*papaya.viewer.Display.TEXT_SPACING + textWidthAtlas, valueLoc);
+    if (atlasLabelsTotalWidth < papaya.viewer.Display.MINI_LABELS_THRESH) {
+        var atlasNumLabels = papayaMain.papayaViewer.atlas.numLabels;
+        var atlasLabelWidth = atlasLabelsTotalWidth / 2;
 
-    this.context.fillStyle = "white";
-    this.context.font = "bold " + papaya.viewer.Display.TEXT_VALUE_SIZE+"px Arial";
-    this.context.fillText(atlasLabel[2], atlasStartX+3*sizeRatio*papaya.viewer.Display.TEXT_SPACING + 2*textWidthAtlas, valueLoc);
-    this.context.fillText(atlasLabel[3], atlasStartX+4*sizeRatio*papaya.viewer.Display.TEXT_SPACING + 3*textWidthAtlas, valueLoc);
+        var atlasLabel = papayaMain.papayaViewer.atlas.getLabelAt(xLoc, yLoc, zLoc);
+
+        for (var ctr = 0; ctr < atlasNumLabels; ctr++) {
+            if (ctr < 2) {
+                this.context.fillStyle = "rgb(182, 59, 0)";
+                this.context.font = papaya.viewer.Display.TEXT_MINI_VALUE_SIZE+"px Arial";
+            } else {
+                this.context.fillStyle = "white";
+                this.context.font = papaya.viewer.Display.TEXT_MINI_VALUE_SIZE+"px Arial";
+            }
+
+            var metricsAtlas = this.context.measureText(atlasLabel[ctr]);
+            if (metricsAtlas.width > atlasLabelWidth) {
+                atlasLabel[ctr] = (atlasLabel[ctr].substr(0, Math.round(atlasLabel[ctr].length / 3)) + " ... " + atlasLabel[ctr].substr(atlasLabel[ctr].length - 3, 3));
+            }
+
+            if (ctr == 0) {
+                this.context.fillText(atlasLabel[ctr], atlasLabelsStartPos, labelLoc);
+            } else if (ctr == 1) {
+                this.context.fillText(atlasLabel[ctr], atlasLabelsStartPos, coordValueLoc);
+            } else if (ctr == 2) {
+                this.context.fillText(atlasLabel[ctr], atlasLabelsStartPos + atlasLabelWidth, labelLoc);
+            } else if (ctr == 3) {
+                this.context.fillText(atlasLabel[ctr], atlasLabelsStartPos + atlasLabelWidth, coordValueLoc);
+            }
+        }
+    } else {
+        var atlasNumLabels = papayaMain.papayaViewer.atlas.numLabels;
+        var atlasLabelWidth = atlasLabelsTotalWidth / atlasNumLabels;
+
+        var atlasLabel = papayaMain.papayaViewer.atlas.getLabelAt(xLoc, yLoc, zLoc);
+
+        for (var ctr = 0; ctr < atlasNumLabels; ctr++) {
+            if (ctr < 2) {
+                this.context.fillStyle = "rgb(182, 59, 0)";
+                this.context.font = "bold " + papaya.viewer.Display.TEXT_VALUE_SIZE+"px Arial";
+            } else {
+                this.context.fillStyle = "white";
+                this.context.font = "bold " + papaya.viewer.Display.TEXT_VALUE_SIZE+"px Arial";
+            }
+
+            var metricsAtlas = this.context.measureText(atlasLabel[ctr]);
+            if (metricsAtlas.width > atlasLabelWidth) {
+                atlasLabel[ctr] = (atlasLabel[ctr].substr(0, Math.round(atlasLabel[ctr].length / 3)) + " ... " + atlasLabel[ctr].substr(atlasLabel[ctr].length - 3, 3));
+            }
+
+            this.context.fillText(atlasLabel[ctr], atlasLabelsStartPos + (ctr * atlasLabelWidth), valueLoc);
+        }
+    }
 }
