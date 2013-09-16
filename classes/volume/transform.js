@@ -7,7 +7,7 @@ papaya.volume = papaya.volume || {};
  * Constructor.
  */
 papaya.volume.Transform = papaya.volume.Transform || function (mat, volume) {
-    this.voxelValue = new papaya.volume.VoxelValue(volume.imageData, volume.header.imageType, volume.header.orientation);
+    this.voxelValue = new papaya.volume.VoxelValue(volume.imageData, volume.header.imageType, volume.header.imageDimensions, volume.header.imageRange, volume.header.orientation);
     this.voxelDimensions = volume.header.voxelDimensions;
     this.imageDimensions = volume.header.imageDimensions;
     this.volume = volume;
@@ -117,21 +117,21 @@ papaya.volume.Transform.prototype.updateTransforms = function(mat) {
 
 
 
-papaya.volume.Transform.prototype.getVoxelAtIndex = function(ctrX, ctrY, ctrZ) {
-    return this.voxelValue.getVoxelAtIndex(ctrX, ctrY, ctrZ);
+papaya.volume.Transform.prototype.getVoxelAtIndex = function(ctrX, ctrY, ctrZ, useNN) {
+    return this.voxelValue.getVoxelAtIndex(ctrX, ctrY, ctrZ, useNN);
 }
 
 
 
-papaya.volume.Transform.prototype.getVoxelAtCoordinate = function(xLoc, yLoc, zLoc) {
-    var xTrans = Math.round(((xLoc * this.worldMat[0][0]) + (yLoc * this.worldMat[0][1]) + (zLoc * this.worldMat[0][2]) + (this.worldMat[0][3])) + .5);
-    var yTrans = Math.round(((xLoc * this.worldMat[1][0]) + (yLoc * this.worldMat[1][1]) + (zLoc * this.worldMat[1][2]) + (this.worldMat[1][3])) + .5);
-    var zTrans = Math.round(((xLoc * this.worldMat[2][0]) + (yLoc * this.worldMat[2][1]) + (zLoc * this.worldMat[2][2]) + (this.worldMat[2][3])) + .5);
+papaya.volume.Transform.prototype.getVoxelAtCoordinate = function(xLoc, yLoc, zLoc, useNN) {
+    var xTrans = ((xLoc * this.worldMat[0][0]) + (yLoc * this.worldMat[0][1]) + (zLoc * this.worldMat[0][2]) + (this.worldMat[0][3]));
+    var yTrans = ((xLoc * this.worldMat[1][0]) + (yLoc * this.worldMat[1][1]) + (zLoc * this.worldMat[1][2]) + (this.worldMat[1][3]));
+    var zTrans = ((xLoc * this.worldMat[2][0]) + (yLoc * this.worldMat[2][1]) + (zLoc * this.worldMat[2][2]) + (this.worldMat[2][3]));
 
     if ((xTrans < 0) || (xTrans >= this.imageDimensions.xDim) || (yTrans < 0) ||  (yTrans >= this.imageDimensions.yDim) || (zTrans < 0) || (zTrans >= this.imageDimensions.zDim)) {
         return 0;
     } else {
-        return this.voxelValue.getVoxelAtIndex(xTrans, yTrans, zTrans);
+        return this.voxelValue.getVoxelAtIndex(xTrans, yTrans, zTrans, useNN);
     }
 }
 

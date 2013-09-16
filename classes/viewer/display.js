@@ -82,7 +82,9 @@ papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc, val) {
     this.context.fillStyle = "white";
     this.context.font = papaya.viewer.Display.TEXT_VALUE_SIZE+"px Arial";
 
-    this.context.fillText(val, 5*sizeRatio*papaya.viewer.Display.TEXT_SPACING + 3*textWidth, valueLoc);
+    var valLabel = parseFloat(val.toPrecision(7));
+
+    this.context.fillText(valLabel, 5*sizeRatio*papaya.viewer.Display.TEXT_SPACING + 3*textWidth, valueLoc);
 
 
     // atlas labels
@@ -122,7 +124,7 @@ papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc, val) {
         }
     } else {
         var atlasNumLabels = papayaMain.papayaViewer.atlas.numLabels;
-        var atlasLabelWidth = atlasLabelsTotalWidth / atlasNumLabels;
+        var atlasLabelWidth = atlasLabelsTotalWidth / atlasNumLabels - papaya.viewer.Display.TEXT_SPACING;
 
         papayaMain.papayaViewer.getWorldCoordinateAtIndex(xLoc, yLoc, zLoc, this.tempCoord);
         var atlasLabel = papayaMain.papayaViewer.atlas.getLabelAtCoordinate(this.tempCoord.x, this.tempCoord.y, this.tempCoord.z);

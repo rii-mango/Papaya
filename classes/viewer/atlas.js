@@ -18,7 +18,7 @@ papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlasData, atlasLabels) {
 
 
 papaya.viewer.Atlas.prototype.getLabelAtCoordinate = function (xLoc, yLoc, zLoc) {
-    var labelString = this.atlasLabels.atlas.data.label[this.volume.getVoxelAtCoordinate(xLoc, yLoc, zLoc)];
+    var labelString = this.atlasLabels.atlas.data.label[this.volume.getVoxelAtCoordinate(xLoc, yLoc, zLoc, true)];
     var labelsCurrent = labelString.split(":");
 
     for (var ctr = 0; ctr < this.numLabels; ctr++) {

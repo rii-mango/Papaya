@@ -15,20 +15,27 @@ papaya.viewer = papaya.viewer || {};
  * @param {Nuermic} widthSize	real world width of pixel
  * @param {Nuermic} heightSize	real world height of pixel
  */
-papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function(vol, dir, width, height, widthSize, heightSize, lut) {
+papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function(vol, dir, width, height, widthSize, heightSize, screenVols) {
 	// Public properties
-	this.volume = vol;
+    this.screenVolumes = screenVols;
 	this.sliceDirection = dir;
 	this.currentSlice = 0;
 	this.xDim = width;
 	this.yDim = height;
 	this.xSize = widthSize;
 	this.ySize = heightSize;
-	this.canvas = document.createElement("canvas");
-	this.canvas.width = this.xDim;
-	this.canvas.height = this.yDim;
-	this.context = this.canvas.getContext("2d");
-   	this.imageData = this.context.createImageData(this.xDim, this.yDim);
+
+	this.canvasMain = document.createElement("canvas");
+	this.canvasMain.width = this.xDim;
+	this.canvasMain.height = this.yDim;
+    this.contextMain = this.canvasMain.getContext("2d");
+
+    this.canvasDraw = document.createElement("canvas");
+    this.canvasDraw.width = this.xDim;
+    this.canvasDraw.height = this.yDim;
+    this.contextDraw = this.canvasDraw.getContext("2d");
+   	this.imageDataDraw = this.contextDraw.createImageData(this.xDim, this.yDim);
+
    	this.screenOffsetX = 0;
    	this.screenOffsetY = 0;
    	this.screenDim = 0;
@@ -36,10 +43,6 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function(vol, dir, widt
 	this.xformScaleY = 1;
 	this.xformTransX = 0;
 	this.xformTransY = 0;
-    this.colorTable = lut;
-	this.screenRatio = 1;
-	this.screenMin = 0;
-	this.screenMax = 0;
 }
 
 
@@ -64,40 +67,61 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function(slice, force) {
 
 	if (force || (this.currentSlice != slice)) {
 		this.currentSlice = slice;
-		
-		var scale = this.volume.header.imageRange.globalScale;
-		var intercept = this.volume.header.imageRange.globalIntercept;
-		
-		for (var ctrY = 0; ctrY < this.yDim; ctrY++) {
-			for (var ctrX = 0; ctrX < this.xDim; ctrX++) {
-				var value = 0;
-				if (this.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-					value = this.volume.getVoxelAtIndex(ctrX, ctrY, slice);
-				} else if (this.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-					value = this.volume.getVoxelAtIndex(ctrX, slice, ctrY);
-				} else if (this.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-					value = this.volume.getVoxelAtIndex(slice, ctrX, ctrY);
-				}
+        var origin = this.screenVolumes[0].volume.header.origin;  // base image origin
+        var voxelDims = this.screenVolumes[0].volume.header.voxelDimensions;
 
-				value = (value * scale) + intercept;  // image value
-				var orig = value;
-				if (value <= this.screenMin) {
-					value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN;  // screen value
-				} else if (value >= this.screenMax) {
-					value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX;  // screen value
-				} else {
-					value = round(((value - this.screenMin) * this.screenRatio) + .5);  // screen value
-				}
+        this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
 
-				var index = ((ctrY * this.xDim) + ctrX) * 4;
-				this.imageData.data[index+0] = this.colorTable.lookupRed(value);
-				this.imageData.data[index+1] = this.colorTable.lookupGreen(value);
-				this.imageData.data[index+2] = this.colorTable.lookupBlue(value);
-				this.imageData.data[index+3] = 255;
-			}
-		}
+        for (var ctr = 0; ctr < this.screenVolumes.length; ctr++) {
+            var scale = this.screenVolumes[ctr].volume.header.imageRange.globalScale;
+            var intercept = this.screenVolumes[ctr].volume.header.imageRange.globalIntercept;
 
-		this.context.putImageData(this.imageData, 0, 0);
+            for (var ctrY = 0; ctrY < this.yDim; ctrY++) {
+                for (var ctrX = 0; ctrX < this.xDim; ctrX++) {
+                    var value = 0;
+                    var alpha = 255;
+
+                    if (ctr == 0) {
+                        if (this.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(ctrX, ctrY, slice, false);
+                        } else if (this.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(ctrX, slice, ctrY, false);
+                        } else if (this.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(slice, ctrX, ctrY, false);
+                        }
+                    } else {
+                        if (this.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                            value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((ctrX - origin.x) * voxelDims.xSize, (origin.y - ctrY) * voxelDims.ySize, (origin.z - slice) * voxelDims.zSize, false);
+                        } else if (this.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                            value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((ctrX - origin.x) * voxelDims.xSize, (origin.y - slice) * voxelDims.ySize, (origin.z - ctrY) * voxelDims.zSize, false);
+                        } else if (this.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                            value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((slice - origin.x) * voxelDims.xSize, (origin.y - ctrX) * voxelDims.ySize, (origin.z - ctrY) * voxelDims.zSize, false);
+                        }
+                    }
+
+                    value = (value * scale) + intercept;  // image value
+                    var orig = value;
+                    if (value <= this.screenVolumes[ctr].screenMin) {
+                        value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN;  // screen value
+                        alpha = this.screenVolumes[ctr].isOverlay() ? 0 : 255;
+                    } else if (value >= this.screenVolumes[ctr].screenMax) {
+                        value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX;  // screen value
+                    } else {
+                        value = round(((value - this.screenVolumes[ctr].screenMin) * this.screenVolumes[ctr].screenRatio) + .5);  // screen value
+                    }
+
+                    var index = ((ctrY * this.xDim) + ctrX) * 4;
+                    this.imageDataDraw.data[index+0] = this.screenVolumes[ctr].colorTable.lookupRed(value);
+                    this.imageDataDraw.data[index+1] = this.screenVolumes[ctr].colorTable.lookupGreen(value);
+                    this.imageDataDraw.data[index+2] = this.screenVolumes[ctr].colorTable.lookupBlue(value);
+                    this.imageDataDraw.data[index+3] = alpha;
+                }
+            }
+
+            this.contextDraw.putImageData(this.imageDataDraw, 0, 0);
+            this.contextMain.globalAlpha = this.screenVolumes[ctr].alpha;
+            this.contextMain.drawImage(this.canvasDraw, 0, 0);
+        }
 	}
 }
 
@@ -171,11 +195,4 @@ papaya.viewer.ScreenSlice.prototype.getXDim = function() {
  */
 papaya.viewer.ScreenSlice.prototype.getYDim = function() {
 	return this.yDim;
-}
-
-
-papaya.viewer.ScreenSlice.prototype.setScreenRange = function(min, max, ratio) {
-	this.screenMin = min;
-	this.screenMax = max;
-	this.screenRatio = ratio;
 }

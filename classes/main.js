@@ -175,6 +175,7 @@ papaya.viewer.Main.prototype.buildToolbar = function() {
                 <li><a href="#">Spectrum</a></li>\
                 <li><a href="#">Hot-and-Cold</a></li>\
                 <li><a href="#">Gold</a></li>\
+                <li><a href="#">Red-to-White</a></li>\
             </ul>');
 
         $("#addImage").button().click(function() {

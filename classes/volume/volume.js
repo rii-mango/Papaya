@@ -152,15 +152,15 @@ papaya.volume.Volume.prototype.readEncodedData = function(data, callback) {
  * @param {Numeric} ctrZ	The Z location.
  * @return {Numeric}	The value at that coordinate index.
  */
-papaya.volume.Volume.prototype.getVoxelAtIndex = function(ctrX, ctrY, ctrZ) {
-	return this.transform.getVoxelAtIndex(ctrX, ctrY, ctrZ);
+papaya.volume.Volume.prototype.getVoxelAtIndex = function(ctrX, ctrY, ctrZ, useNN) {
+	return this.transform.getVoxelAtIndex(ctrX, ctrY, ctrZ, useNN);
 }
 
 
 
 
-papaya.volume.Volume.prototype.getVoxelAtCoordinate = function(xLoc, yLoc, zLoc) {
-    return this.transform.getVoxelAtCoordinate(xLoc, yLoc, zLoc);
+papaya.volume.Volume.prototype.getVoxelAtCoordinate = function(xLoc, yLoc, zLoc, useNN) {
+    return this.transform.getVoxelAtCoordinate(xLoc, yLoc, zLoc, useNN);
 }
 
 
