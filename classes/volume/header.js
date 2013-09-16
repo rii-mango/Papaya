@@ -71,7 +71,7 @@ papaya.volume.Header.prototype.readData = function(headerType, data) {
 		}
 		this.orientation.createInfo(this.imageDimensions, this.voxelDimensions);
 
-        this.origin = this.fileFormat.getOrigin();
+        this.origin = this.orientation.convertCoordinate(this.fileFormat.getOrigin(), new papaya.core.Coordinate(0, 0,0));
 
 		this.imageRange = this.fileFormat.getImageRange();
 		if (!this.imageRange.isValid()) {

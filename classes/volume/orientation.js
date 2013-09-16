@@ -12,7 +12,7 @@ papaya.volume.Orientation = papaya.volume.Orientation ||
 function(str) {
 	// Public properties
 	this.orientation = str;
-	this.orientMat
+	this.orientMat;
 	this.xIncrement, this.yIncrement, this.zIncrement;
 }
 
@@ -34,6 +34,15 @@ papaya.volume.Orientation.prototype.convertIndexToOffset = function(xLoc, yLoc, 
 	zLoc = round((xLoc * this.orientMat[2][0]) + (yLoc * this.orientMat[2][1]) + (zLoc * this.orientMat[2][2]) + (this.orientMat[2][3]));
 
 	return (xLoc * this.xIncrement) + (yLoc * this.yIncrement) + (zLoc * this.zIncrement);
+}
+
+
+
+papaya.volume.Orientation.prototype.convertCoordinate = function(coord, coordConverted) {
+    coordConverted.x = round((coord.x * this.orientMat[0][0]) + (coord.y * this.orientMat[0][1]) + (coord.z * this.orientMat[0][2]) + (this.orientMat[0][3]));
+    coordConverted.y = round((coord.x * this.orientMat[1][0]) + (coord.y * this.orientMat[1][1]) + (coord.z * this.orientMat[1][2]) + (this.orientMat[1][3]));
+    coordConverted.z = round((coord.x * this.orientMat[2][0]) + (coord.y * this.orientMat[2][1]) + (coord.z * this.orientMat[2][2]) + (this.orientMat[2][3]));
+    return coordConverted;
 }
 
 
@@ -352,3 +361,6 @@ papaya.volume.Orientation.prototype.isValidOrientationString = function(orientat
 
 	return true;
 }
+
+
+

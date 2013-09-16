@@ -155,6 +155,13 @@ papaya.volume.Volume.prototype.getVoxelAtIndex = function(ctrX, ctrY, ctrZ) {
 
 
 
+
+papaya.volume.Volume.prototype.getVoxelAtCoordinate = function(xLoc, yLoc, zLoc) {
+    return this.transform.getVoxelAtCoordinate(xLoc, yLoc, zLoc);
+}
+
+
+
 /**
  * Test whether this object is in this.errorMessage state.
  * @param {Boolean}	True if this object is in this.errorMessage state.

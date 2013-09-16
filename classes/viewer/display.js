@@ -15,6 +15,8 @@ papaya.viewer.Display = papaya.viewer.Display || function(width, height) {
     this.canvas.style.border = "none";
     this.canvas.style.cursor = "default";
 
+    this.tempCoord = new papaya.core.Coordinate(0, 0, 0);
+
     this.drawUninitializedDisplay();
 }
 
@@ -91,7 +93,8 @@ papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc, val) {
         var atlasNumLabels = papayaMain.papayaViewer.atlas.numLabels;
         var atlasLabelWidth = atlasLabelsTotalWidth / 2;
 
-        var atlasLabel = papayaMain.papayaViewer.atlas.getLabelAt(xLoc, yLoc, zLoc);
+        papayaMain.papayaViewer.getWorldCoordinateAtIndex(xLoc, yLoc, zLoc, this.tempCoord);
+        var atlasLabel = papayaMain.papayaViewer.atlas.getLabelAtCoordinate(this.tempCoord.x, this.tempCoord.y, this.tempCoord.z);
 
         for (var ctr = 0; ctr < atlasNumLabels; ctr++) {
             if (ctr < 2) {
@@ -121,7 +124,8 @@ papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc, val) {
         var atlasNumLabels = papayaMain.papayaViewer.atlas.numLabels;
         var atlasLabelWidth = atlasLabelsTotalWidth / atlasNumLabels;
 
-        var atlasLabel = papayaMain.papayaViewer.atlas.getLabelAt(xLoc, yLoc, zLoc);
+        papayaMain.papayaViewer.getWorldCoordinateAtIndex(xLoc, yLoc, zLoc, this.tempCoord);
+        var atlasLabel = papayaMain.papayaViewer.atlas.getLabelAtCoordinate(this.tempCoord.x, this.tempCoord.y, this.tempCoord.z);
 
         for (var ctr = 0; ctr < atlasNumLabels; ctr++) {
             if (ctr < 2) {

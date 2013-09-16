@@ -18,7 +18,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(width, height) {
 	this.mainImage; this.lowerImageBot; this.lowerImageTop;
     this.viewerDim = 0;
     this.currentCoord = new papaya.core.Coordinate(0, 0, 0);
-	this.longestDim; this.longestDimSize; this.draggingSliceDir;
+    this.longestDim; this.longestDimSize; this.draggingSliceDir;
     this.isDragging = false;
     this.isWindowControl = false;
     this.canvas = document.createElement("canvas");
@@ -592,4 +592,10 @@ papaya.viewer.Viewer.prototype.resizeViewer = function(dims) {
         this.canvasRect = this.canvas.getBoundingClientRect();
         this.drawViewer(true);
     }
+}
+
+
+papaya.viewer.Viewer.prototype.getWorldCoordinateAtIndex = function(ctrX, ctrY, ctrZ, coord) {
+    coord.setCoordinate((ctrX - this.volume.header.origin.x) * this.volume.header.voxelDimensions.xSize, (this.volume.header.origin.y - ctrY) * this.volume.header.voxelDimensions.ySize, (this.volume.header.origin.z - ctrZ) * this.volume.header.voxelDimensions.zSize);
+    return coord;
 }
