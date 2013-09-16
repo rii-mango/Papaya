@@ -99,6 +99,7 @@ function resizeViewerComponents(resize) {
     $("#"+PAPAYA_TOOLBAR_ID).css({paddingBottom: PAPAYA_SPACING + "px"});
 
     $("#"+PAPAYA_VIEWER_ID).css({height: "100%"});
+    $("#"+PAPAYA_VIEWER_ID).css({width: dims.width + "px"});
     $("#"+PAPAYA_VIEWER_ID).css({paddingLeft: dims.widthPadding + "px"});
 
     if (resize) {
