@@ -123,7 +123,7 @@ papaya.volume.Volume.prototype.readURL = function(url, callback) {
 
 
 papaya.volume.Volume.prototype.readEncodedData = function(data, callback) {
-   // try {
+   try {
         this.fileName = "encoded.nii.gz";
         this.onFinishedRead = callback;
 
@@ -137,7 +137,10 @@ papaya.volume.Volume.prototype.readEncodedData = function(data, callback) {
         fileLength = vol.rawData.length;
 
         vol.decompress(vol);
-   // }
+   } catch (err) {
+       vol.errorMessage = "There was a problem reading that file:\n\n" + err.message;
+       vol.finishedLoad();
+   }
 }
 
 
@@ -306,8 +309,11 @@ papaya.volume.Volume.prototype.finishedReadData = function(vol) {
  */
 papaya.volume.Volume.prototype.finishedLoad = function() {
 	if (this.onFinishedRead) {
-		this.rawData = null;
-        this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
+        if (!this.hasError()) {
+            this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
+        }
+
+        this.rawData = null;
 		this.onFinishedRead(this);
 	}
 }

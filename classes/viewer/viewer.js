@@ -76,7 +76,7 @@ papaya.viewer.Viewer.KEYCODE_TOGGLE_CROSSHAIRS = 65;
  */
 papaya.viewer.Viewer.prototype.initializeViewer = function() {
 	if (this.volume.hasError()) {
-		alert(this.volume.errorMessage);
+        papayaMain.papayaDisplay.drawError(this.volume.errorMessage);
 		return;
 	}
 

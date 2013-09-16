@@ -145,3 +145,19 @@ papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc, val) {
         }
     }
 }
+
+
+
+papaya.viewer.Display.prototype.drawError = function(message) {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.fillStyle = "#000000";
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.fillStyle = "red";
+    this.context.font = papaya.viewer.Display.TEXT_CORRD_VALUE_SIZE+"px Arial";
+
+    var valueLoc = papaya.viewer.Display.TEXT_LABEL_SIZE + papaya.viewer.Display.TEXT_SPACING + 1.5*papaya.viewer.Display.TEXT_SPACING;
+    var metrics = this.context.measureText(message);
+    var textWidth = metrics.width;
+
+    this.context.fillText(message, papaya.viewer.Display.TEXT_SPACING, valueLoc);
+}
