@@ -129,25 +129,27 @@ BrowserDetect.init();
 function checkForBrowserCompatibility() {
     if (BrowserDetect.browser == "Firefox") {
         if (BrowserDetect.version < BROWSER_MIN_FIREFOX) {
-            $("#"+PAPAYA_WARNINGS_ID).append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_FIREFOX+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+            return (BrowserDetect.browser+ " version "+BROWSER_MIN_FIREFOX+" or higher is required. Please consider upgrading or using a different browser.");
         }
     } else if (BrowserDetect.browser == "Chrome") {
         if (BrowserDetect.version < BROWSER_MIN_CHROME) {
-            $("#"+PAPAYA_WARNINGS_ID).append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_CHROME+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+            return (BrowserDetect.browser+ " version "+BROWSER_MIN_CHROME+" or higher is required. Please consider upgrading or using a different browser.");
         }
     } else if (BrowserDetect.browser == "Explorer") {
         if (BrowserDetect.version < BROWSER_MIN_IE) {
-            $("#"+PAPAYA_WARNINGS_ID).append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_IE+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+            return (BrowserDetect.browser+ " version "+BROWSER_MIN_IE+" or higher is required. Please consider upgrading or using a different browser.");
         }
     } else if (BrowserDetect.browser == "Safari") {
         if (BrowserDetect.version < BROWSER_MIN_SAFARI) {
-            $("#"+PAPAYA_WARNINGS_ID).append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_SAFARI+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+            return (BrowserDetect.browser+ " version "+BROWSER_MIN_SAFARI+" or higher is required. Please consider upgrading or using a different browser.");
         }
     } else if (BrowserDetect.browser == "Opera") {
         if (BrowserDetect.version < BROWSER_MIN_OPERA) {
-            $("#"+PAPAYA_WARNINGS_ID).append("<p>This version of " +BrowserDetect.browser+ " is " + BrowserDetect.version + ".\n" +BrowserDetect.browser+ " version "+BROWSER_MIN_OPERA+" or higher is required.\n\nPlease consider upgrading or using a different browser.</p>")
+            return (BrowserDetect.browser+ " version "+BROWSER_MIN_OPERA+" or higher is required. Please consider upgrading or using a different browser.");
         }
     }
+
+    return null;
 }
 
 

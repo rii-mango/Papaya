@@ -18,7 +18,15 @@ papaya.viewer.ColorTable = papaya.viewer.ColorTable || function(lut, baseImage, 
     this.knotMax = this.lut[this.lut.length - 1];
     this.useGradation = gradation;
 
+    this.canvas = document.createElement("canvas");
+    this.canvas.width = papaya.viewer.ColorTable.ICON_SIZE;
+    this.canvas.height = papaya.viewer.ColorTable.ICON_SIZE;
+    this.context = this.canvas.getContext("2d");
+    this.imageData = this.context.createImageData(papaya.viewer.ColorTable.ICON_SIZE, papaya.viewer.ColorTable.ICON_SIZE);
+    this.icon = null;
+
     this.updateLUT(papaya.viewer.ColorTable.LUT_MAX, papaya.viewer.ColorTable.LUT_MIN);
+    this.updateIcon();
 }
 
 papaya.viewer.ColorTable.TABLE_GRAYSCALE = [[0, 0, 0, 0], [1, 1, 1, 1]];
@@ -36,6 +44,7 @@ papaya.viewer.ColorTable.MAP = {"Grayscale":papaya.viewer.ColorTable.TABLE_GRAYS
     "Purple-to-White":papaya.viewer.ColorTable.TABLE_PURPLE2WHITE};
 papaya.viewer.ColorTable.LUT_MIN = 0;
 papaya.viewer.ColorTable.LUT_MAX = 255;
+papaya.viewer.ColorTable.ICON_SIZE = 21;
 
 
 
@@ -55,13 +64,13 @@ papaya.viewer.ColorTable.prototype.updateLUT = function(maxLUTnew, minLUTnew) {
 
     for (ctr = 0; ctr < 256; ctr++) {
         if (ctr <= minLUT) {
-            this.LUTarrayR[ctr] = this.knotMin[1];
-            this.LUTarrayG[ctr] = this.knotMin[2];
-            this.LUTarrayB[ctr] = this.knotMin[3];
+            this.LUTarrayR[ctr] = this.knotMin[1] * papaya.viewer.ColorTable.LUT_MAX;
+            this.LUTarrayG[ctr] = this.knotMin[2] * papaya.viewer.ColorTable.LUT_MAX;
+            this.LUTarrayB[ctr] = this.knotMin[3] * papaya.viewer.ColorTable.LUT_MAX;
         } else if (ctr > maxLUT) {
-            this.LUTarrayR[ctr] = this.knotMax[1];
-            this.LUTarrayG[ctr] = this.knotMax[2];
-            this.LUTarrayB[ctr] = this.knotMax[3];
+            this.LUTarrayR[ctr] = this.knotMax[1] * papaya.viewer.ColorTable.LUT_MAX;
+            this.LUTarrayG[ctr] = this.knotMax[2] * papaya.viewer.ColorTable.LUT_MAX;
+            this.LUTarrayB[ctr] = this.knotMax[3] * papaya.viewer.ColorTable.LUT_MAX;
         } else {
             for (ctrKnot = 0; ctrKnot < (this.lut.length - 1); ctrKnot++) {
                 if ((ctr > this.knotThresholds[ctrKnot]) && (ctr <= this.knotThresholds[ctrKnot + 1])) {
@@ -109,4 +118,26 @@ papaya.viewer.ColorTable.prototype.lookupBlue = function(index) {
     } else {
         return 0;
     }
+}
+
+
+
+
+papaya.viewer.ColorTable.prototype.updateIcon = function() {
+    var step = papaya.viewer.ColorTable.LUT_MAX / papaya.viewer.ColorTable.ICON_SIZE;
+
+    for (var ctrY = 0; ctrY < papaya.viewer.ColorTable.ICON_SIZE; ctrY++) {
+        for (var ctrX = 0; ctrX < papaya.viewer.ColorTable.ICON_SIZE; ctrX++) {
+            var index = ((ctrY * papaya.viewer.ColorTable.ICON_SIZE) + ctrX) * 4;
+            var value = Math.round(ctrX * step);
+
+            this.imageData.data[index+0] = this.lookupRed(value);
+            this.imageData.data[index+1] = this.lookupGreen(value);
+            this.imageData.data[index+2] = this.lookupBlue(value);
+            this.imageData.data[index+3] = 255;
+        }
+    }
+
+    this.context.putImageData(this.imageData, 0, 0);
+    this.icon = this.canvas.toDataURL();
 }

@@ -136,6 +136,8 @@ papaya.viewer.Viewer.prototype.initializeViewer = function() {
 
     this.initialized = true;
     this.drawViewer();
+
+    papayaMain.updateImageButtons();
 }
 
 
@@ -153,6 +155,8 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function(location, url, encod
     this.drawViewer(true);
 
     this.loadingVolume = null;
+
+    papayaMain.updateImageButtons();
 }
 
 

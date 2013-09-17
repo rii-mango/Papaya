@@ -74,3 +74,37 @@ canvas {
 .center {
     text-align:center;
 }
+
+
+.menu {
+    width: 150px;
+    background: darkgray;
+    z-index:100;
+    position:absolute;
+    border: solid 3px lightgray;
+    padding: 3px;
+}
+
+
+.menu li {
+    font-size: 12px;
+    font-family: sans-serif;
+    padding: 2px;
+    color: black;
+    cursor: pointer;
+}
+
+
+.bullet {
+    font-size: 18px;
+    padding: 0 5px;
+}
+
+
+.unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
