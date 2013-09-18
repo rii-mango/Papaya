@@ -5,7 +5,7 @@
 
 function bind(scope, fn) {
     return function () {
-        fn.apply(scope, arguments);
+        return fn.apply(scope, arguments);
     };
 }
 
@@ -40,4 +40,13 @@ Array.prototype.clone = function() {
         }
     }
     return arr;
+}
+
+
+
+
+if (typeof String.prototype.startsWith != 'function') {
+    String.prototype.startsWith = function (str){
+        return this.indexOf(str) == 0;
+    };
 }

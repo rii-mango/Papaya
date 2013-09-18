@@ -3,9 +3,10 @@ var papaya = papaya || {};
 papaya.viewer = papaya.viewer || {};
 
 
-papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function(vol, lut, baseImage) {
+papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function(vol, lutName, baseImage) {
     this.volume = vol;
-    this.colorTable = new papaya.viewer.ColorTable(lut, baseImage, true);
+    this.lutName = lutName;
+    this.colorTable = new papaya.viewer.ColorTable(lutName, baseImage, true);
     this.screenMin = this.volume.header.imageRange.displayMin;
     this.screenMax = this.volume.header.imageRange.displayMax;
     this.imageMin = this.volume.header.imageRange.imageMin;
@@ -111,4 +112,17 @@ papaya.viewer.ScreenVolume.prototype.findDisplayRange = function() {
 
     this.screenMin = min;
     this.screenMax = max;
+}
+
+
+papaya.viewer.ScreenVolume.prototype.isUsingColorTable = function(lutName) {
+    return (this.lutName == lutName);
+}
+
+
+
+papaya.viewer.ScreenVolume.prototype.changeColorTable = function(lutName) {
+    this.colorTable = new papaya.viewer.ColorTable(lutName, !this.isOverlay(), true);
+    this.lutName = lutName;
+    papayaMain.papayaViewer.drawViewer(true);
 }

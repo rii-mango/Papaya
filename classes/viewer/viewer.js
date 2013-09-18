@@ -30,7 +30,6 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(width, height) {
     this.canvas.style.padding = 0;
     this.canvas.style.margin = 0;
     this.canvas.style.border = "none";
-    this.colorTable = new papaya.viewer.ColorTable(papaya.viewer.ColorTable.TABLE_SPECTRUM, true, true);
     this.previousMousePosition = new papaya.core.Point();
     this.preferences = new papaya.viewer.Preferences();
     this.atlas = new papaya.viewer.Atlas(papaya.data.TalairachAtlas.data, papaya.data.TalairachAtlas.labels);
@@ -107,7 +106,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function() {
 		return;
 	}
 
-    this.screenVolumes[0] = this.currentScreenVolume = new papaya.viewer.ScreenVolume(this.volume, papaya.viewer.ColorTable.TABLE_GRAYSCALE, true);
+    this.screenVolumes[0] = this.currentScreenVolume = new papaya.viewer.ScreenVolume(this.volume, papaya.viewer.ColorTable.TABLE_GRAYSCALE_NAME, true);
 
     this.mainImage = this.axialSlice = new papaya.viewer.ScreenSlice(this.volume, papaya.viewer.ScreenSlice.DIRECTION_AXIAL,
 	    this.volume.getXDim(), this.volume.getYDim(), this.volume.getXSize(), this.volume.getYSize(), this.screenVolumes);
@@ -137,7 +136,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function() {
     this.initialized = true;
     this.drawViewer();
 
-    papayaMain.updateImageButtons();
+    papayaMain.papayaToolbar.updateImageButtons();
 }
 
 
@@ -156,7 +155,7 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function(location, url, encod
 
     this.loadingVolume = null;
 
-    papayaMain.updateImageButtons();
+    papayaMain.papayaToolbar.updateImageButtons();
 }
 
 
@@ -602,7 +601,7 @@ papaya.viewer.Viewer.prototype.windowLevelChanged = function(contrastChange, bri
 
 
 papaya.viewer.Viewer.prototype.colorTableChanged = function(name) {
-    this.currentScreenVolume.colorTable = new papaya.viewer.ColorTable(papaya.viewer.ColorTable.MAP[name], !this.currentScreenVolume.isOverlay(), true);
+    this.currentScreenVolume.changeColorTable(name);
     this.drawViewer(true);
 }
 
@@ -640,15 +639,15 @@ papaya.viewer.Viewer.prototype.getWorldCoordinateAtIndex = function(ctrX, ctrY, 
 papaya.viewer.Viewer.prototype.getNextColorTable = function() {
     var value = (this.screenVolumes.length - 1) % 5;
     if (value == 0) {
-        return papaya.viewer.ColorTable.TABLE_RED2WHITE;
+        return papaya.viewer.ColorTable.TABLE_RED2WHITE_NAME;
     } else if (value == 1) {
-        return papaya.viewer.ColorTable.TABLE_GREEN2WHITE;
+        return papaya.viewer.ColorTable.TABLE_GREEN2WHITE_NAME;
     } else if (value == 2) {
-        return papaya.viewer.ColorTable.TABLE_BLUE2WHITE;
+        return papaya.viewer.ColorTable.TABLE_BLUE2WHITE_NAME;
     } else if (value == 3) {
-        return papaya.viewer.ColorTable.TABLE_ORANGE2WHITE;
+        return papaya.viewer.ColorTable.TABLE_ORANGE2WHITE_NAME;
     } else if (value == 4) {
-        return papaya.viewer.ColorTable.TABLE_PURPLE2WHITE;
+        return papaya.viewer.ColorTable.TABLE_PURPLE2WHITE_NAME;
     }
 }
 

@@ -79,10 +79,23 @@ canvas {
 .menu {
     width: 150px;
     background: darkgray;
-    z-index:100;
-    position:absolute;
+    z-index: 100;
+    position: absolute;
     border: solid 3px lightgray;
     padding: 3px;
+}
+
+.menuLabel {
+    font-size: 14px;
+    font-family: sans-serif;
+    font-weight: bold;
+    padding: 2px 8px;
+    cursor: pointer;
+}
+
+
+.menuIcon {
+
 }
 
 

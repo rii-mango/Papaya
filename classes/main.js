@@ -12,11 +12,6 @@ papaya.viewer.Main = papaya.viewer.Main || function() {
 }
 
 
-
-papaya.viewer.Main.CHECKBOX_UNSELECTED_CODE = "&#9744;";
-papaya.viewer.Main.CHECKBOX_SELECTED_CODE = "&#9745;";
-
-
 function isShowingToolbar() {
     return $("#"+PAPAYA_TOOLBAR_ID).length;
 }
@@ -89,6 +84,7 @@ function resizeViewerComponents(resize) {
     $("#"+PAPAYA_TOOLBAR_ID).css({paddingLeft: dims.widthPadding + "px"});
     $("#"+PAPAYA_TOOLBAR_ID).css({paddingBottom: PAPAYA_SPACING + "px"});
     $("#"+PAPAYA_TOOLBAR_ID).css({width: dims.width + "px"});
+    $("#"+PAPAYA_TOOLBAR_ID).css({height: papaya.ui.Toolbar.SIZE+"px"});
 
     $("#"+PAPAYA_VIEWER_ID).css({height: "100%"});
     $("#"+PAPAYA_VIEWER_ID).css({width: dims.width + "px"});
@@ -137,104 +133,8 @@ papaya.viewer.Main.prototype.buildDisplay = function() {
 
 
 papaya.viewer.Main.prototype.buildToolbar = function() {
-    if (isShowingToolbar()) {
-        $("#"+PAPAYA_TOOLBAR_ID).append(
-            '<button id="addImage">Open</button>\
-            \
-            <div id="dialog">\
-                <input type="hidden" autofocus="autofocus" />\
-                <input type="file" id="files1" name="files" />\
-                <input type="file" id="files2" name="files" />\
-                <input type="file" id="files3" name="files" />\
-                <input type="file" id="files4" name="files" />\
-                <div id="selectFilesWarning" class="hidden warning">Please select a file!</div>\
-            </div>');
-
-        $("#addImage").button().click(function() {
-            return openAddImageMenu(this);
-        });
-
-        $("#dialog").dialog({
-            autoOpen: false,
-            position: {my: "left top", at: "left bottom", of: "#addImage"},
-            dialogClass: 'noTitle',
-            width: "400px",
-            buttons: {
-                Cancel: function() {
-                    $("#selectFilesWarning").css({"visibility": "hidden"});
-                    $(this).dialog("close");
-                },
-                "Open Sample Image": function() {
-                    loadSampleImage();
-                    $(this).dialog("close");
-                },
-                "Open Images": function() {
-                    if (hasSelectedFiles()) {
-                        papayaMain.papayaViewer.loadImage(document.getElementById('files1').files[0]);
-                        $(this).dialog("close");
-                    } else {
-                        $("#selectFilesWarning").css({"visibility": "visible"});
-                    }
-                }
-            }
-        });
-    }
-}
-
-
-
-papaya.viewer.Main.prototype.updateImageButtons = function() {
-    $(".imageButtons").remove();
-
-    for (var ctr =  papayaMain.papayaViewer.screenVolumes.length - 1; ctr >= 0; ctr--) {
-        var screenVol = papayaMain.papayaViewer.screenVolumes[ctr];
-        var dataUrl = screenVol.colorTable.icon;
-        var imageId = "imageButtonImg" + ctr;
-        var imageButtonId = "imageButton" + ctr;
-        var imageButtonMenuId = "imageButtonMenu" + ctr;
-        var imageButtonColorMenuId = "imageButtonColorMenu" + ctr;
-
-        $("#"+PAPAYA_TOOLBAR_ID).append(
-            "<span class='imageButtons' id='" + imageButtonId + "' style='float:right'>" +
-                "<img id='" + imageId + "' style='margin:2px; padding:0; width:" + papaya.viewer.ColorTable.ICON_SIZE + "px; height:" + papaya.viewer.ColorTable.ICON_SIZE + "px; vertical-align:bottom; border:2px outset;' src='" + dataUrl + "' />" +
-            "</span>" +
-            "<ul class='menu' id='" + imageButtonMenuId +"'>" +
-                "<li><span class='unselectable'>Image Info</span></li>" +
-                "<li><span class='unselectable' onclick='openSubMenu(\"" + imageId + "\",\"" + imageButtonColorMenuId + "\")'>Color Table...</span></li>" +
-            "</ul>" +
-            "<ul class='menu checkboxmenu' id=" + imageButtonColorMenuId + ">" +
-                "<li><span class='bullet'>"+papaya.viewer.Main.CHECKBOX_UNSELECTED_CODE+"</span><span class='unselectable'>Grayscale</span></li>" +
-                "<li><span class='bullet'>"+papaya.viewer.Main.CHECKBOX_UNSELECTED_CODE+"</span><span class='unselectable'>Spectrum</span></li>" +
-                "<li><span class='bullet'>"+papaya.viewer.Main.CHECKBOX_UNSELECTED_CODE+"</span><span class='unselectable'>Hot-and-Cold</span></li>" +
-                "<li><span class='bullet'>"+papaya.viewer.Main.CHECKBOX_UNSELECTED_CODE+"</span><span class='unselectable'>Gold</span></li>" +
-                "<li><span class='bullet'>"+papaya.viewer.Main.CHECKBOX_UNSELECTED_CODE+"</span><span class='unselectable'>Red-to-White</span></li>" +
-                "<li><span class='bullet'>"+papaya.viewer.Main.CHECKBOX_UNSELECTED_CODE+"</span><span class='unselectable'>Green-to-White</span></li>" +
-                "<li><span class='bullet'>"+papaya.viewer.Main.CHECKBOX_UNSELECTED_CODE+"</span><span class='unselectable'>Blue-to-White</span></li>" +
-                "<li><span class='bullet'>"+papaya.viewer.Main.CHECKBOX_UNSELECTED_CODE+"</span><span class='unselectable'>Orange-to-White</span></li>" +
-                "<li><span class='bullet'>"+papaya.viewer.Main.CHECKBOX_UNSELECTED_CODE+"</span><span class='unselectable'>Purple-to-White</span></li>" +
-            "</ul>"
-        );
-
-        $("#"+imageButtonId + " > img").mousedown(function() {
-            $(this).css({ 'border': '2px solid gray' });
-        });
-
-        $("#"+imageButtonId + " > img").mouseup(function() {
-            $(this).css({ 'border': '2px outset' });
-            openMenu(this, imageButtonMenuId, "right");
-        });
-
-        $('.checkboxmenu > li').click(function(){
-            if ($(this).children(".bullet").html().charCodeAt() == 9744) {
-                $(this).children(".bullet").html(papaya.viewer.Main.CHECKBOX_SELECTED_CODE);
-            } else {
-                $(this).children(".bullet").html(papaya.viewer.Main.CHECKBOX_UNSELECTED_CODE);
-            }
-        });
-
-        $("#"+imageButtonMenuId).hide();
-        $("#"+imageButtonColorMenuId).hide();
-    }
+    this.papayaToolbar = new papaya.ui.Toolbar();
+    this.papayaToolbar.buildToolbar();
 }
 
 
@@ -323,10 +223,7 @@ function hasSelectedFiles() {
 
 
 
-function loadSampleImage() {
-    papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.data, false, true);
-    $("#dialog").dialog("close");
-}
+
 
 
 
