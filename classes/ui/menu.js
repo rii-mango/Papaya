@@ -78,9 +78,6 @@ papaya.ui.Menu.prototype.showMenu = function() {
 
     this.buildMenu();
     $("#"+this.menuId).hide();
-    $("#"+this.menuId).show().position({
-        my: (this.isRight ? "right" : "left") + " top",
-        at: (this.isRight ? "right" : "left") + " bottom",
-        of: button
-    });
+
+    showMenu(button[0], $("#"+this.menuId)[0]);
 }
