@@ -78,11 +78,11 @@ canvas {
 
 .menu {
     width: 150px;
-    background: darkgray;
+    background: #222;
     z-index: 100;
     position: absolute;
-    border: solid 3px lightgray;
-    padding: 3px;
+    border: solid 2px darkgray;
+    padding: 4px;
 }
 
 .menuLabel {
@@ -91,6 +91,7 @@ canvas {
     font-weight: bold;
     padding: 2px 8px;
     cursor: pointer;
+    vertical-align: text-bottom;
 }
 
 
@@ -102,8 +103,8 @@ canvas {
 .menu li {
     font-size: 12px;
     font-family: sans-serif;
-    padding: 2px;
-    color: black;
+    padding: 4px 2px;
+    color: #B5CBD3;
     cursor: pointer;
 }
 

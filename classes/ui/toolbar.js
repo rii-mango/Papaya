@@ -51,15 +51,15 @@ papaya.ui.Toolbar.IMAGE_MENU_DATA = {
 
 papaya.ui.Toolbar.prototype.buildToolbar = function() {
     for (var ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA.menus.length; ctr++) {
-        this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr]);
+        this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, null, null, false);
     }
 }
 
 
 
 
-papaya.ui.Toolbar.prototype.buildMenu = function(menuData, topLevelButtonId, dataSource, modifier) {
-    var menu = new papaya.ui.Menu(menuData.label, menuData.icon, bind(this, this.closeAllMenus));
+papaya.ui.Toolbar.prototype.buildMenu = function(menuData, topLevelButtonId, dataSource, modifier, right) {
+    var menu = new papaya.ui.Menu(menuData.label, menuData.icon, bind(this, this.closeAllMenus), right);
 
     if (topLevelButtonId) {
         menu.setMenuButton(topLevelButtonId)
@@ -69,7 +69,7 @@ papaya.ui.Toolbar.prototype.buildMenu = function(menuData, topLevelButtonId, dat
 
     var items = menuData.items;
     if (items) {
-        this.buildMenuItems(menu, items, topLevelButtonId, dataSource, modifier);
+        this.buildMenuItems(menu, items, topLevelButtonId, dataSource, modifier, right);
     }
 
     return menu;
@@ -77,7 +77,7 @@ papaya.ui.Toolbar.prototype.buildMenu = function(menuData, topLevelButtonId, dat
 
 
 
-papaya.ui.Toolbar.prototype.buildMenuItems = function(menu, itemData, topLevelButtonId, dataSource, modifier) {
+papaya.ui.Toolbar.prototype.buildMenuItems = function(menu, itemData, topLevelButtonId, dataSource, modifier, right) {
     if (modifier == undefined) {
         modifier = "";
     }
@@ -94,7 +94,7 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function(menu, itemData, topLevelBu
         menu.addMenuItem(item);
 
         if (itemData[ctrItems].items) {
-            var menu = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier);
+            var menu = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier, right);
             item.callback = bind(menu, menu.showMenu);
         }
     }
@@ -117,7 +117,7 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function() {
         };
         data.menus[0].items = papaya.ui.Toolbar.IMAGE_MENU_DATA.items;
 
-        this.buildMenu(data.menus[0], null, bind(screenVol, screenVol.isUsingColorTable), ctr);
+        this.buildMenu(data.menus[0], null, bind(screenVol, screenVol.isUsingColorTable), ctr, true);
     }
 }
 

@@ -53,14 +53,16 @@ if (typeof String.prototype.startsWith != 'function') {
 
 
 // adapted from: http://stackoverflow.com/questions/158070/jquery-how-to-position-one-element-relative-to-another
-var showMenu = function(el, menu) {
+var showMenu = function(viewer, el, menu, right) {
     //get the position of the placeholder element
+    var posV = $(viewer.canvas).offset();
     var pos = $(el).offset();
     var eWidth = $(el).outerWidth();
     var eHeight = $(el).outerHeight();
     var mWidth = $(menu).outerWidth();
-    var left = (pos.left + 5) + "px";
-    var top = eHeight+pos.top + "px";
+    var left = pos.left + (right ? ((-1 * mWidth) + eWidth) : 5) +  "px";
+
+    var top = (posV.top) + "px";
     //show the menu directly over the placeholder
     $(menu).css( {
         position: 'absolute',

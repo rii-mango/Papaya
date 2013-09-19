@@ -71,13 +71,14 @@ papaya.ui.Menu.prototype.addMenuItem = function(menuitem) {
 
 
 papaya.ui.Menu.prototype.showMenu = function() {
+    var isShowing = $("#"+this.menuId).is(":visible")
     this.callback();
     $("#"+this.menuId).remove();
 
-    var button = $("#"+this.buttonId);
-
-    this.buildMenu();
-    $("#"+this.menuId).hide();
-
-    showMenu(button[0], $("#"+this.menuId)[0]);
+    if (!isShowing) {
+        var button = $("#"+this.buttonId);
+        this.buildMenu();
+        $("#"+this.menuId).hide();
+        showMenu(papayaMain.papayaViewer, button[0], $("#"+this.menuId)[0], this.isRight);
+    }
 }
