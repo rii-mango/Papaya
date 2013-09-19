@@ -77,7 +77,7 @@ canvas {
 
 
 .menu {
-    width: 150px;
+    width: 200px;
     background: #222;
     z-index: 100;
     position: absolute;
@@ -96,7 +96,7 @@ canvas {
 
 
 .menuIcon {
-
+    margin-left: 5px;
 }
 
 
@@ -121,4 +121,16 @@ canvas {
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+
+input[type=file]{
+    text-align: right;
+    display:none;
+}
+
+label.fileChooser {
+    cursor: pointer;
+    width: 200px;
+    display: inline-block;
 }

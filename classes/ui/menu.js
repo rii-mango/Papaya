@@ -3,13 +3,18 @@ var papaya = papaya || {};
 papaya.ui = papaya.ui || {};
 
 
-papaya.ui.Menu = papaya.ui.Menu || function (label, icon, callback, isRight) {
+papaya.ui.Menu = papaya.ui.Menu || function (label, icon, callback, modifier, isRight) {
     this.label = label;
     this.icon = icon;
     this.callback = callback;
     this.items = new Array();
-    this.buttonId = this.label.replace(/ /g,"_");
-    this.menuId = (this.label + "Menu").replace(/ /g,"_");
+
+    if ((modifier == undefined) || (modifier == null)) {
+        modifier = "";
+    }
+
+    this.buttonId = this.label.replace(/ /g,"_").replace("...", "_")+modifier;
+    this.menuId = (this.label + "Menu").replace(/ /g,"_").replace("...", "_")+modifier;
     this.isRight = isRight;
 }
 
@@ -22,7 +27,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function() {
 
     if (this.icon) {
         html = "<span id='" + this.buttonId + "' class='unselectable menuIcon imageButton' " + (this.isRight ? " style='float:right'" : "") + ">" +
-                "<img style='width:" + papaya.viewer.ColorTable.ICON_SIZE + "px; height:" + papaya.viewer.ColorTable.ICON_SIZE + "px; vertical-align:bottom; border:2px outset;' src='" + this.icon + "' />" +
+                "<img style='width:" + papaya.viewer.ColorTable.ICON_SIZE + "px; height:" + papaya.viewer.ColorTable.ICON_SIZE + "px; vertical-align:bottom; border:2px outset lightgray;' src='" + this.icon + "' />" +
             "</span>";
     } else {
         html = "<span id='" + this.buttonId + "' class='unselectable menuLabel'>" +
@@ -35,11 +40,11 @@ papaya.ui.Menu.prototype.buildMenuButton = function() {
 
     if (this.icon) {
         $("#"+this.buttonId + " > img").mousedown(function() {
-            $(this).css({ 'border': '2px solid gray' });
+            $(this).css({ 'border': '2px inset lightgray' });
         });
 
         $("#"+this.buttonId + " > img").mouseup(function() {
-            $(this).css({ 'border': '2px outset' });
+            $(this).css({ 'border': '2px outset lightgray' });
         });
     }
 
@@ -71,7 +76,7 @@ papaya.ui.Menu.prototype.addMenuItem = function(menuitem) {
 
 
 papaya.ui.Menu.prototype.showMenu = function() {
-    var isShowing = $("#"+this.menuId).is(":visible")
+    var isShowing = $("#"+this.menuId).is(":visible");
     this.callback();
     $("#"+this.menuId).remove();
 

@@ -79,6 +79,8 @@ function getViewerDimensions() {
 
 
 function resizeViewerComponents(resize) {
+    papayaMain.papayaToolbar.closeAllMenus();
+
     var dims = getViewerDimensions();
 
     $("#"+PAPAYA_TOOLBAR_ID).css({paddingLeft: dims.widthPadding + "px"});

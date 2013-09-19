@@ -11,18 +11,6 @@ papaya.viewer = papaya.viewer || {};
  * @param {File} file	The file to read and display.
  */
 papaya.viewer.Viewer = papaya.viewer.Viewer || function(width, height) {
-    this.initialized = false;
-    this.loadingVolume = null;
-	this.volume = new papaya.volume.Volume();
-    this.screenVolumes = new Array();
-    this.currentScreenVolume = null;
-	this.axialSlice; this.coronalSlice; this.sagittalSlice;
-	this.mainImage; this.lowerImageBot; this.lowerImageTop;
-    this.viewerDim = 0;
-    this.currentCoord = new papaya.core.Coordinate(0, 0, 0);
-    this.longestDim; this.longestDimSize; this.draggingSliceDir;
-    this.isDragging = false;
-    this.isWindowControl = false;
     this.canvas = document.createElement("canvas");
     this.canvas.width = width;
     this.canvas.height = height;
@@ -30,9 +18,38 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(width, height) {
     this.canvas.style.padding = 0;
     this.canvas.style.margin = 0;
     this.canvas.style.border = "none";
-    this.previousMousePosition = new papaya.core.Point();
+
     this.preferences = new papaya.viewer.Preferences();
     this.atlas = new papaya.viewer.Atlas(papaya.data.TalairachAtlas.data, papaya.data.TalairachAtlas.labels);
+
+    this.initialized = false;
+    this.loadingVolume = null;
+    this.volume = new papaya.volume.Volume();
+    this.screenVolumes = new Array();
+    this.currentScreenVolume = null;
+
+    this.axialSlice = null;
+    this.coronalSlice = null;
+    this.sagittalSlice = null;
+    this.mainImage = null;
+    this.lowerImageBot = null;
+    this.lowerImageTop = null;
+    this.viewerDim = 0;
+    this.currentCoord = new papaya.core.Coordinate(0, 0, 0);
+    this.longestDim = 0;
+    this.longestDimSize = 0;
+    this.draggingSliceDir = 0;
+    this.isDragging = false;
+    this.isWindowControl = false;
+    this.previousMousePosition = new papaya.core.Point();
+
+    this.listenerMouseMove = bind(this, this.mouseMoveEvent);
+    this.listenerMouseDown = bind(this, this.mouseDownEvent);
+    this.listenerMouseOut = bind(this, this.mouseOutEvent)
+    this.listenerMouseUp = bind(this, this.mouseUpEvent);
+    this.listenerKeyDown = bind(this, this.keyDownEvent);
+    this.listenerContextMenu = function(e) { e.preventDefault(); return false; };
+
     this.drawEmptyViewer();
 }
 
@@ -117,12 +134,12 @@ papaya.viewer.Viewer.prototype.initializeViewer = function() {
 	this.lowerImageTop = this.sagittalSlice = new papaya.viewer.ScreenSlice(this.volume, papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL,
 	    this.volume.getYDim(), this.volume.getZDim(), this.volume.getYSize(), this.volume.getZSize(), this.screenVolumes);
 
-	this.canvas.addEventListener("mousemove", bind(this, this.mouseMoveEvent), false);
-	this.canvas.addEventListener("mousedown", bind(this, this.mouseDownEvent), false);
-    this.canvas.addEventListener("mouseout", bind(this, this.mouseOutEvent), false);
-    document.addEventListener("mouseup", bind(this, this.mouseUpEvent), false);
-	document.addEventListener("keydown", bind(this, this.keyDownEvent), true);
-    document.addEventListener("contextmenu", function(e) { e.preventDefault(); return false; }, false);
+	this.canvas.addEventListener("mousemove", this.listenerMouseMove, false);
+	this.canvas.addEventListener("mousedown", this.listenerMouseDown, false);
+    this.canvas.addEventListener("mouseout", this.listenerMouseOut, false);
+    document.addEventListener("mouseup", this.listenerMouseUp, false);
+	document.addEventListener("keydown", this.listenerKeyDown, true);
+    document.addEventListener("contextmenu", this.listenerContextMenu, false);
 
 	this.setLongestDim(this.volume);
 	this.calculateScreenSliceTransforms(this);
@@ -518,6 +535,8 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function(ke) {
  * @param {Object} me	the mouse event
  */
 papaya.viewer.Viewer.prototype.mouseDownEvent = function(me) {
+    papayaMain.papayaToolbar.closeAllMenus();
+
     if (me.which == 3) {
         this.isWindowControl = true;
         this.previousMousePosition.x = getMousePositionX(me);
@@ -661,3 +680,42 @@ papaya.viewer.Viewer.prototype.getCurrentValueAt = function(ctrX, ctrY, ctrZ) {
         return value = this.currentScreenVolume.volume.getVoxelAtIndex(ctrX, ctrY, ctrZ, true);
     }
 }
+
+
+
+papaya.viewer.Viewer.prototype.resetViewer = function() {
+    this.initialized = false;
+    this.loadingVolume = null;
+    this.volume = new papaya.volume.Volume();
+    this.screenVolumes = new Array();
+    this.currentScreenVolume = null;
+
+    this.axialSlice = null;
+    this.coronalSlice = null;
+    this.sagittalSlice = null;
+    this.mainImage = null;
+    this.lowerImageBot = null;
+    this.lowerImageTop = null;
+    this.viewerDim = 0;
+    this.currentCoord = new papaya.core.Coordinate(0, 0, 0);
+    this.longestDim = 0;
+    this.longestDimSize = 0;
+    this.draggingSliceDir = 0;
+    this.isDragging = false;
+    this.isWindowControl = false;
+    this.previousMousePosition = new papaya.core.Point();
+
+    this.canvas.removeEventListener("mousemove", this.listenerMouseMove, false);
+    this.canvas.removeEventListener("mousedown", this.listenerMouseDown, false);
+    this.canvas.removeEventListener("mouseout", this.listenerMouseOut, false);
+    document.removeEventListener("mouseup", this.listenerMouseUp, false);
+    document.removeEventListener("keydown", this.listenerKeyDown, true);
+    document.removeEventListener("contextmenu", this.listenerContextMenu, false);
+
+    this.drawEmptyViewer();
+    if (papayaMain.papayaDisplay) {
+        papayaMain.papayaDisplay.drawEmptyDisplay();
+    }
+}
+
+

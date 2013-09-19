@@ -10,9 +10,11 @@ papaya.ui.Toolbar = papaya.ui.Toolbar || function () {
 papaya.ui.Toolbar.SIZE = 22;
 papaya.ui.Toolbar.MENU_DATA = {
     "menus": [
-        {"label": "Open", "icon": null,
+        {"label": "File", "icon": null,
             "items": [
-                {"label": "Open Sample Image", "action": "OpenSampleImage"}
+                {"label": "Add Image...", "action": "OpenImage", "type": "button"},
+                {"label": "Add Sample Image", "action": "OpenSampleImage"},
+                {"label": "Close All", "action": "CloseAllImages"}
             ]
         },
         {"label": "Options", "icon": null,
@@ -32,7 +34,7 @@ papaya.ui.Toolbar.MENU_DATA = {
 papaya.ui.Toolbar.IMAGE_MENU_DATA = {
     "items": [
         {"label": "Image Info", "action": "ImageInfo"},
-        {"label": "Color Table", "action": "ColorTable",
+        {"label": "Color Table...", "action": "ColorTable",
             "items": [
                 {"label": "Grayscale", "action": "ColorTable-Grayscale", "type": "checkbox"},
                 {"label": "Spectrum", "action": "ColorTable-Spectrum", "type": "checkbox"},
@@ -59,7 +61,7 @@ papaya.ui.Toolbar.prototype.buildToolbar = function() {
 
 
 papaya.ui.Toolbar.prototype.buildMenu = function(menuData, topLevelButtonId, dataSource, modifier, right) {
-    var menu = new papaya.ui.Menu(menuData.label, menuData.icon, bind(this, this.closeAllMenus), right);
+    var menu = new papaya.ui.Menu(menuData.label, menuData.icon, bind(this, this.closeAllMenus), modifier, right);
 
     if (topLevelButtonId) {
         menu.setMenuButton(topLevelButtonId)
@@ -87,6 +89,8 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function(menu, itemData, topLevelBu
 
         if (itemData[ctrItems].type == "checkbox") {
             item = new papaya.ui.MenuItemCheckBox(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, modifier);
+        } else if (itemData[ctrItems].type == "button") {
+            item = new papaya.ui.MenuItemButton(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
         } else {
             item = new papaya.ui.MenuItem(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
         }
@@ -108,11 +112,10 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function() {
     for (var ctr = papayaMain.papayaViewer.screenVolumes.length - 1; ctr >= 0; ctr--) {
         var screenVol = papayaMain.papayaViewer.screenVolumes[ctr];
         var dataUrl = screenVol.colorTable.icon;
-        var imageId = "imageButtonImg" + ctr;
 
         var data = {
             "menus" : [
-                {"label": imageId, "icon": dataUrl, "items": null}
+                {"label": "ImageButton", "icon": dataUrl, "items": null}
             ]
         };
         data.menus[0].items = papaya.ui.Toolbar.IMAGE_MENU_DATA.items;
@@ -124,20 +127,27 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function() {
 
 
 papaya.ui.Toolbar.prototype.closeAllMenus = function() {
-    $(".menu").hide();
+    $(".menu").hide(100);
+    $(".menu").remove();
+
 }
 
 
 
-papaya.ui.Toolbar.prototype.doAction = function(action) {
+papaya.ui.Toolbar.prototype.doAction = function(action, file) {
     this.closeAllMenus();
 
     if (action == "OpenSampleImage") {
         papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.data, false, true);
+    } else if (action == "OpenImage") {
+        papayaMain.papayaViewer.loadImage(file);
     } else if (action.startsWith("ColorTable")) {
         var colorTableName = action.substring(action.indexOf("-")+1, action.lastIndexOf("-"));
         var imageIndex = action.substring(action.lastIndexOf("-")+1);
 
         papayaMain.papayaViewer.screenVolumes[imageIndex].changeColorTable(colorTableName);
+    } else if (action.startsWith("CloseAllImages")) {
+        papayaMain.papayaViewer.resetViewer();
+        this.updateImageButtons();
     }
 }
