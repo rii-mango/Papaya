@@ -87,6 +87,8 @@ papaya.viewer.Viewer.prototype.loadImage = function(location, url, encoded) {
 
 
 papaya.viewer.Viewer.prototype.loadBaseImage = function(location, url, encoded) {
+    this.volume = new papaya.volume.Volume();
+
     if (encoded) {
         this.volume.readEncodedData(location, bind(this, this.initializeViewer));
     } else if (url || isString(location)) {
@@ -162,7 +164,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function() {
 
 papaya.viewer.Viewer.prototype.initializeOverlay = function(location, url, encoded) {
     if (this.loadingVolume.hasError()) {
-        papayaMain.papayaDisplay.drawError(this.volume.errorMessage);
+        papayaMain.papayaDisplay.drawError(this.loadingVolume.errorMessage);
         this.loadingVolume = null;
         return;
     }
@@ -717,5 +719,3 @@ papaya.viewer.Viewer.prototype.resetViewer = function() {
         papayaMain.papayaDisplay.drawEmptyDisplay();
     }
 }
-
-

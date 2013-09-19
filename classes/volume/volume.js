@@ -67,12 +67,16 @@ papaya.volume.Volume.prototype.readFile = function(file, callback) {
 	this.onFinishedRead = callback;
 
 	this.headerType = this.findFileType(this.fileName);
-	this.compressed = this.fileIsCompressed(this.fileName);
 
-	fileLength = this.file.size;
-
-    var blob = makeSlice(this.file, 0, this.file.size);
-	this.readData(this, blob);
+    if (this.headerType == papaya.volume.Volume.TYPE_UNKNOWN) {
+        this.errorMessage = "File type is not recognized!";
+        this.finishedLoad();
+    } else {
+        this.compressed = this.fileIsCompressed(this.fileName);
+        fileLength = this.file.size;
+        var blob = makeSlice(this.file, 0, this.file.size);
+        this.readData(this, blob);
+    }
 }
 
 
@@ -291,7 +295,7 @@ papaya.volume.Volume.prototype.finishedDecompress = function(vol, data) {
  * @param {Volume} vol	the volume
  */
 papaya.volume.Volume.prototype.finishedReadData = function(vol) {
-	vol.header.readData(vol.headerType, vol.rawData);
+    vol.header.readData(vol.headerType, vol.rawData);
     vol.header.imageType.swapped = (this.header.imageType.littleEndian != isPlatformLittleEndian());
 
 	if (vol.header.hasError()) {
@@ -308,7 +312,7 @@ papaya.volume.Volume.prototype.finishedReadData = function(vol) {
  * Callback to run after loading data is complete.
  */
 papaya.volume.Volume.prototype.finishedLoad = function() {
-	if (this.onFinishedRead) {
+    if (this.onFinishedRead) {
         if (!this.hasError()) {
             this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
         }

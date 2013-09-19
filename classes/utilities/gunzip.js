@@ -7,7 +7,6 @@
  * Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
  * Version: 1.0.0.1  Dec 25 1999
  */
-
 Gunzip = function () {
 	var GUNZIP_FLAG_NOT_SUPPORTED = "GZIP flag not supported!";
 	var GUNZIP_INCORRECT_MAGIC_COOKIE = "Not a GZIP file!";
@@ -21,6 +20,7 @@ Gunzip = function () {
 	var onFinishedDecompress = null;
 	var deflatedBuffer = null;
 	var inflatedBuffer = null;
+    var inflatedSize = 0;
 	var deflatedSize = 0;
 	var startPosition = 0;
 	var endPosition = 0;
@@ -762,7 +762,11 @@ Gunzip = function () {
 			}
 			index += i;
 			timeoutCtr += i;
-			
+
+            if (papayaMain) {
+                papayaMain.papayaDisplay.drawProgress(index / inflatedSize);
+            }
+
 			if (timeoutCtr > PROCESS_TIMEOUT_BYTES) {
 				doTimeout = true;
 				break;
@@ -788,7 +792,7 @@ Gunzip = function () {
 		onFinishedDecompress = onFinish;
 		deflatedSize = arrayBuffer.byteLength;
 		deflatedBuffer = new DataView(arrayBuffer);
-		
+
 		var magicCookie1 = deflatedBuffer.getUint8(0);
 		var magicCookie2 = deflatedBuffer.getUint8(1);
 		
@@ -825,7 +829,7 @@ Gunzip = function () {
 		
 		endPosition = deflatedSize - startPosition - END_OFFSET_DEFAULT;
 
-		var inflatedSize = deflatedBuffer.getUint32(deflatedSize-4, true);
+		inflatedSize = deflatedBuffer.getUint32(deflatedSize-4, true);
 		deflatedBuffer = new DataView(arrayBuffer, startPosition, endPosition);
 		inflatedBuffer = new ArrayBuffer(inflatedSize);		
 		

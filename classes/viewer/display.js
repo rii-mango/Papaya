@@ -14,8 +14,11 @@ papaya.viewer.Display = papaya.viewer.Display || function(width, height) {
     this.canvas.style.margin = 0;
     this.canvas.style.border = "none";
     this.canvas.style.cursor = "default";
-
     this.tempCoord = new papaya.core.Coordinate(0, 0, 0);
+    this.drawingError = false;
+    this.progress = 0;
+    this.progressTimeout = null;
+    this.drawingProgress = false;
 
     this.drawUninitializedDisplay();
 }
@@ -37,6 +40,10 @@ papaya.viewer.Display.prototype.drawUninitializedDisplay = function() {
 
 
 papaya.viewer.Display.prototype.drawEmptyDisplay = function() {
+    if (this.drawingError || this.drawingProgress) {
+        return;
+    }
+
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.fillStyle = "#000000";
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -44,6 +51,10 @@ papaya.viewer.Display.prototype.drawEmptyDisplay = function() {
 
 
 papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc, val) {
+    if (this.drawingError || this.drawingProgress) {
+        return;
+    }
+
     // initialize
     var sizeRatio = papayaMain.papayaViewer.canvas.width / 400.0;
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -151,6 +162,9 @@ papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc, val) {
 
 
 papaya.viewer.Display.prototype.drawError = function(message) {
+    this.drawingError = true;
+    window.setTimeout(bind(this, function() {this.drawingError = false;}), 3000);
+
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.fillStyle = "#000000";
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -162,4 +176,33 @@ papaya.viewer.Display.prototype.drawError = function(message) {
     var textWidth = metrics.width;
 
     this.context.fillText(message, papaya.viewer.Display.TEXT_SPACING, valueLoc);
+}
+
+
+
+
+papaya.viewer.Display.prototype.drawProgress = function(progress) {
+    var prog = Math.round(progress * 100);
+    if (prog > this.progress) {
+        this.progress = prog;
+
+        if (this.progress >= 99) {
+            this.drawingProgress = false;
+            this.progress = 0;
+            this.drawEmptyDisplay();
+        } else {
+            if (this.progressTimeout) {
+                window.clearTimeout(this.progressTimeout);
+            }
+            this.progressTimeout = window.setTimeout(bind(this, function() {this.drawingProgress = false;}), 3000);
+
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.context.fillStyle = "#000000";
+            this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+            var rgbVal = Math.round(255 * progress);
+            this.context.fillStyle = "rgb("+rgbVal+", "+rgbVal+", "+rgbVal+")";
+            this.context.fillRect(0, 0, this.canvas.width * progress, this.canvas.height);
+        }
+    }
 }
