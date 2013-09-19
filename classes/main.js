@@ -5,7 +5,8 @@ papaya.viewer = papaya.viewer || {};
 var papayaMain = null;
 
 
-papaya.viewer.Main = papaya.viewer.Main || function() {
+papaya.Main = papaya.Main || function() {
+    resetComponents();
     this.buildViewer();
     this.buildDisplay();
     this.buildToolbar();
@@ -77,6 +78,16 @@ function getViewerDimensions() {
 }
 
 
+function resetComponents() {
+    $("#"+PAPAYA_CONTAINER_ID).css({height: "auto"});
+    $("#"+PAPAYA_CONTAINER_ID).css({width: "auto"});
+    $("#"+PAPAYA_CONTAINER_ID).css({margin: "auto"});
+
+    $("#"+PAPAYA_VIEWER_ID).removeClass("checkForJS");
+    $('head').append("<style>div#papayaViewer:before{ content:'' }</style>");
+}
+
+
 
 function resizeViewerComponents(resize) {
     papayaMain.papayaToolbar.closeAllMenus();
@@ -112,8 +123,9 @@ function resizeViewerComponents(resize) {
 
 
 
-papaya.viewer.Main.prototype.buildViewer = function() {
+papaya.Main.prototype.buildViewer = function() {
     if (isShowingViewer()) {
+        $("#"+PAPAYA_VIEWER_ID).html("");  // remove noscript message
         var dims = getViewerDimensions();
         this.papayaViewer = new papaya.viewer.Viewer(dims.width, dims.height);
         $("#"+PAPAYA_VIEWER_ID).append($(this.papayaViewer.canvas));
@@ -124,7 +136,7 @@ papaya.viewer.Main.prototype.buildViewer = function() {
 
 
 
-papaya.viewer.Main.prototype.buildDisplay = function() {
+papaya.Main.prototype.buildDisplay = function() {
     if (isShowingDisplay()) {
         var dims = getViewerDimensions();
         this.papayaDisplay = new papaya.viewer.Display(dims.width, PAPAYA_SECTION_HEIGHT);
@@ -134,7 +146,7 @@ papaya.viewer.Main.prototype.buildDisplay = function() {
 
 
 
-papaya.viewer.Main.prototype.buildToolbar = function() {
+papaya.Main.prototype.buildToolbar = function() {
     this.papayaToolbar = new papaya.ui.Toolbar();
     this.papayaToolbar.buildToolbar();
 }
@@ -230,7 +242,7 @@ function hasSelectedFiles() {
 
 
 function main() {
-    papayaMain = new papaya.viewer.Main();
+    papayaMain = new papaya.Main();
 
     var message = checkForBrowserCompatibility();
     if (message != null) {

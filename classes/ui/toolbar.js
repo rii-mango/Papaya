@@ -144,8 +144,8 @@ papaya.ui.Toolbar.prototype.doAction = function(action, file) {
     } else if (action.startsWith("ColorTable")) {
         var colorTableName = action.substring(action.indexOf("-")+1, action.lastIndexOf("-"));
         var imageIndex = action.substring(action.lastIndexOf("-")+1);
-
         papayaMain.papayaViewer.screenVolumes[imageIndex].changeColorTable(colorTableName);
+        this.updateImageButtons();
     } else if (action.startsWith("CloseAllImages")) {
         papayaMain.papayaViewer.resetViewer();
         this.updateImageButtons();
