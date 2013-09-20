@@ -669,7 +669,7 @@ papaya.viewer.Viewer.prototype.mouseOutEvent = function(me) {
 
 papaya.viewer.Viewer.prototype.windowLevelChanged = function(contrastChange, brightnessChange) {
     var range = this.currentScreenVolume.volume.header.imageRange.imageMax - this.currentScreenVolume.volume.header.imageRange.imageMin;
-    var step = range * .01;
+    var step = range * .025;
 
     var minFinal;
     var maxFinal;
