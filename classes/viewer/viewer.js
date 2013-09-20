@@ -43,12 +43,14 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(width, height) {
     this.isWindowControl = false;
     this.previousMousePosition = new papaya.core.Point();
     this.draggingOver = false;
+    this.isControlKeyDown = false;
 
     this.listenerMouseMove = bind(this, this.mouseMoveEvent);
     this.listenerMouseDown = bind(this, this.mouseDownEvent);
     this.listenerMouseOut = bind(this, this.mouseOutEvent)
     this.listenerMouseUp = bind(this, this.mouseUpEvent);
     this.listenerKeyDown = bind(this, this.keyDownEvent);
+    this.listenerKeyUp = bind(this, this.keyUpEvent);
     this.listenerContextMenu = function(e) { e.preventDefault(); return false; };
 
     this.drawEmptyViewer();
@@ -142,6 +144,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function() {
     this.canvas.addEventListener("mouseout", this.listenerMouseOut, false);
     document.addEventListener("mouseup", this.listenerMouseUp, false);
 	document.addEventListener("keydown", this.listenerKeyDown, true);
+    document.addEventListener("keyup", this.listenerKeyUp, true);
     document.addEventListener("contextmenu", this.listenerContextMenu, false);
 
 	this.setLongestDim(this.volume);
@@ -297,7 +300,6 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function() {
     // clear area
     this.context.fillStyle = "#000000";
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    this.context.fillStyle = "#AAAAAA";
 
     if (this.draggingOver) {
         this.context.strokeStyle = "#555555";
@@ -315,15 +317,17 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function() {
     this.context.closePath();
     this.context.stroke();
 
-    var fontSize = 22;
+    this.context.fillStyle = "#777777";
+    var fontSize = 20;
     this.context.font = fontSize+"px Arial";
     var locY = this.canvas.height / 2;
-    var text = "Drop files here";
+    var text = "Drop here or click the File menu";
     var metrics = this.context.measureText(text);
     var textWidth = metrics.width;
     this.context.fillText(text, (this.canvas.width / 2) - (textWidth / 2), locY);
 
     // draw supported formats
+    this.context.fillStyle = "#BBBBBB";
     fontSize = 14;
     this.context.font = fontSize+"px Arial";
     locY = this.canvas.height - 40;
@@ -333,6 +337,7 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function() {
     this.context.fillText(text, 40, locY);
 
     // draw Papaya version info
+    this.context.fillStyle = "#BBBBBB";
     fontSize = 14;
     this.context.font = fontSize+"px Arial";
     locY = this.canvas.height - 40;
@@ -526,7 +531,9 @@ papaya.viewer.Viewer.prototype.setLongestDim = function(volume) {
 papaya.viewer.Viewer.prototype.keyDownEvent = function(ke) {
 	var keyCode = getKeyCode(ke);
 
-	if (keyCode == papaya.viewer.Viewer.KEYCODE_ROTATE_VIEWS) {
+    if (isControlKey(ke)) {
+        this.isControlKeyDown = true;
+    } else if (keyCode == papaya.viewer.Viewer.KEYCODE_ROTATE_VIEWS) {
 		var temp = this.lowerImageBot;
 		this.lowerImageBot = this.lowerImageTop;
 		this.lowerImageTop = this.mainImage;
@@ -586,6 +593,17 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function(ke) {
 }
 
 
+
+papaya.viewer.Viewer.prototype.keyUpEvent = function(ke) {
+    var keyCode = getKeyCode(ke);
+
+    if (isControlKey(ke)) {
+        this.isControlKeyDown = false;
+    }
+}
+
+
+
 /**
  * The mousedown event callback.
  * @param {Object} me	the mouse event
@@ -593,7 +611,7 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function(ke) {
 papaya.viewer.Viewer.prototype.mouseDownEvent = function(me) {
     papayaMain.papayaToolbar.closeAllMenus();
 
-    if (me.which == 3) {
+    if ((me.which == 3) || this.isControlKeyDown) {
         this.isWindowControl = true;
         this.previousMousePosition.x = getMousePositionX(me);
         this.previousMousePosition.y = getMousePositionY(me);
@@ -766,6 +784,7 @@ papaya.viewer.Viewer.prototype.resetViewer = function() {
     this.canvas.removeEventListener("mouseout", this.listenerMouseOut, false);
     document.removeEventListener("mouseup", this.listenerMouseUp, false);
     document.removeEventListener("keydown", this.listenerKeyDown, true);
+    document.removeEventListener("keyup", this.listenerKeyUp, true);
     document.removeEventListener("contextmenu", this.listenerContextMenu, false);
 
     this.drawEmptyViewer();

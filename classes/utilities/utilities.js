@@ -93,3 +93,19 @@ CanvasRenderingContext2D.prototype.dashedLine = function (x1, y1, x2, y2, dashLe
     }
     this[q % 2 == 0 ? 'moveTo' : 'lineTo'](x2, y2);
 };
+
+
+function isControlKey(ke) {
+    var keyCode = getKeyCode(ke);
+
+    if ((OSName == "MacOS") && (
+            (keyCode == 91) || // left command key
+            (keyCode == 93) || // right command key
+            (keyCode == 224))) { // FF command key code
+        return true;
+    } else if ((OSName != "MacOS") && (keyCode == 17)) {
+        return true;
+    }
+
+    return false;
+}
