@@ -90,7 +90,7 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function(menu, itemData, topLevelBu
         if (itemData[ctrItems].type == "checkbox") {
             item = new papaya.ui.MenuItemCheckBox(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, modifier);
         } else if (itemData[ctrItems].type == "button") {
-            item = new papaya.ui.MenuItemButton(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
+            item = new papaya.ui.MenuItemFileChooser(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
         } else {
             item = new papaya.ui.MenuItem(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
         }
