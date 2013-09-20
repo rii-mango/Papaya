@@ -37,6 +37,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function() {
 
     $("#"+PAPAYA_TOOLBAR_ID).append(html);
     $("#"+this.buttonId).click(bind(this, this.showMenu));
+    $("#"+this.buttonId).hover(function(){$(this).toggleClass('menuButtonHover');});
 
     if (this.icon) {
         $("#"+this.buttonId + " > img").mousedown(function() {

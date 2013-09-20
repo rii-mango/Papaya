@@ -18,4 +18,5 @@ papaya.ui.MenuItemButton.prototype.buildHTML = function (parentId) {
     $("#fileChooser")[0].onchange = bind(this, function(e) {
         this.callback(this.action, document.getElementById('fileChooser').files[0]);
     });
+    $("#"+this.id).hover(function(){$(this).toggleClass('menuHover');});
 }

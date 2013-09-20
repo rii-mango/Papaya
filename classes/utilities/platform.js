@@ -129,23 +129,23 @@ BrowserDetect.init();
 function checkForBrowserCompatibility() {
     if (BrowserDetect.browser == "Firefox") {
         if (BrowserDetect.version < BROWSER_MIN_FIREFOX) {
-            return (BrowserDetect.browser+ " version "+BROWSER_MIN_FIREFOX+" or higher is required. Please consider upgrading or using a different browser.");
+            return ("Papaya requires Firefox version " + BROWSER_MIN_FIREFOX + " or higher.");
         }
     } else if (BrowserDetect.browser == "Chrome") {
         if (BrowserDetect.version < BROWSER_MIN_CHROME) {
-            return (BrowserDetect.browser+ " version "+BROWSER_MIN_CHROME+" or higher is required. Please consider upgrading or using a different browser.");
+            return ("Papaya requires Chrome version " + BROWSER_MIN_CHROME + " or higher.");
         }
     } else if (BrowserDetect.browser == "Explorer") {
         if (BrowserDetect.version < BROWSER_MIN_IE) {
-            return (BrowserDetect.browser+ " version "+BROWSER_MIN_IE+" or higher is required. Please consider upgrading or using a different browser.");
+            return ("Papaya requires Internet Explorer version " + BROWSER_MIN_IE + " or higher.");
         }
     } else if (BrowserDetect.browser == "Safari") {
         if (BrowserDetect.version < BROWSER_MIN_SAFARI) {
-            return (BrowserDetect.browser+ " version "+BROWSER_MIN_SAFARI+" or higher is required. Please consider upgrading or using a different browser.");
+            return ("Papaya requires Safari version " + BROWSER_MIN_SAFARI + " or higher.");
         }
     } else if (BrowserDetect.browser == "Opera") {
         if (BrowserDetect.version < BROWSER_MIN_OPERA) {
-            return (BrowserDetect.browser+ " version "+BROWSER_MIN_OPERA+" or higher is required. Please consider upgrading or using a different browser.");
+            return ("Papaya requires Opera version " + BROWSER_MIN_OPERA + " or higher.");
         }
     }
 

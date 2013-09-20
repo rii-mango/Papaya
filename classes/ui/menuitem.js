@@ -16,6 +16,8 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
     var html = "<li id='" + this.id + "'><span class='unselectable'>" + this.label +"</span></li>";
     $("#"+parentId).append(html);
     $("#"+this.id).click(bind(this, this.doAction));
+    $("#"+this.id).hover(function(){$(this).toggleClass('menuHover');});
+
 }
 
 

@@ -307,8 +307,8 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function() {
     this.context.fillStyle = "#AAAAAA";
     var fontSize = 18;
     this.context.font = fontSize+"px Arial";
-    locY = this.canvas.height - 20;
-    var text = "Drop a file here or click the File menu";
+    locY = this.canvas.height - 22;
+    var text = "Drop here or click the File menu";
     var metrics = this.context.measureText(text);
     var textWidth = metrics.width;
     this.context.fillText(text, (this.canvas.width / 2) - (textWidth / 2), locY);
