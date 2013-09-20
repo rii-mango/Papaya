@@ -6,7 +6,7 @@ A pure JavaScript medical image viewer.  Current list of features:
 - Orthogonal viewer controlled with mouse and keyboard controls.
 - Reads NIFTI (.nii and .nii.gz) files.
 - Supports overlays and atlas labels.  (Includes sample image and atlas.)
-- Supported browsers (min version requirement): Firefox (7), Chrome (7), Safari (6), MobileSafari (iOS 6), IE (10).
+- Supported browsers (min version): Firefox (7), Chrome (7), Safari (6), MobileSafari (iOS 6), IE (10).
 - Demo: http://ric.uthscsa.edu/mango/papaya/
 
 ![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)
@@ -14,6 +14,7 @@ A pure JavaScript medical image viewer.  Current list of features:
 Installation
 ------
 Development: See examples/debug.html.
+
 Production: Run build.sh to create minified JavaScript and CSS, output to build/.
 
 
