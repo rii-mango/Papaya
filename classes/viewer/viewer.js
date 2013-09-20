@@ -42,6 +42,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(width, height) {
     this.isDragging = false;
     this.isWindowControl = false;
     this.previousMousePosition = new papaya.core.Point();
+    this.draggingOver = false;
 
     this.listenerMouseMove = bind(this, this.mouseMoveEvent);
     this.listenerMouseDown = bind(this, this.mouseDownEvent);
@@ -293,8 +294,61 @@ papaya.viewer.Viewer.prototype.insideScreenSlice = function(screenSlice, xLoc, y
 
 
 papaya.viewer.Viewer.prototype.drawEmptyViewer = function() {
+    // clear area
     this.context.fillStyle = "#000000";
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.fillStyle = "#AAAAAA";
+
+    if (this.draggingOver) {
+        this.context.strokeStyle = "#555555";
+    } else {
+        this.context.strokeStyle = "#333333";
+    }
+
+    // draw drop area
+    this.context.lineWidth = 4.0;
+    this.context.beginPath();
+    this.context.dashedLine(20, 20, this.canvas.width - 20, 20, 24);
+    this.context.dashedLine(this.canvas.width - 20, 20, this.canvas.width - 20, this.canvas.height - 20, 24);
+    this.context.dashedLine(this.canvas.width - 20, this.canvas.height - 20, 20, this.canvas.height - 20, 24);
+    this.context.dashedLine(20, this.canvas.height - 20, 20, 20, 24);
+    this.context.closePath();
+    this.context.stroke();
+
+    var fontSize = 22;
+    this.context.font = fontSize+"px Arial";
+    var locY = this.canvas.height / 2;
+    var text = "Drop files here";
+    var metrics = this.context.measureText(text);
+    var textWidth = metrics.width;
+    this.context.fillText(text, (this.canvas.width / 2) - (textWidth / 2), locY);
+
+    // draw supported formats
+    fontSize = 14;
+    this.context.font = fontSize+"px Arial";
+    locY = this.canvas.height - 40;
+    text = "Supported formats: NIFTI (.nii, .nii.gz)";
+    metrics = this.context.measureText(text);
+    textWidth = metrics.width;
+    this.context.fillText(text, 40, locY);
+
+    // draw Papaya version info
+    fontSize = 14;
+    this.context.font = fontSize+"px Arial";
+    locY = this.canvas.height - 40;
+
+    if (typeof PAPAYA_VERSION_ID === 'undefined') {
+        PAPAYA_VERSION_ID = "0.0";
+    }
+
+    if (typeof PAPAYA_BUILD_NUM === 'undefined') {
+        PAPAYA_BUILD_NUM = "0";
+    }
+
+    text = "Papaya v" + (PAPAYA_VERSION_ID ? PAPAYA_VERSION_ID : "Dev") + " (build " + (PAPAYA_BUILD_NUM != undefined ? PAPAYA_BUILD_NUM : "Dev") + ")";
+    metrics = this.context.measureText(text);
+    textWidth = metrics.width;
+    this.context.fillText(text, this.canvas.width - textWidth - 40, locY);
 }
 
 

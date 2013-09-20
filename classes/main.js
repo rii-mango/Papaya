@@ -10,13 +10,13 @@ papaya.Main = papaya.Main || function() {
     this.buildViewer();
     this.buildDisplay();
     this.buildToolbar();
+    this.setUpDnD();
 }
 
 
 function isShowingToolbar() {
     return $("#"+PAPAYA_TOOLBAR_ID).length;
 }
-
 
 
 function isShowingDisplay() {
@@ -27,7 +27,6 @@ function isShowingDisplay() {
 function isShowingViewer() {
     return $("#"+PAPAYA_VIEWER_ID).length;
 }
-
 
 
 function getViewerDimensions() {
@@ -88,7 +87,6 @@ function resetComponents() {
 }
 
 
-
 function resizeViewerComponents(resize) {
     papayaMain.papayaToolbar.closeAllMenus();
 
@@ -135,7 +133,6 @@ papaya.Main.prototype.buildViewer = function() {
 }
 
 
-
 papaya.Main.prototype.buildDisplay = function() {
     if (isShowingDisplay()) {
         var dims = getViewerDimensions();
@@ -145,12 +142,37 @@ papaya.Main.prototype.buildDisplay = function() {
 }
 
 
-
 papaya.Main.prototype.buildToolbar = function() {
     this.papayaToolbar = new papaya.ui.Toolbar();
     this.papayaToolbar.buildToolbar();
 }
 
+
+papaya.Main.prototype.setUpDnD = function() {
+    $("#"+PAPAYA_CONTAINER_ID)[0].ondragover = function () {
+        papayaMain.papayaViewer.draggingOver = true;
+        papayaMain.papayaViewer.drawEmptyViewer();
+        return false;
+    };
+
+    $("#"+PAPAYA_CONTAINER_ID)[0].ondragleave = function () {
+        papayaMain.papayaViewer.draggingOver = false;
+        papayaMain.papayaViewer.drawEmptyViewer();
+        return false;
+    };
+
+    $("#"+PAPAYA_CONTAINER_ID)[0].ondragend = function () {
+        papayaMain.papayaViewer.draggingOver = false;
+        papayaMain.papayaViewer.drawEmptyViewer();
+        return false;
+    };
+
+    $("#"+PAPAYA_CONTAINER_ID)[0].ondrop = function (e) {
+        e.preventDefault();
+        papayaMain.papayaViewer.loadImage(e.dataTransfer.files[0], false, false);
+        return false;
+    };
+}
 
 
 function main() {
