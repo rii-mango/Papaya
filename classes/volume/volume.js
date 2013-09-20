@@ -22,6 +22,7 @@ papaya.volume.Volume = papaya.volume.Volume || function() {
 	this.onFinishedRead = null;
 	this.errorMessage = null;
     this.transform = null;
+    this.isLoaded = false;
 }
 
 
@@ -317,6 +318,7 @@ papaya.volume.Volume.prototype.finishedLoad = function() {
             this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
         }
 
+        this.isLoaded = true;
         this.rawData = null;
 		this.onFinishedRead(this);
 	}
