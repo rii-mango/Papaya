@@ -20,7 +20,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(width, height) {
     this.canvas.style.border = "none";
 
     this.preferences = new papaya.viewer.Preferences();
-    this.atlas = new papaya.viewer.Atlas(papaya.data.TalairachAtlas.data, papaya.data.TalairachAtlas.labels);
+    this.atlas = null;
 
     this.initialized = false;
     this.loadingVolume = null;
@@ -127,6 +127,8 @@ papaya.viewer.Viewer.prototype.initializeViewer = function() {
         papayaMain.papayaDisplay.drawError(this.volume.errorMessage);
 		return;
 	}
+
+    this.atlas = new papaya.viewer.Atlas(papaya.data.TalairachAtlas.data, papaya.data.TalairachAtlas.labels);
 
     this.screenVolumes[0] = this.currentScreenVolume = new papaya.viewer.ScreenVolume(this.volume, papaya.viewer.ColorTable.TABLE_GRAYSCALE_NAME, true);
 
