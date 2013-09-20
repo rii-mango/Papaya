@@ -188,7 +188,7 @@ papaya.viewer.Display.prototype.drawProgress = function(progress) {
     if (prog > this.progress) {
         this.progress = prog;
 
-        if (this.progress >= 950) {
+        if (this.progress >= 990) {
             this.drawingProgress = false;
             this.progress = 0;
             this.drawEmptyDisplay();
