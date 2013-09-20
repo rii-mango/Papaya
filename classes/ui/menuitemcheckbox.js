@@ -3,7 +3,7 @@ var papaya = papaya || {};
 papaya.ui = papaya.ui || {};
 
 
-papaya.ui.MenuItemCheckBox = papaya.ui.MenuItemCheckBox || function (label, action, callback, dataSource, modifier) {
+papaya.ui.MenuItemCheckBox = papaya.ui.MenuItemCheckBox || function (label, action, callback, dataSource, method, modifier) {
     this.label = label;
 
     this.modifier = "";
@@ -12,6 +12,7 @@ papaya.ui.MenuItemCheckBox = papaya.ui.MenuItemCheckBox || function (label, acti
     }
 
     this.action = action+this.modifier;
+    this.method = method;
     this.id = this.action.replace(/ /g,"_");
     this.callback = callback;
     this.dataSource = dataSource;
@@ -23,7 +24,7 @@ papaya.ui.MenuItemCheckBox.CHECKBOX_SELECTED_CODE = "&#9745;";
 
 
 papaya.ui.MenuItemCheckBox.prototype.buildHTML = function (parentId) {
-    var selected = this.dataSource(this.label);
+    var selected = this.dataSource[this.method](this.label);
 
     var bulletSymbol = null;
     if (selected) {

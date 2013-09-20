@@ -126,3 +126,11 @@ papaya.viewer.ScreenVolume.prototype.changeColorTable = function(lutName) {
     this.lutName = lutName;
     papayaMain.papayaViewer.drawViewer(true);
 }
+
+
+papaya.viewer.ScreenVolume.prototype.getRange = function() {
+    var range = new Array(2);
+    range[0] = this.screenMin;
+    range[1] = this.screenMax;
+    return range;
+}
