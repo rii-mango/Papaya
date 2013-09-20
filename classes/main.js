@@ -189,13 +189,15 @@ papaya.Main.prototype.setUpDnD = function() {
 
 
 function main() {
-    papayaMain = new papaya.Main();
-
     var message = checkForBrowserCompatibility();
+
     if (message != null) {
-        resizeViewerComponents(false);
-        papayaMain.papayaDisplay.drawError(message);
+        $("#"+PAPAYA_VIEWER_ID).removeClass("checkForJS");
+        $("#"+PAPAYA_VIEWER_ID).addClass("checkBrowser");
+        $("#"+PAPAYA_VIEWER_ID).html("<div class='checkBrowserMessage'>" + message + "</div>");
     } else {
+        papayaMain = new papaya.Main();
+
         var loadUrl = $("#"+PAPAYA_VIEWER_ID).data("load-url");
         var loadEncoded = $("#"+PAPAYA_VIEWER_ID).data("load-encoded");
 
