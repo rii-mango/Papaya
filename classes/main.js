@@ -151,25 +151,38 @@ papaya.Main.prototype.buildToolbar = function() {
 papaya.Main.prototype.setUpDnD = function() {
     $("#"+PAPAYA_CONTAINER_ID)[0].ondragover = function () {
         papayaMain.papayaViewer.draggingOver = true;
-        papayaMain.papayaViewer.drawEmptyViewer();
+        if (!papayaMain.papayaViewer.initialized) {
+            papayaMain.papayaViewer.drawEmptyViewer();
+        }
+
         return false;
     };
 
     $("#"+PAPAYA_CONTAINER_ID)[0].ondragleave = function () {
         papayaMain.papayaViewer.draggingOver = false;
-        papayaMain.papayaViewer.drawEmptyViewer();
+        if (!papayaMain.papayaViewer.initialized) {
+            papayaMain.papayaViewer.drawEmptyViewer();
+        }
         return false;
     };
 
     $("#"+PAPAYA_CONTAINER_ID)[0].ondragend = function () {
         papayaMain.papayaViewer.draggingOver = false;
-        papayaMain.papayaViewer.drawEmptyViewer();
+        if (!papayaMain.papayaViewer.initialized) {
+            papayaMain.papayaViewer.drawEmptyViewer();
+        }
         return false;
     };
 
     $("#"+PAPAYA_CONTAINER_ID)[0].ondrop = function (e) {
         e.preventDefault();
-        papayaMain.papayaViewer.loadImage(e.dataTransfer.files[0], false, false);
+
+        if (e.dataTransfer.files.length > 1) {
+            papayaMain.papayaDisplay.drawError("Please drop one file at a time.")
+        } else {
+            papayaMain.papayaViewer.loadImage(e.dataTransfer.files[0], false, false);
+        }
+
         return false;
     };
 }

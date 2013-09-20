@@ -301,59 +301,44 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function() {
     this.context.fillStyle = "#000000";
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    if (this.draggingOver) {
-        this.context.strokeStyle = "#555555";
-    } else {
-        this.context.strokeStyle = "#333333";
-    }
-
-    // draw drop area
-    this.context.lineWidth = 4.0;
-    this.context.beginPath();
-    this.context.dashedLine(20, 20, this.canvas.width - 20, 20, 24);
-    this.context.dashedLine(this.canvas.width - 20, 20, this.canvas.width - 20, this.canvas.height - 20, 24);
-    this.context.dashedLine(this.canvas.width - 20, this.canvas.height - 20, 20, this.canvas.height - 20, 24);
-    this.context.dashedLine(20, this.canvas.height - 20, 20, 20, 24);
-    this.context.closePath();
-    this.context.stroke();
-
-    this.context.fillStyle = "#777777";
-    var fontSize = 20;
+    // draw drop text
+    this.context.fillStyle = "#AAAAAA";
+    var fontSize = 18;
     this.context.font = fontSize+"px Arial";
-    var locY = this.canvas.height / 2;
-    var text = "Drop here or click the File menu";
+    locY = this.canvas.height - 20;
+    var text = "Drop a file here or click the File menu";
     var metrics = this.context.measureText(text);
     var textWidth = metrics.width;
     this.context.fillText(text, (this.canvas.width / 2) - (textWidth / 2), locY);
 
-    // draw supported formats
-    this.context.fillStyle = "#BBBBBB";
-    fontSize = 14;
-    this.context.font = fontSize+"px Arial";
-    locY = this.canvas.height - 40;
-    text = "Supported formats: NIFTI (.nii, .nii.gz)";
-    metrics = this.context.measureText(text);
-    textWidth = metrics.width;
-    this.context.fillText(text, 40, locY);
+    if (this.canvas.width > 900) {
+        // draw supported formats
+        fontSize = 14;
+        this.context.font = fontSize+"px Arial";
+        locY = this.canvas.height - 20;
+        text = "Supported formats: NIFTI (.nii, .nii.gz)";
+        metrics = this.context.measureText(text);
+        textWidth = metrics.width;
+        this.context.fillText(text, 20, locY);
 
-    // draw Papaya version info
-    this.context.fillStyle = "#BBBBBB";
-    fontSize = 14;
-    this.context.font = fontSize+"px Arial";
-    locY = this.canvas.height - 40;
+        // draw Papaya version info
+        fontSize = 14;
+        this.context.font = fontSize+"px Arial";
+        locY = this.canvas.height - 20;
 
-    if (typeof PAPAYA_VERSION_ID === 'undefined') {
-        PAPAYA_VERSION_ID = "0.0";
+        if (typeof PAPAYA_VERSION_ID === 'undefined') {
+            PAPAYA_VERSION_ID = "0.0";
+        }
+
+        if (typeof PAPAYA_BUILD_NUM === 'undefined') {
+            PAPAYA_BUILD_NUM = "0";
+        }
+
+        text = "Papaya v" + (PAPAYA_VERSION_ID ? PAPAYA_VERSION_ID : "Dev") + " (build " + (PAPAYA_BUILD_NUM != undefined ? PAPAYA_BUILD_NUM : "Dev") + ")";
+        metrics = this.context.measureText(text);
+        textWidth = metrics.width;
+        this.context.fillText(text, this.canvas.width - textWidth - 20, locY);
     }
-
-    if (typeof PAPAYA_BUILD_NUM === 'undefined') {
-        PAPAYA_BUILD_NUM = "0";
-    }
-
-    text = "Papaya v" + (PAPAYA_VERSION_ID ? PAPAYA_VERSION_ID : "Dev") + " (build " + (PAPAYA_BUILD_NUM != undefined ? PAPAYA_BUILD_NUM : "Dev") + ")";
-    metrics = this.context.measureText(text);
-    textWidth = metrics.width;
-    this.context.fillText(text, this.canvas.width - textWidth - 40, locY);
 }
 
 
