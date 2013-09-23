@@ -46,4 +46,4 @@ rm build/index.html.bak
 
 
 # finished
-echo "Done!"
+echo "Done! See build/."
