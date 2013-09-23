@@ -1,11 +1,38 @@
 
 /**
  * Utility functions.
- */
+
 
 function bind(scope, fn) {
     return function () {
         return fn.apply(scope, arguments);
+    };
+}
+ */
+
+function bind (scope, fn, args, appendArgs) {
+    if (arguments.length === 2) {
+        return function() {
+            return fn.apply(scope, arguments);
+        }
+    }
+
+    var method = fn,
+        slice = Array.prototype.slice;
+
+    return function() {
+        var callArgs = args || arguments;
+
+        if (appendArgs === true) {
+            callArgs = slice.call(arguments, 0);
+            callArgs = callArgs.concat(args);
+        }
+        else if (typeof appendArgs == 'number') {
+            callArgs = slice.call(arguments, 0); // copy arguments first
+            Ext.Array.insert(callArgs, appendArgs, args);
+        }
+
+        return method.apply(scope || window, callArgs);
     };
 }
 
@@ -43,8 +70,6 @@ Array.prototype.clone = function() {
 };
 
 
-
-
 if (typeof String.prototype.startsWith != 'function') {
     String.prototype.startsWith = function (str){
         return this.indexOf(str) == 0;
@@ -72,6 +97,28 @@ var showMenu = function(viewer, el, menu, right) {
     } );
 
     $(menu).hide().fadeIn(200);
+};
+
+
+var showModalDialog = function(viewer, dialog) {
+    var viewerOffset = $(viewer.canvas).offset();
+    var viewerWidth = $(viewer.canvas).outerWidth();
+    var viewerHeight = $(viewer.canvas).outerHeight();
+
+    var dialogWidth = $(dialog).outerWidth();
+    var dialogHeight = $(dialog).outerHeight();
+
+    var left = viewerOffset.left + (viewerWidth / 2) - (dialogWidth / 2) + "px";
+    var top = viewerOffset.top + (viewerHeight / 2) - (dialogHeight / 2) + "px";
+
+    $(dialog).css( {
+        position: 'absolute',
+        zIndex: 100,
+        left: left,
+        top: top
+    } );
+
+    $(dialog).hide().fadeIn(200);
 };
 
 
@@ -111,7 +158,6 @@ function isControlKey(ke) {
 }
 
 
-
 function fullyQualifiedVariableExists(dat) {
     var obj = window[dat[0]];
 
@@ -128,4 +174,32 @@ function fullyQualifiedVariableExists(dat) {
     } else {
         return true;
     }
+}
+
+
+// http://www.quirksmode.org/js/cookies.html
+function createCookie(name,value,days) {
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime()+(days*24*60*60*1000));
+        var expires = "; expires="+date.toGMTString();
+    }
+    else var expires = "";
+    document.cookie = name+"="+value+expires+"; path=/";
+    console.log(document.cookie);
+}
+
+function readCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+
+function eraseCookie(name) {
+    createCookie(name,"",-1);
 }

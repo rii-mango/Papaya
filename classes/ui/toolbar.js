@@ -3,29 +3,22 @@ var papaya = papaya || {};
 papaya.ui = papaya.ui || {};
 
 
-papaya.ui.Toolbar = papaya.ui.Toolbar || function () {
-
-}
+papaya.ui.Toolbar = papaya.ui.Toolbar || function () { }
 
 papaya.ui.Toolbar.SIZE = 22;
+
 papaya.ui.Toolbar.MENU_DATA = {
     "menus": [
         {"label": "File", "icon": null,
             "items": [
                 {"label": "Add Image...", "action": "OpenImage", "type": "button"},
-                {"label": "Add Sample Image", "action": "OpenSampleImage", "exists": ["papaya", "data", "SampleImage"]},
+                {"label": "Add Sample Image", "action": "OpenSampleImage", "exists": ["papaya", "data", "SampleImage"], "uninitialized": "true"},
                 {"label": "Close All", "action": "CloseAllImages"}
             ]
         },
         {"label": "Options", "icon": null,
             "items": [
-                {"label": "Test Item", "action": "TestItem"},
-                {"label": "Test Item 2", "action": "TestItem2",
-                    "items": [
-                        {"label": "Test Sub Menu 1", "action": "TestSubMenu1"},
-                        {"label": "Test Sub Menu 2", "action": "TestSubMenu2"}
-                    ]
-                }
+                {"label": "Preferences", "action": "Preferences"}
             ]
         }
     ]
@@ -51,14 +44,21 @@ papaya.ui.Toolbar.IMAGE_MENU_DATA = {
     ]
 };
 
+papaya.ui.Toolbar.PREFERENCES_DATA = {
+    "items": [
+        {"label": "Atlas locked to:", "field": "atlasLocks", "options":["Mouse", "Crosshairs"]}
+    ]
+};
+
 
 papaya.ui.Toolbar.prototype.buildToolbar = function() {
+    $(".menuIcon").remove();
+    $(".menuLabel").remove();
+
     for (var ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA.menus.length; ctr++) {
         this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, null, null, false);
     }
 }
-
-
 
 
 papaya.ui.Toolbar.prototype.buildMenu = function(menuData, topLevelButtonId, dataSource, modifier, right) {
@@ -79,7 +79,6 @@ papaya.ui.Toolbar.prototype.buildMenu = function(menuData, topLevelButtonId, dat
 }
 
 
-
 papaya.ui.Toolbar.prototype.buildMenuItems = function(menu, itemData, topLevelButtonId, dataSource, modifier, right) {
     if (modifier == undefined) {
         modifier = "";
@@ -88,7 +87,8 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function(menu, itemData, topLevelBu
     for (var ctrItems = 0; ctrItems < itemData.length; ctrItems++) {
         var item = null;
 
-        if (!itemData[ctrItems].exists || fullyQualifiedVariableExists(itemData[ctrItems].exists)) {
+        if ((!itemData[ctrItems].uninitialized || !papayaMain.papayaViewer.initialized)
+                && (!itemData[ctrItems].exists || fullyQualifiedVariableExists(itemData[ctrItems].exists))) {
             if (itemData[ctrItems].type == "checkbox") {
                 item = new papaya.ui.MenuItemCheckBox(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
             } else if (itemData[ctrItems].type == "button") {
@@ -110,7 +110,6 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function(menu, itemData, topLevelBu
 }
 
 
-
 papaya.ui.Toolbar.prototype.updateImageButtons = function() {
     $(".imageButton").remove();
 
@@ -130,13 +129,13 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function() {
 }
 
 
-
 papaya.ui.Toolbar.prototype.closeAllMenus = function() {
     $(".menu").hide(100);
     $(".menu").remove();
 
+    $(".modalDialog").hide(100);
+    $(".modalDialog").remove();
 }
-
 
 
 papaya.ui.Toolbar.prototype.doAction = function(action, file) {
@@ -158,5 +157,8 @@ papaya.ui.Toolbar.prototype.doAction = function(action, file) {
     } else if (action.startsWith("CloseAllImages")) {
         papayaMain.papayaViewer.resetViewer();
         this.updateImageButtons();
+    } else if (action == "Preferences") {
+        var dialog = new papaya.ui.Dialog("Preferences", papaya.ui.Toolbar.PREFERENCES_DATA, papayaMain.preferences, bind(papayaMain.preferences, papayaMain.preferences.updatePreference));
+        dialog.showDialog();
     }
 }

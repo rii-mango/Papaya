@@ -7,10 +7,6 @@ var papayaMain = null;
 
 papaya.Main = papaya.Main || function() {
     resetComponents();
-    this.buildViewer();
-    this.buildDisplay();
-    this.buildToolbar();
-    this.setUpDnD();
 }
 
 
@@ -197,6 +193,12 @@ function main() {
         $("#"+PAPAYA_VIEWER_ID).html("<div class='checkBrowserMessage'>" + message + "</div>");
     } else {
         papayaMain = new papaya.Main();
+        papayaMain.preferences = new papaya.viewer.Preferences();
+
+        papayaMain.buildViewer();
+        papayaMain.buildDisplay();
+        papayaMain.buildToolbar();
+        papayaMain.setUpDnD();
 
         var loadUrl = $("#"+PAPAYA_VIEWER_ID).data("load-url");
         var loadEncoded = $("#"+PAPAYA_VIEWER_ID).data("load-encoded");

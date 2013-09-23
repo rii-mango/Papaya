@@ -19,7 +19,6 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(width, height) {
     this.canvas.style.margin = 0;
     this.canvas.style.border = "none";
 
-    this.preferences = new papaya.viewer.Preferences();
     this.atlas = null;
 
     this.initialized = false;
@@ -167,6 +166,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function() {
     this.initialized = true;
     this.drawViewer();
 
+    papayaMain.papayaToolbar.buildToolbar();
     papayaMain.papayaToolbar.updateImageButtons();
 }
 
@@ -186,6 +186,7 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function(location, url, encod
 
     this.loadingVolume = null;
 
+    papayaMain.papayaToolbar.buildToolbar();
     papayaMain.papayaToolbar.updateImageButtons();
 }
 
@@ -355,6 +356,11 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function() {
  * Draw the current state of the viewer.
  */
 papaya.viewer.Viewer.prototype.drawViewer = function(force) {
+    if (!this.initialized) {
+        this.drawEmptyViewer();
+        return;
+    }
+
 	this.context.save();
 
 	// update slice data
@@ -381,14 +387,14 @@ papaya.viewer.Viewer.prototype.drawViewer = function(force) {
 	this.context.setTransform(this.lowerImageTop.xformScaleX, 0, 0, this.lowerImageTop.xformScaleY, this.lowerImageTop.xformTransX, this.lowerImageTop.xformTransY);
 	this.context.drawImage(this.lowerImageTop.canvasMain, 0, 0);
 
-    if (this.preferences.showCrosshairs) {
+    if (papayaMain.preferences.showCrosshairs) {
         // initialize crosshairs
         this.context.setTransform(1, 0, 0, 1, 0, 0);
         this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR;
         this.context.lineWidth = 1.0;
         this.context.beginPath();
 
-        if ((this.mainImage != this.axialSlice) || this.preferences.showMainCrosshairs) {
+        if ((this.mainImage != this.axialSlice) || papayaMain.preferences.showMainCrosshairs) {
             // draw axial crosshairs
             var xLoc = floor(this.axialSlice.xformTransX + (this.currentCoord.x)*this.axialSlice.xformScaleX);
             var yStart = floor(this.axialSlice.xformTransY);
@@ -403,7 +409,7 @@ papaya.viewer.Viewer.prototype.drawViewer = function(force) {
             this.context.lineTo(xEnd, yLoc+.5);
         }
 
-        if ((this.mainImage != this.coronalSlice) || this.preferences.showMainCrosshairs) {
+        if ((this.mainImage != this.coronalSlice) || papayaMain.preferences.showMainCrosshairs) {
             // draw coronal crosshairs
             xLoc = floor(this.coronalSlice.xformTransX + this.currentCoord.x*this.coronalSlice.xformScaleX);
             yStart = floor(this.coronalSlice.xformTransY);
@@ -418,7 +424,7 @@ papaya.viewer.Viewer.prototype.drawViewer = function(force) {
             this.context.lineTo(xEnd, yLoc+.5);
         }
 
-        if ((this.mainImage != this.sagittalSlice) || this.preferences.showMainCrosshairs) {
+        if ((this.mainImage != this.sagittalSlice) || papayaMain.preferences.showMainCrosshairs) {
             // draw sagittal crosshairs
             xLoc = floor(this.sagittalSlice.xformTransX + this.currentCoord.y*this.sagittalSlice.xformScaleX);
             yStart = floor(this.sagittalSlice.xformTransY);
@@ -580,7 +586,7 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function(ke) {
 
         this.gotoCoordinate(this.currentCoord);
     } else if (keyCode == papaya.viewer.Viewer.KEYCODE_TOGGLE_CROSSHAIRS) {
-        this.preferences.showMainCrosshairs = !this.preferences.showMainCrosshairs;
+        papayaMain.preferences.showMainCrosshairs = !papayaMain.preferences.showMainCrosshairs;
         this.drawViewer(true);
     }
 }
@@ -784,4 +790,6 @@ papaya.viewer.Viewer.prototype.resetViewer = function() {
     if (papayaMain.papayaDisplay) {
         papayaMain.papayaDisplay.drawEmptyDisplay();
     }
+
+    papayaMain.papayaToolbar.buildToolbar();
 }

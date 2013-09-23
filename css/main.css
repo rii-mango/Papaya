@@ -124,10 +124,51 @@ input[type=file]{
     display:none;
 }
 
+
 label.fileChooser {
     cursor: pointer;
     width: 200px;
     display: inline-block;
+}
+
+
+.modalDialog {
+    width: 400px;
+    height: 500px;
+    background: #222;
+    position: absolute;
+    z-index: 100;
+    border: solid 2px darkgray;
+    padding: 6px;
+    font-size: 14px;
+    font-family: sans-serif;
+    color: white;
+}
+
+
+.modalDialogContent {
+    margin: 20px;
+    width: 360px;
+    height: 420px;
+}
+
+.modalDialogContentLabel {
+    text-align: right;
+    padding: 5px;
+}
+
+.modalDialogContentControl {
+    text-align: left;
+    padding: 5px;
+}
+
+.modalDialogButtonToolbar {
+    text-align: right;
+}
+
+
+.modalBackground {
+    opacity: 0.5;
 }
 
 
