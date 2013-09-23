@@ -43,6 +43,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function(width, height) {
     this.previousMousePosition = new papaya.core.Point();
     this.draggingOver = false;
     this.isControlKeyDown = false;
+    this.toggleMainCrosshairs = true;
 
     this.listenerMouseMove = bind(this, this.mouseMoveEvent);
     this.listenerMouseDown = bind(this, this.mouseDownEvent);
@@ -260,7 +261,7 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function(viewer, xLoc, yLo
         var zImageLoc = viewer.axialSlice.currentSlice;
 
         if (papayaMain.papayaDisplay) {
-            papayaMain.papayaDisplay.drawDisplay(xImageLoc, yImageLoc, zImageLoc, this.getCurrentValueAt(xImageLoc, yImageLoc, zImageLoc));
+            papayaMain.papayaDisplay.drawDisplay(xImageLoc, yImageLoc, zImageLoc);
         }
     } else if (this.insideScreenSlice(viewer.coronalSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getZDim())) {
         var xImageLoc = (xLoc - viewer.coronalSlice.xformTransX) / viewer.coronalSlice.xformScaleX;
@@ -268,7 +269,7 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function(viewer, xLoc, yLo
         var yImageLoc = viewer.coronalSlice.currentSlice;
 
         if (papayaMain.papayaDisplay) {
-            papayaMain.papayaDisplay.drawDisplay(xImageLoc, yImageLoc, zImageLoc, this.getCurrentValueAt(xImageLoc, yImageLoc, zImageLoc));
+            papayaMain.papayaDisplay.drawDisplay(xImageLoc, yImageLoc, zImageLoc);
         }
     } else if (this.insideScreenSlice(viewer.sagittalSlice, xLoc, yLoc, viewer.volume.getYDim(), viewer.volume.getZDim())) {
         var yImageLoc = (xLoc - viewer.sagittalSlice.xformTransX) / viewer.sagittalSlice.xformScaleX;
@@ -276,7 +277,7 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function(viewer, xLoc, yLo
         var xImageLoc = viewer.sagittalSlice.currentSlice;
 
         if (papayaMain.papayaDisplay) {
-            papayaMain.papayaDisplay.drawDisplay(xImageLoc, yImageLoc, zImageLoc, this.getCurrentValueAt(xImageLoc, yImageLoc, zImageLoc));
+            papayaMain.papayaDisplay.drawDisplay(xImageLoc, yImageLoc, zImageLoc);
         }
     } else {
         if (papayaMain.papayaDisplay) {
@@ -387,14 +388,14 @@ papaya.viewer.Viewer.prototype.drawViewer = function(force) {
 	this.context.setTransform(this.lowerImageTop.xformScaleX, 0, 0, this.lowerImageTop.xformScaleY, this.lowerImageTop.xformTransX, this.lowerImageTop.xformTransY);
 	this.context.drawImage(this.lowerImageTop.canvasMain, 0, 0);
 
-    if (papayaMain.preferences.showCrosshairs) {
+    if (papayaMain.preferences.showCrosshairs != "None") {
         // initialize crosshairs
         this.context.setTransform(1, 0, 0, 1, 0, 0);
         this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR;
         this.context.lineWidth = 1.0;
         this.context.beginPath();
 
-        if ((this.mainImage != this.axialSlice) || papayaMain.preferences.showMainCrosshairs) {
+      if (((this.mainImage != this.axialSlice) && (papayaMain.preferences.showCrosshairs != 'Main')) || ((this.mainImage == this.axialSlice) && (papayaMain.preferences.showCrosshairs != 'Lower') && this.toggleMainCrosshairs)) {
             // draw axial crosshairs
             var xLoc = floor(this.axialSlice.xformTransX + (this.currentCoord.x)*this.axialSlice.xformScaleX);
             var yStart = floor(this.axialSlice.xformTransY);
@@ -409,7 +410,7 @@ papaya.viewer.Viewer.prototype.drawViewer = function(force) {
             this.context.lineTo(xEnd, yLoc+.5);
         }
 
-        if ((this.mainImage != this.coronalSlice) || papayaMain.preferences.showMainCrosshairs) {
+        if (((this.mainImage != this.coronalSlice) && (papayaMain.preferences.showCrosshairs != 'Main')) || ((this.mainImage == this.coronalSlice) && (papayaMain.preferences.showCrosshairs != 'Lower') && this.toggleMainCrosshairs)) {
             // draw coronal crosshairs
             xLoc = floor(this.coronalSlice.xformTransX + this.currentCoord.x*this.coronalSlice.xformScaleX);
             yStart = floor(this.coronalSlice.xformTransY);
@@ -424,7 +425,7 @@ papaya.viewer.Viewer.prototype.drawViewer = function(force) {
             this.context.lineTo(xEnd, yLoc+.5);
         }
 
-        if ((this.mainImage != this.sagittalSlice) || papayaMain.preferences.showMainCrosshairs) {
+        if (((this.mainImage != this.sagittalSlice) && (papayaMain.preferences.showCrosshairs != 'Main')) || ((this.mainImage == this.sagittalSlice) && (papayaMain.preferences.showCrosshairs != 'Lower') && this.toggleMainCrosshairs)) {
             // draw sagittal crosshairs
             xLoc = floor(this.sagittalSlice.xformTransX + this.currentCoord.y*this.sagittalSlice.xformScaleX);
             yStart = floor(this.sagittalSlice.xformTransY);
@@ -586,8 +587,10 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function(ke) {
 
         this.gotoCoordinate(this.currentCoord);
     } else if (keyCode == papaya.viewer.Viewer.KEYCODE_TOGGLE_CROSSHAIRS) {
-        papayaMain.preferences.showMainCrosshairs = !papayaMain.preferences.showMainCrosshairs;
-        this.drawViewer(true);
+        if ((papayaMain.preferences.showCrosshairs == "All") || (papayaMain.preferences.showCrosshairs == "Main")) {
+            this.toggleMainCrosshairs = !this.toggleMainCrosshairs;
+            this.drawViewer(true);
+        }
     }
 }
 

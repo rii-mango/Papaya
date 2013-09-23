@@ -42,6 +42,7 @@ papaya.ui.Dialog.prototype.showDialog = function() {
     }
 
     $("#"+this.id + "-Ok").click(bind(this, this.doOk));
+    $("#"+PAPAYA_CONTAINER_ID).addClass("modalBackground");
 
     showModalDialog(papayaMain.papayaViewer, $("#"+this.id)[0]);
 }
@@ -50,6 +51,7 @@ papaya.ui.Dialog.prototype.showDialog = function() {
 papaya.ui.Dialog.prototype.doOk = function() {
     $(".modalDialog").hide(100);
     $(".modalDialog").remove();
+    $("#"+PAPAYA_CONTAINER_ID).removeClass("modalBackground");
 }
 
 

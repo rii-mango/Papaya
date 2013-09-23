@@ -50,7 +50,7 @@ papaya.viewer.Display.prototype.drawEmptyDisplay = function() {
 }
 
 
-papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc, val) {
+papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc) {
     if (this.drawingError || this.drawingProgress) {
         return;
     }
@@ -61,6 +61,13 @@ papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc, val) {
     this.context.fillStyle = "#000000";
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
+    if (papayaMain.preferences.atlasLocks != "Mouse") {
+        xLoc = papayaMain.papayaViewer.currentCoord.x;
+        yLoc = papayaMain.papayaViewer.currentCoord.y;
+        zLoc = papayaMain.papayaViewer.currentCoord.z;
+    }
+
+    var val = papayaMain.papayaViewer.getCurrentValueAt(xLoc, yLoc, zLoc);
 
     // coordinate labels
     this.context.fillStyle = "white";

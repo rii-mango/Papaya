@@ -46,7 +46,9 @@ papaya.ui.Toolbar.IMAGE_MENU_DATA = {
 
 papaya.ui.Toolbar.PREFERENCES_DATA = {
     "items": [
-        {"label": "Atlas locked to:", "field": "atlasLocks", "options":["Mouse", "Crosshairs"]}
+        {"label": "Coordinate display of:", "field": "atlasLocks", "options":["Mouse", "Crosshairs"]},
+        {"label": "Show Crosshairs:", "field": "showCrosshairs", "options":["All", "Main", "Lower", "None"]}
+
     ]
 };
 
