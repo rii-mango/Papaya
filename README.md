@@ -15,8 +15,13 @@ Installation
 ------
 Development: See examples/debug.html.
 
-Production: Run build.sh to create minified JavaScript and CSS, output to build/.
-
+Production: Run build.sh to create minified JavaScript and CSS.
+````shell
+Usage: build.sh [-sample -image]
+Options:
+-sample includes the sample image
+-atlas includes the atlas data
+````
 
 Usage
 ------
