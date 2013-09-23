@@ -40,7 +40,7 @@ Array.prototype.clone = function() {
         }
     }
     return arr;
-}
+};
 
 
 
@@ -108,4 +108,24 @@ function isControlKey(ke) {
     }
 
     return false;
+}
+
+
+
+function fullyQualifiedVariableExists(dat) {
+    var obj = window[dat[0]];
+
+    for (var ctr = 1; ctr < dat.length; ctr++) {
+        if (typeof obj === "undefined") {
+            return false;
+        }
+
+        obj = obj[dat[ctr]];
+    }
+
+    if (typeof obj === "undefined") {
+        return false;
+    } else {
+        return true;
+    }
 }

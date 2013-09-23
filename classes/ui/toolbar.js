@@ -13,7 +13,7 @@ papaya.ui.Toolbar.MENU_DATA = {
         {"label": "File", "icon": null,
             "items": [
                 {"label": "Add Image...", "action": "OpenImage", "type": "button"},
-                {"label": "Add Sample Image", "action": "OpenSampleImage"},
+                {"label": "Add Sample Image", "action": "OpenSampleImage", "exists": ["papaya", "data", "SampleImage"]},
                 {"label": "Close All", "action": "CloseAllImages"}
             ]
         },
@@ -88,21 +88,23 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function(menu, itemData, topLevelBu
     for (var ctrItems = 0; ctrItems < itemData.length; ctrItems++) {
         var item = null;
 
-        if (itemData[ctrItems].type == "checkbox") {
-            item = new papaya.ui.MenuItemCheckBox(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
-        } else if (itemData[ctrItems].type == "button") {
-            item = new papaya.ui.MenuItemFileChooser(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
-        } else if (itemData[ctrItems].type == "range") {
-            item = new papaya.ui.MenuItemRange(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
-        } else {
-            item = new papaya.ui.MenuItem(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
-        }
+        if (!itemData[ctrItems].exists || fullyQualifiedVariableExists(itemData[ctrItems].exists)) {
+            if (itemData[ctrItems].type == "checkbox") {
+                item = new papaya.ui.MenuItemCheckBox(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+            } else if (itemData[ctrItems].type == "button") {
+                item = new papaya.ui.MenuItemFileChooser(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
+            } else if (itemData[ctrItems].type == "range") {
+                item = new papaya.ui.MenuItemRange(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+            } else {
+                item = new papaya.ui.MenuItem(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
+            }
 
-        menu.addMenuItem(item);
+            menu.addMenuItem(item);
 
-        if (itemData[ctrItems].items) {
-            var menu = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier, right);
-            item.callback = bind(menu, menu.showMenu);
+            if (itemData[ctrItems].items) {
+                var menu = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier, right);
+                item.callback = bind(menu, menu.showMenu);
+            }
         }
     }
 }
