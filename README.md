@@ -21,7 +21,7 @@ Usage: build.sh [-sample -image]
 Options:
 -sample includes the sample image
 -atlas includes the atlas data
--local build for local (not web server) deployment
+-local build for local deployment (encodes image data)
 ````
 
 Usage
