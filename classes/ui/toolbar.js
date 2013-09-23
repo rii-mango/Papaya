@@ -143,7 +143,11 @@ papaya.ui.Toolbar.prototype.doAction = function(action, file) {
     this.closeAllMenus();
 
     if (action == "OpenSampleImage") {
-        papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.data, false, true);
+        if (typeof papaya.data.SampleImage['data'] != 'undefined') {
+            papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.data, false, true);
+        } else if (typeof papaya.data.SampleImage['image'] != 'undefined') {
+            papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.image, true, false);
+        }
     } else if (action == "OpenImage") {
         papayaMain.papayaViewer.loadImage(file);
     } else if (action.startsWith("ColorTable")) {

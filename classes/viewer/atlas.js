@@ -4,15 +4,21 @@ papaya.viewer = papaya.viewer || {};
 
 
 
-papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlasData, atlasLabels) {
+papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlasData, atlasImage, atlasLabels) {
     this.name = null;
     this.atlasData = atlasData;
+    this.atlasImage = atlasImage;
     this.atlasLabels = atlasLabels;
     this.volume = new papaya.volume.Volume();
-    this.volume.readEncodedData(this.atlasData, bind(this, this.readFinished));
     this.displayColumns = new Array(4);
     this.labels = new Array(4);
     this.numLabels = 0;
+
+    if (this.atlasData) {
+        this.volume.readEncodedData(this.atlasData, bind(this, this.readFinished));
+    } else if (this.atlasImage) {
+        this.volume.readURL(this.atlasImage, bind(this, this.readFinished));
+    }
 }
 
 

@@ -129,7 +129,11 @@ papaya.viewer.Viewer.prototype.initializeViewer = function() {
 	}
 
     if ((typeof papaya.data != 'undefined') && (typeof papaya.data.TalairachAtlas != 'undefined')) {
-        this.atlas = new papaya.viewer.Atlas(papaya.data.TalairachAtlas.data, papaya.data.TalairachAtlas.labels);
+        if (typeof papaya.data.TalairachAtlas["data"] != "undefined") {
+            this.atlas = new papaya.viewer.Atlas(papaya.data.TalairachAtlas.data, null, papaya.data.TalairachAtlas.labels);
+        } else if (typeof papaya.data.TalairachAtlas["image"] != "undefined") {
+            this.atlas = new papaya.viewer.Atlas(null, papaya.data.TalairachAtlas.image, papaya.data.TalairachAtlas.labels);
+        }
     }
 
     this.screenVolumes[0] = this.currentScreenVolume = new papaya.viewer.ScreenVolume(this.volume, papaya.viewer.ColorTable.TABLE_GRAYSCALE_NAME, true);
