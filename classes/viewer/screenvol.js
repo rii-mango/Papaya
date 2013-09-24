@@ -12,6 +12,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function(vol, lutName
     this.imageMin = this.volume.header.imageRange.imageMin;
     this.imageMax = this.volume.header.imageRange.imageMax;
     this.alpha = 1.0;
+    this.imageRangeChecked = false;
     this.findImageRange();
     this.findDisplayRange();
     this.updateScreenRange();
@@ -40,10 +41,10 @@ papaya.viewer.ScreenVolume.prototype.isOverlay = function() {
 
 
 
-papaya.viewer.ScreenVolume.prototype.findImageRange = function() {
+papaya.viewer.ScreenVolume.prototype.findImageRange = function(force) {
     var hasImageRange = (this.imageMin != this.imageMax);
 
-    if (!hasImageRange) {
+    if ((!hasImageRange || force) && !this.imageRangeChecked) {
         var min = Number.MAX_VALUE;
         var max = Number.MIN_VALUE;
 
@@ -66,6 +67,10 @@ papaya.viewer.ScreenVolume.prototype.findImageRange = function() {
                 }
             }
         }
+
+        this.imageRangeChecked = true;
+        this.imageMin = min;
+        this.imageMax = max;
     }
 }
 
@@ -77,6 +82,7 @@ papaya.viewer.ScreenVolume.prototype.findDisplayRange = function() {
 
     if (this.isOverlay()) {
         if ((min == max) || ((min < 0) && (max > 0))) {  // if not set or crosses zero
+            this.findImageRange(true);
             min = this.imageMax - (this.imageMax * .75);
             max = this.imageMax - (this.imageMax * .25);
         }
@@ -92,20 +98,24 @@ papaya.viewer.ScreenVolume.prototype.findDisplayRange = function() {
         }
 
         if ((min == 0) && (max == 0)) { // if not found, for some reason, e.g., data not centered in image
+            this.findImageRange(true);
             min = this.imageMin;
             max = this.imageMax;
         }
 
         if (!(max > min)) { // sanity check
+            this.findImageRange(true);
             min = this.imageMin;
             max = this.imageMax;
         }
 
         if (min < this.imageMin) {
+            this.findImageRange(true);
             min = this.imageMin;
         }
 
         if (max > this.imageMax) {
+            this.findImageRange(true);
             max = this.imageMax;
         }
     }
