@@ -18,7 +18,7 @@ papaya.ui.Dialog.prototype.showDialog = function() {
     var html = "<div id='" + this.id + "' class='modalDialog'>" + this.title;
 
     if (this.content) {
-        html += "<table class='modalDialogContent'>";
+        html += "<div class='modalDialogContent'><table>";
 
         for (var ctr = 0; ctr < this.content.items.length; ctr++) {
             html += "<tr><td class='modalDialogContentLabel'>" + this.content.items[ctr].label + "</td><td class='modalDialogContentControl'><select id='" + this.content.items[ctr].field + "'>";
@@ -29,7 +29,7 @@ papaya.ui.Dialog.prototype.showDialog = function() {
             html += "</select></td></tr>"
         }
 
-        html += "</table>";
+        html += "</table></div>";
     }
 
     html += "<div class='modalDialogButtonToolbar'><button type='button' id='" + this.id + "-Ok" + "'>Ok</button></div></div>";

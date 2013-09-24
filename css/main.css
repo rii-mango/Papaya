@@ -152,6 +152,12 @@ label.fileChooser {
     height: 420px;
 }
 
+
+.modalDialogContent table {
+    margin: 0 auto;
+}
+
+
 .modalDialogContentLabel {
     text-align: right;
     padding: 5px;
