@@ -139,7 +139,8 @@ papaya.viewer.Viewer.prototype.initializeViewer = function() {
         }
     }
 
-    this.screenVolumes[0] = this.currentScreenVolume = new papaya.viewer.ScreenVolume(this.volume, papaya.viewer.ColorTable.TABLE_GRAYSCALE_NAME, true);
+    this.screenVolumes[0] = new papaya.viewer.ScreenVolume(this.volume, papaya.viewer.ColorTable.TABLE_GRAYSCALE_NAME, true);
+    this.setCurrentScreenVol(0);
 
     this.mainImage = this.axialSlice = new papaya.viewer.ScreenSlice(this.volume, papaya.viewer.ScreenSlice.DIRECTION_AXIAL,
 	    this.volume.getXDim(), this.volume.getYDim(), this.volume.getXSize(), this.volume.getYSize(), this.screenVolumes);
@@ -185,7 +186,8 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function(location, url, encod
         return;
     }
 
-    this.screenVolumes[this.screenVolumes.length] = this.currentScreenVolume = new papaya.viewer.ScreenVolume(this.loadingVolume, this.getNextColorTable(), false);
+    this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, this.getNextColorTable(), false);
+    this.setCurrentScreenVol(this.screenVolumes.length - 1);
     this.drawViewer(true);
 
     this.loadingVolume = null;
@@ -820,6 +822,13 @@ papaya.viewer.Viewer.prototype.getFilename = function(index) {
 }
 
 
+
+papaya.viewer.Viewer.prototype.getNiceFilename = function(index) {
+    return this.screenVolumes[index].volume.fileName.replace(".nii", "").replace(".gz", "");
+}
+
+
+
 papaya.viewer.Viewer.prototype.getFileLength = function(index) {
     return getSizeString(this.screenVolumes[index].volume.fileLength);
 }
@@ -856,6 +865,7 @@ papaya.viewer.Viewer.prototype.getImageDescription = function(index) {
 
 papaya.viewer.Viewer.prototype.setCurrentScreenVol = function(index) {
     this.currentScreenVolume = this.screenVolumes[index];
+    window.document.title = this.getNiceFilename(index);
 }
 
 papaya.viewer.Viewer.prototype.getCurrentScreenVolIndex = function() {
