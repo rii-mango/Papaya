@@ -846,3 +846,27 @@ papaya.viewer.Viewer.prototype.getOrientationDescription = function(index) {
 papaya.viewer.Viewer.prototype.getImageDescription = function(index) {
     return wordwrap(this.screenVolumes[index].volume.header.imageDescription.notes, 25, "<br />", true);
 }
+
+
+papaya.viewer.Viewer.prototype.setCurrentScreenVol = function(index) {
+    this.currentScreenVolume = this.screenVolumes[index];
+}
+
+papaya.viewer.Viewer.prototype.getCurrentScreenVolIndex = function() {
+    for (var ctr = 0; ctr < this.screenVolumes.length; ctr++) {
+        if (this.screenVolumes[ctr] == this.currentScreenVolume) {
+            return ctr;
+        }
+    }
+
+    return -1;
+}
+
+papaya.viewer.Viewer.prototype.isSelected = function(index) {
+    return (index == this.getCurrentScreenVolIndex());
+}
+
+papaya.viewer.Viewer.prototype.isSelectable = function(index) {
+    return (this.screenVolumes.length > 1);
+}
+

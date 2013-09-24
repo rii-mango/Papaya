@@ -82,7 +82,7 @@ papaya.ui.Toolbar.prototype.buildToolbar = function() {
 
 
 papaya.ui.Toolbar.prototype.buildMenu = function(menuData, topLevelButtonId, dataSource, modifier, right) {
-    var menu = new papaya.ui.Menu(menuData.label, menuData.icon, bind(this, this.closeAllMenus), modifier, right);
+    var menu = new papaya.ui.Menu(menuData.label, menuData.icon, bind(this, this.doAction), papayaMain.papayaViewer, modifier, right);
 
     if (topLevelButtonId) {
         menu.setMenuButton(topLevelButtonId)
@@ -162,28 +162,34 @@ papaya.ui.Toolbar.prototype.closeAllMenus = function() {
 papaya.ui.Toolbar.prototype.doAction = function(action, file) {
     this.closeAllMenus();
 
-    if (action == "OpenSampleImage") {
-        if (typeof papaya.data.SampleImage['data'] != 'undefined') {
-            papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.data, false, true, papaya.data.SampleImage.name);
-        } else if (typeof papaya.data.SampleImage['image'] != 'undefined') {
-            papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.image, true, false);
+    if (action) {
+        if (action.startsWith("ImageButton")) {
+            var imageIndex = parseInt(action.substring(action.length - 1));
+            papayaMain.papayaViewer.setCurrentScreenVol(imageIndex);
+            this.updateImageButtons();
+        } else  if (action == "OpenSampleImage") {
+            if (typeof papaya.data.SampleImage['data'] != 'undefined') {
+                papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.data, false, true, papaya.data.SampleImage.name);
+            } else if (typeof papaya.data.SampleImage['image'] != 'undefined') {
+                papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.image, true, false);
+            }
+        } else if (action == "OpenImage") {
+            papayaMain.papayaViewer.loadImage(file);
+        } else if (action.startsWith("ColorTable")) {
+            var colorTableName = action.substring(action.indexOf("-")+1, action.lastIndexOf("-"));
+            var imageIndex = action.substring(action.lastIndexOf("-")+1);
+            papayaMain.papayaViewer.screenVolumes[imageIndex].changeColorTable(colorTableName);
+            this.updateImageButtons();
+        } else if (action.startsWith("CloseAllImages")) {
+            papayaMain.papayaViewer.resetViewer();
+            this.updateImageButtons();
+        } else if (action == "Preferences") {
+            var dialog = new papaya.ui.Dialog("Preferences", papaya.ui.Toolbar.PREFERENCES_DATA, papayaMain.preferences, bind(papayaMain.preferences, papayaMain.preferences.updatePreference));
+            dialog.showDialog();
+        } else if (action.startsWith("ImageInfo")) {
+            var imageIndex = action.substring(action.lastIndexOf("-")+1);
+            var dialog = new papaya.ui.Dialog("Image Info", papaya.ui.Toolbar.IMAGE_INFO_DATA, papayaMain.papayaViewer, null, ""+imageIndex);
+            dialog.showDialog();
         }
-    } else if (action == "OpenImage") {
-        papayaMain.papayaViewer.loadImage(file);
-    } else if (action.startsWith("ColorTable")) {
-        var colorTableName = action.substring(action.indexOf("-")+1, action.lastIndexOf("-"));
-        var imageIndex = action.substring(action.lastIndexOf("-")+1);
-        papayaMain.papayaViewer.screenVolumes[imageIndex].changeColorTable(colorTableName);
-        this.updateImageButtons();
-    } else if (action.startsWith("CloseAllImages")) {
-        papayaMain.papayaViewer.resetViewer();
-        this.updateImageButtons();
-    } else if (action == "Preferences") {
-        var dialog = new papaya.ui.Dialog("Preferences", papaya.ui.Toolbar.PREFERENCES_DATA, papayaMain.preferences, bind(papayaMain.preferences, papayaMain.preferences.updatePreference));
-        dialog.showDialog();
-    } else if (action.startsWith("ImageInfo")) {
-        var imageIndex = action.substring(action.lastIndexOf("-")+1);
-        var dialog = new papaya.ui.Dialog("Image Info", papaya.ui.Toolbar.IMAGE_INFO_DATA, papayaMain.papayaViewer, null, ""+imageIndex);
-        dialog.showDialog();
     }
 }

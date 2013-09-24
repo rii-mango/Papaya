@@ -33,3 +33,9 @@ papaya.core.Coordinate.prototype.setCoordinate = function (xLoc, yLoc, zLoc, rou
         this.z = zLoc;
     }
 }
+
+
+
+papaya.core.Coordinate.prototype.isAllZeros = function () {
+    return ((this.x == 0) && (this.y == 0) && (this.z == 0));
+}

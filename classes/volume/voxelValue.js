@@ -9,6 +9,7 @@ papaya.volume = papaya.volume || {};
 papaya.volume.VoxelValue = papaya.volume.VoxelValue || function (imageData, imageType, imageDimensions, imageRange, orientation) {
     this.imageData = imageData;
     this.imageType = imageType;
+    this.imageRange = imageRange;
     this.orientation = orientation;
     this.swap16 = ((this.imageType.numBytes == 2) && this.imageType.swapped) && (this.imageType.datatype != papaya.volume.ImageType.DATATYPE_FLOAT);
     this.swap32 = ((this.imageType.numBytes == 4) && this.imageType.swapped) && (this.imageType.datatype != papaya.volume.ImageType.DATATYPE_FLOAT);
@@ -32,9 +33,9 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function(ctrX, ctrY, ctrZ, 
         ctrX = Math.round(ctrX);
         ctrY = Math.round(ctrY);
         ctrZ = Math.round(ctrZ);
-        return this.getVoxelAtOffset(this.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ));
+        return (this.getVoxelAtOffset(this.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ)) * this.imageRange.globalScale) + this.imageRange.globalIntercept;
     } else {
-        return this.getVoxelAtIndexLinear(ctrX, ctrY, ctrZ);
+        return (this.getVoxelAtIndexLinear(ctrX, ctrY, ctrZ) * this.imageRange.globalScale) + this.imageRange.globalIntercept;
     }
 }
 
