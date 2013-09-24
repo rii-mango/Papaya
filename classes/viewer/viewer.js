@@ -78,22 +78,21 @@ papaya.viewer.Viewer.KEYCODE_TOGGLE_CROSSHAIRS = 65;
 
 
 // Public methods
-papaya.viewer.Viewer.prototype.loadImage = function(location, url, encoded) {
+papaya.viewer.Viewer.prototype.loadImage = function(location, url, encoded, name) {
     if (this.screenVolumes.length == 0) {
-        this.loadBaseImage(location, url, encoded);
+        this.loadBaseImage(location, url, encoded, name);
     } else {
-        this.loadOverlay(location, url, encoded);
+        this.loadOverlay(location, url, encoded, name);
     }
 }
 
 
 
-
-papaya.viewer.Viewer.prototype.loadBaseImage = function(location, url, encoded) {
+papaya.viewer.Viewer.prototype.loadBaseImage = function(location, url, encoded, name) {
     this.volume = new papaya.volume.Volume();
 
     if (encoded) {
-        this.volume.readEncodedData(location, bind(this, this.initializeViewer));
+        this.volume.readEncodedData(location, name, bind(this, this.initializeViewer));
     } else if (url || isString(location)) {
         this.volume.readURL(location, bind(this, this.initializeViewer));
     } else {
@@ -103,13 +102,11 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function(location, url, encoded) 
 
 
 
-
-
-papaya.viewer.Viewer.prototype.loadOverlay = function(location, url, encoded) {
+papaya.viewer.Viewer.prototype.loadOverlay = function(location, url, encoded, name) {
     this.loadingVolume = new papaya.volume.Volume();
 
     if (encoded) {
-        this.loadingVolume.readEncodedData(location, bind(this, this.initializeOverlay));
+        this.loadingVolume.readEncodedData(location, name, bind(this, this.initializeOverlay));
     } else if (url || isString(location)) {
         this.loadingVolume.readURL(location, bind(this, this.initializeOverlay));
     } else {
@@ -795,4 +792,55 @@ papaya.viewer.Viewer.prototype.resetViewer = function() {
     }
 
     papayaMain.papayaToolbar.buildToolbar();
+}
+
+
+papaya.viewer.Viewer.prototype.getImageDimensionsDescription = function(index) {
+    var orientationStr = this.screenVolumes[index].volume.header.orientation.orientation;
+    var imageDims = this.screenVolumes[index].volume.header.imageDimensions;
+    return ("(" +orientationStr.charAt(0) + ", " + orientationStr.charAt(1) + ", " + orientationStr.charAt(2) + ") " + imageDims.cols + " x " + imageDims.rows + " x " + imageDims.slices);
+}
+
+
+papaya.viewer.Viewer.prototype.getVoxelDimensionsDescription= function(index) {
+    var orientationStr = this.screenVolumes[index].volume.header.orientation.orientation;
+    var voxelDims = this.screenVolumes[index].volume.header.voxelDimensions;
+    return ("(" +orientationStr.charAt(0) + ", " + orientationStr.charAt(1) + ", " + orientationStr.charAt(2) + ") " + formatNumber(voxelDims.colSize, true) + " x " + formatNumber(voxelDims.rowSize, true) + " x " + formatNumber(voxelDims.sliceSize, true));
+}
+
+
+papaya.viewer.Viewer.prototype.getFilename = function(index) {
+    return this.screenVolumes[index].volume.fileName;
+}
+
+
+papaya.viewer.Viewer.prototype.getFileLength = function(index) {
+    return getSizeString(this.screenVolumes[index].volume.fileLength);
+}
+
+
+papaya.viewer.Viewer.prototype.getByteTypeDescription = function(index) {
+    return ("" + this.screenVolumes[index].volume.header.imageType.numBytes + "-Byte " + this.screenVolumes[index].volume.header.imageType.getTypeDescription());
+}
+
+
+papaya.viewer.Viewer.prototype.getByteOrderDescription = function(index) {
+    return this.screenVolumes[index].volume.header.imageType.getOrderDescription();
+}
+
+
+papaya.viewer.Viewer.prototype.getCompressedDescription = function(index) {
+    if (this.screenVolumes[index].volume.header.imageType.compressed) {
+        return "Yes";
+    } else {
+        return "No";
+    }
+}
+
+papaya.viewer.Viewer.prototype.getOrientationDescription = function(index) {
+    return this.screenVolumes[index].volume.header.orientation.getOrientationDescription();
+}
+
+papaya.viewer.Viewer.prototype.getImageDescription = function(index) {
+    return wordwrap(this.screenVolumes[index].volume.header.imageDescription.notes, 25, "<br />");
 }

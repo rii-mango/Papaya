@@ -52,6 +52,15 @@ function isString(obj) {
 }
 
 
+function isStringEmpty(str) {
+    return (!str || 0 === str.length);
+}
+
+function isStringBlank(str) {
+    return (!str || /^\s*$/.test(str));
+}
+
+
 function signum(val) {
     return val?val<0?-1:1:0
 }
@@ -203,4 +212,53 @@ function readCookie(name) {
 
 function eraseCookie(name) {
     createCookie(name,"",-1);
+}
+
+
+function formatNumber(num, shortFormat) {
+    var val = 0;
+
+    if (isString(num)) {
+        val = parseFloat(num);
+    } else {
+        val = num;
+    }
+
+    if (shortFormat) {
+        val = val.toPrecision(5)
+    } else {
+        val = val.toPrecision(7)
+    }
+
+    return parseFloat(val);
+}
+
+
+function getSizeString(imageFileSize) {
+    var imageFileSizeString = null;
+
+    if (imageFileSize > 1048576) {
+        imageFileSizeString = formatNumber(imageFileSize / 1048576, true) + " Mb";
+    } else if (imageFileSize > 1024) {
+        imageFileSizeString = formatNumber(imageFileSize / 1024, true) + " Kb";
+    } else {
+        imageFileSizeString = imageFileSize + " Bytes";
+    }
+
+    return imageFileSizeString;
+}
+
+
+// http://james.padolsey.com/javascript/wordwrap-for-javascript/
+function wordwrap( str, width, brk, cut ) {
+    brk = brk || '\n';
+    width = width || 75;
+    cut = cut || false;
+
+    if (!str) { return str; }
+
+    var regex = '.{1,' +width+ '}(\\s|$)' + (cut ? '|.{' +width+ '}|.+$' : '|\\S+?(\\s|$)');
+
+    return str.match( RegExp(regex, 'g') ).join( brk );
+
 }

@@ -52,6 +52,24 @@ papaya.ui.Toolbar.PREFERENCES_DATA = {
     ]
 };
 
+papaya.ui.Toolbar.IMAGE_INFO_DATA = {
+    "items": [
+        {"label": "Filename:", "field": "getFilename", "readonly":"true"},
+        {"label": "File Length:", "field": "getFileLength", "readonly":"true"},
+        {"spacer": "true"},
+        {"label": "Image Dims:", "field": "getImageDimensionsDescription", "readonly":"true"},
+        {"label": "Voxel Dims:", "field": "getVoxelDimensionsDescription", "readonly":"true"},
+        {"spacer": "true"},
+        {"label": "Byte Type:", "field": "getByteTypeDescription", "readonly":"true"},
+        {"label": "Byte Order:", "field": "getByteOrderDescription", "readonly":"true"},
+        {"label": "Compressed:", "field": "getCompressedDescription", "readonly":"true"},
+        {"spacer": "true"},
+        {"label": "Orientation:", "field": "getOrientationDescription", "readonly":"true"},
+        {"spacer": "true"},
+        {"label": "Notes:", "field": "getImageDescription", "readonly":"true"}
+    ]
+};
+
 
 papaya.ui.Toolbar.prototype.buildToolbar = function() {
     $(".menuIcon").remove();
@@ -98,7 +116,7 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function(menu, itemData, topLevelBu
             } else if (itemData[ctrItems].type == "range") {
                 item = new papaya.ui.MenuItemRange(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
             } else {
-                item = new papaya.ui.MenuItem(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
+                item = new papaya.ui.MenuItem(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), modifier);
             }
 
             menu.addMenuItem(item);
@@ -126,7 +144,7 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function() {
         };
         data.menus[0].items = papaya.ui.Toolbar.IMAGE_MENU_DATA.items;
 
-        this.buildMenu(data.menus[0], null, screenVol, ctr, true);
+        this.buildMenu(data.menus[0], null, screenVol, ""+ctr, true);
     }
 }
 
@@ -137,6 +155,7 @@ papaya.ui.Toolbar.prototype.closeAllMenus = function() {
 
     $(".modalDialog").hide(100);
     $(".modalDialog").remove();
+    $("#"+PAPAYA_CONTAINER_ID).removeClass("modalBackground");
 }
 
 
@@ -145,7 +164,7 @@ papaya.ui.Toolbar.prototype.doAction = function(action, file) {
 
     if (action == "OpenSampleImage") {
         if (typeof papaya.data.SampleImage['data'] != 'undefined') {
-            papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.data, false, true);
+            papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.data, false, true, papaya.data.SampleImage.name);
         } else if (typeof papaya.data.SampleImage['image'] != 'undefined') {
             papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.image, true, false);
         }
@@ -161,6 +180,10 @@ papaya.ui.Toolbar.prototype.doAction = function(action, file) {
         this.updateImageButtons();
     } else if (action == "Preferences") {
         var dialog = new papaya.ui.Dialog("Preferences", papaya.ui.Toolbar.PREFERENCES_DATA, papayaMain.preferences, bind(papayaMain.preferences, papayaMain.preferences.updatePreference));
+        dialog.showDialog();
+    } else if (action.startsWith("ImageInfo")) {
+        var imageIndex = action.substring(action.lastIndexOf("-")+1);
+        var dialog = new papaya.ui.Dialog("Image Info", papaya.ui.Toolbar.IMAGE_INFO_DATA, papayaMain.papayaViewer, null, ""+imageIndex);
         dialog.showDialog();
     }
 }

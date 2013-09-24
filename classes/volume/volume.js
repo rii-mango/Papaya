@@ -12,6 +12,7 @@ papaya.volume = papaya.volume || {};
 papaya.volume.Volume = papaya.volume.Volume || function() {
 	// Public properties
 	this.file = null;
+    this.fileLength = 0;
     this.url = null;
 	this.fileName = null;
 	this.compressed = false;
@@ -74,7 +75,7 @@ papaya.volume.Volume.prototype.readFile = function(file, callback) {
         this.finishedLoad();
     } else {
         this.compressed = this.fileIsCompressed(this.fileName);
-        fileLength = this.file.size;
+        this.fileLength = this.file.size;
         var blob = makeSlice(this.file, 0, this.file.size);
         this.readData(this, blob);
     }
@@ -105,7 +106,7 @@ papaya.volume.Volume.prototype.readURL = function(url, callback) {
                 if (xhr.readyState == 4) {
                     if (xhr.status == 200) {
                         vol.rawData = xhr.response;
-                        fileLength = vol.rawData.byteLength;
+                        vol.fileLength = vol.rawData.byteLength;
                         vol.decompress(vol);
                     } else {
                         vol.errorMessage = "There was a problem reading that file:\n\nResponse status = " + xhr.status;
@@ -127,9 +128,9 @@ papaya.volume.Volume.prototype.readURL = function(url, callback) {
 
 
 
-papaya.volume.Volume.prototype.readEncodedData = function(data, callback) {
+papaya.volume.Volume.prototype.readEncodedData = function(data, name, callback) {
    try {
-        this.fileName = "encoded.nii.gz";
+        this.fileName = name;
         this.onFinishedRead = callback;
 
         this.headerType = this.findFileType(this.fileName);
@@ -139,7 +140,7 @@ papaya.volume.Volume.prototype.readEncodedData = function(data, callback) {
 
         vol.rawData = Base64Binary.decodeArrayBuffer(data);
 
-        fileLength = vol.rawData.length;
+        this.fileLength = vol.rawData.byteLength;
 
         vol.decompress(vol);
    } catch (err) {
@@ -296,8 +297,8 @@ papaya.volume.Volume.prototype.finishedDecompress = function(vol, data) {
  * @param {Volume} vol	the volume
  */
 papaya.volume.Volume.prototype.finishedReadData = function(vol) {
-    vol.header.readData(vol.headerType, vol.rawData);
-    vol.header.imageType.swapped = (this.header.imageType.littleEndian != isPlatformLittleEndian());
+    vol.header.readData(vol.headerType, vol.rawData, this.compressed);
+    vol.header.imageType.swapped = (vol.header.imageType.littleEndian != isPlatformLittleEndian());
 
 	if (vol.header.hasError()) {
 		vol.errorMessage = vol.header.errorMessage;
@@ -305,7 +306,7 @@ papaya.volume.Volume.prototype.finishedReadData = function(vol) {
 		return;
 	}
 
-	vol.imageData.readData(vol.header, vol.rawData, bind(this, vol.finishedLoad));
+	vol.imageData.readData(vol.header, vol.rawData, bind(vol, vol.finishedLoad));
 }
 
 

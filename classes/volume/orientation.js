@@ -364,3 +364,7 @@ papaya.volume.Orientation.prototype.isValidOrientationString = function(orientat
 
 
 
+papaya.volume.Orientation.prototype.getOrientationDescription = function() {
+    var ornt = this.orientation;
+    return ("Cols (" + ornt.charAt(0) + ornt.charAt(3) + "), Rows (" + ornt.charAt(1) + ornt.charAt(4) + "), Slices (" + ornt.charAt(2) + ornt.charAt(5) + ")");
+}

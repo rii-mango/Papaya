@@ -15,11 +15,14 @@ papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlasData, atlasImage, at
     this.numLabels = 0;
 
     if (this.atlasData) {
-        this.volume.readEncodedData(this.atlasData, bind(this, this.readFinished));
+        this.volume.readEncodedData(this.atlasData, papaya.data.TalairachAtlas.name, bind(this, this.readFinished));
     } else if (this.atlasImage) {
         this.volume.readURL(this.atlasImage, bind(this, this.readFinished));
     }
 }
+
+
+papaya.viewer.Atlas.MAX_LABELS = 4;
 
 
 
@@ -49,7 +52,7 @@ papaya.viewer.Atlas.prototype.readFinished = function () {
     this.name = this.atlasLabels.atlas.header.name;
 }
 
-papaya.viewer.Atlas.MAX_LABELS = 4;
+
 
 
 

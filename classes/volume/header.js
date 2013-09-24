@@ -14,6 +14,7 @@ papaya.volume.Header = papaya.volume.Header || function() {
 	this.fileFormat = null;
 	this.imageDimensions = null;
 	this.voxelDimensions = null;
+    this.imageDescription = null;
 	this.imageType = null;
 	this.orientation = null;
 	this.imageRange = null;
@@ -37,10 +38,10 @@ papaya.volume.Header.INVALID_IMAGE_RANGE = "Image range is not valid!";
  * @param {Numeric} headerType	The type of header to read.
  * @param {String} data	The binary string data that contains the header.
  */
-papaya.volume.Header.prototype.readData = function(headerType, data) {
+papaya.volume.Header.prototype.readData = function(headerType, data, compressed) {
 	if (headerType == papaya.volume.Volume.TYPE_NIFTI) {
 		this.fileFormat = new papaya.volume.nifti.HeaderNIFTI();
-		this.fileFormat.readData(data);
+		this.fileFormat.readData(data, compressed);
 
 		if (this.fileFormat.hasError()) {
 			this.errorMessage = this.fileFormat.errorMessage;
@@ -77,31 +78,9 @@ papaya.volume.Header.prototype.readData = function(headerType, data) {
 		if (!this.imageRange.isValid()) {
 			this.errorMessage = papaya.volume.Header.INVALID_IMAGE_RANGE;
 		}
+
+        this.imageDescription = this.fileFormat.getImageDescription();
 	}
-}
-
-
-/**
- * Display an alert with formatted header data for debugging purposes.
- */
-papaya.volume.Header.prototype.showHeader = function() {
-	var imageDims = "Image Dimensions: " + this.imageDimensions.cols + " " + this.imageDimensions.rows + " " + this.imageDimensions.slices;
-	var voxelDims = "Voxel Dimensions: " + this.voxelDimensions.colSize + " " + this.voxelDimensions.rowSize + " " + this.voxelDimensions.sliceSize;
-	var datatype = "Datatype: " + this.imageType.numBytes + "-Byte ";
-
-	if (this.imageType.datatype == papaya.volume.ImageType.DATATYPE_INTEGER_SIGNED) {
-		datatype += "Integer (Signed)";
-	} else if (this.imageType.datatype == papaya.volume.ImageType.DATATYPE_INTEGER_UNSIGNED) {
-		datatype += "Integer (Unsigned)";
-	} else if (this.imageType.datatype == papaya.volume.ImageType.DATATYPE_FLOAT) {
-		datatype += "Float";
-	} else if (this.imageType.datatype == papaya.volume.ImageType.DATATYPE_UNKNOWN) {
-		datatype += "Unknown";
-	}
-
-	var range = "Range: " + this.imageRange.displayMin + " " + this.imageRange.displayMax;
-
-	alert(imageDims + "\n" + voxelDims + "\n" + datatype + "\n" + range);
 }
 
 

@@ -13,6 +13,7 @@ papaya.volume.nifti = papaya.volume.nifti || {};
 papaya.volume.nifti.HeaderNIFTI = papaya.volume.nifti.HeaderNIFTI || function() {
 	// Public properties
 	this.nifti = null;
+    this.compressed = false;
 }
 
 
@@ -29,7 +30,8 @@ papaya.volume.nifti.HeaderNIFTI.ORIENTATION_DEFAULT = "XYZ-++";
  */
 papaya.volume.nifti.HeaderNIFTI.prototype.readData = function(data, compressed) {
 	this.nifti = new papaya.volume.nifti.NIFTI();
-	this.nifti.readData(data, compressed);
+    this.compressed = compressed;
+	this.nifti.readData(data);
 }
 
 
@@ -61,16 +63,16 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getImageType = function() {
 	var datatype = papaya.volume.ImageType.DATATYPE_UNKNOWN;
 
 	if ((this.nifti.datatypeCode == papaya.volume.nifti.NIFTI_TYPE_UINT8) || (this.nifti.datatypeCode == papaya.volume.nifti.NIFTI_TYPE_UINT16)
-	|| (this.nifti.datatypeCode == papaya.volume.nifti.NIFTI_TYPE_UINT32) || (this.nifti.datatypeCode == papaya.volume.nifti.NIFTI_TYPE_UINT64)) {
+	        || (this.nifti.datatypeCode == papaya.volume.nifti.NIFTI_TYPE_UINT32) || (this.nifti.datatypeCode == papaya.volume.nifti.NIFTI_TYPE_UINT64)) {
 		datatype = papaya.volume.ImageType.DATATYPE_INTEGER_UNSIGNED;
 	} else if ((this.nifti.datatypeCode == papaya.volume.nifti.NIFTI_TYPE_INT8) || (this.nifti.datatypeCode == papaya.volume.nifti.NIFTI_TYPE_INT16)
-	|| (this.nifti.datatypeCode == papaya.volume.nifti.NIFTI_TYPE_INT32) || (this.nifti.datatypeCode == papaya.volume.nifti.NIFTI_TYPE_INT64)) {
+	        || (this.nifti.datatypeCode == papaya.volume.nifti.NIFTI_TYPE_INT32) || (this.nifti.datatypeCode == papaya.volume.nifti.NIFTI_TYPE_INT64)) {
 		datatype = papaya.volume.ImageType.DATATYPE_INTEGER_SIGNED;
 	} else if ((this.nifti.datatypeCode == papaya.volume.nifti.NIFTI_TYPE_FLOAT32) || (this.nifti.datatypeCode == papaya.volume.nifti.NIFTI_TYPE_FLOAT64)) {
 		datatype = papaya.volume.ImageType.DATATYPE_FLOAT;
 	}
 
-	return new papaya.volume.ImageType(datatype, this.nifti.numBitsPerVoxel / 8, this.nifti.littleEndian);
+	return new papaya.volume.ImageType(datatype, this.nifti.numBitsPerVoxel / 8, this.nifti.littleEndian, this.compressed);
 }
 
 
@@ -85,7 +87,6 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrientation = function() {
 	if (this.nifti.qform_code > 0) {
 		orientation = this.getOrientationQform();
 	}
-	
 
 	if (this.nifti.sform_code > this.nifti.qform_code) {
 		orientation = this.getOrientationSform();
@@ -207,4 +208,10 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getImageRange = function() {
  */
 papaya.volume.nifti.HeaderNIFTI.prototype.hasError = function() {
 	return this.nifti.hasError();
+}
+
+
+
+papaya.volume.nifti.HeaderNIFTI.prototype.getImageDescription = function() {
+    return new papaya.volume.ImageDescription(this.nifti.description);
 }
