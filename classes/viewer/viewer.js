@@ -75,6 +75,7 @@ papaya.viewer.Viewer.KEYCODE_FORWARD_SLASH = 191;
 papaya.viewer.Viewer.KEYCODE_INCREMENT_MAIN = 71;
 papaya.viewer.Viewer.KEYCODE_DECREMENT_MAIN = 86;
 papaya.viewer.Viewer.KEYCODE_TOGGLE_CROSSHAIRS = 65;
+papaya.viewer.Viewer.MAX_OVERLAYS = 8;
 
 
 // Public methods
@@ -105,12 +106,17 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function(location, url, encoded, 
 papaya.viewer.Viewer.prototype.loadOverlay = function(location, url, encoded, name) {
     this.loadingVolume = new papaya.volume.Volume();
 
-    if (encoded) {
-        this.loadingVolume.readEncodedData(location, name, bind(this, this.initializeOverlay));
-    } else if (url || isString(location)) {
-        this.loadingVolume.readURL(location, bind(this, this.initializeOverlay));
+    if (this.screenVolumes.length > papaya.viewer.Viewer.MAX_OVERLAYS) {
+        this.loadingVolume.errorMessage = "Maximum number of overlays (" + papaya.viewer.Viewer.MAX_OVERLAYS + ") has been reached!";
+        this.initializeOverlay();
     } else {
-        this.loadingVolume.readFile(location, bind(this, this.initializeOverlay));
+        if (encoded) {
+            this.loadingVolume.readEncodedData(location, name, bind(this, this.initializeOverlay));
+        } else if (url || isString(location)) {
+            this.loadingVolume.readURL(location, bind(this, this.initializeOverlay));
+        } else {
+            this.loadingVolume.readFile(location, bind(this, this.initializeOverlay));
+        }
     }
 }
 
