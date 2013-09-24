@@ -159,8 +159,10 @@ papaya.ui.Toolbar.prototype.closeAllMenus = function() {
 }
 
 
-papaya.ui.Toolbar.prototype.doAction = function(action, file) {
-    this.closeAllMenus();
+papaya.ui.Toolbar.prototype.doAction = function(action, file, keepopen) {
+    if (!keepopen) {
+        this.closeAllMenus();
+    }
 
     if (action) {
         if (action.startsWith("ImageButton")) {

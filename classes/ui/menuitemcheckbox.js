@@ -26,21 +26,21 @@ papaya.ui.MenuItemCheckBox.CHECKBOX_SELECTED_CODE = "&#9745;";
 papaya.ui.MenuItemCheckBox.prototype.buildHTML = function (parentId) {
     var selected = this.dataSource[this.method](this.label);
 
-    var bulletSymbol = null;
+    var checked = "";
     if (selected) {
-        bulletSymbol = papaya.ui.MenuItemCheckBox.CHECKBOX_SELECTED_CODE;
-    } else {
-        bulletSymbol = papaya.ui.MenuItemCheckBox.CHECKBOX_UNSELECTED_CODE;
+        checked = "checked='checked'";
     }
 
-    var html = "<li id='" + this.id + "'><span class='bullet'>"+bulletSymbol+"</span><span class='unselectable'>" + this.label + "</span></li>";
+    var html = "<li id='" + this.id + "'><input type='radio' class='ColorTableGroup' name='ColorTableGroup' id='" + this.id + "' value='" + this.id  + "' " + checked + "><span class='unselectable'>&nbsp;" + this.label + "</span></li>";
     $("#"+parentId).append(html);
     $("#"+this.id).click(bind(this, this.doAction));
     $("#"+this.id).hover(function(){$(this).toggleClass('menuHover');});
 }
 
 
-
 papaya.ui.MenuItemCheckBox.prototype.doAction = function () {
-    this.callback(this.action);
+    $(".ColorTableGroup").removeAttr('checked');
+    $("#"+this.id+" > input")[0].checked = true;
+
+    this.callback(this.action, null, true);
 }
