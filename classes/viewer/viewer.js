@@ -538,7 +538,7 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function(ke) {
 		this.calculateScreenSliceTransforms(this);
 		this.drawViewer();
 	} else if (keyCode == papaya.viewer.Viewer.KEYCODE_CENTER) {
-        var center = new papaya.core.Coordinate(this.volume.header.imageDimensions.xDim / 2, this.volume.header.imageDimensions.yDim / 2, this.volume.header.imageDimensions.zDim / 2);
+        var center = new papaya.core.Coordinate(Math.floor(this.volume.header.imageDimensions.xDim / 2), Math.floor(this.volume.header.imageDimensions.yDim / 2), Math.floor(this.volume.header.imageDimensions.zDim / 2));
         this.gotoCoordinate(center);
     } else if (keyCode == papaya.viewer.Viewer.KEYCODE_ORIGIN) {
         this.gotoCoordinate(this.volume.header.origin);
@@ -810,7 +810,7 @@ papaya.viewer.Viewer.prototype.getVoxelDimensionsDescription= function(index) {
 
 
 papaya.viewer.Viewer.prototype.getFilename = function(index) {
-    return this.screenVolumes[index].volume.fileName;
+    return wordwrap(this.screenVolumes[index].volume.fileName, 25, "<br />", true);
 }
 
 
@@ -837,10 +837,12 @@ papaya.viewer.Viewer.prototype.getCompressedDescription = function(index) {
     }
 }
 
+
 papaya.viewer.Viewer.prototype.getOrientationDescription = function(index) {
     return this.screenVolumes[index].volume.header.orientation.getOrientationDescription();
 }
 
+
 papaya.viewer.Viewer.prototype.getImageDescription = function(index) {
-    return wordwrap(this.screenVolumes[index].volume.header.imageDescription.notes, 25, "<br />");
+    return wordwrap(this.screenVolumes[index].volume.header.imageDescription.notes, 25, "<br />", true);
 }

@@ -67,8 +67,6 @@ papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc) {
         zLoc = papayaMain.papayaViewer.currentCoord.z;
     }
 
-    var val = papayaMain.papayaViewer.getCurrentValueAt(xLoc, yLoc, zLoc);
-
     // coordinate labels
     this.context.fillStyle = "white";
     this.context.font = papaya.viewer.Display.TEXT_CORRD_VALUE_SIZE+"px Arial";
@@ -96,6 +94,7 @@ papaya.viewer.Display.prototype.drawDisplay = function(xLoc, yLoc, zLoc) {
 
 
     // image value
+    var val = papayaMain.papayaViewer.getCurrentValueAt(xLoc, yLoc, zLoc);
     var valueLoc = labelLoc + 1.5*papaya.viewer.Display.TEXT_SPACING;
     this.context.fillStyle = "white";
     this.context.font = papaya.viewer.Display.TEXT_VALUE_SIZE+"px Arial";

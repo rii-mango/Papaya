@@ -73,9 +73,6 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function(slice, force) {
         this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
 
         for (var ctr = 0; ctr < this.screenVolumes.length; ctr++) {
-            var scale = this.screenVolumes[ctr].volume.header.imageRange.globalScale;
-            var intercept = this.screenVolumes[ctr].volume.header.imageRange.globalIntercept;
-
             for (var ctrY = 0; ctrY < this.yDim; ctrY++) {
                 for (var ctrX = 0; ctrX < this.xDim; ctrX++) {
                     var value = 0;
@@ -99,7 +96,6 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function(slice, force) {
                         }
                     }
 
-                    value = (value * scale) + intercept;  // image value
                     var orig = value;
                     if (value <= this.screenVolumes[ctr].screenMin) {
                         value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN;  // screen value
