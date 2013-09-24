@@ -23,7 +23,7 @@ papaya.ui.MenuItemRange = papaya.ui.MenuItemRange || function (label, action, ca
 
 papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
     var range = this.dataSource[this.method]();
-    var html = "<li id='" + this.id + "'><span class='unselectable'>" + this.label + ": &nbsp;<input type='text' size='7' id='" + this.minId + "' value='" + range[0] + "' /> to <input type='text' size='7' id='" + this.maxId + "' value='" + range[1] + "' /></span></li>";
+    var html = "<li id='" + this.id + "'><span class='unselectable'>" + this.label + ": &nbsp;<input type='text' size='7' style='width:60px' id='" + this.minId + "' value='" + range[0] + "' /> to <input type='text' size='7' style='width:60px' id='" + this.maxId + "' value='" + range[1] + "' /></span></li>";
     $("#"+parentId).append(html);
     $("#"+this.id).hover(function(){$(this).toggleClass('menuHover');});
 
