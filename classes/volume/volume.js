@@ -44,7 +44,7 @@ papaya.volume.Volume.prototype.fileIsCompressed = function(filename) {
 
 papaya.volume.Volume.prototype.readFile = function(file, callback) {
 	this.file = file;
-	this.fileName = new String(file.name);
+	this.fileName = file.name;
 	this.onFinishedRead = callback;
 
 	this.headerType = this.findFileType(this.fileName);
@@ -64,8 +64,9 @@ papaya.volume.Volume.prototype.readFile = function(file, callback) {
 
 
 papaya.volume.Volume.prototype.readURL = function(url, callback) {
+    var vol = null, supported, xhr;
+
     try {
-        var vol, supported, xhr;
 
         this.url = url;
         this.fileName = url.substr(url.lastIndexOf("/")+1, url.length);
@@ -100,7 +101,7 @@ papaya.volume.Volume.prototype.readURL = function(url, callback) {
             vol.finishedLoad();
         }
     } catch (err) {
-        if (vol) {
+        if (vol != null) {
             vol.errorMessage = "There was a problem reading that file:\n\n" + err.message;
             vol.finishedLoad();
         }
@@ -111,14 +112,16 @@ papaya.volume.Volume.prototype.readURL = function(url, callback) {
 
 
 papaya.volume.Volume.prototype.readEncodedData = function(data, name, callback) {
-   try {
+    var vol = null;
+
+    try {
         this.fileName = name;
         this.onFinishedRead = callback;
 
         this.headerType = this.findFileType(this.fileName);
         this.compressed = this.fileIsCompressed(this.fileName);
 
-        var vol = this;
+        vol = this;
 
         vol.rawData = Base64Binary.decodeArrayBuffer(data);
 

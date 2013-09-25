@@ -48,9 +48,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtOffset = function(offset) {
 
 
 papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function(xLoc, yLoc, zLoc) {
-    var value, fracX, fracY, fracZ, tempVal1, tempVal2;
-    var offset, xInt, yInt, zInt;
-    var interpolateX, interpolateY, interpolateZ;
+    var value, fracX, fracY, fracZ, tempVal1, tempVal2, offset, xInt, yInt, zInt, interpolateX, interpolateY, interpolateZ, ctrX, ctrY;
     value = tempVal1 = tempVal2 = 0;
 
     xInt = Math.floor(xLoc);
@@ -80,8 +78,8 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function(xLoc, yLoc, 
     }
 
     if (interpolateX && interpolateY && interpolateZ) {
-        for (var ctrX = 0; ctrX < 2; ctrX++) {
-            for (var ctrY = 0; ctrY < 2; ctrY++) {
+        for (ctrX = 0; ctrX < 2; ctrX++) {
+            for (ctrY = 0; ctrY < 2; ctrY++) {
                 if (((ctrX == 1) && (xInt == (this.xDim - 1))) || ((ctrY == 1) && (yInt == (this.yDim - 1)))) {
                     offset = -1;
                 } else {
@@ -110,7 +108,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function(xLoc, yLoc, 
 
         value = (this.interpSecondPass[0] * (1 - fracX)) + (this.interpSecondPass[1] * fracX);
     } else if (interpolateX && interpolateY && !interpolateZ) {
-        for (var ctrX = 0; ctrX < 2; ctrX++) {
+        for (ctrX = 0; ctrX < 2; ctrX++) {
             if ((ctrX == 1) && (xInt == (this.xDim - 1))) {
                 offset = -1;
             } else {
@@ -136,7 +134,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function(xLoc, yLoc, 
 
         value = (this.interpSecondPass[0] * (1 - fracX)) + (this.interpSecondPass[1] * fracX);
     } else if (interpolateX && !interpolateY && interpolateZ) {
-        for (var ctrX = 0; ctrX < 2; ctrX++) {
+        for (ctrX = 0; ctrX < 2; ctrX++) {
             if ((ctrX == 1) && (xInt == (this.xDim - 1))) {
                 offset = -1;
             } else {
@@ -161,7 +159,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function(xLoc, yLoc, 
 
         value = (this.interpSecondPass[0] * (1 - fracX)) + (this.interpSecondPass[1] * fracX);
     } else if (!interpolateX && interpolateY && interpolateZ) {
-        for (var ctrY = 0; ctrY < 2; ctrY++) {
+        for (ctrY = 0; ctrY < 2; ctrY++) {
             if ((ctrY == 1) && (yInt == (this.yDim - 1))) {
                 offset = -1;
             } else {
