@@ -55,7 +55,6 @@ papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL = 3;
 papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX = 255;
 papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN = 0;
 
-
 // Public methods
 
 /**
@@ -80,11 +79,11 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function(slice, force) {
 
                     if (ctr == 0) {
                         if (this.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(ctrX, ctrY, slice, false);
+                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(ctrX, ctrY, slice, true);
                         } else if (this.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(ctrX, slice, ctrY, false);
+                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(ctrX, slice, ctrY, true);
                         } else if (this.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(slice, ctrX, ctrY, false);
+                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(slice, ctrX, ctrY, true);
                         }
                     } else {
                         if (this.sliceDirection == papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {

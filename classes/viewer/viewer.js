@@ -758,7 +758,7 @@ papaya.viewer.Viewer.prototype.getCurrentValueAt = function(ctrX, ctrY, ctrZ) {
         return this.currentScreenVolume.volume.getVoxelAtCoordinate((ctrX - this.volume.header.origin.x) * this.volume.header.voxelDimensions.xSize,
                 (this.volume.header.origin.y - ctrY) * this.volume.header.voxelDimensions.ySize, (this.volume.header.origin.z - ctrZ) * this.volume.header.voxelDimensions.zSize, true);
     } else {
-        return value = this.currentScreenVolume.volume.getVoxelAtIndex(ctrX, ctrY, ctrZ, true);
+        return this.currentScreenVolume.volume.getVoxelAtIndex(ctrX, ctrY, ctrZ, true);
     }
 }
 
