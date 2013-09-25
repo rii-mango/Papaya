@@ -1,16 +1,10 @@
 
-/**
- * @classDescription	The Volume class represents a 3-D image volume dataset.  It contains namely a header and imageData objects.
- */
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
 
-/**
- * Constructor.
- */
+
 papaya.volume.Volume = papaya.volume.Volume || function() {
-	// Public properties
 	this.file = null;
     this.fileLength = 0;
     this.url = null;
@@ -24,45 +18,30 @@ papaya.volume.Volume = papaya.volume.Volume || function() {
 	this.errorMessage = null;
     this.transform = null;
     this.isLoaded = false;
-}
+};
 
 
-// Public constants
 papaya.volume.Volume.TYPE_UNKNOWN = 0;
 papaya.volume.Volume.TYPE_NIFTI = 1;
 
 
-// Public methods
 
-/**
- * Find the type of header file.
- * @param {String} filename
- * @return {Numberic}	the header type code
- */
 papaya.volume.Volume.prototype.findFileType = function(filename) {
 	if (filename.indexOf(".nii") != -1) {
 		return papaya.volume.Volume.TYPE_NIFTI;
 	} else {
 		return papaya.volume.Volume.TYPE_UNKNOWN;
 	}
-}
+};
 
 
-/**
- * Determine if the file is compressed.
- * @param {String} filename
- * @return {Boolean}	true if the file is compressed, false otherwise
- */
+
 papaya.volume.Volume.prototype.fileIsCompressed = function(filename) {
 	return (filename.indexOf(".gz") != -1);
-}
+};
 
 
-/**
- * Read image file.
- * @param {File} file	The file to read.
- * @param {Function} callback	The function to call after reading is complete.
- */
+
 papaya.volume.Volume.prototype.readFile = function(file, callback) {
 	this.file = file;
 	this.fileName = new String(file.name);
@@ -79,13 +58,15 @@ papaya.volume.Volume.prototype.readFile = function(file, callback) {
         var blob = makeSlice(this.file, 0, this.file.size);
         this.readData(this, blob);
     }
-}
+};
 
 
 
 
 papaya.volume.Volume.prototype.readURL = function(url, callback) {
     try {
+        var vol, supported, xhr;
+
         this.url = url;
         this.fileName = url.substr(url.lastIndexOf("/")+1, url.length);
         this.onFinishedRead = callback;
@@ -93,12 +74,11 @@ papaya.volume.Volume.prototype.readURL = function(url, callback) {
         this.headerType = this.findFileType(this.fileName);
         this.compressed = this.fileIsCompressed(this.fileName);
 
-        var vol = this;
+        vol = this;
 
-        var supported = typeof new XMLHttpRequest().responseType === 'string';
+        supported = typeof new XMLHttpRequest().responseType === 'string';
         if (supported) {
-            var xhr = new XMLHttpRequest();
-
+            xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
             xhr.responseType = 'arraybuffer';
 
@@ -120,10 +100,12 @@ papaya.volume.Volume.prototype.readURL = function(url, callback) {
             vol.finishedLoad();
         }
     } catch (err) {
-        vol.errorMessage = "There was a problem reading that file:\n\n" + err.message;
-        vol.finishedLoad();
+        if (vol) {
+            vol.errorMessage = "There was a problem reading that file:\n\n" + err.message;
+            vol.finishedLoad();
+        }
     }
-}
+};
 
 
 
@@ -144,100 +126,67 @@ papaya.volume.Volume.prototype.readEncodedData = function(data, name, callback) 
 
         vol.decompress(vol);
    } catch (err) {
-       vol.errorMessage = "There was a problem reading that file:\n\n" + err.message;
-       vol.finishedLoad();
+       if (vol) {
+           vol.errorMessage = "There was a problem reading that file:\n\n" + err.message;
+           vol.finishedLoad();
+       }
    }
-}
+};
 
 
 
-/**
- * Return a voxel value at a specified coordinate index.
- * @param {Numeric} ctrX	The X location.
- * @param {Numeric} ctrY	The Y location.
- * @param {Numeric} ctrZ	The Z location.
- * @return {Numeric}	The value at that coordinate index.
- */
+
 papaya.volume.Volume.prototype.getVoxelAtIndex = function(ctrX, ctrY, ctrZ, useNN) {
 	return this.transform.getVoxelAtIndex(ctrX, ctrY, ctrZ, useNN);
-}
+};
 
 
 
 
 papaya.volume.Volume.prototype.getVoxelAtCoordinate = function(xLoc, yLoc, zLoc, useNN) {
     return this.transform.getVoxelAtCoordinate(xLoc, yLoc, zLoc, useNN);
-}
+};
 
 
 
-/**
- * Test whether this object is in this.errorMessage state.
- * @param {Boolean}	True if this object is in this.errorMessage state.
- */
+
 papaya.volume.Volume.prototype.hasError = function() {
 	return (this.errorMessage != null);
-}
+};
 
 
-/**
- * Returns the X dimension.
- * @return {Numeric}	the X dim
- */
+
 papaya.volume.Volume.prototype.getXDim = function() {
 	return this.header.imageDimensions.xDim;
-}
+};
 
 
-/**
- * Returns the Y dimension.
- * @return {Numeric}	the Y dim
- */
 papaya.volume.Volume.prototype.getYDim = function() {
 	return this.header.imageDimensions.yDim;
-}
+};
 
 
-/**
- * Returns the Z dimension.
- * @return {Numeric}	the Z dim
- */
 papaya.volume.Volume.prototype.getZDim = function() {
 	return this.header.imageDimensions.zDim;
-}
+};
 
 
-/**
- * Returns the size of the voxel is X.
- * @return {Numeric}	the size of the voxel is X
- */
 papaya.volume.Volume.prototype.getXSize = function() {
 	return this.header.voxelDimensions.xSize;
-}
+};
 
 
-/**
- * Returns the size of the voxel is Y.
- * @return {Numeric}	the size of the voxel is Y
- */
 papaya.volume.Volume.prototype.getYSize = function() {
 	return this.header.voxelDimensions.ySize;
-}
+};
 
 
-/**
- * Returns the size of the voxel is Z.
- * @return {Numeric}	the size of the voxel is Z
- */
+
 papaya.volume.Volume.prototype.getZSize = function() {
 	return this.header.voxelDimensions.zSize;
-}
+};
 
 
-/**
- * Read file data into volume.
- * @param {Volume} vol	the volume
- */
 papaya.volume.Volume.prototype.readData = function(vol, blob) {
     try {
         var reader = new FileReader();
@@ -259,13 +208,10 @@ papaya.volume.Volume.prototype.readData = function(vol, blob) {
         vol.errorMessage = "There was a problem reading that file:\n\n" + err.message;
         vol.finishedLoad();
    }
-}
+};
 
 
-/**
- * Check if the data is compressed and decompress if so.
- * @param {Volume} vol	the volume
- */
+
 papaya.volume.Volume.prototype.decompress = function(vol) {
 	if (vol.compressed) {
 		var gunzip = new Gunzip();
@@ -278,24 +224,16 @@ papaya.volume.Volume.prototype.decompress = function(vol) {
 	} else {
 		setTimeout(function(){vol.finishedReadData(vol)}, 0);
 	}
-}
+};
 
 
-/**
- * Callback to run after decompressing data.
- * @param {Volume} vol	the volume
- * @param {ArrayBuffer} data	the inflated buffer
- */
 papaya.volume.Volume.prototype.finishedDecompress = function(vol, data) {
 	vol.rawData = data;
 	setTimeout(function(){vol.finishedReadData(vol)}, 0);
-}
+};
 
 
-/**
- * Callback to run after reading data.
- * @param {Volume} vol	the volume
- */
+
 papaya.volume.Volume.prototype.finishedReadData = function(vol) {
     vol.header.readData(vol.headerType, vol.rawData, this.compressed);
     vol.header.imageType.swapped = (vol.header.imageType.littleEndian != isPlatformLittleEndian());
@@ -307,12 +245,9 @@ papaya.volume.Volume.prototype.finishedReadData = function(vol) {
 	}
 
 	vol.imageData.readData(vol.header, vol.rawData, bind(vol, vol.finishedLoad));
-}
+};
 
 
-/**
- * Callback to run after loading data is complete.
- */
 papaya.volume.Volume.prototype.finishedLoad = function() {
     if (this.onFinishedRead) {
         if (!this.hasError()) {
@@ -323,4 +258,4 @@ papaya.volume.Volume.prototype.finishedLoad = function() {
         this.rawData = null;
 		this.onFinishedRead(this);
 	}
-}
+};

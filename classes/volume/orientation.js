@@ -1,35 +1,23 @@
-/**
- * @classDescription	Contains special methods that deal with the image orientation.
- */
+
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
-/**
- * Constructor.
- * @param {String} str	The data orientation of the image (e.g., XYZ+--).
- */
+
 papaya.volume.Orientation = papaya.volume.Orientation || function(str) {
 	this.orientation = str;
 	this.orientMat;
 	this.xIncrement, this.yIncrement, this.zIncrement;
 }
 
-// Public constants
 papaya.volume.Orientation.DEFAULT = "XYZ+--";
 
-// Public methods
 
-/**
- * Converts a coordinate index to a voxel offset.
- * @param {Numeric} xLoc	the X location
- * @param {Numeric} yLoc	the Y location
- * @param {Numeric} zLoc	the Z location
- * @return {Numeric}	the corresponding offset into the voxel array
- */
+
 papaya.volume.Orientation.prototype.convertIndexToOffset = function(xLoc, yLoc, zLoc) {
-	var locX = round((xLoc * this.orientMat[0][0]) + (yLoc * this.orientMat[0][1]) + (zLoc * this.orientMat[0][2]) + (this.orientMat[0][3]));
-	var locY = round((xLoc * this.orientMat[1][0]) + (yLoc * this.orientMat[1][1]) + (zLoc * this.orientMat[1][2]) + (this.orientMat[1][3]));
-	var locZ = round((xLoc * this.orientMat[2][0]) + (yLoc * this.orientMat[2][1]) + (zLoc * this.orientMat[2][2]) + (this.orientMat[2][3]));
+    var locX, locY, locZ;
+	locX = round((xLoc * this.orientMat[0][0]) + (yLoc * this.orientMat[0][1]) + (zLoc * this.orientMat[0][2]) + (this.orientMat[0][3]));
+	locY = round((xLoc * this.orientMat[1][0]) + (yLoc * this.orientMat[1][1]) + (zLoc * this.orientMat[1][2]) + (this.orientMat[1][3]));
+	locZ = round((xLoc * this.orientMat[2][0]) + (yLoc * this.orientMat[2][1]) + (zLoc * this.orientMat[2][2]) + (this.orientMat[2][3]));
 
 	return (locX * this.xIncrement) + (locY * this.yIncrement) + (locZ * this.zIncrement);
 }
@@ -44,23 +32,17 @@ papaya.volume.Orientation.prototype.convertCoordinate = function(coord, coordCon
 }
 
 
-/**
- * Populate ImageDimensions and VoxelDimensions objects with XYZ data.
- * @param {ImageDimensions} imageDimensions	the ImageDimensions object
- * @param {VoxelDimensions} voxelDimensions	the VoxelDimensions object
- */
 papaya.volume.Orientation.prototype.createInfo = function(imageDimensions, voxelDimensions) {
-	var xMultiply, yMultiply, zMultiply, xSubtract, ySubtract, zSubtract;
-	var colOrientation, rowOrientation, sliceOrientation;
+	var xMultiply, yMultiply, zMultiply, xSubtract, ySubtract, zSubtract, colOrientation, rowOrientation, sliceOrientation, numCols, numRows, numSlices, numVoxelsInSlice, colSize, rowSize, sliceSize;
 
-	var numCols = imageDimensions.cols;
-	var numRows = imageDimensions.rows;
-	var numSlices = imageDimensions.slices;
-	var numVoxelsInSlice = imageDimensions.getNumVoxelsSlice();
+	numCols = imageDimensions.cols;
+	numRows = imageDimensions.rows;
+	numSlices = imageDimensions.slices;
+	numVoxelsInSlice = imageDimensions.getNumVoxelsSlice();
 
-	var colSize = voxelDimensions.colSize;
-	var rowSize = voxelDimensions.rowSize;
-	var sliceSize = voxelDimensions.sliceSize;
+	colSize = voxelDimensions.colSize;
+	rowSize = voxelDimensions.rowSize;
+	sliceSize = voxelDimensions.sliceSize;
 
 	if (this.orientation.charAt(3) == '+') {
 		colOrientation = true;
@@ -328,11 +310,13 @@ papaya.volume.Orientation.prototype.isValid = function() {
  * @return {Boolean}	true if state is valid
  */
 papaya.volume.Orientation.prototype.isValidOrientationString = function(orientationStr) {
+    var temp;
+
 	if (orientationStr == null || (orientationStr.length != 6)) {
 		return false;
 	}
 
-	var temp = orientationStr.toUpperCase().indexOf("X");
+	temp = orientationStr.toUpperCase().indexOf("X");
 	if (temp == -1 || temp > 2 || (orientationStr.toUpperCase().lastIndexOf("X") != temp)) {
 		return false;
 	}
