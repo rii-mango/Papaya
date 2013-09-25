@@ -42,16 +42,9 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function(ctrX, ctrY, ctrZ, 
 
 
 papaya.volume.VoxelValue.prototype.getVoxelAtOffset = function(offset) {
-    var val = this.imageData.data[offset];
-
-    if (this.swap16) {
-        return ((val & 0xFF) << 8) | ((val >> 8) & 0xFF);
-    } else if (this.swap32) {
-        return ((val & 0xFF) << 24) | ((val & 0xFF00) << 8) | ((val >> 8) & 0xFF00) | ((val >> 24) & 0xFF);
-    } else {
-        return val;
-    }
+    return this.checkSwap(this.imageData.data[offset]);
 }
+
 
 
 papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function(xLoc, yLoc, zLoc) {
@@ -96,13 +89,13 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function(xLoc, yLoc, 
                 }
 
                 if (offset != -1) {
-                    tempVal1 = (((this.imageData.data[offset]) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracZ);
+                    tempVal1 = (((this.checkSwap(this.imageData.data[offset])) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracZ);
 
                     if (zInt == (this.zDim - 1)) {
                         tempVal2 = 0;
                     } else {
                         offset = this.orientation.convertIndexToOffset(xInt + ctrX, yInt + ctrY, zInt + 1);
-                        tempVal2 = (((this.imageData.data[offset]) * this.dataScaleSlope) + this.dataScaleIntercept) * fracZ;
+                        tempVal2 = (((this.checkSwap(this.imageData.data[offset])) * this.dataScaleSlope) + this.dataScaleIntercept) * fracZ;
                     }
 
                     this.interpFirstPass[ctrX][ctrY] = tempVal1 + tempVal2;
@@ -126,13 +119,13 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function(xLoc, yLoc, 
 
             if (offset != -1) {
                 offsetBytes1 = offset * 4;
-                tempVal1 = (((this.imageData.data[offset]) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracY);
+                tempVal1 = (((this.checkSwap(this.imageData.data[offset])) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracY);
 
                 if (yInt == (this.yDim - 1)) {
                     tempVal2 = 0;
                 } else {
                     offset = this.orientation.convertIndexToOffset(xInt + ctrX, yInt + 1, zInt);
-                    tempVal2 = (((this.imageData.data[offset]) * this.dataScaleSlope) + this.dataScaleIntercept) * fracY;
+                    tempVal2 = (((this.checkSwap(this.imageData.data[offset])) * this.dataScaleSlope) + this.dataScaleIntercept) * fracY;
                 }
 
                 this.interpSecondPass[ctrX] = tempVal1 + tempVal2;
@@ -151,13 +144,13 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function(xLoc, yLoc, 
             }
 
             if (offset != -1) {
-                tempVal1 = (((this.imageData.data[offset]) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracZ);
+                tempVal1 = (((this.checkSwap(this.imageData.data[offset])) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracZ);
 
                 if (zInt == (this.zDim - 1)) {
                     tempVal2 = 0;
                 } else {
                     offset = this.orientation.convertIndexToOffset(xInt + ctrX, yInt, zInt + 1);
-                    tempVal2 = (((this.imageData.data[offset]) * this.dataScaleSlope) + this.dataScaleIntercept) * fracZ;
+                    tempVal2 = (((this.checkSwap(this.imageData.data[offset])) * this.dataScaleSlope) + this.dataScaleIntercept) * fracZ;
                 }
 
                 this.interpSecondPass[ctrX] = tempVal1 + tempVal2;
@@ -176,13 +169,13 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function(xLoc, yLoc, 
             }
 
             if (offset != -1) {
-                tempVal1 = (((this.imageData.data[offset]) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracZ);
+                tempVal1 = (((this.checkSwap(this.imageData.data[offset])) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracZ);
 
                 if (zInt == (this.zDim - 1)) {
                     tempVal2 = 0;
                 } else {
                     offset = this.orientation.convertIndexToOffset(xInt, yInt + ctrY, zInt + 1);
-                    tempVal2 = (((this.imageData.data[offset]) * this.dataScaleSlope) + this.dataScaleIntercept) * fracZ;
+                    tempVal2 = (((this.checkSwap(this.imageData.data[offset])) * this.dataScaleSlope) + this.dataScaleIntercept) * fracZ;
                 }
 
                 this.interpSecondPass[ctrY] = tempVal1 + tempVal2;
@@ -194,37 +187,37 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function(xLoc, yLoc, 
         value = (this.interpSecondPass[0] * (1 - fracY)) + (this.interpSecondPass[1] * fracY);
     } else if (!interpolateX && !interpolateY && interpolateZ) {
         offset = this.orientation.convertIndexToOffset(xInt, yInt, zInt);
-        tempVal1 = (((this.imageData.data[offset]) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracZ);
+        tempVal1 = (((this.checkSwap(this.imageData.data[offset])) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracZ);
 
         if (zInt == (this.zDim - 1)) {
             tempVal2 = 0;
         } else {
             offset = this.orientation.convertIndexToOffset(xInt, yInt, zInt + 1);
-            tempVal2 = (((this.imageData.data[offset]) * this.dataScaleSlope) + this.dataScaleIntercept) * fracZ;
+            tempVal2 = (((this.checkSwap(this.imageData.data[offset])) * this.dataScaleSlope) + this.dataScaleIntercept) * fracZ;
         }
 
         value = tempVal1 + tempVal2;
     } else if (!interpolateX && interpolateY && !interpolateZ) {
         offset = this.orientation.convertIndexToOffset(xInt, yInt, zInt);
-        tempVal1 = (((this.imageData.data[offset]) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracY);
+        tempVal1 = (((this.checkSwap(this.imageData.data[offset])) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracY);
 
         if (yInt == (this.yDim - 1)) {
             tempVal2 = 0;
         } else {
             offset = this.orientation.convertIndexToOffset(xInt, yInt + 1, zInt);
-            tempVal2 = (((this.imageData.data[offset]) * this.dataScaleSlope) + this.dataScaleIntercept) * fracY;
+            tempVal2 = (((this.checkSwap(this.imageData.data[offset])) * this.dataScaleSlope) + this.dataScaleIntercept) * fracY;
         }
 
         value = tempVal1 + tempVal2;
     } else if (interpolateX && !interpolateY && !interpolateZ) {
         offset = this.orientation.convertIndexToOffset(xInt, yInt, zInt);
-        tempVal1 = (((this.imageData.data[offset]) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracX);
+        tempVal1 = (((this.checkSwap(this.imageData.data[offset])) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracX);
 
         if (xInt == (this.xDim - 1)) {
             tempVal2 = 0;
         } else {
             offset = this.orientation.convertIndexToOffset(xInt + 1, yInt, zInt);
-            tempVal2 = (((this.imageData.data[offset]) * this.dataScaleSlope) + this.dataScaleIntercept) * fracX;
+            tempVal2 = (((this.checkSwap(this.imageData.data[offset])) * this.dataScaleSlope) + this.dataScaleIntercept) * fracX;
         }
 
         value = tempVal1 + tempVal2;
@@ -232,6 +225,16 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function(xLoc, yLoc, 
         value = this.getVoxelAtOffset(this.orientation.convertIndexToOffset(xLoc, yLoc, zLoc));
     }
 
-
     return value;
+}
+
+
+papaya.volume.VoxelValue.prototype.checkSwap = function(val) {
+    if (this.swap16) {
+        return ((val & 0xFF) << 8) | ((val >> 8) & 0xFF);
+    } else if (this.swap32) {
+        return ((val & 0xFF) << 24) | ((val & 0xFF00) << 8) | ((val >> 8) & 0xFF00) | ((val >> 24) & 0xFF);
+    } else {
+        return val;
+    }
 }

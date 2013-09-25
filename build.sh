@@ -53,10 +53,12 @@ fi
 
 
 # build JavaScript
+echo "Minifying JavaScript..."
 cat build.properties jquery/jquery.js classes/constants.js $DATA_INCLUDES classes/core/*.js classes/volume/*.js classes/volume/nifti/*.js classes/viewer/*.js classes/ui/*.js classes/main.js classes/utilities/*.js | java -jar lib/yuicompressor.jar --type js -o build/papaya.js
 
 
 # build CSS
+echo "Minifying CSS..."
 cat css/main.css | java -jar lib/yuicompressor.jar --type css -o build/papaya.css
 
 

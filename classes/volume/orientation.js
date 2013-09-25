@@ -8,9 +8,7 @@ papaya.volume = papaya.volume || {};
  * Constructor.
  * @param {String} str	The data orientation of the image (e.g., XYZ+--).
  */
-papaya.volume.Orientation = papaya.volume.Orientation ||
-function(str) {
-	// Public properties
+papaya.volume.Orientation = papaya.volume.Orientation || function(str) {
 	this.orientation = str;
 	this.orientMat;
 	this.xIncrement, this.yIncrement, this.zIncrement;
@@ -29,11 +27,11 @@ papaya.volume.Orientation.DEFAULT = "XYZ+--";
  * @return {Numeric}	the corresponding offset into the voxel array
  */
 papaya.volume.Orientation.prototype.convertIndexToOffset = function(xLoc, yLoc, zLoc) {
-	xLoc = round((xLoc * this.orientMat[0][0]) + (yLoc * this.orientMat[0][1]) + (zLoc * this.orientMat[0][2]) + (this.orientMat[0][3]));
-	yLoc = round((xLoc * this.orientMat[1][0]) + (yLoc * this.orientMat[1][1]) + (zLoc * this.orientMat[1][2]) + (this.orientMat[1][3]));
-	zLoc = round((xLoc * this.orientMat[2][0]) + (yLoc * this.orientMat[2][1]) + (zLoc * this.orientMat[2][2]) + (this.orientMat[2][3]));
+	var locX = round((xLoc * this.orientMat[0][0]) + (yLoc * this.orientMat[0][1]) + (zLoc * this.orientMat[0][2]) + (this.orientMat[0][3]));
+	var locY = round((xLoc * this.orientMat[1][0]) + (yLoc * this.orientMat[1][1]) + (zLoc * this.orientMat[1][2]) + (this.orientMat[1][3]));
+	var locZ = round((xLoc * this.orientMat[2][0]) + (yLoc * this.orientMat[2][1]) + (zLoc * this.orientMat[2][2]) + (this.orientMat[2][3]));
 
-	return (xLoc * this.xIncrement) + (yLoc * this.yIncrement) + (zLoc * this.zIncrement);
+	return (locX * this.xIncrement) + (locY * this.yIncrement) + (locZ * this.zIncrement);
 }
 
 
@@ -319,10 +317,12 @@ papaya.volume.Orientation.prototype.createInfo = function(imageDimensions, voxel
 	this.orientMat[3][3] = 1;
 }
 
+
 papaya.volume.Orientation.prototype.isValid = function() {
 	return papaya.volume.Orientation.prototype.isValidOrientationString(this.orientation);
-
 }
+
+
 /**
  * Tests wheter this object has a valid state.
  * @return {Boolean}	true if state is valid
@@ -366,5 +366,5 @@ papaya.volume.Orientation.prototype.isValidOrientationString = function(orientat
 
 papaya.volume.Orientation.prototype.getOrientationDescription = function() {
     var ornt = this.orientation;
-    return ("Columns (" + ornt.charAt(0) + ornt.charAt(3) + "), Rows (" + ornt.charAt(1) + this.ornt.char)
+    return ("Cols (" + ornt.charAt(0) + ornt.charAt(3) + "), Rows (" + ornt.charAt(1) + ornt.charAt(4) + "), Slices (" + ornt.charAt(2) + ornt.charAt(5) + ")")
 }
