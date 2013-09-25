@@ -10,4 +10,4 @@ papaya.volume.ImageDescription = papaya.volume.ImageDescription || function (not
     if (!isStringBlank(notes)) {
         this.notes = notes;
     }
-}
+};

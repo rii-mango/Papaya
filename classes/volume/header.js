@@ -1,14 +1,9 @@
 
-/**
- * @classDescription	The Header class stores volume metadata.
- */
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
 
-/**
- * Constructor.
- */
+
 papaya.volume.Header = papaya.volume.Header || function() {
 	// Public properties
 	this.fileFormat = null;
@@ -20,10 +15,9 @@ papaya.volume.Header = papaya.volume.Header || function() {
 	this.imageRange = null;
 	this.errorMessage = null;
     this.origin = null;
-}
+};
 
 
-// Public constants
 papaya.volume.Header.ERROR_UNRECOGNIZED_FORMAT = "This format is not recognized!";
 papaya.volume.Header.INVALID_IMAGE_DIMENSIONS = "Image dimensions are not valid!";
 papaya.volume.Header.INVALID_VOXEL_DIMENSIONS = "Voxel dimensions are not valid!";
@@ -31,13 +25,7 @@ papaya.volume.Header.INVALID_DATATYPE = "Datatype is not valid or not supported!
 papaya.volume.Header.INVALID_IMAGE_RANGE = "Image range is not valid!";
 
 
-// Public methods
 
-/**
- * Detect image header type, read header and store metadata.
- * @param {Numeric} headerType	The type of header to read.
- * @param {String} data	The binary string data that contains the header.
- */
 papaya.volume.Header.prototype.readData = function(headerType, data, compressed) {
 	if (headerType == papaya.volume.Volume.TYPE_NIFTI) {
 		this.fileFormat = new papaya.volume.nifti.HeaderNIFTI();
@@ -81,13 +69,10 @@ papaya.volume.Header.prototype.readData = function(headerType, data, compressed)
 
         this.imageDescription = this.fileFormat.getImageDescription();
 	}
-}
+};
 
 
-/**
- * Test whether this object is in errorMessage state.
- * @param {Boolean}	True if this object is in errorMessage state.
- */
+
 papaya.volume.Header.prototype.hasError = function() {
 	return (this.errorMessage != null);
-}
+};

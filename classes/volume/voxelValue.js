@@ -3,9 +3,7 @@ var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
 
-/**
- * Constructor.
- */
+
 papaya.volume.VoxelValue = papaya.volume.VoxelValue || function (imageData, imageType, imageDimensions, imageRange, orientation) {
     this.imageData = imageData;
     this.imageType = imageType;
@@ -24,7 +22,7 @@ papaya.volume.VoxelValue = papaya.volume.VoxelValue || function (imageData, imag
     this.dataScaleIntercept = imageRange.globalIntercept;
     this.interpFirstPass = [[0, 0], [0, 0]];
     this.interpSecondPass = [0, 0];
-}
+};
 
 
 
@@ -37,13 +35,13 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function(ctrX, ctrY, ctrZ, 
     } else {
         return (this.getVoxelAtIndexLinear(ctrX, ctrY, ctrZ) * this.imageRange.globalScale) + this.imageRange.globalIntercept;
     }
-}
+};
 
 
 
 papaya.volume.VoxelValue.prototype.getVoxelAtOffset = function(offset) {
     return this.checkSwap(this.imageData.data[offset]);
-}
+};
 
 
 
@@ -224,7 +222,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function(xLoc, yLoc, 
     }
 
     return value;
-}
+};
 
 
 papaya.volume.VoxelValue.prototype.checkSwap = function(val) {
@@ -235,4 +233,4 @@ papaya.volume.VoxelValue.prototype.checkSwap = function(val) {
     } else {
         return val;
     }
-}
+};
