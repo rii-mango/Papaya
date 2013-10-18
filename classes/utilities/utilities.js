@@ -67,9 +67,9 @@ function signum(val) {
 
 
 // http://stackoverflow.com/questions/2294703/multidimensional-array-cloning-using-javascript
-Array.prototype.clone = function() {
+Array.prototype.clone = function () {
     var arr = this.slice(0);
-    for( var i = 0; i < this.length; i++ ) {
+    for (var i = 0; i < this.length; i++) {
         if( this[i].clone ) {
             //recursion
             arr[i] = this[i].clone();
@@ -261,4 +261,20 @@ function wordwrap( str, width, brk, cut ) {
 
     return str.match( RegExp(regex, 'g') ).join( brk );
 
+}
+
+
+// adapted from: http://stackoverflow.com/questions/979975/how-to-get-the-value-from-url-parameter
+function getQueryParams(params) {
+    var tokens, qs, re = /[?&]?([^=]+)=([^&]*)/g;
+
+    if (document.location.href.indexOf("?") != -1) {
+        qs = document.location.href.substring(document.location.href.indexOf("?") + 1);
+        qs = qs.split("+").join(" ");
+
+        while (tokens = re.exec(qs)) {
+            params[decodeURIComponent(tokens[1])]
+                = decodeURIComponent(tokens[2]);
+        }
+    }
 }
