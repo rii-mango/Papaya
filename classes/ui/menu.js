@@ -42,7 +42,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
         html = "<span id='" + this.buttonId + "' class='unselectable menuIcon imageButton' " + (this.isRight ? " style='float:right'" : "") + ">" +
                 "<img style='width:" + papaya.viewer.ColorTable.ICON_SIZE + "px; height:" + papaya.viewer.ColorTable.ICON_SIZE + "px; vertical-align:bottom; ";
 
-        if (this.dataSource.isSelected(this.modifier) && this.dataSource.isSelectable()) {
+        if (this.dataSource.isSelected(parseInt(this.modifier, 10)) && this.dataSource.isSelectable()) {
             html += "border:2px outset #FF5A3D;";
         } else {
             html += "border:2px outset lightgray;";
@@ -66,7 +66,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
         buttonImgHtml.hover(
             function () {$(this).css({"border-color": "#FF5A3D"}); },
             bind(menu, function () {
-                if (menu.dataSource.isSelected(menu.modifier) && menu.dataSource.isSelectable()) {
+                if (menu.dataSource.isSelected(parseInt(menu.modifier, 10)) && menu.dataSource.isSelectable()) {
                     $("#" + menu.buttonId + " > img").css({"border-color": "#FF5A3D"});
                 } else {
                     $("#" + menu.buttonId + " > img").css({"border-color": "lightgray"});

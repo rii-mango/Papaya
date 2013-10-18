@@ -52,7 +52,7 @@ function isString(obj) {
 
 
 function isStringBlank(str) {
-    return (!str || /^\s*$/.test(str));
+    return ($.trim(str).length === 0);
 }
 
 
