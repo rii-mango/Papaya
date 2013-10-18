@@ -1,5 +1,5 @@
 
-/*jslint browser: true*/
+/*jslint browser: true, node: true */
 /*global $, alert, PAPAYA_CONTAINER_ID, PAPAYA_VIEWER_ID, PAPAYA_TOOLBAR_ID, PAPAYA_DISPLAY_ID, PAPAYA_MINIMUM_SIZE,
 PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP, checkForBrowserCompatibility, getQueryParams */
 
@@ -14,9 +14,11 @@ papaya.viewer = papaya.viewer || {};
 
 
 function resetComponents() {
-    $("#" + PAPAYA_CONTAINER_ID).css({height: "auto"});
-    $("#" + PAPAYA_CONTAINER_ID).css({width: "auto"});
-    $("#" + PAPAYA_CONTAINER_ID).css({margin: "auto"});
+    var containerHtml = $("#" + PAPAYA_CONTAINER_ID);
+
+    containerHtml.css({height: "auto"});
+    containerHtml.css({width: "auto"});
+    containerHtml.css({margin: "auto"});
 
     $("#" + PAPAYA_VIEWER_ID).removeClass("checkForJS");
     $('head').append("<style>div#papayaViewer:before{ content:'' }</style>");
@@ -52,10 +54,11 @@ function getViewerDimensions() {
     var numAdditionalSections = 1,
         parentHeight = PAPAYA_MINIMUM_SIZE,
         parentWidth = PAPAYA_MINIMUM_SIZE,
-        height = 0,
-        width = 0,
-        widthPadding = 0,
-        dims = null;
+        containerHtml = $("#" + PAPAYA_CONTAINER_ID),
+        height,
+        width,
+        widthPadding,
+        dims;
 
     if (isShowingDisplay()) {
         numAdditionalSections += 1;
@@ -65,22 +68,22 @@ function getViewerDimensions() {
         numAdditionalSections += 1;
     }
 
-    if ($("#" + PAPAYA_CONTAINER_ID).parent().get(0).tagName.toLowerCase() === "div") {
-        parentHeight = $("#" + PAPAYA_CONTAINER_ID).parent().height();
-        parentWidth = $("#" + PAPAYA_CONTAINER_ID).parent().width();
-    } else if ($("#" + PAPAYA_CONTAINER_ID).parent().get(0).tagName.toLowerCase() === "body") {
+    if (containerHtml.parent().get(0).tagName.toLowerCase() === "div") {
+        parentHeight = containerHtml.parent().height();
+        parentWidth = containerHtml.parent().width();
+    } else if (containerHtml.parent().get(0).tagName.toLowerCase() === "body") {
         parentHeight = window.innerHeight;
         parentWidth = window.innerWidth;
     }
 
     if (parentHeight < PAPAYA_MINIMUM_SIZE) {
         parentHeight = PAPAYA_MINIMUM_SIZE;
-        $("#" + PAPAYA_CONTAINER_ID).parent().height(PAPAYA_MINIMUM_SIZE);
+        containerHtml.parent().height(PAPAYA_MINIMUM_SIZE);
     }
 
     if (parentWidth < PAPAYA_MINIMUM_SIZE) {
         parentWidth = PAPAYA_MINIMUM_SIZE;
-        $("#" + PAPAYA_CONTAINER_ID).parent().width(PAPAYA_MINIMUM_SIZE);
+        containerHtml.parent().width(PAPAYA_MINIMUM_SIZE);
     }
 
     height = parentHeight - PAPAYA_SECTION_HEIGHT * numAdditionalSections;
@@ -104,23 +107,26 @@ function getViewerDimensions() {
 function resizeViewerComponents(resize) {
     papayaMain.papayaToolbar.closeAllMenus();
 
-    var dims = getViewerDimensions();
+    var dims = getViewerDimensions(),
+        toolbarHtml = $("#" + PAPAYA_TOOLBAR_ID),
+        viewerHtml = $("#" + PAPAYA_VIEWER_ID),
+        displayHtml = $("#" + PAPAYA_DISPLAY_ID);
 
-    $("#" + PAPAYA_TOOLBAR_ID).css({paddingLeft: dims.widthPadding + "px"});
-    $("#" + PAPAYA_TOOLBAR_ID).css({paddingBottom: PAPAYA_SPACING + "px"});
-    $("#" + PAPAYA_TOOLBAR_ID).css({width: dims.width + "px"});
-    $("#" + PAPAYA_TOOLBAR_ID).css({height: papaya.ui.Toolbar.SIZE + "px"});
+    toolbarHtml.css({paddingLeft: dims.widthPadding + "px"});
+    toolbarHtml.css({paddingBottom: PAPAYA_SPACING + "px"});
+    toolbarHtml.css({width: dims.width + "px"});
+    toolbarHtml.css({height: papaya.ui.Toolbar.SIZE + "px"});
 
-    $("#" + PAPAYA_VIEWER_ID).css({height: "100%"});
-    $("#" + PAPAYA_VIEWER_ID).css({width: dims.width + "px"});
-    $("#" + PAPAYA_VIEWER_ID).css({paddingLeft: dims.widthPadding + "px"});
+    viewerHtml.css({height: "100%"});
+    viewerHtml.css({width: dims.width + "px"});
+    viewerHtml.css({paddingLeft: dims.widthPadding + "px"});
 
     if (resize) {
         papayaMain.papayaViewer.resizeViewer(dims);
     }
 
-    $("#" + PAPAYA_DISPLAY_ID).css({height: PAPAYA_SECTION_HEIGHT + "px"});
-    $("#" + PAPAYA_DISPLAY_ID).css({paddingLeft: dims.widthPadding + "px"});
+    displayHtml.css({height: PAPAYA_SECTION_HEIGHT + "px"});
+    displayHtml.css({paddingLeft: dims.widthPadding + "px"});
     papayaMain.papayaDisplay.canvas.width = dims.width;
 
     $("#" + PAPAYA_CONTAINER_ID).css({paddingTop: dims.heightPadding + "px"});
@@ -136,11 +142,15 @@ function resizeViewerComponents(resize) {
 
 
 papaya.Main.prototype.buildViewer = function () {
+    var viewerHtml,
+        dims;
+
     if (isShowingViewer()) {
-        $("#" + PAPAYA_VIEWER_ID).html("");  // remove noscript message
-        var dims = getViewerDimensions();
+        viewerHtml = $("#" + PAPAYA_VIEWER_ID);
+        viewerHtml.html("");  // remove noscript message
+        dims = getViewerDimensions();
         this.papayaViewer = new papaya.viewer.Viewer(dims.width, dims.height);
-        $("#" + PAPAYA_VIEWER_ID).append($(this.papayaViewer.canvas));
+        viewerHtml.append($(this.papayaViewer.canvas));
     } else {
         alert("You are missing a viewer div!");
     }
@@ -166,7 +176,9 @@ papaya.Main.prototype.buildToolbar = function () {
 
 
 papaya.Main.prototype.setUpDnD = function () {
-    $("#" + PAPAYA_CONTAINER_ID)[0].ondragover = function () {
+    var containerHtml = $("#" + PAPAYA_CONTAINER_ID);
+
+    containerHtml[0].ondragover = function () {
         papayaMain.papayaViewer.draggingOver = true;
         if (!papayaMain.papayaViewer.initialized) {
             papayaMain.papayaViewer.drawEmptyViewer();
@@ -175,7 +187,7 @@ papaya.Main.prototype.setUpDnD = function () {
         return false;
     };
 
-    $("#" + PAPAYA_CONTAINER_ID)[0].ondragleave = function () {
+    containerHtml[0].ondragleave = function () {
         papayaMain.papayaViewer.draggingOver = false;
         if (!papayaMain.papayaViewer.initialized) {
             papayaMain.papayaViewer.drawEmptyViewer();
@@ -183,7 +195,7 @@ papaya.Main.prototype.setUpDnD = function () {
         return false;
     };
 
-    $("#" + PAPAYA_CONTAINER_ID)[0].ondragend = function () {
+    containerHtml[0].ondragend = function () {
         papayaMain.papayaViewer.draggingOver = false;
         if (!papayaMain.papayaViewer.initialized) {
             papayaMain.papayaViewer.drawEmptyViewer();
@@ -191,7 +203,7 @@ papaya.Main.prototype.setUpDnD = function () {
         return false;
     };
 
-    $("#" + PAPAYA_CONTAINER_ID)[0].ondrop = function (e) {
+    containerHtml[0].ondrop = function (e) {
         e.preventDefault();
 
         if (e.dataTransfer.files.length > 1) {
@@ -208,14 +220,15 @@ papaya.Main.prototype.setUpDnD = function () {
 
 function main() {
     var message = checkForBrowserCompatibility(),
-        loadUrl = null,
-        loadEncoded = null,
-        params = null;
+        viewerHtml = $("#" + PAPAYA_VIEWER_ID),
+        loadUrl,
+        loadEncoded,
+        params;
 
     if (message !== null) {
-        $("#" + PAPAYA_VIEWER_ID).removeClass("checkForJS");
-        $("#" + PAPAYA_VIEWER_ID).addClass("checkBrowser");
-        $("#" + PAPAYA_VIEWER_ID).html("<div class='checkBrowserMessage'>" + message + "</div>");
+        viewerHtml.removeClass("checkForJS");
+        viewerHtml.addClass("checkBrowser");
+        viewerHtml.html("<div class='checkBrowserMessage'>" + message + "</div>");
     } else {
         papayaMain = new papaya.Main();
         papayaMain.preferences = new papaya.viewer.Preferences();
@@ -225,8 +238,8 @@ function main() {
         papayaMain.buildToolbar();
         papayaMain.setUpDnD();
 
-        loadUrl = $("#" + PAPAYA_VIEWER_ID).data("load-url");
-        loadEncoded = $("#" + PAPAYA_VIEWER_ID).data("load-encoded");
+        loadUrl = viewerHtml.data("load-url");
+        loadEncoded = viewerHtml.data("load-encoded");
         params = getQueryParams(papayaParams);
 
         if (loadUrl) {
