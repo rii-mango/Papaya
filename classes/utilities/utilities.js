@@ -1,33 +1,28 @@
 
-/**
- * Utility functions.
+
+/*jslint browser: true, node: true */
+/*global $, Ext, CanvasRenderingContext2D, getKeyCode, OSName */
+
+"use strict";
 
 
-function bind(scope, fn) {
-    return function () {
-        return fn.apply(scope, arguments);
-    };
-}
- */
-
-function bind (scope, fn, args, appendArgs) {
+function bind(scope, fn, args, appendArgs) {
     if (arguments.length === 2) {
-        return function() {
+        return function () {
             return fn.apply(scope, arguments);
-        }
+        };
     }
 
     var method = fn,
         slice = Array.prototype.slice;
 
-    return function() {
+    return function () {
         var callArgs = args || arguments;
 
         if (appendArgs === true) {
             callArgs = slice.call(arguments, 0);
             callArgs = callArgs.concat(args);
-        }
-        else if (typeof appendArgs == 'number') {
+        } else if (typeof appendArgs === 'number') {
             callArgs = slice.call(arguments, 0); // copy arguments first
             Ext.Array.insert(callArgs, appendArgs, args);
         }
@@ -37,40 +32,44 @@ function bind (scope, fn, args, appendArgs) {
 }
 
 
+
 function round(val) {
-	return (0.5 + val) | 0;
+    return (0.5 + val) | 0;
 }
+
 
 
 function floor(val) {
-	return val | 0;
+    return val | 0;
 }
+
 
 
 function isString(obj) {
-    return (typeof obj == 'string' || obj instanceof String);
+    return (typeof obj === "string" || obj instanceof String);
 }
 
 
-function isStringEmpty(str) {
-    return (!str || 0 === str.length);
-}
 
 function isStringBlank(str) {
     return (!str || /^\s*$/.test(str));
 }
 
 
+
 function signum(val) {
-    return val?val<0?-1:1:0
+    return val ? val < 0 ? -1 : 1 : 0;
 }
+
 
 
 // http://stackoverflow.com/questions/2294703/multidimensional-array-cloning-using-javascript
 Array.prototype.clone = function () {
-    var arr = this.slice(0);
-    for (var i = 0; i < this.length; i++) {
-        if( this[i].clone ) {
+    var arr, i;
+
+    arr = this.slice(0);
+    for (i = 0; i < this.length; i += 1) {
+        if (this[i].clone) {
             //recursion
             arr[i] = this[i].clone();
         }
@@ -79,140 +78,142 @@ Array.prototype.clone = function () {
 };
 
 
-if (typeof String.prototype.startsWith != 'function') {
-    String.prototype.startsWith = function (str){
-        return this.indexOf(str) == 0;
+
+if (typeof String.prototype.startsWith !== 'function') {
+    String.prototype.startsWith = function (str) {
+        return this.indexOf(str) === 0;
     };
 }
 
 
-// adapted from: http://stackoverflow.com/questions/158070/jquery-how-to-position-one-element-relative-to-another
-var showMenu = function(viewer, el, menu, right) {
-    //get the position of the placeholder element
-    var posV = $(viewer.canvas).offset();
-    var pos = $(el).offset();
-    var eWidth = $(el).outerWidth();
-    var eHeight = $(el).outerHeight();
-    var mWidth = $(menu).outerWidth();
-    var left = pos.left + (right ? ((-1 * mWidth) + eWidth) : 5) +  "px";
 
-    var top = (posV.top) + "px";
+// adapted from: http://stackoverflow.com/questions/158070/jquery-how-to-position-one-element-relative-to-another
+var showMenu = function (viewer, el, menu, right) {
+    var posV, pos, eWidth, mWidth, left, top;
+
+    //get the position of the placeholder element
+    posV = $(viewer.canvas).offset();
+    pos = $(el).offset();
+    eWidth = $(el).outerWidth();
+    mWidth = $(menu).outerWidth();
+    left = pos.left + (right ? ((-1 * mWidth) + eWidth) : 5) +  "px";
+
+    top = (posV.top) + "px";
     //show the menu directly over the placeholder
-    $(menu).css( {
+    $(menu).css({
         position: 'absolute',
         zIndex: 100,
         left: left,
         top: top
-    } );
+    });
 
     $(menu).hide().fadeIn(200);
 };
 
 
-var showModalDialog = function(viewer, dialog) {
-    var viewerOffset = $(viewer.canvas).offset();
-    var viewerWidth = $(viewer.canvas).outerWidth();
-    var viewerHeight = $(viewer.canvas).outerHeight();
 
-    var dialogWidth = $(dialog).outerWidth();
-    var dialogHeight = $(dialog).outerHeight();
+var showModalDialog = function (viewer, dialog) {
+    var viewerOffset, viewerWidth, viewerHeight, dialogWidth, dialogHeight, left, top;
 
-    var left = viewerOffset.left + (viewerWidth / 2) - (dialogWidth / 2) + "px";
-    var top = viewerOffset.top + (viewerHeight / 2) - (dialogHeight / 2) + "px";
+    viewerOffset = $(viewer.canvas).offset();
+    viewerWidth = $(viewer.canvas).outerWidth();
+    viewerHeight = $(viewer.canvas).outerHeight();
 
-    $(dialog).css( {
+    dialogWidth = $(dialog).outerWidth();
+    dialogHeight = $(dialog).outerHeight();
+
+    left = viewerOffset.left + (viewerWidth / 2) - (dialogWidth / 2) + "px";
+    top = viewerOffset.top + (viewerHeight / 2) - (dialogHeight / 2) + "px";
+
+    $(dialog).css({
         position: 'absolute',
         zIndex: 100,
         left: left,
         top: top
-    } );
+    });
 
     $(dialog).hide().fadeIn(200);
 };
 
 
-// http://stackoverflow.com/questions/15397036/drawing-dashed-lines-on-html5-canvas
-CanvasRenderingContext2D.prototype.dashedLine = function (x1, y1, x2, y2, dashLen) {
-    if (dashLen == undefined) dashLen = 2;
-    this.moveTo(x1, y1);
-    var dX = x2 - x1;
-    var dY = y2 - y1;
-    var dashes = Math.floor(Math.sqrt(dX * dX + dY * dY) / dashLen);
-    var dashX = dX / dashes;
-    var dashY = dY / dashes;
-
-    var q = 0;
-    while (q++ < dashes) {
-        x1 += dashX;
-        y1 += dashY;
-        this[q % 2 == 0 ? 'moveTo' : 'lineTo'](x1, y1);
-    }
-    this[q % 2 == 0 ? 'moveTo' : 'lineTo'](x2, y2);
-};
-
 
 function isControlKey(ke) {
     var keyCode = getKeyCode(ke);
 
-    if ((OSName == "MacOS") && (
-            (keyCode == 91) || // left command key
-            (keyCode == 93) || // right command key
-            (keyCode == 224))) { // FF command key code
-        return true;
-    } else if ((OSName != "MacOS") && (keyCode == 17)) {
+    if ((OSName === "MacOS") && (
+            (keyCode === 91) || // left command key
+            (keyCode === 93) || // right command key
+            (keyCode === 224)
+        )) { // FF command key code
         return true;
     }
 
-    return false;
+    return ((OSName !== "MacOS") && (keyCode === 17));
 }
 
 
-function fullyQualifiedVariableExists(dat) {
-    var obj = window[dat[0]];
 
-    for (var ctr = 1; ctr < dat.length; ctr++) {
-        if (typeof obj === "undefined") {
+function fullyQualifiedVariableExists(dat) {
+    var obj, ctr;
+
+    obj = window[dat[0]];
+
+    for (ctr = 1; ctr < dat.length; ctr += 1) {
+        if (obj === undefined) {
             return false;
         }
 
         obj = obj[dat[ctr]];
     }
 
-    if (typeof obj === "undefined") {
-        return false;
-    } else {
-        return true;
-    }
+    return (!(obj === undefined));
 }
+
 
 
 // http://www.quirksmode.org/js/cookies.html
-function createCookie(name,value,days) {
+function createCookie(name, value, days) {
+    var date, expires;
+
     if (days) {
-        var date = new Date();
-        date.setTime(date.getTime()+(days*24*60*60*1000));
-        var expires = "; expires="+date.toGMTString();
+        date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toGMTString();
+    } else {
+        expires = "";
     }
-    else var expires = "";
-    document.cookie = name+"="+value+expires+"; path=/";
+
+    document.cookie = name + "=" + value + expires + "; path=/";
 }
 
 
+
 function readCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    var nameEQ, ca, i, c;
+
+    nameEQ = name + "=";
+    ca = document.cookie.split(';');
+
+    for (i = 0; i < ca.length; i += 1) {
+        c = ca[i];
+        while (c.charAt(0) === ' ') {
+            c = c.substring(1, c.length);
+        }
+
+        if (c.indexOf(nameEQ) === 0) {
+            return c.substring(nameEQ.length, c.length);
+        }
     }
+
     return null;
 }
 
 
-function eraseCookie(name) {
-    createCookie(name,"",-1);
-}
+
+//function eraseCookie(name) {
+//    createCookie(name, "", -1);
+//}
+
 
 
 function formatNumber(num, shortFormat) {
@@ -225,13 +226,14 @@ function formatNumber(num, shortFormat) {
     }
 
     if (shortFormat) {
-        val = val.toPrecision(5)
+        val = val.toPrecision(5);
     } else {
-        val = val.toPrecision(7)
+        val = val.toPrecision(7);
     }
 
     return parseFloat(val);
 }
+
 
 
 function getSizeString(imageFileSize) {
@@ -249,26 +251,28 @@ function getSizeString(imageFileSize) {
 }
 
 
+
 // http://james.padolsey.com/javascript/wordwrap-for-javascript/
-function wordwrap( str, width, brk, cut ) {
+function wordwrap(str, width, brk, cut) {
     brk = brk || '\n';
     width = width || 75;
     cut = cut || false;
 
     if (!str) { return str; }
 
-    var regex = '.{1,' +width+ '}(\\s|$)' + (cut ? '|.{' +width+ '}|.+$' : '|\\S+?(\\s|$)');
+    var regex = '.{1,' + width + '}(\\s|$)' + (cut ? '|.{' + width + '}|.+$' : '|\\S+?(\\s|$)');
 
-    return str.match( RegExp(regex, 'g') ).join( brk );
+    return str.match(new RegExp(regex, 'g')).join(brk);
 
 }
 
 
 // adapted from: http://stackoverflow.com/questions/979975/how-to-get-the-value-from-url-parameter
 function getQueryParams(params) {
+    /*jslint regexp: true */
     var tokens, qs, re = /[?&]?([^=]+)=([^&]*)/g;
 
-    if (document.location.href.indexOf("?") != -1) {
+    if (document.location.href.indexOf("?") !== -1) {
         qs = document.location.href.substring(document.location.href.indexOf("?") + 1);
         qs = qs.split("+").join(" ");
 
