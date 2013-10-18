@@ -771,6 +771,7 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
 };
 
 
+
 papaya.viewer.Viewer.prototype.getImageDimensionsDescription = function (index) {
     var orientationStr, imageDims;
 
@@ -781,6 +782,7 @@ papaya.viewer.Viewer.prototype.getImageDimensionsDescription = function (index) 
 };
 
 
+
 papaya.viewer.Viewer.prototype.getVoxelDimensionsDescription = function (index) {
     var orientationStr, voxelDims;
 
@@ -789,6 +791,7 @@ papaya.viewer.Viewer.prototype.getVoxelDimensionsDescription = function (index) 
 
     return ("(" + orientationStr.charAt(0) + ", " + orientationStr.charAt(1) + ", " + orientationStr.charAt(2) + ") " + formatNumber(voxelDims.colSize, true) + " x " + formatNumber(voxelDims.rowSize, true) + " x " + formatNumber(voxelDims.sliceSize, true));
 };
+
 
 
 papaya.viewer.Viewer.prototype.getFilename = function (index) {
@@ -808,14 +811,17 @@ papaya.viewer.Viewer.prototype.getFileLength = function (index) {
 };
 
 
+
 papaya.viewer.Viewer.prototype.getByteTypeDescription = function (index) {
     return (this.screenVolumes[index].volume.header.imageType.numBytes + "-Byte " + this.screenVolumes[index].volume.header.imageType.getTypeDescription());
 };
 
 
+
 papaya.viewer.Viewer.prototype.getByteOrderDescription = function (index) {
     return this.screenVolumes[index].volume.header.imageType.getOrderDescription();
 };
+
 
 
 papaya.viewer.Viewer.prototype.getCompressedDescription = function (index) {
