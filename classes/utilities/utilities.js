@@ -1,5 +1,4 @@
 
-
 /*jslint browser: true, node: true */
 /*global $, Ext, CanvasRenderingContext2D, getKeyCode, OSName */
 
