@@ -1,4 +1,9 @@
 
+/*jslint browser: true, node: true */
+/*global */
+
+"use strict";
+
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
@@ -14,6 +19,7 @@ papaya.volume.ImageDimensions = papaya.volume.ImageDimensions || function (cols,
     this.timepoints = timepoints;
     this.offset = 0;  // offset of image data from start of file
 };
+
 
 
 papaya.volume.ImageDimensions.prototype.getNumVoxelsVolume = function () {

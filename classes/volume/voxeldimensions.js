@@ -1,4 +1,9 @@
 
+/*jslint browser: true, node: true */
+/*global */
+
+"use strict";
+
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
