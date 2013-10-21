@@ -527,10 +527,14 @@ papaya.volume.nifti.NIFTI.prototype.nifti_mat33_determ = function (R) {
 
 
 papaya.volume.nifti.NIFTI.prototype.getStringAt = function (data, start, end) {
-    var str = "", ctr;
+    var str = "", ctr, ch;
 
     for (ctr = start; ctr < end; ctr += 1) {
-        str += String.fromCharCode(data.getUint8(ctr));
+        ch = data.getUint8(ctr);
+
+        if (ch !== 0) {
+            str += String.fromCharCode(ch);
+        }
     }
 
     return str;
