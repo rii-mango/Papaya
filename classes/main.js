@@ -1,7 +1,7 @@
 
 /*jslint browser: true, node: true */
 /*global $, alert, PAPAYA_CONTAINER_ID, PAPAYA_VIEWER_ID, PAPAYA_TOOLBAR_ID, PAPAYA_DISPLAY_ID, PAPAYA_MINIMUM_SIZE,
-PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP, checkForBrowserCompatibility, getQueryParams */
+PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP, checkForBrowserCompatibility, getQueryParams, deref */
 
 "use strict";
 
@@ -222,8 +222,9 @@ function main() {
     var message = checkForBrowserCompatibility(),
         viewerHtml = $("#" + PAPAYA_VIEWER_ID),
         loadUrl,
-        loadEncoded,
-        params;
+        loadEncodedData,
+        loadEncodedName,
+        loadParams;
 
     if (message !== null) {
         viewerHtml.removeClass("checkForJS");
@@ -239,15 +240,22 @@ function main() {
         papayaMain.setUpDnD();
 
         loadUrl = viewerHtml.data("load-url");
-        loadEncoded = viewerHtml.data("load-encoded");
-        params = getQueryParams(papayaParams);
+        loadEncodedData = viewerHtml.data("load-encoded-data");
+        loadParams = viewerHtml.data("load-params");
+
+        if (loadParams) {
+            papayaParams = $.extend(papayaParams, window[loadParams]);
+        }
+
+        getQueryParams(papayaParams);
 
         if (loadUrl) {
             papayaMain.papayaViewer.loadImage(loadUrl, true, false);
-        } else if (loadEncoded) {
-            papayaMain.papayaViewer.loadImage(window[loadEncoded], false, true);
-        } else if (params && params.image) {
-            papayaMain.papayaViewer.loadImage("./" + params.image, true, false);
+        } else if (loadEncodedData) {
+            loadEncodedName = viewerHtml.data("load-encoded-name");
+            papayaMain.papayaViewer.loadImage(deref(loadEncodedData), false, true, loadEncodedName);
+        } else if (papayaParams.image) {
+            papayaMain.papayaViewer.loadImage("./" + papayaParams.image, true, false);
         }
 
         resizeViewerComponents(false);

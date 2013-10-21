@@ -64,13 +64,17 @@ cat css/main.css | java -jar lib/yuicompressor.jar --type css -o build/papaya.cs
 
 # build example HTML
 cp examples/index.html build/.
+cp examples/basic.html build/.
+cp examples/load-encoded.html build/.
+cp examples/load-params.html build/.
+cp examples/load-url.html build/.
 sed -i '.bak' "s/papaya.js/papaya.js?version=${PAPAYA_VERSION_ID}\&build=${PAPAYA_BUILD_NUM}/g" build/index.html
 sed -i '.bak' "s/papaya.css/papaya.css?version=${PAPAYA_VERSION_ID}\&build=${PAPAYA_BUILD_NUM}/g" build/index.html
 rm build/index.html.bak
 
 
 # clean up
-rm  build/data/*.js
+rm build/data/*.js
 find build -depth -empty -delete
 
 

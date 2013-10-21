@@ -266,6 +266,7 @@ function wordwrap(str, width, brk, cut) {
 }
 
 
+
 // adapted from: http://stackoverflow.com/questions/979975/how-to-get-the-value-from-url-parameter
 function getQueryParams(params) {
     /*jslint regexp: true */
@@ -280,4 +281,24 @@ function getQueryParams(params) {
                 = decodeURIComponent(tokens[2]);
         }
     }
+}
+
+
+
+// adapted from: http://stackoverflow.com/questions/724857/how-to-find-javascript-variable-by-its-name
+function deref(name) {
+    var obj, M;
+
+    obj = name.replace(/(^[' "]+|[" ']+$)/g, '');
+    M = obj.match(/(^[\w\$]+(\.[\w\$]+)*)/);
+
+    if (M) {
+        M = M[1].split('.');
+        obj = window[M.shift()];
+        while (obj && M.length) {
+            obj = obj[M.shift()];
+        }
+    }
+
+    return obj || name;
 }
