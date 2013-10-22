@@ -76,6 +76,16 @@ papaya.viewer.Viewer.KEYCODE_INCREMENT_MAIN = 71;
 papaya.viewer.Viewer.KEYCODE_DECREMENT_MAIN = 86;
 papaya.viewer.Viewer.KEYCODE_TOGGLE_CROSSHAIRS = 65;
 papaya.viewer.Viewer.MAX_OVERLAYS = 8;
+papaya.viewer.Viewer.ORIENTATION_MARKER_SUPERIOR = "S";
+papaya.viewer.Viewer.ORIENTATION_MARKER_INFERIOR = "I";
+papaya.viewer.Viewer.ORIENTATION_MARKER_ANTERIOR = "A";
+papaya.viewer.Viewer.ORIENTATION_MARKER_POSTERIOR = "P";
+papaya.viewer.Viewer.ORIENTATION_MARKER_LEFT = "L";
+papaya.viewer.Viewer.ORIENTATION_MARKER_RIGHT = "R";
+papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE = 16;
+papaya.viewer.Viewer.ORIENTATION_CERTAINTY_UNKNOWN_COLOR = "red";
+papaya.viewer.Viewer.ORIENTATION_CERTAINTY_LOW_COLOR = "yellow";
+papaya.viewer.Viewer.ORIENTATION_CERTAINTY_HIGH_COLOR = "white";
 
 
 
@@ -342,7 +352,8 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
         this.context.font = fontSize + "px Arial";
         locY = this.canvas.height - 20;
 
-        text = "Papaya v" + (PAPAYA_VERSION_ID || "Dev") + " (build " + (PAPAYA_BUILD_NUM !== undefined ? PAPAYA_BUILD_NUM : "Dev") + ")";
+        text = "Papaya v" + (PAPAYA_VERSION_ID || "Dev")
+            + " (build " + (PAPAYA_BUILD_NUM !== undefined ? PAPAYA_BUILD_NUM : "Dev") + ")";
         metrics = this.context.measureText(text);
         textWidth = metrics.width;
         this.context.fillText(text, this.canvas.width - textWidth - 20, locY);
@@ -352,7 +363,8 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
 
 
 papaya.viewer.Viewer.prototype.drawViewer = function (force) {
-    var xLoc, yStart, yEnd, yLoc, xStart, xEnd;
+    var xLoc, yStart, yEnd, yLoc, xStart, xEnd, orientWidth, orientHeight, orientStartX, orientEndX, orientMidX,
+        orientStartY, orientEndY, orientMidY, orientSlice, metrics, textWidth, top, bottom, left, right, temp;
 
     if (!this.initialized) {
         this.drawEmptyViewer();
@@ -371,19 +383,85 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force) {
 
     // draw screen slices
     this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.fillRect(this.mainImage.screenOffsetX, this.mainImage.screenOffsetY, this.mainImage.screenDim, this.mainImage.screenDim);
-    this.context.setTransform(this.mainImage.xformScaleX, 0, 0, this.mainImage.xformScaleY, this.mainImage.xformTransX, this.mainImage.xformTransY);
+    this.context.fillRect(this.mainImage.screenOffsetX, this.mainImage.screenOffsetY, this.mainImage.screenDim,
+        this.mainImage.screenDim);
+    this.context.setTransform(this.mainImage.xformScaleX, 0, 0, this.mainImage.xformScaleY, this.mainImage.xformTransX,
+        this.mainImage.xformTransY);
     this.context.drawImage(this.mainImage.canvasMain, 0, 0);
 
     this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.fillRect(this.lowerImageBot.screenOffsetX, this.lowerImageBot.screenOffsetY, this.lowerImageBot.screenDim, this.lowerImageBot.screenDim);
-    this.context.setTransform(this.lowerImageBot.xformScaleX, 0, 0, this.lowerImageBot.xformScaleY, this.lowerImageBot.xformTransX, this.lowerImageBot.xformTransY);
+    this.context.fillRect(this.lowerImageBot.screenOffsetX, this.lowerImageBot.screenOffsetY,
+        this.lowerImageBot.screenDim, this.lowerImageBot.screenDim);
+    this.context.setTransform(this.lowerImageBot.xformScaleX, 0, 0, this.lowerImageBot.xformScaleY,
+        this.lowerImageBot.xformTransX, this.lowerImageBot.xformTransY);
     this.context.drawImage(this.lowerImageBot.canvasMain, 0, 0);
 
     this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.fillRect(this.lowerImageTop.screenOffsetX, this.lowerImageTop.screenOffsetY, this.lowerImageTop.screenDim, this.lowerImageTop.screenDim);
-    this.context.setTransform(this.lowerImageTop.xformScaleX, 0, 0, this.lowerImageTop.xformScaleY, this.lowerImageTop.xformTransX, this.lowerImageTop.xformTransY);
+    this.context.fillRect(this.lowerImageTop.screenOffsetX, this.lowerImageTop.screenOffsetY,
+        this.lowerImageTop.screenDim, this.lowerImageTop.screenDim);
+    this.context.setTransform(this.lowerImageTop.xformScaleX, 0, 0, this.lowerImageTop.xformScaleY,
+        this.lowerImageTop.xformTransX, this.lowerImageTop.xformTransY);
     this.context.drawImage(this.lowerImageTop.canvasMain, 0, 0);
+
+    if (papayaMain.preferences.showOrientation === "Yes") {
+        this.context.setTransform(1, 0, 0, 1, 0, 0);
+        this.context.fillStyle = this.getOrientationCertaintyColor();
+        this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px Arial";
+        metrics = this.context.measureText("X");
+        textWidth = metrics.width;
+
+        if (this.mainImage === this.axialSlice) {
+            orientWidth = this.volume.header.imageDimensions.xDim;
+            orientHeight = this.volume.header.imageDimensions.yDim;
+
+            top = papaya.viewer.Viewer.ORIENTATION_MARKER_ANTERIOR;
+            bottom = papaya.viewer.Viewer.ORIENTATION_MARKER_POSTERIOR;
+            left = papaya.viewer.Viewer.ORIENTATION_MARKER_LEFT;
+            right = papaya.viewer.Viewer.ORIENTATION_MARKER_RIGHT;
+
+            orientSlice = this.axialSlice;
+        } else if (this.mainImage === this.coronalSlice) {
+            orientWidth = this.volume.header.imageDimensions.xDim;
+            orientHeight = this.volume.header.imageDimensions.zDim;
+
+            top = papaya.viewer.Viewer.ORIENTATION_MARKER_SUPERIOR;
+            bottom = papaya.viewer.Viewer.ORIENTATION_MARKER_INFERIOR;
+            left = papaya.viewer.Viewer.ORIENTATION_MARKER_LEFT;
+            right = papaya.viewer.Viewer.ORIENTATION_MARKER_RIGHT;
+
+            orientSlice = this.coronalSlice;
+        } else if (this.mainImage === this.sagittalSlice) {
+            temp = this.volume.header.imageDimensions.yDim;
+            orientWidth = temp;
+            orientHeight = this.volume.header.imageDimensions.zDim;
+
+            top = papaya.viewer.Viewer.ORIENTATION_MARKER_SUPERIOR;
+            bottom = papaya.viewer.Viewer.ORIENTATION_MARKER_INFERIOR;
+            left = papaya.viewer.Viewer.ORIENTATION_MARKER_ANTERIOR;
+            right = papaya.viewer.Viewer.ORIENTATION_MARKER_POSTERIOR;
+
+            orientSlice = this.sagittalSlice;
+        }
+
+        orientStartX = orientSlice.xformTransX;
+        orientEndX = floor(orientSlice.xformTransX + orientWidth * orientSlice.xformScaleX);
+        orientMidX = floor(orientSlice.xformTransX + (orientWidth / 2.0) * orientSlice.xformScaleX);
+
+        orientStartY = orientSlice.xformTransY;
+        orientEndY = floor(orientSlice.xformTransY + orientHeight * orientSlice.xformScaleY);
+        orientMidY = floor(orientSlice.xformTransY + (orientHeight / 2.0) * orientSlice.xformScaleY);
+
+        this.context.fillText(top, orientMidX - (textWidth / 2), orientStartY
+            + papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE * 1.5);
+        this.context.fillText(bottom, orientMidX - (textWidth / 2), orientEndY
+            - papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE);
+        this.context.fillText(left, orientStartX + papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE, orientMidY
+            + (papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE * 0.5));
+        this.context.fillText(right, orientEndX - papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE, orientMidY
+            + (papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE * 0.5));
+    }
+
+
 
     if (papayaMain.preferences.showCrosshairs !== "None") {
         // initialize crosshairs
@@ -902,4 +980,24 @@ papaya.viewer.Viewer.prototype.processParams = function (params) {
     if (params.worldSpace) {
         this.worldSpace = true;
     }
+
+    if (params.showOrientation) {
+        papayaMain.preferences.showOrientation = "Yes";
+    }
+};
+
+
+
+papaya.viewer.Viewer.prototype.getOrientationCertaintyColor = function () {
+    var certainty = this.screenVolumes[0].volume.header.orientationCertainty;
+
+    if (certainty === papaya.volume.Header.ORIENTATION_CERTAINTY_LOW) {
+        return papaya.viewer.Viewer.ORIENTATION_CERTAINTY_LOW_COLOR;
+    }
+
+    if (certainty === papaya.volume.Header.ORIENTATION_CERTAINTY_HIGH) {
+        return papaya.viewer.Viewer.ORIENTATION_CERTAINTY_HIGH_COLOR;
+    }
+
+    return papaya.viewer.Viewer.ORIENTATION_CERTAINTY_UNKNOWN_COLOR;
 };

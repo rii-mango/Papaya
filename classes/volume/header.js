@@ -19,6 +19,7 @@ papaya.volume.Header = papaya.volume.Header || function () {
     this.imageRange = null;
     this.errorMessage = null;
     this.origin = null;
+    this.orientationCertainty = papaya.volume.Header.ORIENTATION_CERTAINTY_UNKNOWN;
 };
 
 
@@ -28,6 +29,9 @@ papaya.volume.Header.INVALID_IMAGE_DIMENSIONS = "Image dimensions are not valid!
 papaya.volume.Header.INVALID_VOXEL_DIMENSIONS = "Voxel dimensions are not valid!";
 papaya.volume.Header.INVALID_DATATYPE = "Datatype is not valid or not supported!";
 papaya.volume.Header.INVALID_IMAGE_RANGE = "Image range is not valid!";
+papaya.volume.Header.ORIENTATION_CERTAINTY_UNKNOWN = 0;
+papaya.volume.Header.ORIENTATION_CERTAINTY_LOW = 1;
+papaya.volume.Header.ORIENTATION_CERTAINTY_HIGH = 2;
 
 
 
@@ -62,6 +66,9 @@ papaya.volume.Header.prototype.readData = function (headerType, data, compressed
         this.orientation = this.fileFormat.getOrientation();
         if (!this.orientation.isValid()) {
             this.orientation = new papaya.volume.Orientation(papaya.volume.Orientation.DEFAULT);
+            this.orientationCertainty = papaya.volume.Header.ORIENTATION_CERTAINTY_UNKNOWN;
+        } else {
+            this.orientationCertainty = this.fileFormat.getOrientationCertainty();
         }
         this.orientation.createInfo(this.imageDimensions, this.voxelDimensions);
 

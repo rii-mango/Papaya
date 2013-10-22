@@ -194,3 +194,22 @@ papaya.volume.nifti.HeaderNIFTI.prototype.hasError = function () {
 papaya.volume.nifti.HeaderNIFTI.prototype.getImageDescription = function () {
     return new papaya.volume.ImageDescription(this.nifti.description);
 };
+
+
+
+papaya.volume.nifti.HeaderNIFTI.prototype.getOrientationCertainty = function () {
+    var certainty, origin;
+
+    certainty = papaya.volume.Header.ORIENTATION_CERTAINTY_UNKNOWN;
+
+    if ((this.nifti.qform_code > 0) || (this.nifti.sform_code > 0)) {
+        certainty = papaya.volume.Header.ORIENTATION_CERTAINTY_LOW;
+
+        origin = this.getOrigin();
+        if ((origin !== null) && !origin.isAllZeros()) {
+            certainty = papaya.volume.Header.ORIENTATION_CERTAINTY_HIGH;
+        }
+    }
+
+    return certainty;
+};
