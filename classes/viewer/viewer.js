@@ -33,6 +33,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (width, height) {
     this.lowerImageBot = null;
     this.lowerImageTop = null;
     this.viewerDim = 0;
+    this.worldSpace = false;
     this.currentCoord = new papaya.core.Coordinate(0, 0, 0);
     this.longestDim = 0;
     this.longestDimSize = 0;
@@ -867,12 +868,28 @@ papaya.viewer.Viewer.prototype.getCurrentScreenVolIndex = function () {
 
 
 
+papaya.viewer.Viewer.prototype.toggleWorldSpace = function () {
+    this.worldSpace = !this.worldSpace;
+};
+
+
+
 papaya.viewer.Viewer.prototype.isSelected = function (index) {
-    return (index === this.getCurrentScreenVolIndex());
+    return (this.isSelectable() && (index === this.getCurrentScreenVolIndex()));
 };
 
 
 
 papaya.viewer.Viewer.prototype.isSelectable = function () {
     return (this.screenVolumes.length > 1);
+};
+
+
+
+papaya.viewer.Viewer.prototype.getIndex = function (name) {
+    if (name === "SPACE") {
+        return (this.worldSpace ? 1 : 0);
+    }
+
+    return 0;
 };

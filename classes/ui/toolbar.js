@@ -15,22 +15,25 @@ papaya.ui.Toolbar = papaya.ui.Toolbar || function () {};
 
 papaya.ui.Toolbar.SIZE = 22;
 
-
+// http://dataurl.net/#dataurlmaker
+papaya.ui.Toolbar.ICON_IMAGESPACE = "data:image/gif;base64,R0lGODlhFAAUAPcAMf//////GP///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////2f/ZNbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1qWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpVpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAACoALAAAAAAUABQAAAipAFUIHEiwoMB/A1coXLiwisOHVf4hVLFCosWLGC9SzMgR48Z/VEJSUVjFj0mTESdWBCmS5EmU/6oIXCly5IqSLx/OlFjT5Us/DneybIkzp8yPDElChCjwj8Q/UKOqmkqVatOnUaGqmsaVq1UVTv+lGjv2z9SuXlVdFUs2ldmtaKeubev2bFy1YCXSfYt2mty8/6CS5XtXRcasVRMftJj1beK/hicanKwiIAA7";
+papaya.ui.Toolbar.ICON_WORLDSPACE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAplJREFUeNqM1H1ozVEcx/Hr3p+7O08jQzbzMErznEItK0+Fv0Ye/tki20ia//wn+YMSaXkoEiKkkCVKZhOipsnDstnFagzlrmGMNfeO6/Nd71unu2s59bq7O517ft/z/X7Pz+dLPUbLJrkqX+SbdEubfJZK2cC6PiOQYm61HJcpkintEpcmCcpryZV5spaHhvvbdJ9slsPyU67wgPlEli0X5aiMkMeyXSbKnVRRVxDRRtkm5czbZrv5vkgu8z1P9stWfleRHGkhT3xCLu1YzZIjpfKWnA6VEn43mwcWEaWlo1Ve2YZj5Jms53iP5BjFsFz9lg/yDj0U7JbslFpZQyBP2a83khoiLiWPA/h/OVGOk+GwnJ5y1iyRS5Im1VLm18cKOc+CYrlGjnxUuZPIOlAn0yWdNXdlrMyRE7LM00eBjBT7niFVTvHsKJ8k6sw1yC4ZIl0EUMOcRT/X44v14xEZSBWfk+d8NpzKujgPGiYrOXI+XTGeGtjpewtjm16Qh3JT3sgvickfNo4yF6V4PVyE2wQUZvP7FmmIa/iDIpwkHRPkrC2iEIlhEZ2mtarIsz3sOoX0PPrP7nAWPRYjj51E85JiJEYO0VsfR5hL5wZal3T7aZl10kLiEyNEHtOSbt4g/gaduRjzC+S9RwtZ332XBxQpzGZ+p72SR5BumUYHLaaDSiySUXKPig6Wj+SmjX5s4BQB0pFBQVo4dhenspfKC1kaYLKVa9pOAW5Q2Ww2qeU92kHbzZRDvK2sBSfLDLtNUp/82rOj7nDm9tJi7lhoeWNzG7Pkqxz8R5p8ByhcGVd0CzkOOWv28KBJvNGa+V2/Y5U08vQm8mgvmTNyjpxHSFUj6/9rZPKerGSTuCPCi7qIdX3GXwEGAPFYt+/OgAXDAAAAAElFTkSuQmCC";
 
 papaya.ui.Toolbar.MENU_DATA = {
     "menus": [
-        {"label": "File", "icon": null,
+        {"label": "File", "icons": null,
             "items": [
                 {"label": "Add Image...", "action": "OpenImage", "type": "button"},
                 {"label": "Add Sample Image", "action": "OpenSampleImage", "exists": ["papaya", "data", "SampleImage"], "uninitialized": "true"},
                 {"label": "Close All", "action": "CloseAllImages"}
             ]
             },
-        {"label": "Options", "icon": null,
+        {"label": "Options", "icons": null,
             "items": [
                 {"label": "Preferences", "action": "Preferences"}
             ]
-            }
+            },
+        {"label": "SPACE", "icons": [papaya.ui.Toolbar.ICON_IMAGESPACE, papaya.ui.Toolbar.ICON_WORLDSPACE] }
     ]
 };
 
@@ -95,10 +98,10 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
 
 
 
-papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, dataSource, modifier, right) {
+papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, dataSource, modifier, imageButton) {
     var menu, items;
 
-    menu = new papaya.ui.Menu(menuData.label, menuData.icon, bind(this, this.doAction), papayaMain.papayaViewer, modifier, right);
+    menu = new papaya.ui.Menu(menuData.label, menuData.icons, bind(this, this.doAction), papayaMain.papayaViewer, modifier, imageButton);
 
     if (topLevelButtonId) {
         menu.setMenuButton(topLevelButtonId);
@@ -108,7 +111,7 @@ papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, da
 
     items = menuData.items;
     if (items) {
-        this.buildMenuItems(menu, items, topLevelButtonId, dataSource, modifier, right);
+        this.buildMenuItems(menu, items, topLevelButtonId, dataSource, modifier, imageButton);
     }
 
     return menu;
@@ -116,7 +119,7 @@ papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, da
 
 
 
-papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelButtonId, dataSource, modifier, right) {
+papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelButtonId, dataSource, modifier, imageButton) {
     var ctrItems, item, menu2;
 
     if (modifier === undefined) {
@@ -141,7 +144,7 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
             menu.addMenuItem(item);
 
             if (itemData[ctrItems].items) {
-                menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier, right);
+                menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier, imageButton);
                 item.callback = bind(menu2, menu2.showMenu);
             }
         }
@@ -161,7 +164,7 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
 
         data = {
             "menus" : [
-                {"label": "ImageButton", "icon": dataUrl, "items": null}
+                {"label": "ImageButton", "icons": [dataUrl], "items": null}
             ]
         };
         data.menus[0].items = papaya.ui.Toolbar.IMAGE_MENU_DATA.items;
@@ -226,6 +229,8 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             imageIndex = action.substring(action.lastIndexOf("-") + 1);
             dialog = new papaya.ui.Dialog("Image Info", papaya.ui.Toolbar.IMAGE_INFO_DATA, papayaMain.papayaViewer, null, imageIndex.toString());
             dialog.showDialog();
+        } else if (action.startsWith("SPACE")) {
+            papayaMain.papayaViewer.toggleWorldSpace();
         }
     }
 };
