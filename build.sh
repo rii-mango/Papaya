@@ -46,6 +46,8 @@ then
     sed '/papaya.data.TalairachAtlas.data/d' ./classes/data/talairach-atlas.js > build/data/talairach-atlas.js
     echo "papaya.data.TalairachAtlas.image='data/Talairach-labels-1mm.nii.gz';" >> build/data/talairach-atlas.js
     cp resources/data/Talairach-labels-1mm.nii.gz build/data/.
+
+    cp resources/data/zstat.nii.gz build/data/.
 else
     cp classes/data/sample-image.js build/data/.
     cp classes/data/talairach-atlas.js build/data/.

@@ -15,7 +15,7 @@ papaya.viewer = papaya.viewer || {};
 
 
 papaya.Main = papaya.Main || function () {
-    this.loadingVol = null;
+    this.loadingImageIndex = 0;
     resetComponents();
 };
 
@@ -221,9 +221,9 @@ papaya.Main.prototype.setUpDnD = function () {
 
 
 papaya.Main.prototype.loadNext = function () {
-    var index = papayaParams.indexOf(this.loadingVol);
-    if (index > -1) {
-        papayaParams.splice(index, 1);
+    this.loadingImageIndex += 1;
+    if (this.loadingImageIndex < papayaParams.images.length) {
+        papayaMain.papayaViewer.loadImage("./" + papayaParams.images[this.loadingImageIndex], true, false);
     }
 };
 
@@ -267,8 +267,9 @@ function main() {
             loadEncodedName = viewerHtml.data("load-encoded-name");
             papayaMain.papayaViewer.loadImage(deref(loadEncodedData), false, true, loadEncodedName);
         } else if (papayaParams.image) {
-            papayaMain.loadingVol = papayaParams.image;
             papayaMain.papayaViewer.loadImage("./" + papayaParams.image, true, false);
+        } else if (papayaParams.images) {
+            papayaMain.papayaViewer.loadImage("./" + papayaParams.images[0], true, false);
         }
 
         resizeViewerComponents(false);

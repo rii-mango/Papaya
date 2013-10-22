@@ -191,6 +191,8 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
 
     papayaMain.papayaToolbar.buildToolbar();
     papayaMain.papayaToolbar.updateImageButtons();
+
+    papayaMain.loadNext();
 };
 
 
@@ -210,6 +212,8 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
 
     papayaMain.papayaToolbar.buildToolbar();
     papayaMain.papayaToolbar.updateImageButtons();
+
+    papayaMain.loadNext();
 };
 
 
