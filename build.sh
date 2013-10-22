@@ -61,7 +61,7 @@ cat build.properties jquery/jquery.js classes/constants.js $DATA_INCLUDES classe
 
 # build CSS
 echo "Minifying CSS..."
-cat css/main.css | java -jar lib/yuicompressor.jar --type css -o build/papaya.css
+cat css/reset.css css/main.css | java -jar lib/yuicompressor.jar --type css -o build/papaya.css
 
 
 # build example HTML
