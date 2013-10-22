@@ -222,7 +222,7 @@ papaya.Main.prototype.setUpDnD = function () {
 
 papaya.Main.prototype.loadNext = function () {
     this.loadingImageIndex += 1;
-    if (this.loadingImageIndex < papayaParams.images.length) {
+    if (papayaParams.images && (this.loadingImageIndex < papayaParams.images.length)) {
         papayaMain.papayaViewer.loadImage("./" + papayaParams.images[this.loadingImageIndex], true, false);
     }
 };
