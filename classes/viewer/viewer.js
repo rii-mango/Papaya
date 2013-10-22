@@ -275,37 +275,32 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc) {
 
 
 papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yLoc) {
-    var xImageLoc, yImageLoc, zImageLoc;
+    var xImageLoc, yImageLoc, zImageLoc, found;
 
-    xLoc = xLoc - this.canvasRect.left;
-    yLoc = yLoc - this.canvasRect.top;
+    if (papayaMain.papayaDisplay) {
+        xLoc = xLoc - this.canvasRect.left;
+        yLoc = yLoc - this.canvasRect.top;
 
-    if (this.insideScreenSlice(viewer.axialSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getYDim())) {
-        xImageLoc = (xLoc - viewer.axialSlice.xformTransX) / viewer.axialSlice.xformScaleX;
-        yImageLoc = (yLoc - viewer.axialSlice.xformTransY) / viewer.axialSlice.xformScaleY;
-        zImageLoc = viewer.axialSlice.currentSlice;
-
-        if (papayaMain.papayaDisplay) {
-            papayaMain.papayaDisplay.drawDisplay(xImageLoc, yImageLoc, zImageLoc);
+        if (this.insideScreenSlice(viewer.axialSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getYDim())) {
+            xImageLoc = (xLoc - viewer.axialSlice.xformTransX) / viewer.axialSlice.xformScaleX;
+            yImageLoc = (yLoc - viewer.axialSlice.xformTransY) / viewer.axialSlice.xformScaleY;
+            zImageLoc = viewer.axialSlice.currentSlice;
+            found = true;
+        } else if (this.insideScreenSlice(viewer.coronalSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getZDim())) {
+            xImageLoc = (xLoc - viewer.coronalSlice.xformTransX) / viewer.coronalSlice.xformScaleX;
+            zImageLoc = (yLoc - viewer.coronalSlice.xformTransY) / viewer.coronalSlice.xformScaleY;
+            yImageLoc = viewer.coronalSlice.currentSlice;
+            found = true;
+        } else if (this.insideScreenSlice(viewer.sagittalSlice, xLoc, yLoc, viewer.volume.getYDim(), viewer.volume.getZDim())) {
+            yImageLoc = (xLoc - viewer.sagittalSlice.xformTransX) / viewer.sagittalSlice.xformScaleX;
+            zImageLoc = (yLoc - viewer.sagittalSlice.xformTransY) / viewer.sagittalSlice.xformScaleY;
+            xImageLoc = viewer.sagittalSlice.currentSlice;
+            found = true;
         }
-    } else if (this.insideScreenSlice(viewer.coronalSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getZDim())) {
-        xImageLoc = (xLoc - viewer.coronalSlice.xformTransX) / viewer.coronalSlice.xformScaleX;
-        zImageLoc = (yLoc - viewer.coronalSlice.xformTransY) / viewer.coronalSlice.xformScaleY;
-        yImageLoc = viewer.coronalSlice.currentSlice;
 
-        if (papayaMain.papayaDisplay) {
+        if (found) {
             papayaMain.papayaDisplay.drawDisplay(xImageLoc, yImageLoc, zImageLoc);
-        }
-    } else if (this.insideScreenSlice(viewer.sagittalSlice, xLoc, yLoc, viewer.volume.getYDim(), viewer.volume.getZDim())) {
-        yImageLoc = (xLoc - viewer.sagittalSlice.xformTransX) / viewer.sagittalSlice.xformScaleX;
-        zImageLoc = (yLoc - viewer.sagittalSlice.xformTransY) / viewer.sagittalSlice.xformScaleY;
-        xImageLoc = viewer.sagittalSlice.currentSlice;
-
-        if (papayaMain.papayaDisplay) {
-            papayaMain.papayaDisplay.drawDisplay(xImageLoc, yImageLoc, zImageLoc);
-        }
-    } else {
-        if (papayaMain.papayaDisplay) {
+        } else {
             papayaMain.papayaDisplay.drawEmptyDisplay();
         }
     }

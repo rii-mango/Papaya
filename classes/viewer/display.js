@@ -14,7 +14,6 @@ papaya.viewer.Display = papaya.viewer.Display || function (width) {
     this.canvas.width = width;
     this.canvas.height = PAPAYA_SECTION_HEIGHT;
     this.context = this.canvas.getContext("2d");
-
     this.canvas.style.padding = 0;
     this.canvas.style.margin = 0;
     this.canvas.style.border = "none";
@@ -60,7 +59,9 @@ papaya.viewer.Display.prototype.drawEmptyDisplay = function () {
 
 
 papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
-    var metrics, textWidth, labelLoc, coordValueLoc, val, valueLoc, valLabel, atlasLabelsStartPos, atlasLabelsTotalWidth, atlasNumLabels, atlasLabelWidth, atlasLabel, ctr, metricsAtlas, sizeRatio;
+    var metrics, textWidth, labelLoc, coordValueLoc, val, valueLoc, valLabel, atlasLabelsStartPos, viewerOrigin,
+        atlasLabelsTotalWidth, atlasNumLabels, atlasLabelWidth, atlasLabel, ctr, metricsAtlas, sizeRatio,
+        viewerVoxelDims;
 
     if (this.drawingError || this.drawingProgress) {
         return;
@@ -99,9 +100,18 @@ papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
     this.context.fillStyle = "rgb(182, 59, 0)";
     this.context.font = "bold " + papaya.viewer.Display.TEXT_CORRD_VALUE_SIZE + "px Arial";
 
-    this.context.fillText(Math.round(xLoc).toString(), 2 * sizeRatio * papaya.viewer.Display.TEXT_SPACING, coordValueLoc);
-    this.context.fillText(Math.round(yLoc).toString(), 3 * sizeRatio * papaya.viewer.Display.TEXT_SPACING + textWidth, coordValueLoc);
-    this.context.fillText(Math.round(zLoc).toString(), 4 * sizeRatio * papaya.viewer.Display.TEXT_SPACING + 2 * textWidth, coordValueLoc);
+    if (papayaMain.papayaViewer.worldSpace) {
+        viewerOrigin = papayaMain.papayaViewer.screenVolumes[0].volume.header.origin;  // base image origin
+        viewerVoxelDims = papayaMain.papayaViewer.screenVolumes[0].volume.header.voxelDimensions;
+
+        this.context.fillText(Math.round((xLoc - viewerOrigin.x) * viewerVoxelDims.xSize).toString(), 2 * sizeRatio * papaya.viewer.Display.TEXT_SPACING, coordValueLoc);
+        this.context.fillText(Math.round((viewerOrigin.y - yLoc) * viewerVoxelDims.ySize).toString(), 3 * sizeRatio * papaya.viewer.Display.TEXT_SPACING + textWidth, coordValueLoc);
+        this.context.fillText(Math.round((viewerOrigin.z - zLoc) * viewerVoxelDims.zSize).toString(), 4 * sizeRatio * papaya.viewer.Display.TEXT_SPACING + 2 * textWidth, coordValueLoc);
+    } else {
+        this.context.fillText(Math.round(xLoc).toString(), 2 * sizeRatio * papaya.viewer.Display.TEXT_SPACING, coordValueLoc);
+        this.context.fillText(Math.round(yLoc).toString(), 3 * sizeRatio * papaya.viewer.Display.TEXT_SPACING + textWidth, coordValueLoc);
+        this.context.fillText(Math.round(zLoc).toString(), 4 * sizeRatio * papaya.viewer.Display.TEXT_SPACING + 2 * textWidth, coordValueLoc);
+    }
 
 
     // image value
@@ -197,7 +207,6 @@ papaya.viewer.Display.prototype.drawError = function (message) {
 
     this.context.fillText(message, papaya.viewer.Display.TEXT_SPACING, valueLoc);
 };
-
 
 
 
