@@ -1,7 +1,8 @@
 
 /*jslint browser: true, node: true */
 /*global $, alert, PAPAYA_CONTAINER_ID, PAPAYA_VIEWER_ID, PAPAYA_TOOLBAR_ID, PAPAYA_DISPLAY_ID, PAPAYA_MINIMUM_SIZE,
-PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP, checkForBrowserCompatibility, getQueryParams, deref */
+PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP, checkForBrowserCompatibility, getQueryParams,
+deref, resetComponents */
 
 "use strict";
 
@@ -10,6 +11,13 @@ var papayaMain = null;
 var papayaParams = papayaParams || {};
 
 papaya.viewer = papaya.viewer || {};
+
+
+
+papaya.Main = papaya.Main || function () {
+    this.loadingVol = null;
+    resetComponents();
+};
 
 
 
@@ -23,12 +31,6 @@ function resetComponents() {
     $("#" + PAPAYA_VIEWER_ID).removeClass("checkForJS");
     $('head').append("<style>div#papayaViewer:before{ content:'' }</style>");
 }
-
-
-
-papaya.Main = papaya.Main || function () {
-    resetComponents();
-};
 
 
 
@@ -218,6 +220,15 @@ papaya.Main.prototype.setUpDnD = function () {
 
 
 
+papaya.Main.prototype.loadNext = function () {
+    var index = papayaParams.indexOf(this.loadingVol);
+    if (index > -1) {
+        papayaParams.splice(index, 1);
+    }
+};
+
+
+
 function main() {
     var message = checkForBrowserCompatibility(),
         viewerHtml = $("#" + PAPAYA_VIEWER_ID),
@@ -255,6 +266,7 @@ function main() {
             loadEncodedName = viewerHtml.data("load-encoded-name");
             papayaMain.papayaViewer.loadImage(deref(loadEncodedData), false, true, loadEncodedName);
         } else if (papayaParams.image) {
+            papayaMain.loadingVol = papayaParams.image;
             papayaMain.papayaViewer.loadImage("./" + papayaParams.image, true, false);
         }
 

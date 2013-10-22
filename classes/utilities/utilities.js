@@ -277,8 +277,7 @@ function getQueryParams(params) {
         qs = qs.split("+").join(" ");
 
         while (tokens = re.exec(qs)) {
-            params[decodeURIComponent(tokens[1])]
-                = decodeURIComponent(tokens[2]);
+            params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
         }
     }
 }
