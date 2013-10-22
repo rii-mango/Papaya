@@ -154,6 +154,12 @@ papaya.volume.Volume.prototype.getVoxelAtCoordinate = function (xLoc, yLoc, zLoc
 
 
 
+papaya.volume.Volume.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, useNN) {
+    return this.transform.getVoxelAtMM(xLoc, yLoc, zLoc, useNN);
+};
+
+
+
 papaya.volume.Volume.prototype.hasError = function () {
     return (this.errorMessage !== null);
 };

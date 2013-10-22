@@ -231,6 +231,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             dialog.showDialog();
         } else if (action.startsWith("SPACE")) {
             papayaMain.papayaViewer.toggleWorldSpace();
+            papayaMain.papayaViewer.drawViewer(true);
         }
     }
 };

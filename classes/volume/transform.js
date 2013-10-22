@@ -140,3 +140,18 @@ papaya.volume.Transform.prototype.getVoxelAtCoordinate = function (xLoc, yLoc, z
 
     return this.voxelValue.getVoxelAtIndex(xTrans, yTrans, zTrans, useNN);
 };
+
+
+
+papaya.volume.Transform.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, useNN) {
+    var xTrans, yTrans, zTrans;
+    xTrans = ((xLoc * this.mmMat[0][0]) + (yLoc * this.mmMat[0][1]) + (zLoc * this.mmMat[0][2]) + (this.mmMat[0][3]));
+    yTrans = ((xLoc * this.mmMat[1][0]) + (yLoc * this.mmMat[1][1]) + (zLoc * this.mmMat[1][2]) + (this.mmMat[1][3]));
+    zTrans = ((xLoc * this.mmMat[2][0]) + (yLoc * this.mmMat[2][1]) + (zLoc * this.mmMat[2][2]) + (this.mmMat[2][3]));
+
+    if ((xTrans < 0) || (xTrans >= this.imageDimensions.xDim) || (yTrans < 0) ||  (yTrans >= this.imageDimensions.yDim) || (zTrans < 0) || (zTrans >= this.imageDimensions.zDim)) {
+        return 0;
+    }
+
+    return this.voxelValue.getVoxelAtIndex(xTrans, yTrans, zTrans, useNN);
+};

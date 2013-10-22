@@ -1,6 +1,7 @@
 
 /*jslint browser: true, node: true */
-/*global PAPAYA_SPACING, bind, papayaMain, isString, round, floor, getKeyCode, isControlKey, getMousePositionX, getMousePositionY, signum, wordwrap, getSizeString, formatNumber */
+/*global PAPAYA_SPACING, bind, papayaMain, isString, round, floor, getKeyCode, isControlKey, getMousePositionX,
+getMousePositionY, signum, wordwrap, getSizeString, formatNumber */
 
 "use strict";
 
@@ -359,9 +360,9 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force) {
     this.context.save();
 
     // update slice data
-    this.axialSlice.updateSlice(this.currentCoord.z, force);
-    this.coronalSlice.updateSlice(this.currentCoord.y, force);
-    this.sagittalSlice.updateSlice(this.currentCoord.x, force);
+    this.axialSlice.updateSlice(this.currentCoord.z, force, this.worldSpace);
+    this.coronalSlice.updateSlice(this.currentCoord.y, force, this.worldSpace);
+    this.sagittalSlice.updateSlice(this.currentCoord.x, force, this.worldSpace);
 
     // intialize screen slices
     this.context.fillStyle = papaya.viewer.Viewer.BACKGROUND_COLOR;

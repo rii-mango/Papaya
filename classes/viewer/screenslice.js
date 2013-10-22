@@ -46,7 +46,7 @@ papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN = 0;
 
 
 
-papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
+papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldSpace) {
     var origin, voxelDims, ctr, ctrY, ctrX, value, alpha, orig, index;
 
     slice = round(slice);
@@ -73,12 +73,22 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                             value = this.screenVolumes[ctr].volume.getVoxelAtIndex(slice, ctrX, ctrY, true);
                         }
                     } else {
-                        if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                            value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((ctrX - origin.x) * voxelDims.xSize, (origin.y - ctrY) * voxelDims.ySize, (origin.z - slice) * voxelDims.zSize, false);
-                        } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                            value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((ctrX - origin.x) * voxelDims.xSize, (origin.y - slice) * voxelDims.ySize, (origin.z - ctrY) * voxelDims.zSize, false);
-                        } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-                            value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((slice - origin.x) * voxelDims.xSize, (origin.y - ctrX) * voxelDims.ySize, (origin.z - ctrY) * voxelDims.zSize, false);
+                        if (worldSpace) {
+                            if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                                value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((ctrX - origin.x) * voxelDims.xSize, (origin.y - ctrY) * voxelDims.ySize, (origin.z - slice) * voxelDims.zSize, false);
+                            } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                                value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((ctrX - origin.x) * voxelDims.xSize, (origin.y - slice) * voxelDims.ySize, (origin.z - ctrY) * voxelDims.zSize, false);
+                            } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                                value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((slice - origin.x) * voxelDims.xSize, (origin.y - ctrX) * voxelDims.ySize, (origin.z - ctrY) * voxelDims.zSize, false);
+                            }
+                        } else {
+                            if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                                value = this.screenVolumes[ctr].volume.getVoxelAtMM(ctrX * voxelDims.xSize, ctrY * voxelDims.ySize, slice * voxelDims.zSize, false);
+                            } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                                value = this.screenVolumes[ctr].volume.getVoxelAtMM(ctrX * voxelDims.xSize, slice * voxelDims.ySize, ctrY * voxelDims.zSize, false);
+                            } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                                value = this.screenVolumes[ctr].volume.getVoxelAtMM(slice * voxelDims.xSize, ctrX * voxelDims.ySize, ctrY * voxelDims.zSize, false);
+                            }
                         }
                     }
 
