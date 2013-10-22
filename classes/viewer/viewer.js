@@ -13,7 +13,7 @@ var PAPAYA_BUILD_NUM = PAPAYA_BUILD_NUM || "0";
 
 
 
-papaya.viewer.Viewer = papaya.viewer.Viewer || function (width, height) {
+papaya.viewer.Viewer = papaya.viewer.Viewer || function (width, height, params) {
     this.canvas = document.createElement("canvas");
     this.canvas.width = width;
     this.canvas.height = height;
@@ -52,6 +52,8 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (width, height) {
     this.listenerKeyUp = bind(this, this.keyUpEvent);
     this.listenerContextMenu = function (e) { e.preventDefault(); return false; };
     this.drawEmptyViewer();
+
+    this.processParams(params);
 };
 
 
@@ -893,4 +895,11 @@ papaya.viewer.Viewer.prototype.getIndex = function (name) {
     }
 
     return 0;
+};
+
+
+papaya.viewer.Viewer.prototype.processParams = function (params) {
+    if (params.worldSpace) {
+        this.worldSpace = true;
+    }
 };

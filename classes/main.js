@@ -143,7 +143,7 @@ function resizeViewerComponents(resize) {
 
 
 
-papaya.Main.prototype.buildViewer = function () {
+papaya.Main.prototype.buildViewer = function (params) {
     var viewerHtml,
         dims;
 
@@ -151,7 +151,7 @@ papaya.Main.prototype.buildViewer = function () {
         viewerHtml = $("#" + PAPAYA_VIEWER_ID);
         viewerHtml.html("");  // remove noscript message
         dims = getViewerDimensions();
-        this.papayaViewer = new papaya.viewer.Viewer(dims.width, dims.height);
+        this.papayaViewer = new papaya.viewer.Viewer(dims.width, dims.height, params);
         viewerHtml.append($(this.papayaViewer.canvas));
     } else {
         alert("You are missing a viewer div!");
@@ -245,13 +245,6 @@ function main() {
         papayaMain = new papaya.Main();
         papayaMain.preferences = new papaya.viewer.Preferences();
 
-        papayaMain.buildViewer();
-        papayaMain.buildDisplay();
-        papayaMain.buildToolbar();
-        papayaMain.setUpDnD();
-
-        loadUrl = viewerHtml.data("load-url");
-        loadEncodedData = viewerHtml.data("load-encoded-data");
         loadParams = viewerHtml.data("load-params");
 
         if (loadParams) {
@@ -259,6 +252,14 @@ function main() {
         }
 
         getQueryParams(papayaParams);
+
+        papayaMain.buildViewer(papayaParams);
+        papayaMain.buildDisplay();
+        papayaMain.buildToolbar();
+        papayaMain.setUpDnD();
+
+        loadUrl = viewerHtml.data("load-url");
+        loadEncodedData = viewerHtml.data("load-encoded-data");
 
         if (loadUrl) {
             papayaMain.papayaViewer.loadImage(loadUrl, true, false);
