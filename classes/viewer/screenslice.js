@@ -22,11 +22,7 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
     this.canvasMain.width = this.xDim;
     this.canvasMain.height = this.yDim;
     this.contextMain = this.canvasMain.getContext("2d");
-    this.canvasDraw = document.createElement("canvas");
-    this.canvasDraw.width = this.xDim;
-    this.canvasDraw.height = this.yDim;
-    this.contextDraw = this.canvasDraw.getContext("2d");
-    this.imageDataDraw = this.contextDraw.createImageData(this.xDim, this.yDim);
+    this.imageDataDraw = this.contextMain.createImageData(this.xDim, this.yDim);
     this.screenOffsetX = 0;
     this.screenOffsetY = 0;
     this.screenDim = 0;
@@ -113,9 +109,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
             }
         }
 
-        this.contextDraw.putImageData(this.imageDataDraw, 0, 0);
-        //this.contextMain.globalAlpha = this.screenVolumes[ctr].alpha;
-        this.contextMain.drawImage(this.canvasDraw, 0, 0);
+        this.contextMain.putImageData(this.imageDataDraw, 0, 0);
     }
 };
 
