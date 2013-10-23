@@ -382,15 +382,15 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
     this.context.save();
 
     if (!skipUpdate) {
-        if (this.draggingSliceDir !== papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+        if (force || (this.draggingSliceDir !== papaya.viewer.ScreenSlice.DIRECTION_AXIAL)) {
             this.axialSlice.updateSlice(this.currentCoord.z, force, this.worldSpace);
         }
 
-        if (this.draggingSliceDir !== papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+        if (force || (this.draggingSliceDir !== papaya.viewer.ScreenSlice.DIRECTION_CORONAL)) {
             this.coronalSlice.updateSlice(this.currentCoord.y, force, this.worldSpace);
         }
 
-        if (this.draggingSliceDir !== papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+        if (force || (this.draggingSliceDir !== papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL)) {
             this.sagittalSlice.updateSlice(this.currentCoord.x, force, this.worldSpace);
         }
     }

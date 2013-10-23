@@ -33,7 +33,6 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
     thisHtml = $("#" + this.id);
     thisHtml.click(bind(this,
         function (event) {
-            console.log(event);
             this.doAction();
         }));
 
