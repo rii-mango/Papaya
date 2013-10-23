@@ -50,6 +50,9 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (width, height, params) 
     this.listenerMouseUp = bind(this, this.mouseUpEvent);
     this.listenerKeyDown = bind(this, this.keyDownEvent);
     this.listenerKeyUp = bind(this, this.keyUpEvent);
+    this.listenerTouchStart = bind(this, this.touchStartEvent);
+    this.listenerTouchMove = bind(this, this.touchMoveEvent);
+    this.listenerTouchEnd = bind(this, this.touchEndEvent);
     this.listenerContextMenu = function (e) { e.preventDefault(); return false; };
     this.drawEmptyViewer();
 
@@ -176,6 +179,9 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
     document.addEventListener("keydown", this.listenerKeyDown, true);
     document.addEventListener("keyup", this.listenerKeyUp, true);
     document.addEventListener("contextmenu", this.listenerContextMenu, false);
+    document.addEventListener("touchmove", this.listenerTouchMove, false);
+    document.addEventListener("touchstart", this.listenerTouchStart, false);
+    document.addEventListener("touchend", this.listenerTouchEnd, false);
 
     this.setLongestDim(this.volume);
     this.calculateScreenSliceTransforms(this);
@@ -704,6 +710,8 @@ papaya.viewer.Viewer.prototype.keyUpEvent = function (ke) {
 
 
 papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
+    console.log("mouse down");
+
     papayaMain.papayaToolbar.closeAllMenus();
 
     if ((me.which === 3) || this.isControlKeyDown) {
@@ -722,6 +730,8 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
 
 papaya.viewer.Viewer.prototype.mouseUpEvent = function () {
+    console.log("mouse up");
+
     this.isDragging = false;
     this.isWindowControl = false;
 };
@@ -753,6 +763,24 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
 
 papaya.viewer.Viewer.prototype.mouseOutEvent = function () {
     papayaMain.papayaDisplay.drawEmptyDisplay();
+};
+
+
+
+papaya.viewer.Viewer.prototype.touchStartEvent = function () {
+    console.log("touch start");
+};
+
+
+
+papaya.viewer.Viewer.prototype.touchEndEvent = function () {
+    console.log("touch end");
+};
+
+
+
+papaya.viewer.Viewer.prototype.touchMoveEvent = function () {
+    console.log("touch move");
 };
 
 
