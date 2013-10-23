@@ -735,8 +735,8 @@ papaya.viewer.Viewer.prototype.resetUpdateTimer = function (me) {
 
 
 papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
-    me.stopPropagation();
-    me.preventDefault();
+    //me.stopPropagation();
+    //me.preventDefault();
 
     if (me.handled !== true) {
         papayaMain.papayaToolbar.closeAllMenus();
@@ -751,9 +751,6 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
         }
 
         this.isDragging = true;
-
-        me.preventDefault();
-
         me.handled = true;
     }
 };
@@ -761,8 +758,8 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
 
 papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
-    me.stopPropagation();
-    me.preventDefault();
+    //me.stopPropagation();
+    //me.preventDefault();
 
     if (me.handled !== true) {
         if (!this.isWindowControl) {
@@ -779,6 +776,8 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
 
 
 papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
+    me.preventDefault();
+
     var currentMouseX, currentMouseY;
 
     if (this.isDragging) {
@@ -811,6 +810,8 @@ papaya.viewer.Viewer.prototype.mouseOutEvent = function () {
 papaya.viewer.Viewer.prototype.touchMoveEvent = function (me) {
     this.updatePosition(this, getMousePositionX(me), getMousePositionY(me), true);
     this.resetUpdateTimer(me);
+
+    me.preventDefault();
 };
 
 
