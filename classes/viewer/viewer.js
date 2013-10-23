@@ -180,9 +180,9 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
     document.addEventListener("keydown", this.listenerKeyDown, true);
     document.addEventListener("keyup", this.listenerKeyUp, true);
     document.addEventListener("contextmenu", this.listenerContextMenu, false);
-    document.addEventListener("touchmove", this.listenerTouchMove, false);
-    document.addEventListener("touchstart", this.listenerMouseDown, false);
-    document.addEventListener("touchend", this.listenerMouseUp, false);
+    this.canvas.addEventListener("touchmove", this.listenerTouchMove, false);
+    this.canvas.addEventListener("touchstart", this.listenerMouseDown, false);
+    this.canvas.addEventListener("touchend", this.listenerMouseUp, false);
 
     this.setLongestDim(this.volume);
     this.calculateScreenSliceTransforms(this);
@@ -735,41 +735,45 @@ papaya.viewer.Viewer.prototype.resetUpdateTimer = function (me) {
 
 
 papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
-    //me.stopPropagation();
-    //me.preventDefault();
+    me.stopPropagation();
+    me.preventDefault();
 
-    if (me.handled !== true) {
-        papayaMain.papayaToolbar.closeAllMenus();
+    if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
+        if (me.handled !== true) {
+            papayaMain.papayaToolbar.closeAllMenus();
 
-        if ((me.which === 3) || this.isControlKeyDown) {
-            this.isWindowControl = true;
-            this.previousMousePosition.x = getMousePositionX(me);
-            this.previousMousePosition.y = getMousePositionY(me);
-        } else {
-            this.updatePosition(this, getMousePositionX(me), getMousePositionY(me), true);
-            this.resetUpdateTimer(me);
+            if ((me.which === 3) || this.isControlKeyDown) {
+                this.isWindowControl = true;
+                this.previousMousePosition.x = getMousePositionX(me);
+                this.previousMousePosition.y = getMousePositionY(me);
+            } else {
+                this.updatePosition(this, getMousePositionX(me), getMousePositionY(me), true);
+                this.resetUpdateTimer(me);
+            }
+
+            this.isDragging = true;
+            me.handled = true;
         }
-
-        this.isDragging = true;
-        me.handled = true;
     }
 };
 
 
 
 papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
-    //me.stopPropagation();
-    //me.preventDefault();
+    me.stopPropagation();
+    me.preventDefault();
 
-    if (me.handled !== true) {
-        if (!this.isWindowControl) {
-            this.updatePosition(this, getMousePositionX(me), getMousePositionY(me));
+    if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
+        if (me.handled !== true) {
+            if (!this.isWindowControl) {
+                this.updatePosition(this, getMousePositionX(me), getMousePositionY(me));
+            }
+
+            this.isDragging = false;
+            this.isWindowControl = false;
+
+            me.handled = true;
         }
-
-        this.isDragging = false;
-        this.isWindowControl = false;
-
-        me.handled = true;
     }
 };
 

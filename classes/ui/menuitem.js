@@ -31,7 +31,12 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
     $("#" + parentId).append(html);
 
     thisHtml = $("#" + this.id);
-    thisHtml.click(bind(this, this.doAction));
+    thisHtml.click(bind(this,
+        function (event) {
+            console.log(event);
+            this.doAction();
+        }));
+
     thisHtml.hover(function () {$(this).toggleClass('menuHover'); });
 };
 
