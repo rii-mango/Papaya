@@ -114,7 +114,7 @@ papaya.viewer.ScreenVolume.prototype.findDisplayRange = function (parametric) {
     }
 
     if (this.isOverlay()) {
-        if (min === max) {  // if not set
+        if ((min === max) || ((min < 0) && (max > 0)) || ((min > 0) && (max < 0)) || (parametric && ((min > 0) || (max > 0)))) {  // if not set or crosses zero
             this.findImageRange(true);
 
             if (parametric) {
