@@ -44,6 +44,8 @@ papaya.ui.Toolbar.IMAGE_MENU_DATA = {
         {"label": "Color Table...", "action": "ColorTable",
             "items": [
                 {"label": "Grayscale", "action": "ColorTable-Grayscale", "type": "checkbox", "method": "isUsingColorTable"},
+                {"label": "Red-to-Yellow", "action": "ColorTable-Red-to-Yellow", "type": "checkbox", "method": "isUsingColorTable"},
+                {"label": "Blue-to-Green", "action": "ColorTable-Blue-to-Green", "type": "checkbox", "method": "isUsingColorTable"},
                 {"label": "Spectrum", "action": "ColorTable-Spectrum", "type": "checkbox", "method": "isUsingColorTable"},
                 {"label": "Hot-and-Cold", "action": "ColorTable-Hot-and-Cold", "type": "checkbox", "method": "isUsingColorTable"},
                 {"label": "Gold", "action": "ColorTable-Gold", "type": "checkbox", "method": "isUsingColorTable"},

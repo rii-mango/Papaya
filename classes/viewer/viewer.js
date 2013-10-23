@@ -198,22 +198,25 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
 
 
 papaya.viewer.Viewer.prototype.initializeOverlay = function () {
+    var screenParams, parametric;
+
     if (this.loadingVolume.hasError()) {
         papayaMain.papayaDisplay.drawError(this.loadingVolume.errorMessage);
         this.loadingVolume = null;
         return;
     }
 
-    this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, this.getNextColorTable(), false);
+    screenParams = papayaParams[this.loadingVolume.fileName];
+    parametric = (screenParams && screenParams.parametric);
+
+    this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, (parametric ? papaya.viewer.ColorTable.TABLE_RED2YELLOW_NAME : this.getNextColorTable()), false);
     this.setCurrentScreenVol(this.screenVolumes.length - 1);
     this.drawViewer(true);
     papayaMain.papayaToolbar.buildToolbar();
     papayaMain.papayaToolbar.updateImageButtons();
 
-    var screenParams = papayaParams[this.loadingVolume.fileName];
-
-    if (screenParams && screenParams.parametric) {
-        this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, this.getNextColorTable(), false, true);
+    if (parametric) {
+        this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, papaya.viewer.ColorTable.TABLE_BLUE2GREEN_NAME, false, true);
         this.setCurrentScreenVol(this.screenVolumes.length - 1);
         this.drawViewer(true);
         papayaMain.papayaToolbar.buildToolbar();
@@ -221,7 +224,6 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
     }
 
     this.loadingVolume = null;
-
     papayaMain.loadNext();
 };
 
