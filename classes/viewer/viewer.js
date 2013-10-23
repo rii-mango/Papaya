@@ -180,8 +180,8 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
     document.addEventListener("keyup", this.listenerKeyUp, true);
     document.addEventListener("contextmenu", this.listenerContextMenu, false);
     document.addEventListener("touchmove", this.listenerTouchMove, false);
-    document.addEventListener("touchstart", this.listenerTouchStart, false);
-    document.addEventListener("touchend", this.listenerTouchEnd, false);
+    document.addEventListener("touchstart", this.listenerMouseDown, false);
+    document.addEventListener("touchend", this.listenerMouseUp, false);
 
     this.setLongestDim(this.volume);
     this.calculateScreenSliceTransforms(this);
@@ -481,8 +481,6 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force) {
             + (papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE * 0.5));
     }
 
-
-
     if (papayaMain.preferences.showCrosshairs !== "None") {
         // initialize crosshairs
         this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -710,30 +708,48 @@ papaya.viewer.Viewer.prototype.keyUpEvent = function (ke) {
 
 
 papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
-    console.log("mouse down");
-
-    papayaMain.papayaToolbar.closeAllMenus();
-
-    if ((me.which === 3) || this.isControlKeyDown) {
-        this.isWindowControl = true;
-        this.previousMousePosition.x = getMousePositionX(me);
-        this.previousMousePosition.y = getMousePositionY(me);
-    } else {
-        this.draggingSliceDir = this.updatePosition(this, getMousePositionX(me), getMousePositionY(me));
-    }
-
-    this.isDragging = true;
-
+    me.stopPropagation();
     me.preventDefault();
+
+    if (me.handled !== true) {
+        console.log("mouse down " + getMousePositionX(me) + " " + getMousePositionY(me));
+
+        papayaMain.papayaToolbar.closeAllMenus();
+
+        if ((me.which === 3) || this.isControlKeyDown) {
+            this.isWindowControl = true;
+            this.previousMousePosition.x = getMousePositionX(me);
+            this.previousMousePosition.y = getMousePositionY(me);
+        } else {
+            this.draggingSliceDir = this.updatePosition(this, getMousePositionX(me), getMousePositionY(me));
+        }
+
+        this.isDragging = true;
+
+        me.preventDefault();
+
+        me.handled = true;
+    }
 };
 
 
 
-papaya.viewer.Viewer.prototype.mouseUpEvent = function () {
-    console.log("mouse up");
+papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
+    me.stopPropagation();
+    me.preventDefault();
 
-    this.isDragging = false;
-    this.isWindowControl = false;
+    if (me.handled !== true) {
+        console.log("mouse up " + getMousePositionX(me) + " " + getMousePositionY(me));
+
+        if (!this.isWindowControl) {
+            this.updatePosition(this, getMousePositionX(me), getMousePositionY(me));
+        }
+
+        this.isDragging = false;
+        this.isWindowControl = false;
+
+        me.handled = true;
+    }
 };
 
 
@@ -763,18 +779,6 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
 
 papaya.viewer.Viewer.prototype.mouseOutEvent = function () {
     papayaMain.papayaDisplay.drawEmptyDisplay();
-};
-
-
-
-papaya.viewer.Viewer.prototype.touchStartEvent = function () {
-    console.log("touch start");
-};
-
-
-
-papaya.viewer.Viewer.prototype.touchEndEvent = function () {
-    console.log("touch end");
 };
 
 
@@ -911,6 +915,9 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     document.removeEventListener("keydown", this.listenerKeyDown, true);
     document.removeEventListener("keyup", this.listenerKeyUp, true);
     document.removeEventListener("contextmenu", this.listenerContextMenu, false);
+    document.removeEventListener("touchmove", this.listenerTouchMove, false);
+    document.removeEventListener("touchstart", this.listenerMouseDown, false);
+    document.removeEventListener("touchend", this.listenerMouseUp, false);
     this.drawEmptyViewer();
     if (papayaMain.papayaDisplay) {
         papayaMain.papayaDisplay.drawEmptyDisplay();
