@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global papayaMain */
+/*global papayaMain, papayaParams */
 
 "use strict";
 
@@ -9,7 +9,8 @@ papaya.viewer = papaya.viewer || {};
 
 
 
-papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutName, baseImage) {
+papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutName, baseImage, parametric) {
+    /*jslint sub: true */
     this.volume = vol;
     this.lutName = lutName;
     this.colorTable = new papaya.viewer.ColorTable(lutName, baseImage, true);
@@ -20,7 +21,22 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutNam
     this.alpha = 1.0;
     this.imageRangeChecked = false;
     this.findImageRange();
-    this.findDisplayRange();
+
+    var screenParams = papayaParams[this.volume.fileName];
+    if (screenParams && (screenParams.min !== undefined) && (screenParams.max !== undefined)) {
+        if (parametric) {
+            this.screenMin = -1 * Math.abs(screenParams.min);
+            this.screenMax = -1 * Math.abs(screenParams.max);
+        } else {
+            this.screenMin = Math.abs(screenParams.min);
+            this.screenMax = Math.abs(screenParams.max);
+        }
+    } else {
+        this.findDisplayRange(parametric);
+    }
+
+    this.negative = (this.screenMax < this.screenMin);
+
     this.updateScreenRange();
 };
 
@@ -37,6 +53,7 @@ papaya.viewer.ScreenVolume.prototype.setScreenRange = function (min, max) {
 papaya.viewer.ScreenVolume.prototype.updateScreenRange = function () {
     this.screenRatio = (papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX / (this.screenMax - this.screenMin));
 };
+
 
 
 papaya.viewer.ScreenVolume.prototype.isOverlay = function () {
@@ -82,17 +99,31 @@ papaya.viewer.ScreenVolume.prototype.findImageRange = function (force) {
 
 
 
-papaya.viewer.ScreenVolume.prototype.findDisplayRange = function () {
-    var min, max;
+papaya.viewer.ScreenVolume.prototype.findDisplayRange = function (parametric) {
+    var min, max, temp;
 
     min = this.screenMin;
     max = this.screenMax;
 
+    if (parametric) {
+        if (Math.abs(min) > Math.abs(max)) {
+            temp = max;
+            max = min;
+            min = temp;
+        }
+    }
+
     if (this.isOverlay()) {
         if ((min === max) || ((min < 0) && (max > 0))) {  // if not set or crosses zero
             this.findImageRange(true);
-            min = this.imageMax - (this.imageMax * 0.75);
-            max = this.imageMax - (this.imageMax * 0.25);
+
+            if (parametric) {
+                min = this.imageMin - (this.imageMin * 0.75);
+                max = this.imageMin - (this.imageMin * 0.25);
+            } else {
+                min = this.imageMax - (this.imageMax * 0.75);
+                max = this.imageMax - (this.imageMax * 0.25);
+            }
         }
 
         if (!((min < 1) && (min > -1) && (max < 1) && (max > -1))) { // if not small numbers, round

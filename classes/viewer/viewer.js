@@ -1,7 +1,7 @@
 
 /*jslint browser: true, node: true */
 /*global PAPAYA_SPACING, bind, papayaMain, isString, round, floor, getKeyCode, isControlKey, getMousePositionX,
-getMousePositionY, signum, wordwrap, getSizeString, formatNumber */
+getMousePositionY, signum, wordwrap, getSizeString, formatNumber, papayaParams */
 
 "use strict";
 
@@ -207,11 +207,20 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
     this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, this.getNextColorTable(), false);
     this.setCurrentScreenVol(this.screenVolumes.length - 1);
     this.drawViewer(true);
-
-    this.loadingVolume = null;
-
     papayaMain.papayaToolbar.buildToolbar();
     papayaMain.papayaToolbar.updateImageButtons();
+
+    var screenParams = papayaParams[this.loadingVolume.fileName];
+
+    if (screenParams && screenParams.parametric) {
+        this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, this.getNextColorTable(), false, true);
+        this.setCurrentScreenVol(this.screenVolumes.length - 1);
+        this.drawViewer(true);
+        papayaMain.papayaToolbar.buildToolbar();
+        papayaMain.papayaToolbar.updateImageButtons();
+    }
+
+    this.loadingVolume = null;
 
     papayaMain.loadNext();
 };

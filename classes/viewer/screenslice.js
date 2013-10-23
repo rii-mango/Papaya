@@ -44,7 +44,7 @@ papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN = 0;
 
 
 papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldSpace) {
-    var origin, voxelDims, ctr, ctrY, ctrX, value, alpha, index;
+    var origin, voxelDims, ctr, ctrY, ctrX, value, alpha, index, negative;
 
     slice = round(slice);
 
@@ -89,10 +89,12 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
                         }
                     }
 
-                    if (value <= this.screenVolumes[ctr].screenMin) {
+                    if ((!this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMin))
+                            || (this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMin))) {
                         value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN;  // screen value
                         alpha = this.screenVolumes[ctr].isOverlay() ? 0 : 255;
-                    } else if (value >= this.screenVolumes[ctr].screenMax) {
+                    } else if ((!this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMax))
+                            || (this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMax))) {
                         value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX;  // screen value
                     } else {
                         value = round(((value - this.screenVolumes[ctr].screenMin) * this.screenVolumes[ctr].screenRatio) + 0.5);  // screen value
