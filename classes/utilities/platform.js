@@ -73,15 +73,19 @@ function getKeyCode(ev) {
 function getMousePositionX(ev) {
     var touch;
 
-    if (ev.targetTouches.length === 1) {
-        touch = ev.targetTouches[0];
-        if (touch) {
-            return touch.pageX;
+    if (ev.targetTouches) {
+        if (ev.targetTouches.length === 1) {
+            touch = ev.targetTouches[0];
+            if (touch) {
+                return touch.pageX;
+            }
         }
-    } else if (ev.changedTouches.length === 1) {
-        touch = ev.changedTouches[0];
-        if (touch) {
-            return touch.pageX;
+    } else if (ev.changedTouches) {
+        if (ev.changedTouches.length === 1) {
+            touch = ev.changedTouches[0];
+            if (touch) {
+                return touch.pageX;
+            }
         }
     }
 
@@ -93,15 +97,19 @@ function getMousePositionX(ev) {
 function getMousePositionY(ev) {
     var touch;
 
-    if (ev.targetTouches.length === 1) {
-        touch = ev.targetTouches[0];
-        if (touch) {
-            return touch.pageY;
+    if (ev.targetTouches) {
+        if (ev.targetTouches.length === 1) {
+            touch = ev.targetTouches[0];
+            if (touch) {
+                return touch.pageY;
+            }
         }
-    } else if (ev.changedTouches.length === 1) {
-        touch = ev.changedTouches[0];
-        if (touch) {
-            return touch.pageY;
+    } else if (ev.changedTouches) {
+        if (ev.changedTouches.length === 1) {
+            touch = ev.changedTouches[0];
+            if (touch) {
+                return touch.pageY;
+            }
         }
     }
 
