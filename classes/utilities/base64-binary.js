@@ -36,7 +36,7 @@
  * https://developer.mozilla.org/en/JavaScript_typed_arrays/Uint8Array
  */
 
-Base64Binary = {
+var Base64Binary = {
     _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
     /* will return a  Uint8Array type */

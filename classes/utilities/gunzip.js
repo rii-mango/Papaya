@@ -7,7 +7,7 @@
  * Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
  * Version: 1.0.0.1  Dec 25 1999
  */
-Gunzip = function () {
+var Gunzip = function () {
     var GUNZIP_FLAG_NOT_SUPPORTED = "GZIP flag not supported!";
     var GUNZIP_INCORRECT_MAGIC_COOKIE = "Not a GZIP file!";
     var START_OFFSET_DEFAULT = 10;
