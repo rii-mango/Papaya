@@ -36,7 +36,7 @@ mkdir build
 mkdir build/data
 
 
-# build local usage
+# build for specific usage
 if $WEB_BUILD
 then
     sed '/papaya.data.SampleImage.data/d' ./classes/data/sample-image.js > build/data/sample-image.js
