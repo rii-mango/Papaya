@@ -142,9 +142,11 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         papayaDataTalairachAtlasImageType;
 
     papayaDataType = (typeof papaya.data);
-    papayaDataTalairachAtlasType = (typeof papaya.data.TalairachAtlas);
-    papayaDataTalairachAtlasDataType = (typeof papaya.data.TalairachAtlas.data);
-    papayaDataTalairachAtlasImageType = (typeof papaya.data.TalairachAtlas.image);
+    papayaDataTalairachAtlasType = (typeof papaya.data.Atlas);
+    if (papaya.data.Atlas) {
+        papayaDataTalairachAtlasDataType = (typeof papaya.data.Atlas.data);
+        papayaDataTalairachAtlasImageType = (typeof papaya.data.Atlas.image);
+    }
 
     if (this.volume.hasError()) {
         papayaMain.papayaDisplay.drawError(this.volume.errorMessage);
@@ -154,10 +156,10 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
     if ((papayaDataType !== 'undefined') && (papayaDataTalairachAtlasType !== 'undefined')) {
         if (papayaDataTalairachAtlasDataType !== "undefined") {
             this.atlas
-                = new papaya.viewer.Atlas(papaya.data.TalairachAtlas.data, null, papaya.data.TalairachAtlas.labels);
+                = new papaya.viewer.Atlas(papaya.data.Atlas.data, null, papaya.data.Atlas.labels);
         } else if (papayaDataTalairachAtlasImageType !== "undefined") {
             this.atlas
-                = new papaya.viewer.Atlas(null, papaya.data.TalairachAtlas.image, papaya.data.TalairachAtlas.labels);
+                = new papaya.viewer.Atlas(null, papaya.data.Atlas.image, papaya.data.Atlas.labels);
         }
     }
 
