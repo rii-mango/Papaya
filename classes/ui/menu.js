@@ -130,10 +130,16 @@ papaya.ui.Menu.prototype.showMenu = function () {
         menuHtml = $(menuHtmlId);
 
         isShowing = menuHtml.is(":visible");
-        this.callback(this.buttonId);
+
         menuHtml.remove();
 
         if (!isShowing) {
+            this.callback(this.buttonId);
+
+            if (this.icons) {
+                $("#" + this.buttonId + " > img").attr("src", this.icons[this.dataSource.getIndex(this.label)]);
+            }
+
             button = $("#" + this.buttonId);
             this.buildMenu();
             menuHtml = $(menuHtmlId);

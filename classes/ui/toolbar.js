@@ -33,7 +33,7 @@ papaya.ui.Toolbar.MENU_DATA = {
                 {"label": "Preferences", "action": "Preferences"}
             ]
             },
-        {"label": "SPACE", "icons": [papaya.ui.Toolbar.ICON_IMAGESPACE, papaya.ui.Toolbar.ICON_WORLDSPACE] }
+        {"label": "SPACE", "icons": [papaya.ui.Toolbar.ICON_IMAGESPACE, papaya.ui.Toolbar.ICON_WORLDSPACE], "items": [] }
     ]
 };
 
@@ -94,7 +94,25 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
     $(".menuLabel").remove();
 
     for (ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA.menus.length; ctr += 1) {
-        this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, null, null, false);
+        this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, papayaMain.papayaViewer, null, false);
+    }
+
+    this.buildAtlasMenu();
+};
+
+
+
+papaya.ui.Toolbar.prototype.buildAtlasMenu = function () {
+    if (papaya.data) {
+        if (papaya.data.Atlas) {
+            var items = papaya.ui.Toolbar.MENU_DATA.menus[2].items;
+
+            items[0] = {"label": papaya.data.Atlas.labels.atlas.header.name, "action": "AtlasChanged-" + papaya.data.Atlas.labels.atlas.header.name, "type": "checkbox", "method": "isUsingAtlas"};
+
+            if (papaya.data.Atlas.labels.atlas.header.transformedname) {
+                items[1] = {"label": papaya.data.Atlas.labels.atlas.header.transformedname, "action": "AtlasChanged-" + papaya.data.Atlas.labels.atlas.header.transformedname, "type": "checkbox", "method": "isUsingAtlas"};
+            }
+        }
     }
 };
 
@@ -194,7 +212,7 @@ papaya.ui.Toolbar.prototype.closeAllMenus = function () {
 
 
 papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
-    var imageIndex, colorTableName, dialog, papayaDataSampleImageDataType, papayaDataSampleImageImageType;
+    var imageIndex, colorTableName, dialog, papayaDataSampleImageDataType, papayaDataSampleImageImageType, atlasName;
 
     if (!keepopen) {
         this.closeAllMenus();
@@ -233,6 +251,10 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             dialog.showDialog();
         } else if (action.startsWith("SPACE")) {
             papayaMain.papayaViewer.toggleWorldSpace();
+            papayaMain.papayaViewer.drawViewer(true);
+        } else if (action.startsWith("AtlasChanged")) {
+            atlasName = action.substring(action.lastIndexOf("-") + 1);
+            papayaMain.papayaViewer.atlas.currentAtlas = atlasName;
             papayaMain.papayaViewer.drawViewer(true);
         }
     }

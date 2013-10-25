@@ -9,17 +9,18 @@ papaya.ui = papaya.ui || {};
 
 
 
-papaya.ui.MenuItemCheckBox = papaya.ui.MenuItemCheckBox || function (label, action, callback, dataSource, method, modifier) {
+papaya.ui.MenuItemCheckBox = papaya.ui.MenuItemCheckBox || function (label, action, callback, dataSource, method,
+                                                                     modifier) {
     this.label = label;
 
     this.modifier = "";
-    if (modifier !== undefined) {
+    if ((modifier !== undefined) && (modifier !== null)) {
         this.modifier = "-" + modifier;
     }
 
     this.action = action + this.modifier;
     this.method = method;
-    this.id = this.action.replace(/ /g, "_");
+    this.id = this.action.replace(/ /g, "_").replace(/\(/g, "").replace(/\)/g, "");
     this.callback = callback;
     this.dataSource = dataSource;
 };
@@ -41,7 +42,8 @@ papaya.ui.MenuItemCheckBox.prototype.buildHTML = function (parentId) {
         checked = "checked='checked'";
     }
 
-    html = "<li id='" + this.id + "'><input type='radio' class='ColorTableGroup' name='ColorTableGroup' id='" + this.id + "' value='" + this.id  + "' " + checked + "><span class='unselectable'>&nbsp;" + this.label + "</span></li>";
+    html = "<li id='" + this.id + "'><input type='radio' class='ColorTableGroup' name='ColorTableGroup' id='" + this.id
+        + "' value='" + this.id  + "' " + checked + "><span class='unselectable'>&nbsp;" + this.label + "</span></li>";
     $("#" + parentId).append(html);
     thisHtml = $("#" + this.id);
     thisHtml.click(bind(this, this.doAction));

@@ -951,6 +951,8 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     document.removeEventListener("touchmove", this.listenerTouchMove, false);
     document.removeEventListener("touchstart", this.listenerMouseDown, false);
     document.removeEventListener("touchend", this.listenerMouseUp, false);
+    this.updateTimer = null;
+    this.updateTimerEvent = null;
     this.drawEmptyViewer();
     if (papayaMain.papayaDisplay) {
         papayaMain.papayaDisplay.drawEmptyDisplay();
@@ -1108,3 +1110,9 @@ papaya.viewer.Viewer.prototype.getOrientationCertaintyColor = function () {
 
     return papaya.viewer.Viewer.ORIENTATION_CERTAINTY_UNKNOWN_COLOR;
 };
+
+
+
+papaya.viewer.Viewer.prototype.isUsingAtlas = function (name) {
+    return (name === this.atlas.currentAtlas);
+}
