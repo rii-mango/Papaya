@@ -1,13 +1,19 @@
 Papaya
 ======
 
-A pure JavaScript medical research image viewer.  Current list of features:
-- Requires no browser plugin.  Runs in desktop and mobile browsers (iPhone and iPad supported).
-- Orthogonal viewer controlled with mouse and keyboard controls.
+A pure JavaScript medical research image viewer.
+- Requires no browser plugin.
+- Runs in Firefox (7), Chrome (7), Safari (6), MobileSafari (iOS 6), IE (10).
+- Orthogonal viewer with mouse and keyboard controls.
 - Reads NIFTI (.nii and .nii.gz) files.
-- Supports overlays and atlas labels.  (Includes sample image and atlas.)
-- Supported browsers (min version): Firefox (7), Chrome (7), Safari (6), MobileSafari (iOS 6), IE (10).
+- Supports atlas labels.
+
+
+Demo
+-----
 - Demo: http://ric.uthscsa.edu/mango/papaya/
+- Current Beta: http://ric.uthscsa.edu/mango/papayabeta/
+
 
 ![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)
 
