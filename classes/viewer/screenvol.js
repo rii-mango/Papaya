@@ -13,7 +13,6 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutNam
     /*jslint sub: true */
     this.volume = vol;
     this.lutName = lutName;
-    this.colorTable = new papaya.viewer.ColorTable(lutName, baseImage, true);
     this.screenMin = this.volume.header.imageRange.displayMin;
     this.screenMax = this.volume.header.imageRange.displayMax;
     this.imageMin = this.volume.header.imageRange.imageMin;
@@ -23,18 +22,25 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutNam
     this.findImageRange();
 
     var screenParams = papayaParams[this.volume.fileName];
-    if (screenParams && (screenParams.min !== undefined) && (screenParams.max !== undefined)) {
-        if (parametric) {
-            this.screenMin = -1 * Math.abs(screenParams.min);
-            this.screenMax = -1 * Math.abs(screenParams.max);
+    if (screenParams) {
+        if ((screenParams.min !== undefined) && (screenParams.max !== undefined)) {
+            if (parametric) {
+                this.screenMin = -1 * Math.abs(screenParams.min);
+                this.screenMax = -1 * Math.abs(screenParams.max);
+            } else {
+                this.screenMin = Math.abs(screenParams.min);
+                this.screenMax = Math.abs(screenParams.max);
+            }
         } else {
-            this.screenMin = Math.abs(screenParams.min);
-            this.screenMax = Math.abs(screenParams.max);
+            this.findDisplayRange(parametric);
         }
-    } else {
-        this.findDisplayRange(parametric);
+
+        if (screenParams.lut !== undefined) {
+            this.lutName = screenParams.lut;
+        }
     }
 
+    this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
     this.negative = (this.screenMax < this.screenMin);
 
     this.updateScreenRange();
