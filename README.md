@@ -15,7 +15,7 @@ Demo
 - Current Beta: http://ric.uthscsa.edu/mango/papayabeta/
 
 
-![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)
+[![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://ric.uthscsa.edu/mango/papaya/)
 
 Installation
 ------
@@ -60,7 +60,29 @@ Basic usage:
 </html>
 ```
 
+To specify multiple images and other options:
+```html
+<head>
+    ...
+    <script type="text/javascript">
+        var params = [];
+        params["worldSpace"] = true;
+        params["images"] = ["myBaseImage.nii.gz", "myOverlayImage.nii.gz"];
+        params["myOverlayImage.nii.gz"] = {"min": 4, "max":10};
+    </script>
+<head>
+```
+
+
 To automatically load an image by URL:
 ```html
 <div id="papayaViewer" data-load-url="http://www.mysite.com/myimages/myimage.nii.gz"></div>
 ```
+
+To automatically load an image by variable name of encoded data:
+```html
+<div id="papayaViewer" data-load-encoded-data="my-encoded-data-var"></div>
+```
+
+
+
