@@ -43,17 +43,17 @@ papaya.ui.Toolbar.IMAGE_MENU_DATA = {
         {"label": "Range", "action": "ChangeRange", "type": "range", "method": "getRange"},
         {"label": "Color Table...", "action": "ColorTable",
             "items": [
-                {"label": "Grayscale", "action": "ColorTable-Grayscale", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": "Red-to-Yellow", "action": "ColorTable-Red-to-Yellow", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": "Blue-to-Green", "action": "ColorTable-Blue-to-Green", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": "Spectrum", "action": "ColorTable-Spectrum", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": "Hot-and-Cold", "action": "ColorTable-Hot-and-Cold", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": "Gold", "action": "ColorTable-Gold", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": "Red-to-White", "action": "ColorTable-Red-to-White", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": "Green-to-White", "action": "ColorTable-Green-to-White", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": "Blue-to-White", "action": "ColorTable-Blue-to-White", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": "Orange-to-White", "action": "ColorTable-Orange-to-White", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": "Purple-to-White", "action": "ColorTable-Purple-to-White", "type": "checkbox", "method": "isUsingColorTable"}
+                {"label": papaya.viewer.ColorTable.TABLE_GRAYSCALE_NAME, "action": "ColorTable-Grayscale", "type": "checkbox", "method": "isUsingColorTable"},
+                {"label": papaya.viewer.ColorTable.TABLE_RED2YELLOW_NAME, "action": "ColorTable-Red-to-Yellow", "type": "checkbox", "method": "isUsingColorTable"},
+                {"label": papaya.viewer.ColorTable.TABLE_BLUE2GREEN_NAME, "action": "ColorTable-Blue-to-Green", "type": "checkbox", "method": "isUsingColorTable"},
+                {"label": papaya.viewer.ColorTable.TABLE_SPECTRUM_NAME, "action": "ColorTable-Spectrum", "type": "checkbox", "method": "isUsingColorTable"},
+                {"label": papaya.viewer.ColorTable.TABLE_HOTANDCOLD_NAME, "action": "ColorTable-Hot-and-Cold", "type": "checkbox", "method": "isUsingColorTable"},
+                {"label": papaya.viewer.ColorTable.TABLE_GOLD_NAME, "action": "ColorTable-Gold", "type": "checkbox", "method": "isUsingColorTable"},
+                {"label": papaya.viewer.ColorTable.TABLE_RED2WHITE_NAME, "action": "ColorTable-Red-to-White", "type": "checkbox", "method": "isUsingColorTable"},
+                {"label": papaya.viewer.ColorTable.TABLE_GREEN2WHITE_NAME, "action": "ColorTable-Green-to-White", "type": "checkbox", "method": "isUsingColorTable"},
+                {"label": papaya.viewer.ColorTable.TABLE_BLUE2WHITE_NAME, "action": "ColorTable-Blue-to-White", "type": "checkbox", "method": "isUsingColorTable"},
+                {"label": papaya.viewer.ColorTable.TABLE_ORANGE2WHITE_NAME, "action": "ColorTable-Orange-to-White", "type": "checkbox", "method": "isUsingColorTable"},
+                {"label": papaya.viewer.ColorTable.TABLE_PURPLE2WHITE_NAME, "action": "ColorTable-Purple-to-White", "type": "checkbox", "method": "isUsingColorTable"}
             ]
             }
     ]
