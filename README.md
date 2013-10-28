@@ -81,7 +81,7 @@ To automatically load an image by URL:
 
 To automatically load an image by variable name of encoded data:
 ```html
-<div id="papayaViewer" data-load-encoded-data="my-encoded-data-var"></div>
+<div id="papayaViewer" data-load-encoded-data="my-encoded-data" data-load-encoded-name="my-encoded-data-name"></div>
 ```
 
 
