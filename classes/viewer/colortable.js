@@ -10,7 +10,7 @@ papaya.viewer = papaya.viewer || {};
 
 
 papaya.viewer.ColorTable = papaya.viewer.ColorTable || function (lutName, baseImage, gradation) {
-    this.lut = papaya.viewer.ColorTable.MAP[lutName];
+    this.lut = papaya.viewer.ColorTable.findLUT(lutName);
     this.maxLUT = 0;
     this.minLUT = 0;
     this.knotThresholds = [];
@@ -38,43 +38,66 @@ papaya.viewer.ColorTable = papaya.viewer.ColorTable || function (lutName, baseIm
 
 
 
-papaya.viewer.ColorTable.TABLE_GRAYSCALE_NAME = "Grayscale";
-papaya.viewer.ColorTable.TABLE_SPECTRUM_NAME = "Spectrum";
-papaya.viewer.ColorTable.TABLE_HOTANDCOLD_NAME = "Hot-and-Cold";
-papaya.viewer.ColorTable.TABLE_GOLD_NAME  = "Gold";
-papaya.viewer.ColorTable.TABLE_RED2WHITE_NAME  = "Red-to-White";
-papaya.viewer.ColorTable.TABLE_GREEN2WHITE_NAME  = "Green-to-White";
-papaya.viewer.ColorTable.TABLE_BLUE2WHITE_NAME  = "Blue-to-White";
-papaya.viewer.ColorTable.TABLE_ORANGE2WHITE_NAME  = "Orange-to-White";
-papaya.viewer.ColorTable.TABLE_PURPLE2WHITE_NAME  = "Purple-to-White";
-papaya.viewer.ColorTable.TABLE_RED2YELLOW_NAME = "Red-to-Yellow";
-papaya.viewer.ColorTable.TABLE_BLUE2GREEN_NAME = "Blue-to-Green";
-papaya.viewer.ColorTable.TABLE_GRAYSCALE = [[0, 0, 0, 0], [1, 1, 1, 1]];
-papaya.viewer.ColorTable.TABLE_SPECTRUM = [[0, 0, 0, 0], [0.1, 0, 0, 1], [0.33, 0, 1, 1], [0.5, 0, 1, 0], [0.66, 1, 1, 0], [0.9, 1, 0, 0], [1, 1, 1, 1]];
-papaya.viewer.ColorTable.TABLE_HOTANDCOLD = [[0, 0, 0, 1], [0.15, 0, 1, 1], [0.3, 0, 1, 0], [0.45, 0, 0, 0], [0.5, 0, 0, 0], [0.55, 0, 0, 0], [0.7, 1, 1, 0], [0.85, 1, 0, 0], [1, 1, 1, 1]];
-papaya.viewer.ColorTable.TABLE_GOLD =  [[0, 0, 0, 0], [0.13, 0.19, 0.03, 0], [0.25, 0.39, 0.12, 0], [0.38, 0.59, 0.26, 0], [0.50, 0.80, 0.46, 0.08], [0.63, 0.99, 0.71, 0.21], [0.75, 0.99, 0.88, 0.34], [0.88, 0.99, 0.99, 0.48], [1, 0.90, 0.95, 0.61]];
-papaya.viewer.ColorTable.TABLE_RED2WHITE = [[0, 1, 0, 0], [1, 1, 1, 1]];
-papaya.viewer.ColorTable.TABLE_GREEN2WHITE = [[0, 0, 1, 0], [1, 1, 1, 1]];
-papaya.viewer.ColorTable.TABLE_BLUE2WHITE = [[0, 0, 0, 1], [1, 1, 1, 1]];
-papaya.viewer.ColorTable.TABLE_ORANGE2WHITE = [[0, 1, 0.5, 0], [1, 1, 1, 1]];
-papaya.viewer.ColorTable.TABLE_PURPLE2WHITE = [[0, 0.5, 0, 1], [1, 1, 1, 1]];
-papaya.viewer.ColorTable.TABLE_RED2YELLOW = [[0, 1, 0, 0], [1, 1, 1, 0]];
-papaya.viewer.ColorTable.TABLE_BLUE2GREEN = [[0, 0, 0, 1], [1, 0, 1, 0]];
-papaya.viewer.ColorTable.MAP = {};
-papaya.viewer.ColorTable.MAP[papaya.viewer.ColorTable.TABLE_GRAYSCALE_NAME] = papaya.viewer.ColorTable.TABLE_GRAYSCALE;
-papaya.viewer.ColorTable.MAP[papaya.viewer.ColorTable.TABLE_SPECTRUM_NAME] = papaya.viewer.ColorTable.TABLE_SPECTRUM;
-papaya.viewer.ColorTable.MAP[papaya.viewer.ColorTable.TABLE_RED2YELLOW_NAME] = papaya.viewer.ColorTable.TABLE_RED2YELLOW;
-papaya.viewer.ColorTable.MAP[papaya.viewer.ColorTable.TABLE_BLUE2GREEN_NAME] = papaya.viewer.ColorTable.TABLE_BLUE2GREEN;
-papaya.viewer.ColorTable.MAP[papaya.viewer.ColorTable.TABLE_HOTANDCOLD_NAME] = papaya.viewer.ColorTable.TABLE_HOTANDCOLD;
-papaya.viewer.ColorTable.MAP[papaya.viewer.ColorTable.TABLE_GOLD_NAME] = papaya.viewer.ColorTable.TABLE_GOLD;
-papaya.viewer.ColorTable.MAP[papaya.viewer.ColorTable.TABLE_RED2WHITE_NAME] = papaya.viewer.ColorTable.TABLE_RED2WHITE;
-papaya.viewer.ColorTable.MAP[papaya.viewer.ColorTable.TABLE_GREEN2WHITE_NAME] = papaya.viewer.ColorTable.TABLE_GREEN2WHITE;
-papaya.viewer.ColorTable.MAP[papaya.viewer.ColorTable.TABLE_BLUE2WHITE_NAME] = papaya.viewer.ColorTable.TABLE_BLUE2WHITE;
-papaya.viewer.ColorTable.MAP[papaya.viewer.ColorTable.TABLE_ORANGE2WHITE_NAME] = papaya.viewer.ColorTable.TABLE_ORANGE2WHITE;
-papaya.viewer.ColorTable.MAP[papaya.viewer.ColorTable.TABLE_PURPLE2WHITE_NAME] = papaya.viewer.ColorTable.TABLE_PURPLE2WHITE;
+papaya.viewer.ColorTable.TABLE_GRAYSCALE = {"name": "Grayscale", "data": [[0, 0, 0, 0], [1, 1, 1, 1]]};
+papaya.viewer.ColorTable.TABLE_SPECTRUM = {"name": "Spectrum", "data": [[0, 0, 0, 0], [0.1, 0, 0, 1], [0.33, 0, 1, 1], [0.5, 0, 1, 0], [0.66, 1, 1, 0], [0.9, 1, 0, 0], [1, 1, 1, 1]]};
+papaya.viewer.ColorTable.TABLE_RED2YELLOW = {"name": "Red-to-Yellow", "data": [[0, 1, 0, 0], [1, 1, 1, 0]]};
+papaya.viewer.ColorTable.TABLE_BLUE2GREEN = {"name": "Blue-to-Green", "data": [[0, 0, 0, 1], [1, 0, 1, 0]]};
+papaya.viewer.ColorTable.TABLE_HOTANDCOLD = {"name": "Hot-and-Cold", "data": [[0, 0, 0, 1], [0.15, 0, 1, 1], [0.3, 0, 1, 0], [0.45, 0, 0, 0], [0.5, 0, 0, 0], [0.55, 0, 0, 0], [0.7, 1, 1, 0], [0.85, 1, 0, 0], [1, 1, 1, 1]]};
+papaya.viewer.ColorTable.TABLE_GOLD = {"name": "Gold", "data": [[0, 0, 0, 0], [0.13, 0.19, 0.03, 0], [0.25, 0.39, 0.12, 0], [0.38, 0.59, 0.26, 0], [0.50, 0.80, 0.46, 0.08], [0.63, 0.99, 0.71, 0.21], [0.75, 0.99, 0.88, 0.34], [0.88, 0.99, 0.99, 0.48], [1, 0.90, 0.95, 0.61]]};
+papaya.viewer.ColorTable.TABLE_RED2WHITE = {"name": "Red-to-White", "data": [[0, 1, 0, 0], [1, 1, 1, 1]]};
+papaya.viewer.ColorTable.TABLE_GREEN2WHITE = {"name": "Green-to-White", "data": [[0, 0, 1, 0], [1, 1, 1, 1]]};
+papaya.viewer.ColorTable.TABLE_BLUE2WHITE = {"name": "Blue-to-White", "data": [[0, 0, 0, 1], [1, 1, 1, 1]]};
+papaya.viewer.ColorTable.TABLE_ORANGE2WHITE = {"name": "Orange-to-White", "data": [[0, 1, 0.5, 0], [1, 1, 1, 1]]};
+papaya.viewer.ColorTable.TABLE_PURPLE2WHITE = {"name": "Purple-to-White", "data": [[0, 0.5, 0, 1], [1, 1, 1, 1]]};
+
+papaya.viewer.ColorTable.DEFAULT_COLOR_TABLE = papaya.viewer.ColorTable.TABLE_GRAYSCALE;
+papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES = [papaya.viewer.ColorTable.TABLE_RED2YELLOW, papaya.viewer.ColorTable.TABLE_BLUE2GREEN];
+papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES = [
+    papaya.viewer.ColorTable.TABLE_RED2WHITE,
+    papaya.viewer.ColorTable.TABLE_GREEN2WHITE,
+    papaya.viewer.ColorTable.TABLE_BLUE2WHITE,
+    papaya.viewer.ColorTable.TABLE_ORANGE2WHITE,
+    papaya.viewer.ColorTable.TABLE_PURPLE2WHITE
+];
+papaya.viewer.ColorTable.TABLE_ALL = [
+    papaya.viewer.ColorTable.TABLE_GRAYSCALE,
+    papaya.viewer.ColorTable.TABLE_SPECTRUM,
+    papaya.viewer.ColorTable.TABLE_RED2YELLOW,
+    papaya.viewer.ColorTable.TABLE_BLUE2GREEN,
+    papaya.viewer.ColorTable.TABLE_HOTANDCOLD,
+    papaya.viewer.ColorTable.TABLE_GOLD,
+    papaya.viewer.ColorTable.TABLE_RED2WHITE,
+    papaya.viewer.ColorTable.TABLE_GREEN2WHITE,
+    papaya.viewer.ColorTable.TABLE_BLUE2WHITE,
+    papaya.viewer.ColorTable.TABLE_ORANGE2WHITE,
+    papaya.viewer.ColorTable.TABLE_PURPLE2WHITE
+];
+
 papaya.viewer.ColorTable.LUT_MIN = 0;
 papaya.viewer.ColorTable.LUT_MAX = 255;
 papaya.viewer.ColorTable.ICON_SIZE = 18;
+
+
+
+papaya.viewer.ColorTable.findLUT = function (name) {
+    var ctr;
+
+    for (ctr = 0; ctr < papaya.viewer.ColorTable.TABLE_ALL.length; ctr += 1) {
+        if (papaya.viewer.ColorTable.TABLE_ALL[ctr].name === name) {
+            return papaya.viewer.ColorTable.TABLE_ALL[ctr].data;
+        }
+    }
+
+    return null;
+};
+
+
+
+papaya.viewer.ColorTable.addCustomLUT = function (lut) {
+    if (papaya.viewer.ColorTable.findLUT(lut.name) === null) {
+        papaya.viewer.ColorTable.TABLE_ALL.push(lut);
+    }
+};
 
 
 

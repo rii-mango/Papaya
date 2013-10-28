@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, papayaMain, fullyQualifiedVariableExists, PAPAYA_CONTAINER_ID */
+/*global $, bind, papayaMain, fullyQualifiedVariableExists, PAPAYA_CONTAINER_ID, papayaParams */
 
 "use strict";
 
@@ -41,21 +41,7 @@ papaya.ui.Toolbar.IMAGE_MENU_DATA = {
     "items": [
         {"label": "Image Info", "action": "ImageInfo"},
         {"label": "Range", "action": "ChangeRange", "type": "range", "method": "getRange"},
-        {"label": "Color Table...", "action": "ColorTable",
-            "items": [
-                {"label": papaya.viewer.ColorTable.TABLE_GRAYSCALE_NAME, "action": "ColorTable-Grayscale", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": papaya.viewer.ColorTable.TABLE_RED2YELLOW_NAME, "action": "ColorTable-Red-to-Yellow", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": papaya.viewer.ColorTable.TABLE_BLUE2GREEN_NAME, "action": "ColorTable-Blue-to-Green", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": papaya.viewer.ColorTable.TABLE_SPECTRUM_NAME, "action": "ColorTable-Spectrum", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": papaya.viewer.ColorTable.TABLE_HOTANDCOLD_NAME, "action": "ColorTable-Hot-and-Cold", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": papaya.viewer.ColorTable.TABLE_GOLD_NAME, "action": "ColorTable-Gold", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": papaya.viewer.ColorTable.TABLE_RED2WHITE_NAME, "action": "ColorTable-Red-to-White", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": papaya.viewer.ColorTable.TABLE_GREEN2WHITE_NAME, "action": "ColorTable-Green-to-White", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": papaya.viewer.ColorTable.TABLE_BLUE2WHITE_NAME, "action": "ColorTable-Blue-to-White", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": papaya.viewer.ColorTable.TABLE_ORANGE2WHITE_NAME, "action": "ColorTable-Orange-to-White", "type": "checkbox", "method": "isUsingColorTable"},
-                {"label": papaya.viewer.ColorTable.TABLE_PURPLE2WHITE_NAME, "action": "ColorTable-Purple-to-White", "type": "checkbox", "method": "isUsingColorTable"}
-            ]
-            }
+        {"label": "Color Table...", "action": "ColorTable", "items": [] }
     ]
 };
 
@@ -98,6 +84,7 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
     }
 
     this.buildAtlasMenu();
+    this.buildColorMenuItems();
 };
 
 
@@ -113,6 +100,38 @@ papaya.ui.Toolbar.prototype.buildAtlasMenu = function () {
                 items[1] = {"label": papaya.data.Atlas.labels.atlas.header.transformedname, "action": "AtlasChanged-" + papaya.data.Atlas.labels.atlas.header.transformedname, "type": "checkbox", "method": "isUsingAtlas"};
             }
         }
+    }
+};
+
+
+papaya.ui.Toolbar.prototype.buildColorMenuItems = function () {
+    var items, colorTableItem, ctr, allColorTables, item, screenParams;
+
+    screenParams = papayaParams.lut;
+    if (screenParams) {
+        papaya.viewer.ColorTable.addCustomLUT(screenParams);
+    }
+
+    screenParams = papayaParams.luts;
+    if (screenParams) {
+        for (ctr = 0; ctr < screenParams.length; ctr += 1) {
+            papaya.viewer.ColorTable.addCustomLUT(screenParams[ctr]);
+        }
+    }
+
+    allColorTables = papaya.viewer.ColorTable.TABLE_ALL;
+    items = papaya.ui.Toolbar.IMAGE_MENU_DATA.items;
+
+    for (ctr = 0; ctr < items.length; ctr += 1) {
+        if (items[ctr].label === "Color Table...") {
+            items = items[ctr].items;
+            break;
+        }
+    }
+
+    for (ctr = 0; ctr < allColorTables.length; ctr += 1) {
+        item = {"label": allColorTables[ctr].name, "action": "ColorTable-" + allColorTables[ctr].name, "type": "checkbox", "method": "isUsingColorTable"};
+        items[ctr] = item;
     }
 };
 

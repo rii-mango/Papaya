@@ -167,7 +167,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         }
     }
 
-    this.screenVolumes[0] = new papaya.viewer.ScreenVolume(this.volume, papaya.viewer.ColorTable.TABLE_GRAYSCALE_NAME, true);
+    this.screenVolumes[0] = new papaya.viewer.ScreenVolume(this.volume, papaya.viewer.ColorTable.DEFAULT_COLOR_TABLE.name, true);
     this.setCurrentScreenVol(0);
 
     this.mainImage = this.axialSlice = new papaya.viewer.ScreenSlice(this.volume, papaya.viewer.ScreenSlice.DIRECTION_AXIAL,
@@ -222,14 +222,14 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
     screenParams = papayaParams[this.loadingVolume.fileName];
     parametric = (screenParams && screenParams.parametric);
 
-    this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, (parametric ? papaya.viewer.ColorTable.TABLE_RED2YELLOW_NAME : this.getNextColorTable()), false);
+    this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, (parametric ? papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[0].name : this.getNextColorTable()), false);
     this.setCurrentScreenVol(this.screenVolumes.length - 1);
     this.drawViewer(true);
     papayaMain.papayaToolbar.buildToolbar();
     papayaMain.papayaToolbar.updateImageButtons();
 
     if (parametric) {
-        this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, papaya.viewer.ColorTable.TABLE_BLUE2GREEN_NAME, false, true);
+        this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
         this.setCurrentScreenVol(this.screenVolumes.length - 1);
         this.drawViewer(true);
         papayaMain.papayaToolbar.buildToolbar();
@@ -886,28 +886,7 @@ papaya.viewer.Viewer.prototype.getWorldCoordinateAtIndex = function (ctrX, ctrY,
 
 papaya.viewer.Viewer.prototype.getNextColorTable = function () {
     var value = (this.screenVolumes.length - 1) % 5;
-
-    if (value === 0) {
-        return papaya.viewer.ColorTable.TABLE_RED2WHITE_NAME;
-    }
-
-    if (value === 1) {
-        return papaya.viewer.ColorTable.TABLE_GREEN2WHITE_NAME;
-    }
-
-    if (value === 2) {
-        return papaya.viewer.ColorTable.TABLE_BLUE2WHITE_NAME;
-    }
-
-    if (value === 3) {
-        return papaya.viewer.ColorTable.TABLE_ORANGE2WHITE_NAME;
-    }
-
-    if (value === 4) {
-        return papaya.viewer.ColorTable.TABLE_PURPLE2WHITE_NAME;
-    }
-
-    return papaya.viewer.ColorTable.TABLE_GRAYSCALE_NAME;
+    return papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES[value].name;
 };
 
 
