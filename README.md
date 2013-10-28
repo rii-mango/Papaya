@@ -67,7 +67,7 @@ To specify multiple images and other options:
     <script type="text/javascript">
         var params = [];
         params["worldSpace"] = true;
-        params["images"] = ["myBaseImage.nii.gz", "myOverlayImage.nii.gz"];
+        params["images"] = ["./data/myBaseImage.nii.gz", "./data/myOverlayImage.nii.gz"];
         params["myOverlayImage.nii.gz"] = {"min": 4, "max": 10};
     </script>
 <head>
@@ -76,7 +76,7 @@ To specify multiple images and other options:
 
 To automatically load a single image by URL:
 ```html
-<div id="papayaViewer" data-load-url="http://www.mysite.com/myimages/myimage.nii.gz"></div>
+<div id="papayaViewer" data-load-url="./data/myimage.nii.gz"></div>
 ```
 
 To automatically load a single image by variable name of encoded data:
