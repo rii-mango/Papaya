@@ -218,15 +218,17 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
         this.closeAllMenus();
     }
 
-    papayaDataSampleImageDataType = (typeof papaya.data.SampleImage.data);
-    papayaDataSampleImageImageType = (typeof papaya.data.SampleImage.image);
-
     if (action) {
         if (action.startsWith("ImageButton")) {
             imageIndex = parseInt(action.substring(action.length - 1), 10);
             papayaMain.papayaViewer.setCurrentScreenVol(imageIndex);
             this.updateImageButtons();
         } else if (action === "OpenSampleImage") {
+            if (papaya.data && papaya.data.SampleImage) {
+                papayaDataSampleImageDataType = (typeof papaya.data.SampleImage.data);
+                papayaDataSampleImageImageType = (typeof papaya.data.SampleImage.image);
+            }
+
             if (papayaDataSampleImageDataType !== 'undefined') {
                 papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.data, false, true, papaya.data.SampleImage.name);
             } else if (papayaDataSampleImageImageType !== 'undefined') {
