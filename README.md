@@ -22,7 +22,7 @@ Installation
 Development: Load `debug.html` in your favorite JavaScript debugger.
 
 Production: Run `build.sh` to create the build files. See the [Papaya Builder](https://github.com/rii-mango/Papaya-Builder) project for more 
-information. For example `build.sh -sample -atlas`
+information. A typical usage would be `build.sh -sample -atlas`
 
 ```shell
 usage: papaya-builder [options]
