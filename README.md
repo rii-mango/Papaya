@@ -15,7 +15,7 @@ Demo
 - Current Beta: http://ric.uthscsa.edu/mango/papayabeta/
 
 
-[![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://ric.uthscsa.edu/mango/papaya/)
+![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)
 
 Installation
 ------
@@ -73,6 +73,7 @@ To specify multiple images and other options:
 <head>
 
 ...
+
 <div id="papayaViewer" class="checkForJS" data-params="params"></div>
 
 ```
