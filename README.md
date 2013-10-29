@@ -71,6 +71,10 @@ To specify multiple images and other options:
         params["myOverlayImage.nii.gz"] = {"min": 4, "max": 10};
     </script>
 <head>
+
+...
+<div id="papayaViewer" class="checkForJS" data-params="params"></div>
+
 ```
 
 
