@@ -92,22 +92,26 @@ papaya.viewer.Viewer.UPDATE_TIMER_INTERVAL = 250;
 
 
 
-papaya.viewer.Viewer.prototype.loadImage = function (name) {
+papaya.viewer.Viewer.prototype.loadImage = function (name, forceUrl, forceEncode) {
     if (this.screenVolumes.length === 0) {
-        this.loadBaseImage(name);
+        this.loadBaseImage(name, forceUrl, forceEncode);
     } else {
-        this.loadOverlay(name);
+        this.loadOverlay(name, forceUrl, forceEncode);
     }
 };
 
 
 
-papaya.viewer.Viewer.prototype.loadBaseImage = function (name) {
-    var loadableImage = papayaMain.findLoadableImage(name);
+papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEncode) {
+    var loadableImage = papayaMain.findLoadableImage(name, forceUrl, forceEncode);
     this.volume = new papaya.volume.Volume();
 
-    if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
+    if (forceEncode) {
+        this.volume.readEncodedData(name, bind(this, this.initializeViewer));
+    } else if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
         this.volume.readEncodedData(loadableImage.encode, bind(this, this.initializeViewer));
+    } else if (forceUrl) {
+        this.volume.readURL(name, bind(this, this.initializeViewer));
     } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
         this.volume.readURL(loadableImage.url, bind(this, this.initializeViewer));
     } else {
@@ -117,7 +121,7 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function (name) {
 
 
 
-papaya.viewer.Viewer.prototype.loadOverlay = function (name) {
+papaya.viewer.Viewer.prototype.loadOverlay = function (name, forceUrl, forceEncode) {
     var loadableImage = papayaMain.findLoadableImage(name);
     this.loadingVolume = new papaya.volume.Volume();
 
@@ -125,8 +129,12 @@ papaya.viewer.Viewer.prototype.loadOverlay = function (name) {
         this.loadingVolume.errorMessage = "Maximum number of overlays (" + papaya.viewer.Viewer.MAX_OVERLAYS + ") has been reached!";
         this.initializeOverlay();
     } else {
-        if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
+        if (forceEncode) {
+            this.loadingVolume.readEncodedData(name, bind(this, this.initializeOverlay));
+        } else if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
             this.loadingVolume.readEncodedData(loadableImage.encode, bind(this, this.initializeOverlay));
+        } else if (forceUrl) {
+            this.loadingVolume.readURL(name, bind(this, this.initializeOverlay));
         } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
             this.loadingVolume.readURL(loadableImage.url, bind(this, this.initializeOverlay));
         } else {

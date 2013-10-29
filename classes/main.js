@@ -225,7 +225,7 @@ papaya.Main.prototype.setUpDnD = function () {
 papaya.Main.prototype.loadNext = function () {
     this.loadingImageIndex += 1;
     if (papayaParams.images && (this.loadingImageIndex < papayaParams.images.length)) {
-        papayaMain.papayaViewer.loadImage(papayaParams.images[this.loadingImageIndex]);
+        papayaMain.papayaViewer.loadImage(papayaParams.images[this.loadingImageIndex], true, false);
     }
 };
 
@@ -275,11 +275,11 @@ function main() {
         loadUrl = viewerHtml.data("load-url");
 
         if (loadUrl) {
-            papayaMain.papayaViewer.loadImage(loadUrl);
+            papayaMain.papayaViewer.loadImage(loadUrl, true, false);
         } else if (papayaParams.images) {
-            papayaMain.papayaViewer.loadImage(papayaParams.images[0]);
+            papayaMain.papayaViewer.loadImage(papayaParams.images[0], true, false);
         } else if (papayaParams.encodedImages) {
-            papayaMain.papayaViewer.loadImage(papayaParams.encodedImages[0]);
+            papayaMain.papayaViewer.loadImage(papayaParams.encodedImages[0], false, true);
         }
 
         resizeViewerComponents(false);

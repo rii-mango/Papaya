@@ -64,12 +64,14 @@
         <script type="text/javascript" src="classes/utilities/utilities.js"></script>
 
         <script type="text/javascript">
-            var papayaLoadableImages = [
-                {"nicename": "Sample Image", "name": "sample_image", "encode": "sample_image"},
-                {"nicename": "Atlas", "name": "Talairach_labels_1mm", "encode": "Talairach_labels_1mm", "hide": true}
-            ];
+            //var papayaLoadableImages = [
+            //    {"nicename": "Sample Image", "name": "sample_image", "encode": "sample_image"},
+            //    {"nicename": "Atlas", "name": "Talairach_labels_1mm", "encode": "Talairach_labels_1mm", "hide": true}
+            //];
 
             var params = [];
+            params["worldSpace"] = true;
+            params["images"] = ["data/sample_image.nii.gz", "data/Talairach_labels_1mm.nii.gz"];
         </script>
 
         <title>Papaya</title>
@@ -78,7 +80,7 @@
     <body>
         <div id="papayaContainer">
             <div id="papayaToolbar"></div>
-            <div id="papayaViewer" class="checkForJS"></div>
+            <div id="papayaViewer" class="checkForJS" data-load-params="params"></div>
             <div id="papayaDisplay"></div>
         </div>
     </body>
