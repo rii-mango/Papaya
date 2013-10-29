@@ -224,8 +224,15 @@ papaya.Main.prototype.setUpDnD = function () {
 
 papaya.Main.prototype.loadNext = function () {
     this.loadingImageIndex += 1;
-    if (papayaParams.images && (this.loadingImageIndex < papayaParams.images.length)) {
-        papayaMain.papayaViewer.loadImage(papayaParams.images[this.loadingImageIndex], true, false);
+
+    if (papayaParams.images) {
+        if (this.loadingImageIndex < papayaParams.images.length) {
+            papayaMain.papayaViewer.loadImage(papayaParams.images[this.loadingImageIndex], true, false);
+        }
+    } else if (papayaParams.encodedImages) {
+        if (this.loadingImageIndex < papayaParams.encodedImages.length) {
+            papayaMain.papayaViewer.loadImage(papayaParams.encodedImages[this.loadingImageIndex], false, true);
+        }
     }
 };
 
