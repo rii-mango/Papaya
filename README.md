@@ -1,4 +1,4 @@
-Papaya
+Papaya (v0.6.1 build 469)
 ======
 
 A pure JavaScript medical research image viewer.
