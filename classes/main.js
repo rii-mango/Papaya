@@ -12,6 +12,8 @@ var papayaParams = papayaParams || {};
 
 papaya.viewer = papaya.viewer || {};
 
+var papayaLoadableImages = papayaLoadableImages || [];
+
 
 
 papaya.Main = papaya.Main || function () {
@@ -211,7 +213,7 @@ papaya.Main.prototype.setUpDnD = function () {
         if (e.dataTransfer.files.length > 1) {
             papayaMain.papayaDisplay.drawError("Please drop one file at a time.");
         } else {
-            papayaMain.papayaViewer.loadImage(e.dataTransfer.files[0], false, false);
+            papayaMain.papayaViewer.loadImage(e.dataTransfer.files[0]);
         }
 
         return false;
@@ -223,19 +225,31 @@ papaya.Main.prototype.setUpDnD = function () {
 papaya.Main.prototype.loadNext = function () {
     this.loadingImageIndex += 1;
     if (papayaParams.images && (this.loadingImageIndex < papayaParams.images.length)) {
-        papayaMain.papayaViewer.loadImage("./" + papayaParams.images[this.loadingImageIndex], true, false);
+        papayaMain.papayaViewer.loadImage(papayaParams.images[this.loadingImageIndex]);
     }
 };
 
 
 
+papaya.Main.prototype.findLoadableImage = function (name) {
+    var ctr;
+
+    for (ctr = 0; ctr < papayaLoadableImages.length; ctr += 1) {
+        if (papayaLoadableImages[ctr].name === name) {
+            return papayaLoadableImages[ctr];
+        }
+    }
+
+    return null;
+};
+
+
+
 function main() {
-    var message = checkForBrowserCompatibility(),
-        viewerHtml = $("#" + PAPAYA_VIEWER_ID),
-        loadUrl,
-        loadEncodedData,
-        loadEncodedName,
-        loadParams;
+    var message, viewerHtml, loadParams, loadUrl;
+
+    message = checkForBrowserCompatibility();
+    viewerHtml = $("#" + PAPAYA_VIEWER_ID);
 
     if (message !== null) {
         viewerHtml.removeClass("checkForJS");
@@ -259,17 +273,13 @@ function main() {
         papayaMain.setUpDnD();
 
         loadUrl = viewerHtml.data("load-url");
-        loadEncodedData = viewerHtml.data("load-encoded-data");
 
         if (loadUrl) {
-            papayaMain.papayaViewer.loadImage(loadUrl, true, false);
-        } else if (loadEncodedData) {
-            loadEncodedName = viewerHtml.data("load-encoded-name");
-            papayaMain.papayaViewer.loadImage(deref(loadEncodedData), false, true, loadEncodedName);
-        } else if (papayaParams.image) {
-            papayaMain.papayaViewer.loadImage("./" + papayaParams.image, true, false);
+            papayaMain.papayaViewer.loadImage(loadUrl);
         } else if (papayaParams.images) {
-            papayaMain.papayaViewer.loadImage("./" + papayaParams.images[0], true, false);
+            papayaMain.papayaViewer.loadImage(papayaParams.images[0]);
+        } else if (papayaParams.encodedImages) {
+            papayaMain.papayaViewer.loadImage(papayaParams.encodedImages[0]);
         }
 
         resizeViewerComponents(false);

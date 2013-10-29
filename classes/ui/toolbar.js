@@ -7,7 +7,7 @@
 var papaya = papaya || {};
 papaya.ui = papaya.ui || {};
 
-
+var papayaLoadableImages = papayaLoadableImages || [];
 
 papaya.ui.Toolbar = papaya.ui.Toolbar || function () {};
 
@@ -24,7 +24,8 @@ papaya.ui.Toolbar.MENU_DATA = {
         {"label": "File", "icons": null,
             "items": [
                 {"label": "Add Image...", "action": "OpenImage", "type": "button"},
-                {"label": "Add Sample Image", "action": "OpenSampleImage", "exists": ["papaya", "data", "SampleImage"], "uninitialized": "true"},
+                {"type": "spacer"},
+                {"type": "spacer"},
                 {"label": "Close All", "action": "CloseAllImages"}
             ]
             },
@@ -79,6 +80,8 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
     $(".menuIcon").remove();
     $(".menuLabel").remove();
 
+    this.buildOpenMenuItems();
+
     for (ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA.menus.length; ctr += 1) {
         this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, papayaMain.papayaViewer, null, false);
     }
@@ -105,12 +108,7 @@ papaya.ui.Toolbar.prototype.buildAtlasMenu = function () {
 
 
 papaya.ui.Toolbar.prototype.buildColorMenuItems = function () {
-    var items, colorTableItem, ctr, allColorTables, item, screenParams;
-
-    screenParams = papayaParams.lut;
-    if (screenParams) {
-        papaya.viewer.ColorTable.addCustomLUT(screenParams);
-    }
+    var items, ctr, allColorTables, item, screenParams;
 
     screenParams = papayaParams.luts;
     if (screenParams) {
@@ -133,6 +131,41 @@ papaya.ui.Toolbar.prototype.buildColorMenuItems = function () {
         item = {"label": allColorTables[ctr].name, "action": "ColorTable-" + allColorTables[ctr].name, "type": "checkbox", "method": "isUsingColorTable"};
         items[ctr] = item;
     }
+};
+
+
+
+papaya.ui.Toolbar.prototype.buildOpenMenuItems = function () {
+    var ctr, items;
+
+    for (ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA.menus.length; ctr += 1) {
+        if (papaya.ui.Toolbar.MENU_DATA.menus[ctr].label === "File") {
+            items = papaya.ui.Toolbar.MENU_DATA.menus[ctr].items;
+            break;
+        }
+    }
+
+    for (ctr = 0; ctr < papayaLoadableImages.length; ctr += 1) {
+        if (!papayaLoadableImages[ctr].hide) {
+            if (!this.menuContains(items, papayaLoadableImages[ctr].nicename)) {
+                items.splice(2, 0, {"label": papayaLoadableImages[ctr].nicename, "action": "Open-" + papayaLoadableImages[ctr].name});
+            }
+        }
+    }
+};
+
+
+
+papaya.ui.Toolbar.prototype.menuContains = function (menuItems, name) {
+    var ctr;
+
+    for (ctr = 0; ctr < menuItems.length; ctr += 1) {
+        if (menuItems[ctr].label === name) {
+            return true;
+        }
+    }
+
+    return false;
 };
 
 
@@ -168,24 +201,23 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
     for (ctrItems = 0; ctrItems < itemData.length; ctrItems += 1) {
         item = null;
 
-        if ((!itemData[ctrItems].uninitialized || !papayaMain.papayaViewer.initialized)
-                && (!itemData[ctrItems].exists || fullyQualifiedVariableExists(itemData[ctrItems].exists))) {
-            if (itemData[ctrItems].type === "checkbox") {
-                item = new papaya.ui.MenuItemCheckBox(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
-            } else if (itemData[ctrItems].type === "button") {
-                item = new papaya.ui.MenuItemFileChooser(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
-            } else if (itemData[ctrItems].type === "range") {
-                item = new papaya.ui.MenuItemRange(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
-            } else {
-                item = new papaya.ui.MenuItem(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), modifier);
-            }
+        if (itemData[ctrItems].type === "spacer") {
+            item = new papaya.ui.MenuItemSpacer();
+        } else if (itemData[ctrItems].type === "checkbox") {
+            item = new papaya.ui.MenuItemCheckBox(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+        } else if (itemData[ctrItems].type === "button") {
+            item = new papaya.ui.MenuItemFileChooser(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
+        } else if (itemData[ctrItems].type === "range") {
+            item = new papaya.ui.MenuItemRange(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+        } else {
+            item = new papaya.ui.MenuItem(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), modifier);
+        }
 
-            menu.addMenuItem(item);
+        menu.addMenuItem(item);
 
-            if (itemData[ctrItems].items) {
-                menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier, imageButton);
-                item.callback = bind(menu2, menu2.showMenu);
-            }
+        if (itemData[ctrItems].items) {
+            menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier, imageButton);
+            item.callback = bind(menu2, menu2.showMenu);
         }
     }
 };
@@ -231,7 +263,7 @@ papaya.ui.Toolbar.prototype.closeAllMenus = function () {
 
 
 papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
-    var imageIndex, colorTableName, dialog, papayaDataSampleImageDataType, papayaDataSampleImageImageType, atlasName;
+    var imageIndex, colorTableName, dialog, atlasName, imageName;
 
     if (!keepopen) {
         this.closeAllMenus();
@@ -242,17 +274,9 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             imageIndex = parseInt(action.substring(action.length - 1), 10);
             papayaMain.papayaViewer.setCurrentScreenVol(imageIndex);
             this.updateImageButtons();
-        } else if (action === "OpenSampleImage") {
-            if (papaya.data && papaya.data.SampleImage) {
-                papayaDataSampleImageDataType = (typeof papaya.data.SampleImage.data);
-                papayaDataSampleImageImageType = (typeof papaya.data.SampleImage.image);
-            }
-
-            if (papayaDataSampleImageDataType !== 'undefined') {
-                papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.data, false, true, papaya.data.SampleImage.name);
-            } else if (papayaDataSampleImageImageType !== 'undefined') {
-                papayaMain.papayaViewer.loadImage(papaya.data.SampleImage.image, true, false);
-            }
+        } else if (action.startsWith("Open-")) {
+            imageName = action.substring(action.indexOf("-") + 1);
+            papayaMain.papayaViewer.loadImage(imageName);
         } else if (action === "OpenImage") {
             papayaMain.papayaViewer.loadImage(file);
         } else if (action.startsWith("ColorTable")) {

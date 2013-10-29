@@ -10,8 +10,6 @@ papaya.data.Atlas = papaya.data.Atlas || {};
 
 
 
-papaya.data.Atlas.name = "Talairach-labels-1mm.nii.gz";
-papaya.data.Atlas.image = "data/Talairach-labels-1mm.nii.gz";
 papaya.data.Atlas.labels = {
     "atlas": {
         "version": "1.0",
@@ -20,8 +18,7 @@ papaya.data.Atlas.labels = {
             "transformedname": "MNI (Nearest Grey Matter)",
             "type": "Label",
             "images": {
-                "imagefile": "/Talairach/Talairach-labels-1mm",
-                "summaryimagefile": "/Talairach/Talairach-labels-1mm"
+                "summaryimagefile": "Talairach_labels_1mm"
             },
             "display": "*.*.*. .*",
             "transform": "0.9357 0.0029 -0.0072 -1.0423 -0.0065 0.9396 -0.0726 -1.3940 0.0103 0.0752 0.8967 3.6475 0 0 0 1"

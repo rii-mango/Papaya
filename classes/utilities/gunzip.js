@@ -7,13 +7,15 @@
  * Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
  * Version: 1.0.0.1  Dec 25 1999
  */
+var GUNZIP_MAGIC_COOKIE1 = 31;
+var GUNZIP_MAGIC_COOKIE2 = 139;
+
+
 var Gunzip = function () {
     var GUNZIP_FLAG_NOT_SUPPORTED = "GZIP flag not supported!";
     var GUNZIP_INCORRECT_MAGIC_COOKIE = "Not a GZIP file!";
     var START_OFFSET_DEFAULT = 10;
     var END_OFFSET_DEFAULT = 8;
-    var MAGIC_COOKIE1 = 31;
-    var MAGIC_COOKIE2 = 139;
     var PROCESS_TIMEOUT_BYTES = 1000 * 1024;
 
     var error = null;
@@ -796,10 +798,10 @@ var Gunzip = function () {
         var magicCookie1 = deflatedBuffer.getUint8(0);
         var magicCookie2 = deflatedBuffer.getUint8(1);
 
-        if (magicCookie1 != MAGIC_COOKIE1) {
+        if (magicCookie1 != GUNZIP_MAGIC_COOKIE1) {
             error = GUNZIP_INCORRECT_MAGIC_COOKIE;
             return null;
-        } else if (magicCookie2 != MAGIC_COOKIE2) {
+        } else if (magicCookie2 != GUNZIP_MAGIC_COOKIE2) {
             error = GUNZIP_INCORRECT_MAGIC_COOKIE;
             return null;
         }

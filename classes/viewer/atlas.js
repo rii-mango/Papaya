@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global bind, isString, papayaMain */
+/*global bind, isString, papayaMain, deref */
 
 "use strict";
 
@@ -8,13 +8,11 @@ var papaya = papaya || {};
 papaya.viewer = papaya.viewer || {};
 
 
-// only supports Label, not Probabilistic type; assumes label indices go from 0 to n (with no gaps); assumes labels use place holders
-papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlasData, atlasImage, atlasLabels) {
+// only supports Label, not Probabilistic type; assumes label indices go from 0 to n-1 (with no gaps); assumes labels use place holders
+papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas) {
     this.name = null;
     this.transformedname = null;
-    this.atlasData = atlasData;
-    this.atlasImage = atlasImage;
-    this.atlasLabels = atlasLabels;
+    this.atlasLabels = atlas.labels;
     this.volume = new papaya.volume.Volume();
     this.displayColumns = new Array(4);
     this.labels = new Array(4);
@@ -22,10 +20,12 @@ papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlasData, atlasImage, at
     this.transform = null;
     this.currentAtlas = null;
 
-    if (this.atlasData) {
-        this.volume.readEncodedData(this.atlasData, papaya.data.Atlas.name, bind(this, this.readFinished));
-    } else if (this.atlasImage) {
-        this.volume.readURL(this.atlasImage, bind(this, this.readFinished));
+    var loadableImage = papayaMain.findLoadableImage(atlas.labels.atlas.header.images.summaryimagefile);
+
+    if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
+        this.volume.readEncodedData(loadableImage.encode, bind(this, this.readFinished));
+    } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
+        this.volume.readURL(loadableImage.url, bind(this, this.readFinished));
     }
 };
 

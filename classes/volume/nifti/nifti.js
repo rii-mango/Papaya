@@ -70,6 +70,8 @@ papaya.volume.nifti.NIFTI_TYPE_UINT64       = 1280;
 papaya.volume.nifti.NIFTI_TYPE_FLOAT128     = 1536;
 papaya.volume.nifti.NIFTI_TYPE_COMPLEX128   = 1792;
 papaya.volume.nifti.NIFTI_TYPE_COMPLEX256   = 2048;
+papaya.volume.nifti.MAGIC_NUMBER_LOCATION   = 344;
+papaya.volume.nifti.MAGIC_NUMBER            = [110, 43, 49];  // n+1
 
 
 
