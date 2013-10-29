@@ -136,7 +136,7 @@ papaya.ui.Toolbar.prototype.buildColorMenuItems = function () {
 
 
 papaya.ui.Toolbar.prototype.buildOpenMenuItems = function () {
-    var ctr, items;
+    var ctr, items, menuItemName;
 
     for (ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA.menus.length; ctr += 1) {
         if (papaya.ui.Toolbar.MENU_DATA.menus[ctr].label === "File") {
@@ -147,8 +147,9 @@ papaya.ui.Toolbar.prototype.buildOpenMenuItems = function () {
 
     for (ctr = 0; ctr < papayaLoadableImages.length; ctr += 1) {
         if (!papayaLoadableImages[ctr].hide) {
-            if (!this.menuContains(items, papayaLoadableImages[ctr].nicename)) {
-                items.splice(2, 0, {"label": papayaLoadableImages[ctr].nicename, "action": "Open-" + papayaLoadableImages[ctr].name});
+            menuItemName = "Add " + papayaLoadableImages[ctr].nicename;
+            if (!this.menuContains(items, menuItemName)) {
+                items.splice(2, 0, {"label": menuItemName, "action": "Open-" + papayaLoadableImages[ctr].name});
             }
         }
     }
