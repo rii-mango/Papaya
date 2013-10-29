@@ -67,7 +67,7 @@ To specify multiple images and other options:
     <script type="text/javascript">
         var params = [];
         params["worldSpace"] = true;
-        params["images"] = ["./data/myBaseImage.nii.gz", "./data/myOverlayImage.nii.gz"];
+        params["images"] = ["data/myBaseImage.nii.gz", "data/myOverlayImage.nii.gz"];
         params["myOverlayImage.nii.gz"] = {"min": 4, "max": 10};
     </script>
 <head>
