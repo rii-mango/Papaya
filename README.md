@@ -15,7 +15,7 @@ Demo
 - Current Beta: http://ric.uthscsa.edu/mango/papayabeta/ (v0.6 build 366)
 
 
-![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)
+[![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://ric.uthscsa.edu/mango/papaya/)
 
 Installation
 ------
