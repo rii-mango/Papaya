@@ -12,7 +12,7 @@ A pure JavaScript medical research image viewer.
 Demo
 -----
 - Demo: http://ric.uthscsa.edu/mango/papaya/ (v0.6 build 119)
-- Current Beta: http://ric.uthscsa.edu/mango/papayabeta/ (v0.6 build 366)
+- Current Beta: http://ric.uthscsa.edu/mango/papayabeta/ (v0.6.1 build 471)
 
 
 [![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://ric.uthscsa.edu/mango/papaya/)
