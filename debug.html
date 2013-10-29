@@ -64,12 +64,12 @@
         <script type="text/javascript" src="classes/utilities/utilities.js"></script>
 
         <script type="text/javascript">
-            var papayaLoadableImages = [
+            var papayaLoadableImages = [ <!-- papaya-builder adds this for you automatically -->
                 {"nicename": "Sample Image", "name": "sample_image", "encode": "sample_image"},
                 {"nicename": "Atlas", "name": "Talairach_labels_1mm", "encode": "Talairach_labels_1mm", "hide": true}
             ];
 
-            var params = [];
+            var params = [];  <!-- specify images to load automatically as well as other options here; see "data-params" below -->
             params["worldSpace"] = true;
             params["images"] = ["data/sample_image.nii.gz"];
         </script>
