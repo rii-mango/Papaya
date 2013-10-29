@@ -19,7 +19,7 @@ Demo
 
 Installation
 ------
-Development: Load `debug.html` in your favorite JavaScript debugger.
+Development: Load `debug.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
 
 Production: Run `build.sh` to create the build files. See the [Papaya Builder](https://github.com/rii-mango/Papaya-Builder) project for more 
 information. A typical usage would be `build.sh -sample -atlas`
