@@ -65,16 +65,25 @@
         <script type="text/javascript" src="classes/utilities/utilities.js"></script>
 
         <script type="text/javascript">
-            // papaya-builder adds this for you automatically; this structure is used to manage image data in File menu (also atlas image data)
+            /*
+                DON'T ADD THIS!  This is here for debugging purposes only, otherwise papaya-builder adds this for you
+                automatically.  This structure is used to manage image data references used by the File menu (and also
+                atlas image data references).
+            */
             var papayaLoadableImages = [
                 {"nicename": "Sample Image", "name": "sample_image", "encode": "sample_image"},
                 {"nicename": "Atlas", "name": "Talairach_labels_1mm", "encode": "Talairach_labels_1mm", "hide": true}
             ];
 
-            // specify images to load automatically and other options here; see reference in "data-params" below
+            /*
+                Here you can specify what images you want to load or what options you want to apply automatically. You
+                need to reference the variable name in 'data-params' below.
+             */
             var params = [];
             params["worldSpace"] = true;
-            params["encodedImages"] = ["sample_image"];
+            params["images"] = ["sample_image", "data/zstat.nii.gz"];
+            params["luts"] = [{"name": "Custom", "data":[[0, 1, 0, 0],[.5, 1, 1, 0], [1, 1, 1, 1]]}];
+            params["zstat.nii.gz"] = {"min": 4, "max": 8, "lut": "Custom"};
         </script>
 
         <title>Papaya</title>
