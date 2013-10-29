@@ -64,12 +64,14 @@
         <script type="text/javascript" src="classes/utilities/utilities.js"></script>
 
         <script type="text/javascript">
-            var papayaLoadableImages = [ <!-- papaya-builder adds this for you automatically -->
+            // papaya-builder adds this for you automatically; this structure is used to manage image data in File menu (also atlases)
+            var papayaLoadableImages = [
                 {"nicename": "Sample Image", "name": "sample_image", "encode": "sample_image"},
                 {"nicename": "Atlas", "name": "Talairach_labels_1mm", "encode": "Talairach_labels_1mm", "hide": true}
             ];
 
-            var params = [];  <!-- specify images to load automatically as well as other options here; see "data-params" below -->
+            // specify images to load automatically and options here; referenced in "data-params" below
+            var params = [];
             params["worldSpace"] = true;
             params["images"] = ["data/sample_image.nii.gz"];
         </script>
