@@ -19,19 +19,19 @@ Demo
 
 Installation
 ------
-Development: Run `debug.html` with your favorite JavaScript debugger.
+Development: Load `debug.html` in your favorite JavaScript debugger.
 
-Production: Run `build.sh` to create the build files.  For example `build.sh -sample -atlas`.  Include the `-local` flag if 
-not intending to store files on a web server.  See the [Papaya Builder](https://github.com/rii-mango/Papaya-Builder) project for more 
-information.
+Production: Run `build.sh` to create the build files. See the [Papaya Builder](https://github.com/rii-mango/Papaya-Builder) project for more 
+information. For example `build.sh -sample -atlas`
 
 ```shell
 usage: papaya-builder [options]
-  -atlas <file>   add atlas
-  -help           print this message
-  -local          build for local usage
-  -root <dir>     papaya project directory
-  -sample         include sample image
+ -atlas <file>     add atlas
+ -help             print this message
+ -images <files>   images to include
+ -local            build for local usage
+ -root <dir>       papaya project directory
+ -sample           include sample image
 ```
 
 Usage
