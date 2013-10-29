@@ -266,7 +266,7 @@ function main() {
         papayaMain = new papaya.Main();
         papayaMain.preferences = new papaya.viewer.Preferences();
 
-        loadParams = viewerHtml.data("load-params");
+        loadParams = viewerHtml.data("params");
 
         if (loadParams) {
             papayaParams = $.extend(papayaParams, window[loadParams]);
