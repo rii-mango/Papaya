@@ -1,7 +1,7 @@
 
 /*jslint browser: true, node: true */
 /*global PAPAYA_SPACING, bind, papayaMain, isString, round, floor, getKeyCode, isControlKey, getMousePositionX,
-getMousePositionY, signum, wordwrap, getSizeString, formatNumber, papayaParams */
+getMousePositionY, signum, wordwrap, getSizeString, formatNumber, papayaParams, deref */
 
 "use strict";
 
@@ -10,7 +10,6 @@ var papaya = papaya || {};
 papaya.viewer = papaya.viewer || {};
 var PAPAYA_VERSION_ID = PAPAYA_VERSION_ID || "0.0";
 var PAPAYA_BUILD_NUM = PAPAYA_BUILD_NUM || "0";
-
 
 
 papaya.viewer.Viewer = papaya.viewer.Viewer || function (width, height, params) {
@@ -93,44 +92,53 @@ papaya.viewer.Viewer.UPDATE_TIMER_INTERVAL = 250;
 
 
 
-papaya.viewer.Viewer.prototype.loadImage = function (location, url, encoded, name) {
+papaya.viewer.Viewer.prototype.loadImage = function (name, forceUrl, forceEncode) {
     if (this.screenVolumes.length === 0) {
-        this.loadBaseImage(location, url, encoded, name);
+        this.loadBaseImage(name, forceUrl, forceEncode);
     } else {
-        this.loadOverlay(location, url, encoded, name);
+        this.loadOverlay(name, forceUrl, forceEncode);
     }
 };
 
 
 
-papaya.viewer.Viewer.prototype.loadBaseImage = function (location, url, encoded, name) {
+papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEncode) {
+    var loadableImage = papayaMain.findLoadableImage(name, forceUrl, forceEncode);
     this.volume = new papaya.volume.Volume();
 
-    if (encoded) {
-        this.volume.readEncodedData(location, name, bind(this, this.initializeViewer));
-    } else if (url || isString(location)) {
-        this.volume.readURL(location, bind(this, this.initializeViewer));
+    if (forceEncode) {
+        this.volume.readEncodedData(name, bind(this, this.initializeViewer));
+    } else if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
+        this.volume.readEncodedData(loadableImage.encode, bind(this, this.initializeViewer));
+    } else if (forceUrl) {
+        this.volume.readURL(name, bind(this, this.initializeViewer));
+    } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
+        this.volume.readURL(loadableImage.url, bind(this, this.initializeViewer));
     } else {
-        this.volume.readFile(location, bind(this, this.initializeViewer));
+        this.volume.readFile(name, bind(this, this.initializeViewer));
     }
 };
 
 
 
-papaya.viewer.Viewer.prototype.loadOverlay = function (location, url, encoded, name) {
+papaya.viewer.Viewer.prototype.loadOverlay = function (name, forceUrl, forceEncode) {
+    var loadableImage = papayaMain.findLoadableImage(name);
     this.loadingVolume = new papaya.volume.Volume();
 
     if (this.screenVolumes.length > papaya.viewer.Viewer.MAX_OVERLAYS) {
-        this.loadingVolume.errorMessage
-            = "Maximum number of overlays (" + papaya.viewer.Viewer.MAX_OVERLAYS + ") has been reached!";
+        this.loadingVolume.errorMessage = "Maximum number of overlays (" + papaya.viewer.Viewer.MAX_OVERLAYS + ") has been reached!";
         this.initializeOverlay();
     } else {
-        if (encoded) {
-            this.loadingVolume.readEncodedData(location, name, bind(this, this.initializeOverlay));
-        } else if (url || isString(location)) {
-            this.loadingVolume.readURL(location, bind(this, this.initializeOverlay));
+        if (forceEncode) {
+            this.loadingVolume.readEncodedData(name, bind(this, this.initializeOverlay));
+        } else if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
+            this.loadingVolume.readEncodedData(loadableImage.encode, bind(this, this.initializeOverlay));
+        } else if (forceUrl) {
+            this.loadingVolume.readURL(name, bind(this, this.initializeOverlay));
+        } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
+            this.loadingVolume.readURL(loadableImage.url, bind(this, this.initializeOverlay));
         } else {
-            this.loadingVolume.readFile(location, bind(this, this.initializeOverlay));
+            this.loadingVolume.readFile(name, bind(this, this.initializeOverlay));
         }
     }
 };
@@ -138,8 +146,7 @@ papaya.viewer.Viewer.prototype.loadOverlay = function (location, url, encoded, n
 
 
 papaya.viewer.Viewer.prototype.initializeViewer = function () {
-    var papayaDataType, papayaDataTalairachAtlasType, papayaDataTalairachAtlasDataType,
-        papayaDataTalairachAtlasImageType;
+    var papayaDataType, papayaDataTalairachAtlasType;
 
     if (this.volume.hasError()) {
         papayaMain.papayaDisplay.drawError(this.volume.errorMessage);
@@ -152,18 +159,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         papayaDataTalairachAtlasType = (typeof papaya.data.Atlas);
 
         if (papayaDataTalairachAtlasType !== "undefined") {
-            papayaDataTalairachAtlasDataType = (typeof papaya.data.Atlas.data);
-            papayaDataTalairachAtlasImageType = (typeof papaya.data.Atlas.image);
-
-            if (papayaDataTalairachAtlasType !== "undefined") {
-                if (papayaDataTalairachAtlasDataType !== "undefined") {
-                    this.atlas
-                        = new papaya.viewer.Atlas(papaya.data.Atlas.data, null, papaya.data.Atlas.labels);
-                } else if (papayaDataTalairachAtlasImageType !== "undefined") {
-                    this.atlas
-                        = new papaya.viewer.Atlas(null, papaya.data.Atlas.image, papaya.data.Atlas.labels);
-                }
-            }
+            this.atlas = new papaya.viewer.Atlas(papaya.data.Atlas);
         }
     }
 

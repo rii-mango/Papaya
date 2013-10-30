@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<atlas version="1.0">
+  <header>
+      <name>Talairach (Nearest Grey Matter)</name>
+      <transformedname>MNI (Nearest Grey Matter)</transformedname>
+    <type>Label</type>
+    <images>
+      <imagefile>Talairach_labels_1mm</imagefile>
+      <summaryimagefile>Talairach_labels_1mm</summaryimagefile>
+    </images>
+		<display>*.*.*. .*</display><!-- which labels to display, max=4 -->
+		<transform>0.9357 0.0029 -0.0072 -1.0423 -0.0065 0.9396 -0.0726 -1.3940 0.0103 0.0752 0.8967 3.6475 0.0000 0.0000 0.0000 1.0000</transform><!-- transforms input coordinate -->
+    </header>
+  <data>
+<label> : : : : </label>
+<label>Right Cerebellum:Posterior Lobe:Inf Semi-Lunar Lob:Gray Matter: </label>
+<label>Left Cerebellum:Posterior Lobe:Inf Semi-Lunar Lob:Gray Matter: </label>
+<label>Left Cerebellum:Posterior Lobe:Cerebellar Tonsil:Gray Matter: </label>
+<label>Right Cerebellum:Posterior Lobe:Cerebellar Tonsil:Gray Matter: </label>
+<label>Right Cerebrum:Temporal Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 20</label>
+<label>Right Cerebrum:Frontal Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 20</label>
+<label>Left Cerebrum:Temporal Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 20</label>
+<label>Right Cerebrum:Limbic Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 20</label>
+<label>Right Cerebrum:Limbic Lobe:Uncus:Gray Matter:Brodmann area 20</label>
+<label>Left Cerebrum:Limbic Lobe:Uncus:Gray Matter:Brodmann area 20</label>
+<label>Left Cerebrum:Limbic Lobe: :Gray Matter:Brodmann area 20</label>
+<label>Right Cerebrum:Limbic Lobe:Uncus:Gray Matter:Brodmann area 38</label>
+<label>Left Cerebrum:Limbic Lobe:Uncus:Gray Matter:Brodmann area 38</label>
+<label>Left Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 38</label>
+<label>Right Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 38</label>
+<label>Right Cerebrum:Limbic Lobe: :Gray Matter:Brodmann area 20</label>
+<label>Left Cerebrum:Limbic Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 20</label>
+<label>Right Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 20</label>
+<label>Left Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 20</label>
+<label>Right Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 38</label>
+<label>Left Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 38</label>
+<label>Right Cerebrum:Temporal Lobe: :Gray Matter:Brodmann area 38</label>
+<label>Left Cerebrum:Temporal Lobe: :Gray Matter:Brodmann area 38</label>
+<label>Left Cerebellum:Posterior Lobe:Uvula:Gray Matter: </label>
+<label>Right Cerebrum:Limbic Lobe:Uncus:Gray Matter:Brodmann area 36</label>
+<label>Left Cerebrum:Limbic Lobe:Uncus:Gray Matter:Brodmann area 36</label>
+<label>Right Cerebellum:Posterior Lobe:Pyramis:Gray Matter: </label>
+<label>Left Cerebellum:Posterior Lobe:Pyramis:Gray Matter: </label>
+<label>Right Cerebellum:Posterior Lobe:Uvula:Gray Matter: </label>
+<label>Right Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 21</label>
+<label>Left Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 21</label>
+<label>Right Cerebrum:Limbic Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 38</label>
+<label>Right Cerebellum: : :Gray Matter: </label>
+<label>Left Cerebrum:Limbic Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 38</label>
+<label>Left Cerebellum: : :Gray Matter: </label>
+<label>Left Cerebellum:Posterior Lobe:Uvula of Vermis:Gray Matter: </label>
+<label>Left Cerebellum:Posterior Lobe:Tuber:Gray Matter: </label>
+<label>Right Cerebellum:Posterior Lobe:Uvula of Vermis:Gray Matter: </label>
+<label>Right Cerebellum:Posterior Lobe:Tuber:Gray Matter: </label>
+<label>Left Cerebellum:Anterior Lobe:Culmen:Gray Matter: </label>
+<label>Right Cerebellum:Anterior Lobe: :Gray Matter: </label>
+<label>Left Cerebellum:Anterior Lobe: :Gray Matter: </label>
+<label>Right Cerebellum:Anterior Lobe:Culmen:Gray Matter: </label>
+<label>Right Cerebrum:Limbic Lobe:Uncus:Gray Matter:Brodmann area 28</label>
+<label>Left Cerebrum:Limbic Lobe:Uncus:Gray Matter:Brodmann area 28</label>
+<label>Left Cerebrum: :Sup Temporal Gyr:Gray Matter:Brodmann area 38</label>
+<label>Right Cerebrum: :Orbital Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Left Cerebrum:Frontal Lobe:Orbital Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Right Cerebrum:Frontal Lobe:Orbital Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Right Cerebrum:Temporal Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 21</label>
+<label>Right Cerebellum:Anterior Lobe:Nodule:Gray Matter: </label>
+<label>Left Cerebellum:Anterior Lobe:Nodule:Gray Matter: </label>
+<label>Left Cerebrum:Frontal Lobe:Rectal Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Left Cerebellum:Posterior Lobe:Pyramis of Vermis:Gray Matter: </label>
+<label>Right Cerebellum:Posterior Lobe:Pyramis of Vermis:Gray Matter: </label>
+<label>Right Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 36</label>
+<label>Left Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 36</label>
+<label>Right Cerebrum:Frontal Lobe:Rectal Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Right Cerebrum:Temporal Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 20</label>
+<label>Left Cerebrum:Temporal Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 20</label>
+<label>Right Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 35</label>
+<label>Left Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 35</label>
+<label>Right Cerebrum:Frontal Lobe:Orbital Gyrus:Gray Matter:Brodmann area 47</label>
+<label>Left Cerebrum:Frontal Lobe:Orbital Gyrus:Gray Matter:Brodmann area 47</label>
+<label>Right Cerebrum:Frontal Lobe:Sup Frontal Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Left Cerebrum:Frontal Lobe:Sup Frontal Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Left Cerebrum:Temporal Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 21</label>
+<label>Right Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 28</label>
+<label>Right Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 47</label>
+<label>Left Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 28</label>
+<label>Right Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 34</label>
+<label>Left Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 34</label>
+<label>Right Cerebrum:Limbic Lobe:Uncus:Gray Matter:Brodmann area 34</label>
+<label>Left Cerebrum:Limbic Lobe:Uncus:Gray Matter:Brodmann area 34</label>
+<label>Left Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 47</label>
+<label>Right Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Left Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Right Cerebellum:Posterior Lobe:Tuber of Vermis:Gray Matter: </label>
+<label>Left Cerebellum:Posterior Lobe:Tuber of Vermis:Gray Matter: </label>
+<label>Right Cerebellum:Anterior Lobe: :Gray Matter:Dentate</label>
+<label>Right Cerebellum:Anterior Lobe:Pyramis:Gray Matter: </label>
+<label>Left Cerebellum:Anterior Lobe:Pyramis:Gray Matter: </label>
+<label>Left Cerebellum:Anterior Lobe: :Gray Matter:Dentate</label>
+<label>Left Cerebellum:Posterior Lobe:Culmen:Gray Matter: </label>
+<label>Right Cerebrum:Limbic Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 20</label>
+<label>Left Cerebrum:Temporal Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 36</label>
+<label>Right Cerebrum:Limbic Lobe:Uncus:Gray Matter:Amygdala</label>
+<label>Left Cerebrum:Limbic Lobe:Uncus:Gray Matter:Amygdala</label>
+<label>Right Cerebrum:Temporal Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 36</label>
+<label>Right Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Hippocampus</label>
+<label>Left Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter:Brodmann area 20</label>
+<label>Right Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter:Brodmann area 20</label>
+<label>Left Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Hippocampus</label>
+<label>Right Cerebrum:Occipital Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 18</label>
+<label>Left Cerebrum:Occipital Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 18</label>
+<label>Left Cerebellum:Posterior Lobe:Declive:Gray Matter: </label>
+<label>Right Cerebrum:Temporal Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 37</label>
+<label>Right Cerebrum: :Fusiform Gyrus:Gray Matter:Brodmann area 20</label>
+<label>Left Cerebrum:Temporal Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 37</label>
+<label>Right Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Amygdala</label>
+<label>Left Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Amygdala</label>
+<label>Right Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 25</label>
+<label>Left Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 25</label>
+<label>Right Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Left Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Right Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Left Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Right Cerebellum:Posterior Lobe:Declive:Gray Matter: </label>
+<label>Right Cerebellum:Posterior Lobe:Declive of Vermis:Gray Matter: </label>
+<label>Left Cerebellum:Posterior Lobe:Declive of Vermis:Gray Matter: </label>
+<label>Right Cerebellum:Posterior Lobe: :Gray Matter:Dentate</label>
+<label>Right Cerebellum:Anterior Lobe:Fastigium:Gray Matter: </label>
+<label>Left Cerebellum:Posterior Lobe:Fastigium:Gray Matter: </label>
+<label>Left Cerebellum:Posterior Lobe: :Gray Matter:Dentate</label>
+<label>Left Cerebellum:Anterior Lobe:Fastigium:Gray Matter: </label>
+<label>Left Cerebrum:Temporal Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 37</label>
+<label>Right Cerebrum:Temporal Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 37</label>
+<label>Left Cerebrum:Occipital Lobe:Lingual Gyrus:Gray Matter:Brodmann area 18</label>
+<label>Right Cerebrum:Occipital Lobe:Lingual Gyrus:Gray Matter:Brodmann area 18</label>
+<label>Right Cerebellum:Anterior Lobe:Cerebellar Lingual:Gray Matter: </label>
+<label>Left Cerebellum:Anterior Lobe:Cerebellar Lingual:Gray Matter: </label>
+<label>Right Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 20</label>
+<label>Right Cerebrum:Occipital Lobe:Lingual Gyrus:Gray Matter:Brodmann area 17</label>
+<label>Left Cerebrum:Occipital Lobe:Lingual Gyrus:Gray Matter:Brodmann area 17</label>
+<label>Right Cerebrum:Occipital Lobe:Inf Occipital Gyr:Gray Matter:Brodmann area 18</label>
+<label>Left Cerebrum:Occipital Lobe:Inf Occipital Gyr:Gray Matter:Brodmann area 18</label>
+<label> : : :Gray Matter:Hypothalamus</label>
+<label>Right Cerebrum:Frontal Lobe:Subcallosal Gyrus:Gray Matter:Brodmann area 34</label>
+<label>Left Cerebrum:Frontal Lobe:Subcallosal Gyrus:Gray Matter:Brodmann area 34</label>
+<label>Right Cerebrum:Frontal Lobe:Subcallosal Gyrus:Gray Matter:Brodmann area 25</label>
+<label>Left Cerebrum:Frontal Lobe:Subcallosal Gyrus:Gray Matter:Brodmann area 25</label>
+<label>Left Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 20</label>
+<label>Right Cerebrum:Limbic Lobe: :Gray Matter:Brodmann area 35</label>
+<label>Right Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 38</label>
+<label>Right Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter:Brodmann area 38</label>
+<label>Left Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 25</label>
+<label>Right Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 25</label>
+<label>Right Brainstem:Midbrain: :Gray Matter:Substania Nigra</label>
+<label>Left Brainstem:Midbrain: :Gray Matter:Substania Nigra</label>
+<label>Right Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter:Brodmann area 21</label>
+<label>Right Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 21</label>
+<label>Right Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 13</label>
+<label>Left Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 13</label>
+<label>Right Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter:Brodmann area 10</label>
+<label>Right Cerebrum:Occipital Lobe:Inf Occipital Gyr:Gray Matter:Brodmann area 17</label>
+<label>Left Cerebrum:Occipital Lobe:Inf Occipital Gyr:Gray Matter:Brodmann area 17</label>
+<label>Right Cerebrum:Occipital Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Temporal Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 19</label>
+<label>Left Cerebrum:Temporal Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Occipital Lobe:Mid Occipital Gyr:Gray Matter:Brodmann area 19</label>
+<label>Left Cerebrum:Occipital Lobe:Mid Occipital Gyr:Gray Matter:Brodmann area 37</label>
+<label>Left Cerebrum:Occipital Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Occipital Lobe:Mid Occipital Gyr:Gray Matter:Brodmann area 37</label>
+<label>Right Brainstem:Midbrain: :Gray Matter:Red Nucleus</label>
+<label>Left Brainstem:Midbrain: :Gray Matter:Red Nucleus</label>
+<label>Right Brainstem:Midbrain: :Gray Matter:Mammillary Body</label>
+<label>Left Brainstem:Midbrain: :Gray Matter:Mammillary Body</label>
+<label>Right Cerebrum:Sub-lobar: :Gray Matter:Hypothalamus</label>
+<label>Left Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter:Brodmann area 21</label>
+<label>Right Cerebrum:Temporal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 13</label>
+<label>Left Cerebrum:Temporal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 13</label>
+<label>Right Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter:Brodmann area 47</label>
+<label>Right Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 10</label>
+<label>Left Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 10</label>
+<label>Left Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter:Brodmann area 47</label>
+<label>Left Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter:Brodmann area 10</label>
+<label>Right Cerebrum:Frontal Lobe:Sup Frontal Gyrus:Gray Matter:Brodmann area 10</label>
+<label>Left Cerebrum:Frontal Lobe:Sup Frontal Gyrus:Gray Matter:Brodmann area 10</label>
+<label>Right Cerebrum:Occipital Lobe: :Gray Matter:Brodmann area 19</label>
+<label>Left Cerebrum:Occipital Lobe: :Gray Matter:Brodmann area 19</label>
+<label>Left Cerebrum:Temporal Lobe: :Gray Matter:Brodmann area 37</label>
+<label>Right Cerebrum:Temporal Lobe: :Gray Matter:Brodmann area 37</label>
+<label>Left Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 37</label>
+<label>Left Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 37</label>
+<label>Right Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 37</label>
+<label>Right Cerebrum:Temporal Lobe:Caudate:Gray Matter:Caudate Tail</label>
+<label>Left Cerebrum:Sub-lobar: :Gray Matter:Hypothalamus</label>
+<label>Right Cerebrum:Limbic Lobe:Subcallosal Gyrus:Gray Matter:Brodmann area 34</label>
+<label>Left Cerebrum:Limbic Lobe:Subcallosal Gyrus:Gray Matter:Brodmann area 34</label>
+<label>Left Cerebrum:Temporal Lobe:Subcallosal Gyrus:Gray Matter:Brodmann area 34</label>
+<label>Left Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 21</label>
+<label>Left Cerebrum:Frontal Lobe:Subcallosal Gyrus:Gray Matter:Brodmann area 13</label>
+<label>Right Cerebrum:Frontal Lobe:Subcallosal Gyrus:Gray Matter:Brodmann area 13</label>
+<label>Right Cerebrum:Frontal Lobe:Subcallosal Gyrus:Gray Matter:Brodmann area 47</label>
+<label>Left Cerebrum:Frontal Lobe:Subcallosal Gyrus:Gray Matter:Brodmann area 47</label>
+<label>Left Cerebrum:Frontal Lobe:Subcallosal Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Right Cerebrum:Frontal Lobe:Subcallosal Gyrus:Gray Matter:Brodmann area 11</label>
+<label>Right Cerebrum:Limbic Lobe:Anterior Cingulate:Gray Matter:Brodmann area 32</label>
+<label>Left Cerebrum:Occipital Lobe:Mid Occipital Gyr:Gray Matter:Brodmann area 18</label>
+<label>Left Cerebrum:Occipital Lobe:Mid Occipital Gyr:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Occipital Lobe:Mid Occipital Gyr:Gray Matter:Brodmann area 18</label>
+<label>Right Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter:Hippocampus</label>
+<label>Left Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter:Hippocampus</label>
+<label>Left Cerebrum:Temporal Lobe:Caudate:Gray Matter:Caudate Tail</label>
+<label>Right Cerebrum:Sub-lobar:Extra-Nuclear:Gray Matter:Brodmann area 13</label>
+<label>Left Cerebrum:Sub-lobar:Extra-Nuclear:Gray Matter:Brodmann area 13</label>
+<label>Left Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter:Brodmann area 13</label>
+<label>Left Cerebrum:Limbic Lobe:Anterior Cingulate:Gray Matter:Brodmann area 32</label>
+<label>Right Cerebrum: : :Gray Matter:Brodmann area 18</label>
+<label>Right Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 37</label>
+<label>Left Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter:Brodmann area 37</label>
+<label>Right Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter:Brodmann area 37</label>
+<label>Right Cerebrum:Occipital Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 37</label>
+<label>Left Cerebrum:Occipital Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 37</label>
+<label>Right Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 22</label>
+<label>Left Cerebrum:Limbic Lobe:Sub-Gyral:Gray Matter:Brodmann area 28</label>
+<label>Right Cerebrum:Sub-lobar: :Gray Matter:Amygdala</label>
+<label>Left Cerebrum:Sub-lobar: :Gray Matter:Amygdala</label>
+<label>Right Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 13</label>
+<label>Right Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter:Brodmann area 13</label>
+<label>Left Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 13</label>
+<label>Right Cerebrum:Sub-lobar: :Gray Matter: </label>
+<label>Left Cerebrum:Sub-lobar: :Gray Matter: </label>
+<label>Left Cerebrum:Sub-lobar:Lentiform Nucleus:Gray Matter:Putamen</label>
+<label>Right Cerebrum:Sub-lobar:Lentiform Nucleus:Gray Matter:Putamen</label>
+<label>Right Cerebrum:Limbic Lobe:Anterior Cingulate:Gray Matter:Brodmann area 25</label>
+<label>Left Cerebrum:Limbic Lobe:Anterior Cingulate:Gray Matter:Brodmann area 25</label>
+<label>Right Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 47</label>
+<label>Left Cerebrum:Limbic Lobe:Anterior Cingulate:Gray Matter:Brodmann area 10</label>
+<label>Left Cerebrum:Occipital Lobe:Inf Occipital Gyr:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Occipital Lobe:Inf Occipital Gyr:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Limbic Lobe:Sub-Gyral:Gray Matter:Hippocampus</label>
+<label>Left Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 22</label>
+<label>Right Cerebrum:Sub-lobar:Insula:Gray Matter:Brodmann area 13</label>
+<label>Left Cerebrum:Sub-lobar:Insula:Gray Matter:Brodmann area 13</label>
+<label>Right Cerebrum:Sub-lobar:Claustrum:Gray Matter: </label>
+<label>Left Cerebrum:Sub-lobar:Claustrum:Gray Matter: </label>
+<label>Right Cerebellum:Anterior Lobe:Culmen of Vermis:Gray Matter: </label>
+<label>Left Cerebellum:Anterior Lobe:Culmen of Vermis:Gray Matter: </label>
+<label>Right Cerebrum:Occipital Lobe:Parahippocampus:Gray Matter:Brodmann area 37</label>
+<label>Right Cerebrum:Limbic Lobe:Fusiform Gyrus:Gray Matter:Brodmann area 37</label>
+<label>Left Cerebrum:Limbic Lobe:Sub-Gyral:Gray Matter:Hippocampus</label>
+<label>Right Cerebrum:Sub-lobar:Caudate:Gray Matter:Caudate Tail</label>
+<label>Left Cerebrum:Sub-lobar:Caudate:Gray Matter:Caudate Tail</label>
+<label>Left Cerebrum:Temporal Lobe: :Gray Matter:Caudate Tail</label>
+<label>Left Cerebrum:Sub-lobar:Lentiform Nucleus:Gray Matter:Lat Glob Pallidus</label>
+<label>Left Cerebrum:Sub-lobar:Lentiform Nucleus:Gray Matter:Med Glob Pallidus</label>
+<label>Right Cerebrum:Sub-lobar:Lentiform Nucleus:Gray Matter:Med Glob Pallidus</label>
+<label>Right Cerebrum:Frontal Lobe:Extra-Nuclear:Gray Matter:Brodmann area 47</label>
+<label>Left Cerebrum:Frontal Lobe:Extra-Nuclear:Gray Matter:Brodmann area 47</label>
+<label>Left Cerebrum:Frontal Lobe:Extra-Nuclear:Gray Matter:Brodmann area 13</label>
+<label>Left Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 47</label>
+<label>Right Cerebrum:Sub-lobar:Extra-Nuclear:Gray Matter:Brodmann area 47</label>
+<label>Right Cerebrum:Sub-lobar:Caudate:Gray Matter:Caudate Head</label>
+<label>Left Cerebrum:Sub-lobar:Caudate:Gray Matter:Caudate Head</label>
+<label>Right Cerebrum:Limbic Lobe:Anterior Cingulate:Gray Matter:Brodmann area 10</label>
+<label>Right Cerebrum:Sub-lobar:Lentiform Nucleus:Gray Matter:Lat Glob Pallidus</label>
+<label>Right Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 22</label>
+<label>Left Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 22</label>
+<label>Left Brainstem:Midbrain: :Gray Matter:Subthalamic Nuc</label>
+<label>Right Cerebrum:Temporal Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 19</label>
+<label>Left Cerebrum:Temporal Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 19</label>
+<label>Left Cerebrum:Occipital Lobe:Lingual Gyrus:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Occipital Lobe:Lingual Gyrus:Gray Matter:Brodmann area 19</label>
+<label>Left Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 27</label>
+<label>Left Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 27</label>
+<label>Right Brainstem:Midbrain:Thalamus:Gray Matter:Med Geniculum Body</label>
+<label>Left Brainstem:Midbrain:Thalamus:Gray Matter:Med Geniculum Body</label>
+<label>Left Cerebrum:Sub-lobar:Insula:Gray Matter:Brodmann area 22</label>
+<label>Right Brainstem:Midbrain: :Gray Matter:Subthalamic Nuc</label>
+<label>Right Cerebrum:Limbic Lobe:Anterior Cingulate:Gray Matter:Brodmann area 24</label>
+<label>Left Cerebrum:Limbic Lobe:Anterior Cingulate:Gray Matter:Brodmann area 24</label>
+<label>Left Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 10</label>
+<label>Right Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 10</label>
+<label>Right Cerebrum:Frontal Lobe: :Gray Matter:Brodmann area 10</label>
+<label>Left Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 30</label>
+<label>Right Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 30</label>
+<label>Right Cerebrum:Occipital Lobe:Mid Occipital Gyr:Gray Matter: </label>
+<label>Right Cerebrum:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 17</label>
+<label>Left Cerebrum:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 17</label>
+<label> : : :Gray Matter: </label>
+<label>Right Cerebrum: : :Gray Matter: </label>
+<label>Right Cerebrum:Occipital Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 37</label>
+<label>Left Cerebrum:Occipital Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 19</label>
+<label>Left Cerebrum:Occipital Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 37</label>
+<label>Right Cerebrum:Occipital Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Limbic Lobe:Sub-Gyral:Gray Matter:Brodmann area 19</label>
+<label>Left Cerebrum:Limbic Lobe:Sub-Gyral:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Limbic Lobe:Sub-Gyral:Gray Matter:Brodmann area 30</label>
+<label>Left Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter: </label>
+<label>Right Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter: </label>
+<label>Right Cerebrum:Sub-lobar:Insula:Gray Matter:Brodmann area 22</label>
+<label>Right Cerebrum:Sub-lobar:Thalamus:Gray Matter: </label>
+<label>Left Cerebrum:Sub-lobar:Thalamus:Gray Matter: </label>
+<label>Right Cerebrum:Sub-lobar:Insula:Gray Matter:Brodmann area 47</label>
+<label>Right Cerebrum:Sub-lobar:Inf Frontal Gyrus:Gray Matter:Brodmann area 47</label>
+<label>Left Cerebrum:Sub-lobar:Insula:Gray Matter:Brodmann area 47</label>
+<label>Right Cerebrum:Sub-lobar:Caudate:Gray Matter: </label>
+<label>Left Cerebrum:Occipital Lobe:Mid Occipital Gyr:Gray Matter: </label>
+<label>Left Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter: </label>
+<label>Right Cerebrum:Occipital Lobe:Inf Temporal Gyrus:Gray Matter: </label>
+<label>Left Cerebrum:Occipital Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 37</label>
+<label>Right Cerebrum:Occipital Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 37</label>
+<label>Right Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter: </label>
+<label>Right Brainstem:Midbrain: :Gray Matter:Med Geniculum Body</label>
+<label>Left Brainstem:Midbrain: :Gray Matter:Med Geniculum Body</label>
+<label>Right Cerebrum:Sub-lobar: :Gray Matter:Lat Geniculum Body</label>
+<label>Left Cerebrum:Sub-lobar: :Gray Matter:Lat Geniculum Body</label>
+<label>Left Cerebrum:Sub-lobar:Lentiform Nucleus:Gray Matter: </label>
+<label>Left Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter: </label>
+<label>Left Cerebrum:Sub-lobar:Extra-Nuclear:Gray Matter:Brodmann area 47</label>
+<label>Right Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 45</label>
+<label>Left Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 45</label>
+<label>Right Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 10</label>
+<label>Left Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 10</label>
+<label>Left Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 46</label>
+<label>Left Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter: </label>
+<label>Right Cerebrum:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 18</label>
+<label>Left Cerebrum:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 18</label>
+<label>Right Cerebrum:Occipital Lobe:Lingual Gyrus:Gray Matter:Brodmann area 30</label>
+<label>Right Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter: </label>
+<label>Right Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter: </label>
+<label>Left Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter: </label>
+<label>Left Cerebrum:Occipital Lobe:Inf Temporal Gyrus:Gray Matter: </label>
+<label>Right Cerebrum:Occipital Lobe:Lingual Gyrus:Gray Matter: </label>
+<label>Left Cerebrum:Occipital Lobe:Lingual Gyrus:Gray Matter: </label>
+<label>Left Cerebrum:Occipital Lobe:Sub-Gyral:Gray Matter: </label>
+<label>Left Cerebrum:Occipital Lobe:Lingual Gyrus:Gray Matter:Brodmann area 30</label>
+<label>Left Cerebrum:Sub-lobar:Thalamus:Gray Matter:Pulvinar</label>
+<label>Left Cerebrum:Sub-lobar:Caudate:Gray Matter: </label>
+<label>Left Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter: </label>
+<label>Right Cerebrum:Sub-lobar:Thalamus:Gray Matter:Ven Pos Lat Nuc</label>
+<label>Left Cerebrum:Sub-lobar:Thalamus:Gray Matter:Ven Pos Lat Nuc</label>
+<label>Right Cerebrum:Sub-lobar:Thalamus:Gray Matter:Mammillary Body</label>
+<label>Right Cerebrum:Limbic Lobe:Anterior Cingulate:Gray Matter: </label>
+<label>Left Cerebrum:Limbic Lobe:Anterior Cingulate:Gray Matter: </label>
+<label>Right Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 46</label>
+<label>Right Cerebrum:Occipital Lobe:Cuneus:Gray Matter: </label>
+<label>Right Cerebrum:Occipital Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 18</label>
+<label>Left Cerebrum:Occipital Lobe:Inf Temporal Gyrus:Gray Matter:Brodmann area 18</label>
+<label>Right Cerebrum:Sub-lobar:Thalamus:Gray Matter:Pulvinar</label>
+<label>Left Cerebrum:Sub-lobar:Thalamus:Gray Matter:Mammillary Body</label>
+<label>Left Cerebrum:Sub-lobar:Thalamus:Gray Matter:Ven Pos Med Nuc</label>
+<label>Right Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter: </label>
+<label>Left Cerebrum:Sub-lobar:Insula:Gray Matter: </label>
+<label>Right Cerebrum:Frontal Lobe:Sup Frontal Gyrus:Gray Matter: </label>
+<label>Inter-Hemispheric:Occipital Lobe: :Gray Matter: </label>
+<label>Left Cerebrum:Occipital Lobe: :Gray Matter: </label>
+<label>Left Cerebrum:Occipital Lobe:Cuneus:Gray Matter: </label>
+<label> : :Mid Occipital Gyr:Gray Matter: </label>
+<label>Left Cerebrum:Limbic Lobe:Lingual Gyrus:Gray Matter: </label>
+<label>Left Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter: </label>
+<label> : :Mid Temporal Gyr:Gray Matter: </label>
+<label>Right Cerebrum:Sub-lobar:Thalamus:Gray Matter:Ven Pos Med Nuc</label>
+<label>Right Cerebrum:Sub-lobar:Insula:Gray Matter: </label>
+<label>Left Cerebrum:Frontal Lobe:Sup Frontal Gyrus:Gray Matter: </label>
+<label>Right Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter: </label>
+<label>Left Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter: </label>
+<label>Right Cerebrum:Frontal Lobe: :Gray Matter: </label>
+<label>Right Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter: </label>
+<label>Right Cerebrum: :Cuneus:Gray Matter: </label>
+<label>Inter-Hemispheric:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 18</label>
+<label>Right Cerebrum:Occipital Lobe: :Gray Matter: </label>
+<label>Inter-Hemispheric:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 17</label>
+<label>Right Cerebrum: :Mid Occipital Gyr:Gray Matter: </label>
+<label>Inter-Hemispheric:Occipital Lobe:Cuneus:Gray Matter: </label>
+<label>Inter-Hemispheric:Occipital Lobe:Lingual Gyrus:Gray Matter: </label>
+<label>Right Cerebrum: :Inf Temporal Gyrus:Gray Matter: </label>
+<label> : :Inf Temporal Gyrus:Gray Matter: </label>
+<label>Right Cerebrum:Temporal Lobe:Inf Temporal Gyrus:Gray Matter: </label>
+<label>Left Cerebrum:Temporal Lobe:Inf Temporal Gyrus:Gray Matter: </label>
+<label>Left Cerebrum:Occipital Lobe:Mid Temporal Gyr:Gray Matter: </label>
+<label>Right Cerebellum:Anterior Lobe:Culmen:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Temporal Lobe:Lingual Gyrus:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter: </label>
+<label>Left Cerebrum:Temporal Lobe:Lingual Gyrus:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 41</label>
+<label>Right Cerebrum:Temporal Lobe:Insula:Gray Matter: </label>
+<label>Left Cerebrum:Temporal Lobe:Insula:Gray Matter: </label>
+<label>Right Cerebrum:Temporal Lobe:Insula:Gray Matter:Brodmann area 22</label>
+<label>Left Cerebrum:Temporal Lobe:Insula:Gray Matter:Brodmann area 22</label>
+<label>Right Cerebrum:Temporal Lobe:Insula:Gray Matter:Brodmann area 13</label>
+<label>Left Cerebrum:Temporal Lobe:Insula:Gray Matter:Brodmann area 13</label>
+<label>Left Cerebrum:Sub-lobar:Inf Frontal Gyrus:Gray Matter:Brodmann area 47</label>
+<label>Right Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 32</label>
+<label>Left Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 32</label>
+<label>Right Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 18</label>
+<label>Left Cerebrum:Limbic Lobe:Parahippocampus:Gray Matter:Brodmann area 18</label>
+<label>Left Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 41</label>
+<label>Right Cerebrum:Sub-lobar:Thalamus:Gray Matter:Med Dorsal Nucleus</label>
+<label>Right Cerebrum:Sub-lobar:Thalamus:Gray Matter:Ven Ant Nucleus</label>
+<label>Left Cerebrum:Sub-lobar:Thalamus:Gray Matter:Ven Ant Nucleus</label>
+<label>Right Cerebrum:Frontal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 44</label>
+<label>Right Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 46</label>
+<label>Right Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter:Brodmann area 46</label>
+<label>Left Cerebrum:Sub-lobar:Thalamus:Gray Matter:Med Dorsal Nucleus</label>
+<label>Left Cerebrum:Frontal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 44</label>
+<label>Left Cerebrum:Sub-lobar:Insula:Gray Matter:Brodmann area 45</label>
+<label>Left Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter:Brodmann area 46</label>
+<label>Left Cerebrum:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 30</label>
+<label>Right Cerebrum:Temporal Lobe:Mid Occipital Gyr:Gray Matter:Brodmann area 37</label>
+<label>Left Cerebrum:Temporal Lobe:Mid Occipital Gyr:Gray Matter:Brodmann area 37</label>
+<label>Right Cerebrum:Limbic Lobe:Pos Cingulate:Gray Matter:Brodmann area 30</label>
+<label>Left Cerebrum:Limbic Lobe:Pos Cingulate:Gray Matter:Brodmann area 30</label>
+<label>Right Cerebrum:Sub-lobar:Sup Temporal Gyr:Gray Matter:Brodmann area 22</label>
+<label>Right Cerebrum:Sub-lobar:Lentiform Nucleus:Gray Matter: </label>
+<label>Right Cerebrum:Sub-lobar:Thalamus:Gray Matter:Ven Lat Nucleus</label>
+<label>Left Cerebrum:Sub-lobar:Thalamus:Gray Matter:Ven Lat Nucleus</label>
+<label>Left Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 42</label>
+<label>Right Cerebrum: :Thalamus:Gray Matter: </label>
+<label>Left Cerebrum:Sub-lobar:Thalamus:Gray Matter:Anterior Nucleus</label>
+<label>Right Cerebrum:Frontal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 6</label>
+<label>Left Cerebrum:Frontal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 6</label>
+<label>Right Cerebrum:Sub-lobar:Inf Frontal Gyrus:Gray Matter:Brodmann area 45</label>
+<label>Right Cerebrum:Sub-lobar:Caudate:Gray Matter:Caudate Body</label>
+<label>Right Cerebrum:Sub-lobar:Insula:Gray Matter:Brodmann area 45</label>
+<label>Right Cerebrum:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 30</label>
+<label>Left Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 39</label>
+<label>Right Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 39</label>
+<label>Right Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 39</label>
+<label>Right Cerebrum:Temporal Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 42</label>
+<label>Left Cerebrum:Limbic Lobe:Pos Cingulate:Gray Matter:Brodmann area 29</label>
+<label>Right Cerebrum:Limbic Lobe:Pos Cingulate:Gray Matter:Brodmann area 29</label>
+<label>Left Cerebrum:Sub-lobar:Caudate:Gray Matter:Caudate Body</label>
+<label>Right Cerebrum:Occipital Lobe:Pos Cingulate:Gray Matter:Brodmann area 30</label>
+<label>Right Cerebrum:Temporal Lobe:Transverse Tem Gyr:Gray Matter:Brodmann area 41</label>
+<label>Left Cerebrum:Temporal Lobe:Transverse Tem Gyr:Gray Matter:Brodmann area 41</label>
+<label>Right Cerebrum:Sub-lobar:Thalamus:Gray Matter:Anterior Nucleus</label>
+<label>Right Cerebrum:Sub-lobar:Insula:Gray Matter:Brodmann area 44</label>
+<label>Right Cerebrum:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 23</label>
+<label>Left Cerebrum:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 23</label>
+<label>Right Cerebrum:Temporal Lobe:Transverse Tem Gyr:Gray Matter:Brodmann area 42</label>
+<label>Left Cerebrum:Temporal Lobe:Transverse Tem Gyr:Gray Matter:Brodmann area 42</label>
+<label>Right Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 44</label>
+<label>Left Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 44</label>
+<label>Left Cerebrum:Occipital Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Occipital Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Occipital Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Occipital Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 39</label>
+<label>Right Cerebrum:Sub-lobar:Insula:Gray Matter:Brodmann area 41</label>
+<label>Left Cerebrum:Sub-lobar:Insula:Gray Matter:Brodmann area 41</label>
+<label>Right Cerebrum:Limbic Lobe:Pos Cingulate:Gray Matter:Brodmann area 31</label>
+<label>Right Cerebrum:Frontal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 13</label>
+<label>Left Cerebrum:Frontal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 13</label>
+<label>Right Cerebrum:Frontal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 43</label>
+<label>Left Cerebrum:Frontal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 43</label>
+<label>Right Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 9</label>
+<label>Left Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 9</label>
+<label>Left Cerebrum:Limbic Lobe:Pos Cingulate:Gray Matter:Brodmann area 31</label>
+<label>Right Cerebrum:Occipital Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 22</label>
+<label>Left Cerebrum:Occipital Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 22</label>
+<label>Left Cerebrum:Sub-lobar:Transverse Tem Gyr:Gray Matter:Brodmann area 41</label>
+<label>Right Cerebrum:Sub-lobar:Thalamus:Gray Matter:Lat Pos Nucleus</label>
+<label>Left Cerebrum:Sub-lobar:Thalamus:Gray Matter:Lat Pos Nucleus</label>
+<label>Left Cerebrum:Sub-lobar:Precentral Gyrus:Gray Matter:Brodmann area 13</label>
+<label>Left Cerebrum:Temporal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 43</label>
+<label>Right Cerebrum:Temporal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 42</label>
+<label>Left Cerebrum:Temporal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 42</label>
+<label>Right Cerebrum: : :Gray Matter:Brodmann area 10</label>
+<label>Inter-Hemispheric:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 10</label>
+<label>Left Cerebrum:Limbic Lobe:Pos Cingulate:Gray Matter:Brodmann area 23</label>
+<label>Right Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter:Brodmann area 41</label>
+<label>Right Cerebrum:Limbic Lobe:Pos Cingulate:Gray Matter:Brodmann area 23</label>
+<label>Right Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 43</label>
+<label>Left Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 43</label>
+<label>Right Cerebrum:Frontal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 4</label>
+<label>Left Cerebrum:Frontal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 4</label>
+<label>Right Cerebrum:Occipital Lobe:Precuneus:Gray Matter:Brodmann area 31</label>
+<label>Left Cerebrum: :Sup Temporal Gyr:Gray Matter:Brodmann area 22</label>
+<label>Right Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 40</label>
+<label>Left Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 40</label>
+<label>Right Cerebrum:Sub-lobar:Insula:Gray Matter:Brodmann area 40</label>
+<label>Left Cerebrum:Sub-lobar:Insula:Gray Matter:Brodmann area 40</label>
+<label>Left Cerebrum:Occipital Lobe:Precuneus:Gray Matter:Brodmann area 31</label>
+<label>Left Cerebrum:Limbic Lobe:Pos Cingulate:Gray Matter:Brodmann area 18</label>
+<label>Right Cerebrum:Limbic Lobe:Pos Cingulate:Gray Matter: </label>
+<label>Right Cerebrum:Limbic Lobe:Pos Cingulate:Gray Matter:Brodmann area 18</label>
+<label>Left Cerebrum:Limbic Lobe:Pos Cingulate:Gray Matter: </label>
+<label>Left Cerebrum:Occipital Lobe:Sup Temporal Gyr:Gray Matter:Brodmann area 22</label>
+<label>Right Cerebrum:Temporal Lobe:Insula:Gray Matter:Brodmann area 41</label>
+<label>Left Cerebrum:Temporal Lobe:Insula:Gray Matter:Brodmann area 41</label>
+<label>Right Cerebrum:Sub-lobar:Thalamus:Gray Matter:Lat Dorsal Nucleus</label>
+<label>Left Cerebrum:Sub-lobar:Thalamus:Gray Matter:Lat Dorsal Nucleus</label>
+<label>Right Cerebrum:Sub-lobar:Thalamus:Gray Matter:Midline Nucleus</label>
+<label>Left Cerebrum:Sub-lobar:Thalamus:Gray Matter:Midline Nucleus</label>
+<label>Right Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter: </label>
+<label>Left Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter: </label>
+<label>Right Cerebrum:Parietal Lobe:Sub-Gyral:Gray Matter:Brodmann area 43</label>
+<label>Right Cerebrum:Parietal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 4</label>
+<label>Left Cerebrum:Parietal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 4</label>
+<label>Right Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 6</label>
+<label>Left Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 6</label>
+<label>Right Cerebrum:Limbic Lobe:Anterior Cingulate:Gray Matter:Brodmann area 33</label>
+<label>Left Cerebrum:Limbic Lobe:Anterior Cingulate:Gray Matter:Brodmann area 33</label>
+<label>Right Cerebrum:Limbic Lobe:Anterior Cingulate:Gray Matter:Brodmann area 9</label>
+<label>Left Cerebrum:Limbic Lobe:Anterior Cingulate:Gray Matter:Brodmann area 9</label>
+<label>Left Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Temporal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Occipital Lobe:Precuneus:Gray Matter:Brodmann area 23</label>
+<label>Left Cerebrum:Parietal Lobe:Inf Parietal Lob:Gray Matter:Brodmann area 40</label>
+<label>Right Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 9</label>
+<label>Left Cerebrum:Frontal Lobe:Inf Frontal Gyrus:Gray Matter:Brodmann area 9</label>
+<label>Left Cerebrum:Temporal Lobe:Mid Occipital Gyr:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Occipital Lobe:Precuneus:Gray Matter:Brodmann area 18</label>
+<label>Left Cerebrum:Occipital Lobe:Precuneus:Gray Matter:Brodmann area 18</label>
+<label>Left Cerebrum:Occipital Lobe:Precuneus:Gray Matter:Brodmann area 23</label>
+<label>Right Cerebrum:Parietal Lobe:Precuneus:Gray Matter:Brodmann area 31</label>
+<label>Left Cerebrum:Parietal Lobe:Precuneus:Gray Matter:Brodmann area 31</label>
+<label>Right Cerebrum:Temporal Lobe:Supramarginal Gyr:Gray Matter:Brodmann area 40</label>
+<label>Left Cerebrum:Temporal Lobe:Supramarginal Gyr:Gray Matter:Brodmann area 40</label>
+<label>Right Cerebrum:Frontal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 4</label>
+<label>Left Cerebrum:Frontal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 4</label>
+<label>Left Cerebrum:Frontal Lobe:Anterior Cingulate:Gray Matter:Brodmann area 9</label>
+<label>Right Cerebrum:Frontal Lobe:Sup Frontal Gyrus:Gray Matter:Brodmann area 9</label>
+<label>Left Cerebrum:Frontal Lobe:Sup Frontal Gyrus:Gray Matter:Brodmann area 9</label>
+<label>Right Cerebrum:Parietal Lobe:Inf Parietal Lob:Gray Matter:Brodmann area 40</label>
+<label>Left Cerebrum:Limbic Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 31</label>
+<label>Right Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 3</label>
+<label>Left Cerebrum:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Limbic Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 31</label>
+<label>Right Cerebrum:Limbic Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 23</label>
+<label>Left Cerebrum:Limbic Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 23</label>
+<label>Left Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 2</label>
+<label>Left Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 3</label>
+<label>Right Cerebrum:Frontal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 3</label>
+<label>Left Cerebrum:Frontal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 3</label>
+<label>Right Cerebrum:Occipital Lobe:Sup Occipital Gyr:Gray Matter:Brodmann area 19</label>
+<label>Left Cerebrum:Occipital Lobe:Sup Occipital Gyr:Gray Matter:Brodmann area 19</label>
+<label> :Frontal Lobe:Mid Temporal Gyr:Gray Matter:Brodmann area 39</label>
+<label>Right Cerebrum:Occipital Lobe:Sup Occipital Gyr:Gray Matter:Brodmann area 39</label>
+<label>Right Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 2</label>
+<label>Right Cerebrum:Limbic Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 24</label>
+<label>Left Cerebrum:Limbic Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 24</label>
+<label>Left Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter:Brodmann area 9</label>
+<label>Right Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter:Brodmann area 9</label>
+<label>Right Cerebrum:Limbic Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 32</label>
+<label>Left Cerebrum:Limbic Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 32</label>
+<label>Right Cerebrum:Parietal Lobe:Precuneus:Gray Matter:Brodmann area 18</label>
+<label>Left Cerebrum:Parietal Lobe:Precuneus:Gray Matter:Brodmann area 18</label>
+<label>Right Cerebrum:Temporal Lobe:Precuneus:Gray Matter:Brodmann area 31</label>
+<label>Right Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Temporal Lobe:Sub-Gyral:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Temporal Lobe:Inf Parietal Lob:Gray Matter:Brodmann area 40</label>
+<label>Right Cerebrum:Temporal Lobe:Inf Parietal Lob:Gray Matter:Brodmann area 40</label>
+<label>Right Cerebrum:Limbic Lobe:Sub-Gyral:Gray Matter:Brodmann area 31</label>
+<label>Right Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 1</label>
+<label>Left Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 1</label>
+<label>Left Cerebrum:Frontal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 3</label>
+<label>Right Cerebrum:Frontal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 9</label>
+<label>Right Cerebrum:Frontal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 3</label>
+<label>Right Cerebrum:Parietal Lobe:Supramarginal Gyr:Gray Matter:Brodmann area 40</label>
+<label>Left Cerebrum:Parietal Lobe:Supramarginal Gyr:Gray Matter:Brodmann area 40</label>
+<label>Right Cerebrum:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 31</label>
+<label>Right Cerebrum:Parietal Lobe:Precuneus:Gray Matter:Brodmann area 7</label>
+<label>Left Cerebrum:Parietal Lobe:Precuneus:Gray Matter:Brodmann area 7</label>
+<label>Right Cerebrum:Limbic Lobe:Precuneus:Gray Matter:Brodmann area 31</label>
+<label>Left Cerebrum:Limbic Lobe:Precuneus:Gray Matter:Brodmann area 31</label>
+<label>Right Cerebrum:Temporal Lobe:Sup Occipital Gyr:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Temporal Lobe:Sup Occipital Gyr:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 31</label>
+<label>Left Cerebrum:Occipital Lobe:Sup Occipital Gyr:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Parietal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 3</label>
+<label>Right Cerebrum:Limbic Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 32</label>
+<label>Left Cerebrum:Limbic Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 32</label>
+<label>Right Cerebrum:Temporal Lobe:Angular Gyrus:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Temporal Lobe:Angular Gyrus:Gray Matter:Brodmann area 39</label>
+<label>Right Cerebrum:Parietal Lobe:Angular Gyrus:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Parietal Lobe:Angular Gyrus:Gray Matter:Brodmann area 39</label>
+<label>Right Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 9</label>
+<label>Left Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 9</label>
+<label>Right Cerebrum:Parietal Lobe:Precuneus:Gray Matter:Brodmann area 19</label>
+<label>Left Cerebrum:Parietal Lobe:Precuneus:Gray Matter:Brodmann area 19</label>
+<label>Right Cerebrum:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 7</label>
+<label>Left Cerebrum:Occipital Lobe:Cuneus:Gray Matter:Brodmann area 7</label>
+<label>Right Cerebrum:Occipital Lobe:Precuneus:Gray Matter:Brodmann area 7</label>
+<label>Right Cerebrum:Parietal Lobe:Supramarginal Gyr:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Parietal Lobe:Supramarginal Gyr:Gray Matter:Brodmann area 39</label>
+<label>Right Cerebrum:Parietal Lobe:Sub-Gyral:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Limbic Lobe:Sub-Gyral:Gray Matter:Brodmann area 31</label>
+<label>Right Cerebrum:Parietal Lobe:Sub-Gyral:Gray Matter:Brodmann area 40</label>
+<label>Left Cerebrum:Parietal Lobe:Sub-Gyral:Gray Matter:Brodmann area 40</label>
+<label>Left Cerebrum:Frontal Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 32</label>
+<label>Right Cerebrum:Frontal Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 32</label>
+<label>Right Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 8</label>
+<label>Right Cerebrum:Parietal Lobe:Precuneus:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Parietal Lobe:Precuneus:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Occipital Lobe:Precuneus:Gray Matter:Brodmann area 7</label>
+<label>Left Cerebrum:Parietal Lobe:Inf Parietal Lob:Gray Matter:Brodmann area 2</label>
+<label>Left Cerebrum:Frontal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 9</label>
+<label>Right Cerebrum:Limbic Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 9</label>
+<label>Left Cerebrum:Limbic Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 9</label>
+<label>Right Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 6</label>
+<label>Right Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter:Brodmann area 8</label>
+<label>Left Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter:Brodmann area 8</label>
+<label>Left Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 6</label>
+<label>Left Cerebrum:Parietal Lobe:Sub-Gyral:Gray Matter:Brodmann area 2</label>
+<label>Right Cerebrum:Limbic Lobe:Sub-Gyral:Gray Matter:Brodmann area 24</label>
+<label>Left Cerebrum:Limbic Lobe:Sub-Gyral:Gray Matter:Brodmann area 24</label>
+<label>Right Cerebrum:Parietal Lobe:Angular Gyrus:Gray Matter:Brodmann area 40</label>
+<label>Left Cerebrum:Parietal Lobe:Angular Gyrus:Gray Matter:Brodmann area 40</label>
+<label>Right Cerebrum:Parietal Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 31</label>
+<label>Left Cerebrum:Parietal Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 31</label>
+<label>Left Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 4</label>
+<label>Right Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter:Brodmann area 6</label>
+<label>Right Cerebrum:Frontal Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 6</label>
+<label>Left Cerebrum:Frontal Lobe:Cingulate Gyrus:Gray Matter:Brodmann area 6</label>
+<label>Left Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 8</label>
+<label>Right Cerebrum:Frontal Lobe:Sup Frontal Gyrus:Gray Matter:Brodmann area 8</label>
+<label>Left Cerebrum:Frontal Lobe:Sup Frontal Gyrus:Gray Matter:Brodmann area 8</label>
+<label>Right Cerebrum:Parietal Lobe:Inf Parietal Lob:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Parietal Lobe:Inf Parietal Lob:Gray Matter:Brodmann area 39</label>
+<label>Left Cerebrum:Frontal Lobe:Mid Frontal Gyrus:Gray Matter:Brodmann area 6</label>
+<label>Right Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 8</label>
+<label>Left Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 8</label>
+<label>Right Cerebrum:Parietal Lobe:Sup Parietal Lob:Gray Matter:Brodmann area 7</label>
+<label>Left Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 6</label>
+<label>Left Cerebrum:Parietal Lobe:Sup Parietal Lob:Gray Matter:Brodmann area 7</label>
+<label>Right Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 31</label>
+<label>Left Cerebrum:Frontal Lobe:Precuneus:Gray Matter:Brodmann area 31</label>
+<label>Right Cerebrum:Parietal Lobe:Precentral Gyrus:Gray Matter:Brodmann area 3</label>
+<label>Right Cerebrum:Limbic Lobe:Sub-Gyral:Gray Matter:Brodmann area 32</label>
+<label>Left Cerebrum:Limbic Lobe:Sub-Gyral:Gray Matter:Brodmann area 32</label>
+<label>Right Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 32</label>
+<label>Left Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 32</label>
+<label>Right Cerebrum:Parietal Lobe:Inf Parietal Lob:Gray Matter:Brodmann area 7</label>
+<label>Left Cerebrum:Parietal Lobe:Inf Parietal Lob:Gray Matter:Brodmann area 7</label>
+<label>Right Cerebrum:Parietal Lobe:Sub-Gyral:Gray Matter:Brodmann area 31</label>
+<label>Right Cerebrum:Frontal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 31</label>
+<label>Left Cerebrum:Frontal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 31</label>
+<label>Right Cerebrum:Frontal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 5</label>
+<label>Left Cerebrum:Frontal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 5</label>
+<label>Left Cerebrum:Limbic Lobe:Paracentral Lobule:Gray Matter:Brodmann area 31</label>
+<label>Right Cerebrum:Parietal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 5</label>
+<label>Right Cerebrum:Frontal Lobe:Sup Frontal Gyrus:Gray Matter:Brodmann area 6</label>
+<label>Left Cerebrum:Frontal Lobe:Sup Frontal Gyrus:Gray Matter:Brodmann area 6</label>
+<label>Left Cerebrum:Parietal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 5</label>
+<label>Right Cerebrum:Frontal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 6</label>
+<label>Left Cerebrum:Frontal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 6</label>
+<label>Right Cerebrum:Parietal Lobe:Sup Parietal Lob:Gray Matter:Brodmann area 40</label>
+<label>Left Cerebrum:Parietal Lobe:Sup Parietal Lob:Gray Matter:Brodmann area 40</label>
+<label>Right Cerebrum:Parietal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 7</label>
+<label>Left Cerebrum:Parietal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 7</label>
+<label>Right Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 6</label>
+<label>Right Cerebrum:Parietal Lobe:Sub-Gyral:Gray Matter:Brodmann area 7</label>
+<label>Left Cerebrum:Parietal Lobe:Sub-Gyral:Gray Matter:Brodmann area 7</label>
+<label>Right Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 4</label>
+<label>Right Cerebrum:Frontal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 3</label>
+<label>Left Cerebrum:Frontal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 3</label>
+<label>Right Cerebrum:Frontal Lobe:Sub-Gyral:Gray Matter:Brodmann area 3</label>
+<label>Right Cerebrum:Frontal Lobe:Inf Parietal Lob:Gray Matter:Brodmann area 40</label>
+<label>Right Cerebrum:Frontal Lobe:Precuneus:Gray Matter:Brodmann area 5</label>
+<label>Left Cerebrum:Frontal Lobe:Precuneus:Gray Matter:Brodmann area 5</label>
+<label>Right Cerebrum:Frontal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 7</label>
+<label>Right Cerebrum:Frontal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 4</label>
+<label>Left Cerebrum:Frontal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 4</label>
+<label>Left Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 5</label>
+<label>Right Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 5</label>
+<label>Right Cerebrum:Parietal Lobe:Sup Parietal Lob:Gray Matter:Brodmann area 5</label>
+<label>Left Cerebrum:Parietal Lobe:Sup Parietal Lob:Gray Matter:Brodmann area 5</label>
+<label>Right Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 4</label>
+<label>Right Cerebrum:Frontal Lobe:Med Frontal Gyrus:Gray Matter:Brodmann area 4</label>
+<label>Right Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 7</label>
+<label>Left Cerebrum:Parietal Lobe:Postcentral Gyrus:Gray Matter:Brodmann area 7</label>
+<label>Left Cerebrum:Parietal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 4</label>
+<label>Right Cerebrum:Parietal Lobe:Paracentral Lobule:Gray Matter:Brodmann area 4</label>
+  </data>
+</atlas>

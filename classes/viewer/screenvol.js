@@ -13,6 +13,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutNam
     /*jslint sub: true */
     this.volume = vol;
     this.lutName = lutName;
+    this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
     this.screenMin = this.volume.header.imageRange.displayMin;
     this.screenMax = this.volume.header.imageRange.displayMax;
     this.imageMin = this.volume.header.imageRange.imageMin;
@@ -37,10 +38,12 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutNam
 
         if (screenParams.lut !== undefined) {
             this.lutName = screenParams.lut;
+            this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
         }
+    } else {
+        this.findDisplayRange(parametric);
     }
 
-    this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
     this.negative = (this.screenMax < this.screenMin);
 
     this.updateScreenRange();

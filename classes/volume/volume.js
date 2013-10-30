@@ -1,6 +1,7 @@
 
 /*jslint browser: true, node: true */
-/*global makeSlice, Base64Binary, FileReader, bind, Gunzip, isPlatformLittleEndian */
+/*global makeSlice, Base64Binary, FileReader, bind, Gunzip, isPlatformLittleEndian, deref, DataView,
+GUNZIP_MAGIC_COOKIE1, GUNZIP_MAGIC_COOKIE2 */
 
 "use strict";
 
@@ -42,8 +43,47 @@ papaya.volume.Volume.prototype.findFileType = function (filename) {
 
 
 
-papaya.volume.Volume.prototype.fileIsCompressed = function (filename) {
-    return (filename.indexOf(".gz") !== -1);
+papaya.volume.Volume.prototype.findFileTypeByMagicNumber = function (data) {
+    var buf, mag1, mag2, mag3;
+
+    buf = new DataView(data);
+
+    mag1 = buf.getUint8(papaya.volume.nifti.MAGIC_NUMBER_LOCATION);
+    mag2 = buf.getUint8(papaya.volume.nifti.MAGIC_NUMBER_LOCATION + 1);
+    mag3 = buf.getUint8(papaya.volume.nifti.MAGIC_NUMBER_LOCATION + 2);
+
+    if ((mag1 === papaya.volume.nifti.MAGIC_NUMBER[0]) && (mag2 === papaya.volume.nifti.MAGIC_NUMBER[1]) && (mag3 === papaya.volume.nifti.MAGIC_NUMBER[2])) {
+        return papaya.volume.Volume.TYPE_NIFTI;
+    }
+
+    return papaya.volume.Volume.TYPE_UNKNOWN;
+};
+
+
+
+papaya.volume.Volume.prototype.fileIsCompressed = function (filename, data) {
+    var buf, magicCookie1, magicCookie2;
+
+    if (filename.indexOf(".gz") !== -1) {
+        return true;
+    }
+
+    if (data) {
+        buf = new DataView(data);
+
+        magicCookie1 = buf.getUint8(0);
+        magicCookie2 = buf.getUint8(1);
+
+        if (magicCookie1 === GUNZIP_MAGIC_COOKIE1) {
+            return true;
+        }
+
+        if (magicCookie2 === GUNZIP_MAGIC_COOKIE2) {
+            return true;
+        }
+    }
+
+    return false;
 };
 
 
@@ -114,19 +154,19 @@ papaya.volume.Volume.prototype.readURL = function (url, callback) {
 
 
 
-papaya.volume.Volume.prototype.readEncodedData = function (data, name, callback) {
+papaya.volume.Volume.prototype.readEncodedData = function (name, callback) {
     var vol = null;
 
     try {
         this.fileName = name;
         this.onFinishedRead = callback;
 
-        this.headerType = this.findFileType(this.fileName);
-        this.compressed = this.fileIsCompressed(this.fileName);
-
         vol = this;
 
-        vol.rawData = Base64Binary.decodeArrayBuffer(data);
+        vol.rawData = Base64Binary.decodeArrayBuffer(deref(name));
+
+        this.headerType = this.findFileType(this.fileName);
+        this.compressed = this.fileIsCompressed(this.fileName, vol.rawData);
 
         this.fileLength = vol.rawData.byteLength;
 
@@ -245,6 +285,11 @@ papaya.volume.Volume.prototype.decompress = function (vol) {
 
 papaya.volume.Volume.prototype.finishedDecompress = function (vol, data) {
     vol.rawData = data;
+
+    if (this.headerType === papaya.volume.Volume.TYPE_UNKNOWN) {  // try again to determine type by reading magic cookie
+        this.headerType = this.findFileTypeByMagicNumber(vol.rawData);
+    }
+
     setTimeout(function () {vol.finishedReadData(vol); }, 0);
 };
 

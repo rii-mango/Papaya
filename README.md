@@ -1,4 +1,4 @@
-Papaya
+Papaya (v0.6.1)
 ======
 
 A pure JavaScript medical research image viewer.
@@ -11,27 +11,27 @@ A pure JavaScript medical research image viewer.
 
 Demo
 -----
-- Demo: http://ric.uthscsa.edu/mango/papaya/
-- Current Beta: http://ric.uthscsa.edu/mango/papayabeta/
+- Demo: http://ric.uthscsa.edu/mango/papaya/ (v0.6 build 119)
+- Current Beta: http://ric.uthscsa.edu/mango/papayabeta/ (v0.6.1 build 471)
 
 
 [![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://ric.uthscsa.edu/mango/papaya/)
 
 Installation
 ------
-Development: Run `debug.html` with your favorite JavaScript debugger.
+Development: Load `debug.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
 
-Production: Run `build.sh` to create the build files.  For example `build.sh -sample -atlas`.  Include the `-local` flag if 
-not intending to store files on a web server.  See the [Papaya Builder](https://github.com/rii-mango/Papaya-Builder) project for more 
-information.
+Production: Run `build.sh` to create the build files. See the [Papaya Builder](https://github.com/rii-mango/Papaya-Builder) project for more 
+information. A typical usage would be `build.sh -sample -atlas`
 
 ```shell
 usage: papaya-builder [options]
-  -atlas <file>   add atlas
-  -help           print this message
-  -local          build for local usage
-  -root <dir>     papaya project directory
-  -sample         include sample image
+ -atlas <file>     add atlas
+ -help             print this message
+ -images <files>   images to include
+ -local            build for local usage
+ -root <dir>       papaya project directory
+ -sample           include sample image
 ```
 
 Usage
@@ -65,23 +65,17 @@ To specify multiple images and other options:
 <head>
     ...
     <script type="text/javascript">
-        var papayaParams = [];
-        papayaParams["worldSpace"] = true;
-        papayaParams["images"] = ["./data/myBaseImage.nii.gz", "./data/myOverlayImage.nii.gz"];
-        papayaParams["myOverlayImage.nii.gz"] = {"min": 4, "max": 10};
+        var params = [];
+        params["worldSpace"] = true;
+        params["images"] = ["data/myBaseImage.nii.gz", "data/myOverlayImage.nii.gz"];
+        params["myOverlayImage.nii.gz"] = {"min": 4, "max": 10};
     </script>
 <head>
-```
 
+...
 
-To automatically load a single image by URL:
-```html
-<div id="papayaViewer" data-load-url="./data/myimage.nii.gz"></div>
-```
+<div id="papayaViewer" class="checkForJS" data-params="params"></div>
 
-To automatically load a single image by variable name of encoded data:
-```html
-<div id="papayaViewer" data-load-encoded-data="my-encoded-data" data-load-encoded-name="my-encoded-data-name"></div>
 ```
 
 

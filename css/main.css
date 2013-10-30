@@ -135,6 +135,11 @@ label.fileChooser {
 }
 
 
+.spacer {
+    height: 5px;
+}
+
+
 /* These default values are only relevant when JavaScript is disabled. */
 div#papayaContainer {
     width: 100%;

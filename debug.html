@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,8 +15,9 @@
 
         <script type="text/javascript" src="classes/constants.js"></script>
 
-        <script type="text/javascript" src="classes/data/sample-image-local.js"></script>
-        <script type="text/javascript" src="classes/data/talairach-atlas-local.js"></script>
+        <script type="text/javascript" src="classes/data/sample-image.js"></script>
+        <script type="text/javascript" src="classes/data/talairach-atlas.js"></script>
+        <script type="text/javascript" src="classes/data/talairach-atlas-image.js"></script>
 
         <script type="text/javascript" src="classes/core/coordinate.js"></script>
         <script type="text/javascript" src="classes/core/dimensions.js"></script>
@@ -50,6 +52,7 @@
         <script type="text/javascript" src="classes/ui/menuitemcheckbox.js"></script>
         <script type="text/javascript" src="classes/ui/menuitemfilechooser.js"></script>
         <script type="text/javascript" src="classes/ui/menuitemrange.js"></script>
+        <script type="text/javascript" src="classes/ui/menuitemspacer.js"></script>
         <script type="text/javascript" src="classes/ui/toolbar.js"></script>
 
         <script type="text/javascript" src="classes/main.js"></script>
@@ -62,9 +65,25 @@
         <script type="text/javascript" src="classes/utilities/utilities.js"></script>
 
         <script type="text/javascript">
+            /*
+                DON'T ADD THIS!  This is here for debugging purposes only; papaya-builder adds this for you
+                automatically.  This structure is used to manage image data references used by the File menu (and also
+                atlas image data references).
+            */
+            var papayaLoadableImages = [
+                {"nicename": "Sample Image", "name": "sample_image", "encode": "sample_image"},
+                {"nicename": "Atlas", "name": "Talairach_labels_1mm", "encode": "Talairach_labels_1mm", "hide": true}
+            ];
+
+            /*
+                Here you can specify what images you want to load or what options you want to apply automatically. You
+                need to reference the variable name in 'data-params' below.
+             */
             var params = [];
-            params["images"] = ["resources/data/sample_image.nii.gz"];
-            params["lut"] = {"name": "Custom", "data": [[0, 0.5, 0, 1], [1, 1, 1, 0]]};
+            params["worldSpace"] = true;
+            params["images"] = ["sample_image", "data/zstat.nii.gz"];
+            params["luts"] = [{"name": "Custom", "data":[[0, 1, 0, 0], [.5, 1, 1, 0], [1, 1, 1, 1]]}];
+            params["zstat.nii.gz"] = {"min": 4, "max": 8, "lut": "Custom"};
         </script>
 
         <title>Papaya</title>
@@ -73,7 +92,7 @@
     <body>
         <div id="papayaContainer">
             <div id="papayaToolbar"></div>
-            <div id="papayaViewer" class="checkForJS" data-load-params="params"></div>
+            <div id="papayaViewer" class="checkForJS" data-params="params"></div>
             <div id="papayaDisplay"></div>
         </div>
     </body>

@@ -165,7 +165,7 @@ function fullyQualifiedVariableExists(dat) {
         obj = obj[dat[ctr]];
     }
 
-    return (!(obj === undefined));
+    return (!(obj === undefined) && !(obj === null));
 }
 
 
@@ -288,8 +288,11 @@ function getQueryParams(params) {
 function deref(name) {
     var obj, M;
 
-    obj = name.replace(/(^[' "]+|[" ']+$)/g, '');
-    M = obj.match(/(^[\w\$]+(\.[\w\$]+)*)/);
+    if (!isString(name)) {
+        return null;
+    }
+
+    M = name.replace(/(^[' "]+|[" ']+$)/g, '').match(/(^[\w\$]+(\.[\w\$]+)*)/);
 
     if (M) {
         M = M[1].split('.');
@@ -299,5 +302,5 @@ function deref(name) {
         }
     }
 
-    return obj || name;
+    return obj || null;
 }
