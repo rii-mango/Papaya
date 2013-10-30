@@ -1,4 +1,3 @@
-
 /*jslint browser: true, node: true */
 /*global */
 
