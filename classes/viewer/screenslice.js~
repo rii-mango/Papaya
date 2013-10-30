@@ -99,17 +99,12 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
                     } else {
                         value = round(((value - this.screenVolumes[ctr].screenMin) * this.screenVolumes[ctr].screenRatio) + 0.5);  // screen value
                     }
-			
 
-                    if ( (alpha > 0) || (ctr === 0)) {
+                    if ((alpha > 0) || (ctr === 0)) {
                         index = ((ctrY * this.xDim) + ctrX) * 4;
-			var layerAlpha=this.screenVolumes[ctr].alpha;
-			var newRed=(this.imageDataDraw.data[index]*(1-layerAlpha) + this.screenVolumes[ctr].colorTable.lookupRed(value)*layerAlpha);
-			var newGreen=(this.imageDataDraw.data[index + 1]*(1-layerAlpha)+this.screenVolumes[ctr].colorTable.lookupGreen(value)*layerAlpha);
-			var newBlue=(this.imageDataDraw.data[index + 2]*(1-layerAlpha)+this.screenVolumes[ctr].colorTable.lookupBlue(value)*layerAlpha);
-                        this.imageDataDraw.data[index] = newRed;
-                        this.imageDataDraw.data[index + 1] = newGreen;
-                        this.imageDataDraw.data[index + 2] = newBlue;
+                        this.imageDataDraw.data[index] = this.screenVolumes[ctr].colorTable.lookupRed(value);
+                        this.imageDataDraw.data[index + 1] = this.screenVolumes[ctr].colorTable.lookupGreen(value);
+                        this.imageDataDraw.data[index + 2] = this.screenVolumes[ctr].colorTable.lookupBlue(value);
                         this.imageDataDraw.data[index + 3] = alpha;
                     }
                 }
