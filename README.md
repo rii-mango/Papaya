@@ -62,7 +62,7 @@ See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for
 </html>
 ```
 
-####To specify multiple images and other options
+####To automatically load images and specify other options
 ```html
 <head>
     ...
