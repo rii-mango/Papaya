@@ -1,28 +1,28 @@
-Papaya (v0.6.1)
+Papaya 
 ======
 
-A pure JavaScript medical research image viewer.
-- Requires no browser plugin.
-- Runs in Firefox (7), Chrome (7), Safari (6), MobileSafari (iOS 6), IE (10).
-- Orthogonal viewer with mouse and keyboard controls.
-- Reads NIFTI (.nii and .nii.gz) files.
-- Supports atlas labels.
-
-
-Demo
------
-- Demo: http://ric.uthscsa.edu/mango/papaya/ (v0.6 build 119)
-- Current Beta: http://ric.uthscsa.edu/mango/papayabeta/ (v0.6.1 build 471)
-
+Papaya is a pure JavaScript medical research image viewer, compatible across a range of popular web browsers, 
+including mobile devices.  The orthogonal viewer supports NIFTI (.nii or .nii.gz) files, overlays and atlas labels.
 
 [![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://ric.uthscsa.edu/mango/papaya/)
 
-Installation
-------
-Development: Load `debug.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
+**Demo:** http://ric.uthscsa.edu/mango/papaya/ (v0.6 build 119)
 
-Production: Run `build.sh` to create the build files. See the [Papaya Builder](https://github.com/rii-mango/Papaya-Builder) project for more 
-information. A typical usage would be `build.sh -sample -atlas`
+**Requirements:** Firefox (7), Chrome (7), Safari (6), MobileSafari (iOS 6), IE (10)
+
+**User Guide:** http://ric.uthscsa.edu/mango/papaya_userguide.html
+
+**Developer Guide:** http://ric.uthscsa.edu/mango/papaya_devguide.html
+
+Quickstart Guide
+------
+
+###Development
+Load `debug.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
+
+
+###Building
+Run `papaya-builder.sh` to create the build files.  A typical usage might be `papaya-builder.sh -sample -atlas`
 
 ```shell
 usage: papaya-builder [options]
@@ -34,8 +34,7 @@ usage: papaya-builder [options]
  -sample           include sample image
 ```
 
-Usage
-------
+###Usage
 Basic usage:
 ```html
 <!DOCTYPE html>
