@@ -7,7 +7,7 @@ the [user guide](http://ric.uthscsa.edu/mango/papaya_userguide.html) for a full 
 
 [![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://ric.uthscsa.edu/mango/papaya/)
 
-**Demo:** http://ric.uthscsa.edu/mango/papaya/ (v0.6 build 119)
+**Demo:** http://ric.uthscsa.edu/mango/papaya/ (v0.6.1 build 479)
 
 **Requirements:** Firefox (7), Chrome (7), Safari (6), MobileSafari (iOS 6), IE (10)
 
