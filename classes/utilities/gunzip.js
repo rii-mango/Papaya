@@ -766,7 +766,9 @@ var Gunzip = function () {
             timeoutCtr += i;
 
             if (papayaMain) {
-                papayaMain.papayaDisplay.drawProgress(index / inflatedSize);
+                if (papayaMain.papayaDisplay) {
+                    papayaMain.papayaDisplay.drawProgress(index / inflatedSize);
+                }
             }
 
             if (timeoutCtr > PROCESS_TIMEOUT_BYTES) {

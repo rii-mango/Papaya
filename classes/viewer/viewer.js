@@ -149,7 +149,11 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
     var papayaDataType, papayaDataTalairachAtlasType;
 
     if (this.volume.hasError()) {
-        papayaMain.papayaDisplay.drawError(this.volume.errorMessage);
+        console.error(this.volume.errorMessage);
+
+        if (papayaMain.papayaDisplay) {
+            papayaMain.papayaDisplay.drawError(this.volume.errorMessage);
+        }
         return;
     }
 
@@ -808,7 +812,9 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
 
 
 papaya.viewer.Viewer.prototype.mouseOutEvent = function () {
-    papayaMain.papayaDisplay.drawEmptyDisplay();
+    if (papayaMain.papayaDisplay) {
+        papayaMain.papayaDisplay.drawEmptyDisplay();
+    }
 };
 
 

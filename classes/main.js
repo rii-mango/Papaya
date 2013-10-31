@@ -129,9 +129,11 @@ function resizeViewerComponents(resize) {
         papayaMain.papayaViewer.resizeViewer(dims);
     }
 
-    displayHtml.css({height: PAPAYA_SECTION_HEIGHT + "px"});
-    displayHtml.css({paddingLeft: dims.widthPadding + "px"});
-    papayaMain.papayaDisplay.canvas.width = dims.width;
+    if (papayaMain.papayaDisplay) {
+        displayHtml.css({height: PAPAYA_SECTION_HEIGHT + "px"});
+        displayHtml.css({paddingLeft: dims.widthPadding + "px"});
+        papayaMain.papayaDisplay.canvas.width = dims.width;
+    }
 
     $("#" + PAPAYA_CONTAINER_ID).css({paddingTop: dims.heightPadding + "px"});
 
@@ -139,7 +141,10 @@ function resizeViewerComponents(resize) {
         papayaMain.papayaViewer.drawViewer(true);
     } else {
         papayaMain.papayaViewer.drawEmptyViewer();
-        papayaMain.papayaDisplay.drawEmptyDisplay();
+
+        if (papayaMain.papayaDisplay) {
+            papayaMain.papayaDisplay.drawEmptyDisplay();
+        }
     }
 }
 
