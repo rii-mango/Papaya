@@ -1,4 +1,8 @@
 
+body {
+    background: #AAAAAA;
+}
+
 canvas {
     cursor: crosshair;
 }
