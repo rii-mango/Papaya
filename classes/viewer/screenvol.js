@@ -40,6 +40,10 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutNam
             this.lutName = screenParams.lut;
             this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
         }
+
+        if (screenParams.alpha !== undefined) {
+            this.alpha = screenParams.alpha;
+        }
     } else {
         this.findDisplayRange(parametric);
     }
