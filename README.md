@@ -2,7 +2,8 @@ Papaya
 ======
 
 Papaya is a pure JavaScript medical research image viewer, compatible across a range of popular web browsers, 
-including mobile devices.  The orthogonal viewer supports NIFTI (.nii or .nii.gz) files, overlays and atlas labels.
+including mobile devices.  The orthogonal viewer supports NIFTI (.nii or .nii.gz) files, overlays and atlas labels.  See 
+the [user guide](http://ric.uthscsa.edu/mango/papaya_userguide.html) for a full list of features.
 
 [![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://ric.uthscsa.edu/mango/papaya/)
 
@@ -35,7 +36,9 @@ usage: papaya-builder [options]
 ```
 
 ###Usage
-Basic usage:
+See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for a full list of configurable parameters.
+
+####Basic usage (loads a blank viewer)
 ```html
 <!DOCTYPE html>
 
@@ -59,7 +62,7 @@ Basic usage:
 </html>
 ```
 
-To specify multiple images and other options:
+####To specify multiple images and other options
 ```html
 <head>
     ...
