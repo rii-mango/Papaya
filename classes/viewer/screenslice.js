@@ -44,7 +44,7 @@ papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN = 0;
 
 
 papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldSpace) {
-    var origin, voxelDims, ctr, ctrY, ctrX, value, alpha, index, negative;
+    var origin, voxelDims, ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha;
 
     slice = round(slice);
 
@@ -59,7 +59,8 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
             for (ctrY = 0; ctrY < this.yDim; ctrY += 1) {
                 for (ctrX = 0; ctrX < this.xDim; ctrX += 1) {
                     value = 0;
-                    alpha = 255;
+                    thresholdAlpha = 255;
+                    layerAlpha = this.screenVolumes[ctr].alpha;
 
                     if (ctr === 0) {
                         if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
@@ -92,25 +93,21 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
                     if ((!this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMin))
                             || (this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMin))) {
                         value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN;  // screen value
-                        alpha = this.screenVolumes[ctr].isOverlay() ? 0 : 255;
+                        thresholdAlpha = this.screenVolumes[ctr].isOverlay() ? 0 : 255;
                     } else if ((!this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMax))
                             || (this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMax))) {
                         value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX;  // screen value
                     } else {
                         value = round(((value - this.screenVolumes[ctr].screenMin) * this.screenVolumes[ctr].screenRatio) + 0.5);  // screen value
                     }
-			
 
-                    if ( (alpha > 0) || (ctr === 0)) {
+                    if ((thresholdAlpha > 0) || (ctr === 0)) {
                         index = ((ctrY * this.xDim) + ctrX) * 4;
-			var layerAlpha=this.screenVolumes[ctr].alpha;
-			var newRed=(this.imageDataDraw.data[index]*(1-layerAlpha) + this.screenVolumes[ctr].colorTable.lookupRed(value)*layerAlpha);
-			var newGreen=(this.imageDataDraw.data[index + 1]*(1-layerAlpha)+this.screenVolumes[ctr].colorTable.lookupGreen(value)*layerAlpha);
-			var newBlue=(this.imageDataDraw.data[index + 2]*(1-layerAlpha)+this.screenVolumes[ctr].colorTable.lookupBlue(value)*layerAlpha);
-                        this.imageDataDraw.data[index] = newRed;
-                        this.imageDataDraw.data[index + 1] = newGreen;
-                        this.imageDataDraw.data[index + 2] = newBlue;
-                        this.imageDataDraw.data[index + 3] = alpha;
+
+                        this.imageDataDraw.data[index] = (this.imageDataDraw.data[index] * (1 - layerAlpha) + this.screenVolumes[ctr].colorTable.lookupRed(value) * layerAlpha);
+                        this.imageDataDraw.data[index + 1] = (this.imageDataDraw.data[index + 1] * (1 - layerAlpha) + this.screenVolumes[ctr].colorTable.lookupGreen(value) * layerAlpha);
+                        this.imageDataDraw.data[index + 2] = (this.imageDataDraw.data[index + 2] * (1 - layerAlpha) + this.screenVolumes[ctr].colorTable.lookupBlue(value) * layerAlpha);
+                        this.imageDataDraw.data[index + 3] = thresholdAlpha;
                     }
                 }
             }
