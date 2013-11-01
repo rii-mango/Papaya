@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global bind, isString, papayaMain, deref */
+/*global bind, isString, papayaMain, deref, papayaParams */
 
 "use strict";
 
@@ -8,17 +8,18 @@ var papaya = papaya || {};
 papaya.viewer = papaya.viewer || {};
 
 
-// only supports Label, not Probabilistic type; assumes label indices go from 0 to n-1 (with no gaps); assumes labels use place holders
 papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas) {
     this.name = null;
     this.transformedname = null;
-    this.atlasLabels = atlas.labels;
+    this.labels = [];
+    this.atlasLabelData = atlas.labels;
     this.volume = new papaya.volume.Volume();
-    this.displayColumns = new Array(4);
-    this.labels = new Array(4);
-    this.numLabels = 0;
+    this.displayColumns = null;
+    this.returnLabels = null;
     this.transform = null;
     this.currentAtlas = null;
+    this.maxLabels = 0;
+    this.probabilistic = false;
 
     var loadableImage = papayaMain.findLoadableImage(atlas.labels.atlas.header.images.summaryimagefile);
 
@@ -32,11 +33,13 @@ papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas) {
 
 
 papaya.viewer.Atlas.MAX_LABELS = 4;
+papaya.viewer.Atlas.PROBABILISTIC = [ "probabalistic", "probabilistic" ]; // typo is in FSL < 5.0.2
+papaya.viewer.Atlas.LABEL_SPLIT_REGEX = /\.|:|,|\//;  // possible delimiters
 
 
 
 papaya.viewer.Atlas.prototype.getLabelAtCoordinate = function (xLoc, yLoc, zLoc) {
-    var labelString, labelsCurrent, ctr, xTrans, yTrans, zTrans;
+    var xTrans, yTrans, zTrans, val;
 
     if (this.transform && (this.currentAtlas === this.transformedname)) {
         xTrans = ((xLoc * this.transform[0][0]) + (yLoc * this.transform[0][1]) + (zLoc * this.transform[0][2]) + (this.transform[0][3]));
@@ -48,44 +51,53 @@ papaya.viewer.Atlas.prototype.getLabelAtCoordinate = function (xLoc, yLoc, zLoc)
         zTrans = zLoc;
     }
 
-    labelString = this.getLabelString(this.volume.getVoxelAtCoordinate(xTrans, yTrans, zTrans, true));
+    val = (this.volume.getVoxelAtCoordinate(xTrans, yTrans, zTrans, true));
 
-    if (labelString) {
-        labelsCurrent = labelString.split(/\.|:/);
-
-        for (ctr = 0; ctr < this.numLabels; ctr += 1) {
-            this.labels[ctr] = labelsCurrent[this.displayColumns[ctr]];
-        }
-    } else {
-        for (ctr = 0; ctr < this.numLabels; ctr += 1) {
-            this.labels[ctr] = "";
-        }
+    if (this.probabilistic) {
+        val -= 1;
     }
 
-    return this.labels;
+    return this.formatLabels(this.labels[val], this.returnLabels);
 };
 
 
 
 papaya.viewer.Atlas.prototype.readFinished = function () {
-    this.findNumLabels();
     this.parseTransform();
-    this.name = this.atlasLabels.atlas.header.name;
+    this.parseLabels();
+    this.parseDisplayColumns();
+    this.maxLabels = this.findMaxLabelParts();
     this.currentAtlas = this.name;
+    this.probabilistic = this.atlasLabelData.atlas.header.type
+        && ((this.atlasLabelData.atlas.header.type.toLowerCase() === papaya.viewer.Atlas.PROBABILISTIC[0])
+            || (this.atlasLabelData.atlas.header.type.toLowerCase() === papaya.viewer.Atlas.PROBABILISTIC[1]));
 
-    if (this.atlasLabels.atlas.header.transformedname) {
-        this.transformedname = this.atlasLabels.atlas.header.transformedname;
+    this.returnLabels = [];
+    this.returnLabels.length = this.maxLabels;
+
+    if (this.atlasLabelData.atlas.header.transformedname) {
+        this.transformedname = this.atlasLabelData.atlas.header.transformedname;
+    }
+
+    this.name = this.atlasLabelData.atlas.header.name;
+
+    var params = papayaParams.atlas;
+    if (params) {
+        if (params === this.transformedname) {
+            this.currentAtlas = this.transformedname;
+        }
     }
 };
 
 
 
-papaya.viewer.Atlas.prototype.findNumLabels = function () {
-    var index, columns, ctr, testStr, testStrSplit;
+papaya.viewer.Atlas.prototype.parseDisplayColumns = function () {
+    var index, columns, ctr;
 
-    if (this.atlasLabels.atlas.header.display) {  // uses "display" attribute
+    if (this.atlasLabelData.atlas.header.display) {  // uses "display" attribute
+        this.displayColumns = [];
         index = 0;
-        columns = this.atlasLabels.atlas.header.display.split(".");
+        columns = this.atlasLabelData.atlas.header.display.split(papaya.viewer.Atlas.LABEL_SPLIT_REGEX);
 
         for (ctr = 0; ctr < columns.length; ctr += 1) {
             if (columns[ctr] === "*") {
@@ -93,17 +105,6 @@ papaya.viewer.Atlas.prototype.findNumLabels = function () {
                 index += 1;
             }
         }
-
-        this.numLabels = index;
-    } else {  // parse first label to find number of parts
-        testStr = this.getLabelString(0);
-        testStrSplit = testStr.split(/\.|:/);
-
-        for (ctr = 0; ctr < testStrSplit.length; ctr += 1) {
-            this.displayColumns[ctr] = ctr;
-        }
-
-        this.numLabels = testStrSplit.length;
     }
 };
 
@@ -112,8 +113,8 @@ papaya.viewer.Atlas.prototype.findNumLabels = function () {
 papaya.viewer.Atlas.prototype.parseTransform = function () {
     var parts, ctrOut, ctrIn;
 
-    if (this.atlasLabels.atlas.header.transform) {
-        parts = this.atlasLabels.atlas.header.transform.split(" ");
+    if (this.atlasLabelData.atlas.header.transform) {
+        parts = this.atlasLabelData.atlas.header.transform.split(" ");
         this.transform = papaya.volume.Transform.IDENTITY.clone();
 
         if (parts.length === 16) {
@@ -128,18 +129,75 @@ papaya.viewer.Atlas.prototype.parseTransform = function () {
 
 
 
-papaya.viewer.Atlas.prototype.getLabelString = function (val) {
-    var label;
+papaya.viewer.Atlas.prototype.parseLabels = function () {
+    var ctr, index, label;
 
-    if (this.atlasLabels.atlas.data.label) {
-        label = this.atlasLabels.atlas.data.label[val];
+    for (ctr = 0; ctr < this.atlasLabelData.atlas.data.label.length; ctr += 1) {
+        label = this.atlasLabelData.atlas.data.label[ctr];
 
-        if (label.content) {
-            return label.content;
+        if (label.index) {
+            index = parseInt(label.index, 10);
+        } else {
+            index = ctr;
         }
 
-        return label;
+        if (label.content) {
+            this.labels[index] = label.content;
+        } else {
+            this.labels[index] = label;
+        }
+    }
+};
+
+
+
+papaya.viewer.Atlas.prototype.formatLabels = function (labelString, labelArray) {
+    var ctr, start, labelParts, numLabels;
+
+    if (labelString) {
+        labelParts = labelString.split(papaya.viewer.Atlas.LABEL_SPLIT_REGEX);
+
+        if (this.displayColumns) {
+            for (ctr = 0; ctr < labelParts.length; ctr += 1) {
+                if (ctr < this.displayColumns.length) {
+                    labelArray[ctr] = labelParts[this.displayColumns[ctr]];
+                }
+            }
+        } else {
+            numLabels = labelParts.length;
+            start = 0;
+
+            if (numLabels > papaya.viewer.Atlas.MAX_LABELS) {
+                start = (numLabels - papaya.viewer.Atlas.MAX_LABELS);
+            }
+
+            for (ctr = start; ctr < labelParts.length; ctr += 1) {
+                labelArray[ctr] = labelParts[ctr].trim();
+            }
+        }
+    } else {
+        for (ctr = 0; ctr < labelArray.length; ctr += 1) {
+            labelArray[ctr] = "";
+        }
     }
 
-    return "";
+    return labelArray;
+};
+
+
+
+papaya.viewer.Atlas.prototype.findMaxLabelParts = function () {
+    var ctr, tempArray;
+
+    if (this.displayColumns) {
+        return this.displayColumns.length;
+    }
+
+    tempArray = [];
+
+    for (ctr = 0; ctr < this.labels.length; ctr += 1) {
+        this.formatLabels(this.labels[ctr], tempArray);
+    }
+
+    return tempArray.length;
 };

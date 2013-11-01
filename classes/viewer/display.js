@@ -61,7 +61,7 @@ papaya.viewer.Display.prototype.drawEmptyDisplay = function () {
 papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
     var metrics, textWidth, labelLoc, coordValueLoc, val, valueLoc, valLabel, atlasLabelsStartPos, viewerOrigin,
         atlasLabelsTotalWidth, atlasNumLabels, atlasLabelWidth, atlasLabel, ctr, metricsAtlas, sizeRatio,
-        viewerVoxelDims;
+        viewerVoxelDims, labelColorThresh;
 
     if (this.drawingError || this.drawingProgress) {
         return;
@@ -131,14 +131,14 @@ papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
 
     if (papayaMain.papayaViewer.atlas && papayaMain.papayaViewer.atlas.volume.isLoaded) {
         if (atlasLabelsTotalWidth < papaya.viewer.Display.MINI_LABELS_THRESH) {
-            atlasNumLabels = papayaMain.papayaViewer.atlas.numLabels;
-            atlasLabelWidth = atlasLabelsTotalWidth / 2;
-
             papayaMain.papayaViewer.getWorldCoordinateAtIndex(xLoc, yLoc, zLoc, this.tempCoord);
             atlasLabel = papayaMain.papayaViewer.atlas.getLabelAtCoordinate(this.tempCoord.x, this.tempCoord.y, this.tempCoord.z);
+            labelColorThresh = Math.ceil(papayaMain.papayaViewer.atlas.maxLabels / 2);
+            atlasNumLabels = atlasLabel.length;
+            atlasLabelWidth = atlasLabelsTotalWidth / 2;
 
             for (ctr = 0; ctr < atlasNumLabels; ctr += 1) {
-                if (ctr < 2) {
+                if (ctr < labelColorThresh) {
                     this.context.fillStyle = "rgb(182, 59, 0)";
                     this.context.font =  "bold " + papaya.viewer.Display.TEXT_MINI_VALUE_SIZE + "px Arial";
                 } else {
@@ -162,14 +162,14 @@ papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
                 }
             }
         } else {
-            atlasNumLabels = papayaMain.papayaViewer.atlas.numLabels;
-            atlasLabelWidth = atlasLabelsTotalWidth / atlasNumLabels - papaya.viewer.Display.TEXT_SPACING;
-
             papayaMain.papayaViewer.getWorldCoordinateAtIndex(xLoc, yLoc, zLoc, this.tempCoord);
             atlasLabel = papayaMain.papayaViewer.atlas.getLabelAtCoordinate(this.tempCoord.x, this.tempCoord.y, this.tempCoord.z);
+            labelColorThresh = Math.ceil(papayaMain.papayaViewer.atlas.maxLabels / 2);
+            atlasNumLabels = atlasLabel.length;
+            atlasLabelWidth = atlasLabelsTotalWidth / atlasNumLabels - papaya.viewer.Display.TEXT_SPACING;
 
             for (ctr = 0; ctr < atlasNumLabels; ctr += 1) {
-                if (ctr < 2) {
+                if (ctr < labelColorThresh) {
                     this.context.fillStyle = "rgb(182, 59, 0)";
                     this.context.font = "bold " + papaya.viewer.Display.TEXT_VALUE_SIZE + "px Arial";
                 } else {
