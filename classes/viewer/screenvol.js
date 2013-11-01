@@ -41,7 +41,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutNam
             this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
         }
 
-        if (screenParams.alpha !== undefined) {
+        if ((screenParams.alpha !== undefined) && !baseImage) {
             this.alpha = screenParams.alpha;
         }
     } else {
