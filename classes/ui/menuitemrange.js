@@ -38,12 +38,36 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
     menuItemRange = this;
 
     $("#" + this.minId).change(bind(this, function () {
-        menuItemRange.dataSource.setScreenRange(parseFloat($("#" + menuItemRange.minId).val()), parseFloat($("#" + menuItemRange.maxId).val()));
+        menuItemRange.updateDataSource(this);
         papayaMain.papayaViewer.drawViewer(true);
     }));
 
     $("#" + this.maxId).change(bind(this, function () {
-        menuItemRange.dataSource.setScreenRange(parseFloat($("#" + menuItemRange.minId).val()), parseFloat($("#" + menuItemRange.maxId).val()));
+        menuItemRange.updateDataSource(this);
         papayaMain.papayaViewer.drawViewer(true);
     }));
+};
+
+
+
+papaya.ui.MenuItemRange.prototype.updateDataSource = function (menuItemRange) {
+    var max, min, maxHtml, minHtml;
+
+    minHtml = $("#" + menuItemRange.minId);
+    maxHtml = $("#" + menuItemRange.maxId);
+
+    min = parseFloat(minHtml.val());
+    if (isNaN(min)) {
+        min = menuItemRange.dataSource.screenMin;
+    }
+
+    max = parseFloat(maxHtml.val());
+    if (isNaN(max)) {
+        max = menuItemRange.dataSource.screenMax;
+    }
+
+    minHtml.val(min);
+    maxHtml.val(max);
+
+    menuItemRange.dataSource.setScreenRange(min, max);
 };
