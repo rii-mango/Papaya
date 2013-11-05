@@ -636,6 +636,10 @@ papaya.viewer.Viewer.prototype.setLongestDim = function (volume) {
 papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
     var keyCode, temp, center;
 
+    if (papayaMain.papayaToolbar.isShowingMenus()) {
+        return;
+    }
+
     keyCode = getKeyCode(ke);
 
     if (isControlKey(ke)) {

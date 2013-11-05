@@ -263,6 +263,19 @@ papaya.ui.Toolbar.prototype.closeAllMenus = function () {
 
 
 
+papaya.ui.Toolbar.prototype.isShowingMenus = function () {
+    var menuVisible, dialogVisible;
+
+    menuVisible = $(".menu").is(":visible");
+    dialogVisible = $(".modalDialog").is(":visible");
+
+    return (menuVisible || dialogVisible);
+};
+
+
+
+
+
 papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
     var imageIndex, colorTableName, dialog, atlasName, imageName;
 
