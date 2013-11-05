@@ -274,8 +274,6 @@ papaya.ui.Toolbar.prototype.isShowingMenus = function () {
 
 
 
-
-
 papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
     var imageIndex, colorTableName, dialog, atlasName, imageName;
 
