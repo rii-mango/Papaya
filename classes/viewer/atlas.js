@@ -33,7 +33,7 @@ papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas) {
 
 
 papaya.viewer.Atlas.MAX_LABELS = 4;
-papaya.viewer.Atlas.PROBABILISTIC = [ "probabalistic", "probabilistic" ]; // typo is in FSL < 5.0.2
+papaya.viewer.Atlas.PROBABILISTIC = [ "probabalistic", "probabilistic", "statistic" ]; // typo is in FSL < 5.0.2
 papaya.viewer.Atlas.LABEL_SPLIT_REGEX = /\.|:|,|\//;  // possible delimiters
 
 
@@ -70,7 +70,8 @@ papaya.viewer.Atlas.prototype.readFinished = function () {
     this.currentAtlas = this.name;
     this.probabilistic = this.atlasLabelData.atlas.header.type
         && ((this.atlasLabelData.atlas.header.type.toLowerCase() === papaya.viewer.Atlas.PROBABILISTIC[0])
-            || (this.atlasLabelData.atlas.header.type.toLowerCase() === papaya.viewer.Atlas.PROBABILISTIC[1]));
+            || (this.atlasLabelData.atlas.header.type.toLowerCase() === papaya.viewer.Atlas.PROBABILISTIC[1])
+            || (this.atlasLabelData.atlas.header.type.toLowerCase() === papaya.viewer.Atlas.PROBABILISTIC[2]));
 
     this.returnLabels = [];
     this.returnLabels.length = this.maxLabels;
