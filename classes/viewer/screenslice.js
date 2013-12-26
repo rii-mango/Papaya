@@ -91,7 +91,8 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
                     }
 
                     if ((!this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMin))
-                            || (this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMin))) {
+                            || (this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMin))
+							|| isNaN(value)) {
                         value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN;  // screen value
                         thresholdAlpha = this.screenVolumes[ctr].isOverlay() ? 0 : 255;
                     } else if ((!this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMax))
