@@ -228,7 +228,8 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
     papayaMain.papayaToolbar.buildToolbar();
     papayaMain.papayaToolbar.updateImageButtons();
 
-    if (parametric) {
+    //even if "parametric" is set to true we should not add another screenVolume if the value range does not cross zero
+    if (this.loadingVolume.header.imageRange.imageMin < 0 && parametric) {
         this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
         this.setCurrentScreenVol(this.screenVolumes.length - 1);
         this.drawViewer(true);
