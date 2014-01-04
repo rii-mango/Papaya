@@ -35,11 +35,18 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutNam
         } else {
             this.findDisplayRange(parametric);
         }
-
-        if (screenParams.lut !== undefined) {
-            this.lutName = screenParams.lut;
-            this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
-        }
+        
+        if (parametric) {
+	        if (screenParams.negative_lut !== undefined) {
+	            this.lutName = screenParams.negative_lut;
+	            this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
+	        }
+        } else {
+	    	if (screenParams.lut !== undefined) {
+	            this.lutName = screenParams.lut;
+	            this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
+	        }
+	    }
 
         if ((screenParams.alpha !== undefined) && !baseImage) {
             this.alpha = screenParams.alpha;
