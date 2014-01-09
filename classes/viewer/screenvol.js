@@ -19,8 +19,6 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutNam
     this.imageMin = this.volume.header.imageRange.imageMin;
     this.imageMax = this.volume.header.imageRange.imageMax;
     this.alpha = 1.0;
-    this.imageRangeChecked = false;
-    this.findImageRange();
 
     var screenParams = papayaParams[this.volume.fileName];
     if (screenParams) {
@@ -29,30 +27,30 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutNam
                 this.screenMin = -1 * Math.abs(screenParams.min);
                 this.screenMax = -1 * Math.abs(screenParams.max);
             } else {
-                this.screenMin = Math.abs(screenParams.min);
-                this.screenMax = Math.abs(screenParams.max);
+                this.screenMin = screenParams.min;
+                this.screenMax = screenParams.max;
             }
         } else {
-            this.findDisplayRange(parametric);
+            this.findDisplayRange(parametric, screenParams.symmetric);
         }
-        
+
         if (parametric) {
-	        if (screenParams.negative_lut !== undefined) {
-	            this.lutName = screenParams.negative_lut;
-	            this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
-	        }
+            if (screenParams.negative_lut !== undefined) {
+                this.lutName = screenParams.negative_lut;
+                this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
+            }
         } else {
-	    	if (screenParams.lut !== undefined) {
-	            this.lutName = screenParams.lut;
-	            this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
-	        }
-	    }
+            if (screenParams.lut !== undefined) {
+                this.lutName = screenParams.lut;
+                this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
+            }
+        }
 
         if ((screenParams.alpha !== undefined) && !baseImage) {
             this.alpha = screenParams.alpha;
         }
     } else {
-        this.findDisplayRange(parametric);
+        this.findDisplayRange(parametric, false);
     }
 
     this.negative = (this.screenMax < this.screenMin);
@@ -82,12 +80,13 @@ papaya.viewer.ScreenVolume.prototype.isOverlay = function () {
 
 
 
-papaya.viewer.ScreenVolume.prototype.findImageRange = function (force) {
+papaya.viewer.ScreenVolume.prototype.findImageRange = function () {
     var hasImageRange, min, max, xDim, yDim, zDim, ctrZ, ctrY, ctrX, value;
 
-    hasImageRange = (this.imageMin !== this.imageMax);
+    hasImageRange = (this.volume.header.imageRange.imageMin !== this.volume.header.imageRange.imageMax);
 
-    if ((!hasImageRange || force) && !this.imageRangeChecked) {
+    if (!hasImageRange) {
+        console.log("scanning image range of " + this.volume.fileName + "...");
         min = Number.MAX_VALUE;
         max = Number.MIN_VALUE;
 
@@ -111,16 +110,17 @@ papaya.viewer.ScreenVolume.prototype.findImageRange = function (force) {
             }
         }
 
-        this.imageRangeChecked = true;
-        this.imageMin = min;
-        this.imageMax = max;
+        this.volume.header.imageRange.imageMin = this.imageMin = min;
+        this.volume.header.imageRange.imageMax = this.imageMax = max;
     }
 };
 
 
 
-papaya.viewer.ScreenVolume.prototype.findDisplayRange = function (parametric) {
-    var min, max, temp;
+papaya.viewer.ScreenVolume.prototype.findDisplayRange = function (parametric, symmetric) {
+    var hasImageRange, min, max, temp;
+
+    hasImageRange = (this.volume.header.imageRange.imageMin !== this.volume.header.imageRange.imageMax);
 
     min = this.screenMin;
     max = this.screenMax;
@@ -134,12 +134,17 @@ papaya.viewer.ScreenVolume.prototype.findDisplayRange = function (parametric) {
     }
 
     if (this.isOverlay()) {
-        if ((min === max) || ((min < 0) && (max > 0)) || ((min > 0) && (max < 0)) || (parametric && ((min > 0) || (max > 0)))) {  // if not set or crosses zero
-            this.findImageRange(true);
+        if ((min === max) || ((min < 0) && (max > 0)) || ((min > 0) && (max < 0)) || (parametric && ((min > 0) || (max > 0))) || symmetric) {  // if not set or crosses zero
+            this.findImageRange();
 
             if (parametric) {
-                min = this.imageMin - (this.imageMin * 0.75);
-                max = this.imageMin - (this.imageMin * 0.25);
+                if (symmetric || (this.imageMin === 0)) {
+                    min = -1 * (this.imageMax - (this.imageMax * 0.75));
+                    max = -1 * (this.imageMax - (this.imageMax * 0.25));
+                } else {
+                    min = this.imageMin - (this.imageMin * 0.75);
+                    max = this.imageMin - (this.imageMin * 0.25);
+                }
             } else {
                 min = this.imageMax - (this.imageMax * 0.75);
                 max = this.imageMax - (this.imageMax * 0.25);
@@ -156,25 +161,25 @@ papaya.viewer.ScreenVolume.prototype.findDisplayRange = function (parametric) {
             max = Math.round(max);
         }
 
-        if ((min === 0) && (max === 0)) { // if not found, for some reason, e.g., data not centered in image
-            this.findImageRange(true);
+        if ((min === 0) && (max === 0)) { // if not found, for some reason
+            this.findImageRange();
             min = this.imageMin;
             max = this.imageMax;
         }
 
         if (!(max > min)) { // sanity check
-            this.findImageRange(true);
+            this.findImageRange();
             min = this.imageMin;
             max = this.imageMax;
         }
 
-        if (min < this.imageMin) {
-            this.findImageRange(true);
+        if (hasImageRange && (min < this.imageMin)) {
+            this.findImageRange();
             min = this.imageMin;
         }
 
-        if (max > this.imageMax) {
-            this.findImageRange(true);
+        if (hasImageRange && (max > this.imageMax)) {
+            this.findImageRange();
             max = this.imageMax;
         }
     }

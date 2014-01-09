@@ -229,27 +229,15 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
     papayaMain.papayaToolbar.updateImageButtons();
 
     //even if "parametric" is set to true we should not add another screenVolume if the value range does not cross zero
-    if (this.screenVolumes[this.screenVolumes.length-1].imageMin < 0 && parametric) {
-        this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
-        
-        //make sure that the positive and negative ranges are symmetrical
-        if (Math.abs(this.screenVolumes[this.screenVolumes.length-1].screenMin) < this.screenVolumes[this.screenVolumes.length-2].screenMin) {
-        	this.screenVolumes[this.screenVolumes.length-2].screenMin = Math.abs(this.screenVolumes[this.screenVolumes.length-1].screenMin);
-        } else {
-        	this.screenVolumes[this.screenVolumes.length-1].screenMin = -this.screenVolumes[this.screenVolumes.length-2].screenMin;
+    if (parametric) {
+        this.screenVolumes[this.screenVolumes.length - 1].findImageRange();
+        if (this.screenVolumes[this.screenVolumes.length - 1].volume.header.imageRange.imageMin < 0) {
+            this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
+            this.setCurrentScreenVol(this.screenVolumes.length - 1);
+            this.drawViewer(true);
+            papayaMain.papayaToolbar.buildToolbar();
+            papayaMain.papayaToolbar.updateImageButtons();
         }
-        if (Math.abs(this.screenVolumes[this.screenVolumes.length-1].screenMax) > this.screenVolumes[this.screenVolumes.length-2].screenMax) {
-        	this.screenVolumes[this.screenVolumes.length-2].screenMax = Math.abs(this.screenVolumes[this.screenVolumes.length-1].screenMax);
-        } else {
-        	this.screenVolumes[this.screenVolumes.length-1].screenMax = -this.screenVolumes[this.screenVolumes.length-2].screenMax;
-        }
-        this.screenVolumes[this.screenVolumes.length-1].updateScreenRange();
-        this.screenVolumes[this.screenVolumes.length-2].updateScreenRange();
-        
-        this.setCurrentScreenVol(this.screenVolumes.length - 1);
-        this.drawViewer(true);
-        papayaMain.papayaToolbar.buildToolbar();
-        papayaMain.papayaToolbar.updateImageButtons();
     }
 
     this.loadingVolume = null;
