@@ -839,8 +839,7 @@ papaya.viewer.Viewer.prototype.touchMoveEvent = function (me) {
 papaya.viewer.Viewer.prototype.windowLevelChanged = function (contrastChange, brightnessChange) {
     var range, step, minFinal, maxFinal;
 
-    range = this.currentScreenVolume.volume.header.imageRange.imageMax
-        - this.currentScreenVolume.volume.header.imageRange.imageMin;
+    range = this.currentScreenVolume.screenMax - this.currentScreenVolume.screenMin;
     step = range * 0.025;
 
     if (Math.abs(contrastChange) > Math.abs(brightnessChange)) {
