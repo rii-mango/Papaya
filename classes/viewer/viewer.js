@@ -77,6 +77,8 @@ papaya.viewer.Viewer.KEYCODE_FORWARD_SLASH = 191;
 papaya.viewer.Viewer.KEYCODE_INCREMENT_MAIN = 71;
 papaya.viewer.Viewer.KEYCODE_DECREMENT_MAIN = 86;
 papaya.viewer.Viewer.KEYCODE_TOGGLE_CROSSHAIRS = 65;
+papaya.viewer.Viewer.KEYCODE_SERIES_BACK = 188;  // , <
+papaya.viewer.Viewer.KEYCODE_SERIES_FORWARD = 190;  // . >
 papaya.viewer.Viewer.MAX_OVERLAYS = 8;
 papaya.viewer.Viewer.ORIENTATION_MARKER_SUPERIOR = "S";
 papaya.viewer.Viewer.ORIENTATION_MARKER_INFERIOR = "I";
@@ -638,7 +640,7 @@ papaya.viewer.Viewer.prototype.setLongestDim = function (volume) {
 
 
 papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
-    var keyCode, temp, center;
+    var keyCode, center;
 
     if (papayaMain.papayaToolbar.isShowingMenus()) {
         return;
@@ -649,12 +651,7 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
     if (isControlKey(ke)) {
         this.isControlKeyDown = true;
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_ROTATE_VIEWS) {
-        temp = this.lowerImageBot;
-        this.lowerImageBot = this.lowerImageTop;
-        this.lowerImageTop = this.mainImage;
-        this.mainImage = temp;
-        this.calculateScreenSliceTransforms(this);
-        this.drawViewer();
+        this.rotateViews();
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_CENTER) {
         center = new papaya.core.Coordinate(Math.floor(this.volume.header.imageDimensions.xDim / 2),
             Math.floor(this.volume.header.imageDimensions.yDim / 2),
@@ -711,7 +708,33 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
             this.toggleMainCrosshairs = !this.toggleMainCrosshairs;
             this.drawViewer(true);
         }
+    } else if (keyCode === papaya.viewer.Viewer.KEYCODE_SERIES_FORWARD) {
+        this.currentScreenVolume.incrementTimepoint();
+        this.timepointChanged();
+    } else if (keyCode === papaya.viewer.Viewer.KEYCODE_SERIES_BACK) {
+        this.currentScreenVolume.decrementTimepoint();
+        this.timepointChanged();
     }
+};
+
+
+
+papaya.viewer.Viewer.prototype.rotateViews = function () {
+    var temp;
+
+    temp = this.lowerImageBot;
+    this.lowerImageBot = this.lowerImageTop;
+    this.lowerImageTop = this.mainImage;
+    this.mainImage = temp;
+    this.calculateScreenSliceTransforms(this);
+    this.drawViewer();
+};
+
+
+
+papaya.viewer.Viewer.prototype.timepointChanged = function () {
+    this.drawViewer(true);
+    this.updateWindowTitle();
 };
 
 
@@ -905,10 +928,10 @@ papaya.viewer.Viewer.prototype.getCurrentValueAt = function (ctrX, ctrY, ctrZ) {
         return this.currentScreenVolume.volume.getVoxelAtCoordinate((ctrX - this.volume.header.origin.x)
             * this.volume.header.voxelDimensions.xSize,
                 (this.volume.header.origin.y - ctrY) * this.volume.header.voxelDimensions.ySize,
-            (this.volume.header.origin.z - ctrZ) * this.volume.header.voxelDimensions.zSize, true);
+            (this.volume.header.origin.z - ctrZ) * this.volume.header.voxelDimensions.zSize, this.currentScreenVolume.currentTimepoint, true);
     }
 
-    return this.currentScreenVolume.volume.getVoxelAtIndex(ctrX, ctrY, ctrZ, true);
+    return this.currentScreenVolume.volume.getVoxelAtIndex(ctrX, ctrY, ctrZ, this.currentScreenVolume.currentTimepoint, true);
 };
 
 
@@ -1031,7 +1054,21 @@ papaya.viewer.Viewer.prototype.getImageDescription = function (index) {
 
 papaya.viewer.Viewer.prototype.setCurrentScreenVol = function (index) {
     this.currentScreenVolume = this.screenVolumes[index];
-    window.document.title = this.getNiceFilename(index);
+    this.updateWindowTitle();
+};
+
+
+
+papaya.viewer.Viewer.prototype.updateWindowTitle = function () {
+    var title;
+
+    title = this.getNiceFilename(this.getCurrentScreenVolIndex());
+
+    if (this.currentScreenVolume.volume.numTimepoints > 1) {
+        title = (title + " (" + (this.currentScreenVolume.currentTimepoint + 1) + " of " + this.currentScreenVolume.volume.numTimepoints + ")");
+    }
+
+    window.document.title = title;
 };
 
 
@@ -1075,6 +1112,7 @@ papaya.viewer.Viewer.prototype.getIndex = function (name) {
 
     return 0;
 };
+
 
 
 papaya.viewer.Viewer.prototype.processParams = function (params) {

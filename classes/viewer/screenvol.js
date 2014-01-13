@@ -19,6 +19,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutNam
     this.imageMin = this.volume.header.imageRange.imageMin;
     this.imageMax = this.volume.header.imageRange.imageMax;
     this.alpha = 1.0;
+    this.currentTimepoint = 0;
 
     var screenParams = papayaParams[this.volume.fileName];
     if (screenParams) {
@@ -209,4 +210,23 @@ papaya.viewer.ScreenVolume.prototype.getRange = function () {
     range[0] = this.screenMin;
     range[1] = this.screenMax;
     return range;
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.incrementTimepoint = function () {
+    var numTimepoints = this.volume.numTimepoints;
+
+    this.currentTimepoint += 1;
+    if (this.currentTimepoint >= numTimepoints) {
+        this.currentTimepoint = numTimepoints - 1;
+    }
+};
+
+
+papaya.viewer.ScreenVolume.prototype.decrementTimepoint = function () {
+    this.currentTimepoint -= 1;
+    if (this.currentTimepoint < 0) {
+        this.currentTimepoint = 0;
+    }
 };

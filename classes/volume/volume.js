@@ -24,6 +24,7 @@ papaya.volume.Volume = papaya.volume.Volume || function () {
     this.errorMessage = null;
     this.transform = null;
     this.isLoaded = false;
+    this.numTimepoints = 1;
 };
 
 
@@ -181,21 +182,20 @@ papaya.volume.Volume.prototype.readEncodedData = function (name, callback) {
 
 
 
-papaya.volume.Volume.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, useNN) {
-    return this.transform.getVoxelAtIndex(ctrX, ctrY, ctrZ, useNN);
+papaya.volume.Volume.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
+    return this.transform.getVoxelAtIndex(ctrX, ctrY, ctrZ, timepoint, useNN);
 };
 
 
 
-
-papaya.volume.Volume.prototype.getVoxelAtCoordinate = function (xLoc, yLoc, zLoc, useNN) {
-    return this.transform.getVoxelAtCoordinate(xLoc, yLoc, zLoc, useNN);
+papaya.volume.Volume.prototype.getVoxelAtCoordinate = function (xLoc, yLoc, zLoc, timepoint, useNN) {
+    return this.transform.getVoxelAtCoordinate(xLoc, yLoc, zLoc, timepoint, useNN);
 };
 
 
 
-papaya.volume.Volume.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, useNN) {
-    return this.transform.getVoxelAtMM(xLoc, yLoc, zLoc, useNN);
+papaya.volume.Volume.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, timepoint, useNN) {
+    return this.transform.getVoxelAtMM(xLoc, yLoc, zLoc, timepoint, useNN);
 };
 
 
@@ -317,6 +317,7 @@ papaya.volume.Volume.prototype.finishedLoad = function () {
         }
 
         this.isLoaded = true;
+        this.numTimepoints = this.header.imageDimensions.timepoints || 1;
         this.rawData = null;
         this.onFinishedRead(this);
     }

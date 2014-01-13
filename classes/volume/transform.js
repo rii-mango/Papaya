@@ -122,13 +122,13 @@ papaya.volume.Transform.prototype.updateTransforms = function (mat) {
 
 
 
-papaya.volume.Transform.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, useNN) {
-    return this.voxelValue.getVoxelAtIndex(ctrX, ctrY, ctrZ, useNN);
+papaya.volume.Transform.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
+    return this.voxelValue.getVoxelAtIndex(ctrX, ctrY, ctrZ, timepoint, useNN);
 };
 
 
 
-papaya.volume.Transform.prototype.getVoxelAtCoordinate = function (xLoc, yLoc, zLoc, useNN) {
+papaya.volume.Transform.prototype.getVoxelAtCoordinate = function (xLoc, yLoc, zLoc, timepoint, useNN) {
     var xTrans, yTrans, zTrans;
     xTrans = ((xLoc * this.worldMat[0][0]) + (yLoc * this.worldMat[0][1]) + (zLoc * this.worldMat[0][2]) + (this.worldMat[0][3]));
     yTrans = ((xLoc * this.worldMat[1][0]) + (yLoc * this.worldMat[1][1]) + (zLoc * this.worldMat[1][2]) + (this.worldMat[1][3]));
@@ -138,12 +138,12 @@ papaya.volume.Transform.prototype.getVoxelAtCoordinate = function (xLoc, yLoc, z
         return 0;
     }
 
-    return this.voxelValue.getVoxelAtIndex(xTrans, yTrans, zTrans, useNN);
+    return this.voxelValue.getVoxelAtIndex(xTrans, yTrans, zTrans, timepoint, useNN);
 };
 
 
 
-papaya.volume.Transform.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, useNN) {
+papaya.volume.Transform.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, timepoint, useNN) {
     var xTrans, yTrans, zTrans;
     xTrans = ((xLoc * this.mmMat[0][0]) + (yLoc * this.mmMat[0][1]) + (zLoc * this.mmMat[0][2]) + (this.mmMat[0][3]));
     yTrans = ((xLoc * this.mmMat[1][0]) + (yLoc * this.mmMat[1][1]) + (zLoc * this.mmMat[1][2]) + (this.mmMat[1][3]));
@@ -153,5 +153,5 @@ papaya.volume.Transform.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, use
         return 0;
     }
 
-    return this.voxelValue.getVoxelAtIndex(xTrans, yTrans, zTrans, useNN);
+    return this.voxelValue.getVoxelAtIndex(xTrans, yTrans, zTrans, timepoint, useNN);
 };

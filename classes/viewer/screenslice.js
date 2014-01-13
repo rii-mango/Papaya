@@ -44,7 +44,7 @@ papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN = 0;
 
 
 papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldSpace) {
-    var origin, voxelDims, ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha;
+    var origin, voxelDims, ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha, timepoint;
 
     slice = round(slice);
 
@@ -56,6 +56,8 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
         this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
 
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
+            timepoint = this.screenVolumes[ctr].currentTimepoint;
+
             for (ctrY = 0; ctrY < this.yDim; ctrY += 1) {
                 for (ctrX = 0; ctrX < this.xDim; ctrX += 1) {
                     value = 0;
@@ -64,35 +66,34 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
 
                     if (ctr === 0) {
                         if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(ctrX, ctrY, slice, true);
+                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(ctrX, ctrY, slice, timepoint, true);
                         } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(ctrX, slice, ctrY, true);
+                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(ctrX, slice, ctrY, timepoint, true);
                         } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(slice, ctrX, ctrY, true);
+                            value = this.screenVolumes[ctr].volume.getVoxelAtIndex(slice, ctrX, ctrY, timepoint, true);
                         }
                     } else {
                         if (worldSpace) {
                             if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                                value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((ctrX - origin.x) * voxelDims.xSize, (origin.y - ctrY) * voxelDims.ySize, (origin.z - slice) * voxelDims.zSize, false);
+                                value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((ctrX - origin.x) * voxelDims.xSize, (origin.y - ctrY) * voxelDims.ySize, (origin.z - slice) * voxelDims.zSize, timepoint, false);
                             } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                                value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((ctrX - origin.x) * voxelDims.xSize, (origin.y - slice) * voxelDims.ySize, (origin.z - ctrY) * voxelDims.zSize, false);
+                                value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((ctrX - origin.x) * voxelDims.xSize, (origin.y - slice) * voxelDims.ySize, (origin.z - ctrY) * voxelDims.zSize, timepoint, false);
                             } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-                                value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((slice - origin.x) * voxelDims.xSize, (origin.y - ctrX) * voxelDims.ySize, (origin.z - ctrY) * voxelDims.zSize, false);
+                                value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((slice - origin.x) * voxelDims.xSize, (origin.y - ctrX) * voxelDims.ySize, (origin.z - ctrY) * voxelDims.zSize, timepoint, false);
                             }
                         } else {
                             if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                                value = this.screenVolumes[ctr].volume.getVoxelAtMM(ctrX * voxelDims.xSize, ctrY * voxelDims.ySize, slice * voxelDims.zSize, false);
+                                value = this.screenVolumes[ctr].volume.getVoxelAtMM(ctrX * voxelDims.xSize, ctrY * voxelDims.ySize, slice * voxelDims.zSize, timepoint, false);
                             } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                                value = this.screenVolumes[ctr].volume.getVoxelAtMM(ctrX * voxelDims.xSize, slice * voxelDims.ySize, ctrY * voxelDims.zSize, false);
+                                value = this.screenVolumes[ctr].volume.getVoxelAtMM(ctrX * voxelDims.xSize, slice * voxelDims.ySize, ctrY * voxelDims.zSize, timepoint, false);
                             } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-                                value = this.screenVolumes[ctr].volume.getVoxelAtMM(slice * voxelDims.xSize, ctrX * voxelDims.ySize, ctrY * voxelDims.zSize, false);
+                                value = this.screenVolumes[ctr].volume.getVoxelAtMM(slice * voxelDims.xSize, ctrX * voxelDims.ySize, ctrY * voxelDims.zSize, timepoint, false);
                             }
                         }
                     }
 
                     if ((!this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMin))
-                            || (this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMin))
-							|| isNaN(value)) {
+                            || (this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMin)) || isNaN(value)) {
                         value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN;  // screen value
                         thresholdAlpha = this.screenVolumes[ctr].isOverlay() ? 0 : 255;
                     } else if ((!this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMax))

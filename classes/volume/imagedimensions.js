@@ -16,8 +16,14 @@ papaya.volume.ImageDimensions = papaya.volume.ImageDimensions || function (cols,
     this.xDim = -1;
     this.yDim = -1;
     this.zDim = -1;
-    this.timepoints = timepoints;
+    this.timepoints = timepoints || 1;
     this.offset = 0;  // offset of image data from start of file
+};
+
+
+
+papaya.volume.ImageDimensions.prototype.getNumVoxelsSeries = function () {
+    return this.cols * this.rows * this.slices * this.timepoints;
 };
 
 

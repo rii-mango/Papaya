@@ -19,20 +19,20 @@ papaya.volume.ImageData.prototype.readData = function (header, rawData, onReadFi
     var numVoxels, dv, ctr;
 
     if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_SIGNED) && (header.imageType.numBytes === 1)) {
-        this.data = new Int8Array(rawData, header.imageDimensions.offset, header.imageDimensions.getNumVoxelsVolume());
+        this.data = new Int8Array(rawData, header.imageDimensions.offset, header.imageDimensions.getNumVoxelsSeries());
     } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_UNSIGNED) && (header.imageType.numBytes === 1)) {
-        this.data = new Uint8Array(rawData, header.imageDimensions.offset, header.imageDimensions.getNumVoxelsVolume());
+        this.data = new Uint8Array(rawData, header.imageDimensions.offset, header.imageDimensions.getNumVoxelsSeries());
     } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_SIGNED) && (header.imageType.numBytes === 2)) {
-        this.data = new Int16Array(rawData, header.imageDimensions.offset, header.imageDimensions.getNumVoxelsVolume());
+        this.data = new Int16Array(rawData, header.imageDimensions.offset, header.imageDimensions.getNumVoxelsSeries());
     } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_UNSIGNED) && (header.imageType.numBytes === 2)) {
-        this.data = new Uint16Array(rawData, header.imageDimensions.offset, header.imageDimensions.getNumVoxelsVolume());
+        this.data = new Uint16Array(rawData, header.imageDimensions.offset, header.imageDimensions.getNumVoxelsSeries());
     } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_SIGNED) && (header.imageType.numBytes === 4)) {
-        this.data = new Int32Array(rawData, header.imageDimensions.offset, header.imageDimensions.getNumVoxelsVolume());
+        this.data = new Int32Array(rawData, header.imageDimensions.offset, header.imageDimensions.getNumVoxelsSeries());
     } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_UNSIGNED) && (header.imageType.numBytes === 4)) {
-        this.data = new Uint32Array(rawData, header.imageDimensions.offset, header.imageDimensions.getNumVoxelsVolume());
+        this.data = new Uint32Array(rawData, header.imageDimensions.offset, header.imageDimensions.getNumVoxelsSeries());
     } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_FLOAT) && (header.imageType.numBytes === 4)) {
         if (header.imageType.swapped) {
-            numVoxels = header.imageDimensions.getNumVoxelsVolume();
+            numVoxels = header.imageDimensions.getNumVoxelsSeries();
             dv = new DataView(rawData, header.imageDimensions.offset);
             this.data = new Float32Array(numVoxels);
 
@@ -41,7 +41,7 @@ papaya.volume.ImageData.prototype.readData = function (header, rawData, onReadFi
             }
 
         } else {
-            this.data = new Float32Array(rawData, header.imageDimensions.offset, header.imageDimensions.getNumVoxelsVolume());
+            this.data = new Float32Array(rawData, header.imageDimensions.offset, header.imageDimensions.getNumVoxelsSeries());
         }
     }
 
