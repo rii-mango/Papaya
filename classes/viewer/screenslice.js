@@ -22,14 +22,19 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
     this.canvasMain.width = this.xDim;
     this.canvasMain.height = this.yDim;
     this.contextMain = this.canvasMain.getContext("2d");
+
+    //this.canvasDraw = document.createElement("canvas");
+    //this.canvasDraw.width = this.xDim;
+    //this.canvasDraw.height = this.yDim;
+    //this.contextDraw = this.canvasDraw.getContext("2d");
+
     this.imageDataDraw = this.contextMain.createImageData(this.xDim, this.yDim);
     this.screenOffsetX = 0;
     this.screenOffsetY = 0;
     this.screenDim = 0;
-    this.xformScaleX = 1;
-    this.xformScaleY = 1;
-    this.xformTransX = 0;
-    this.xformTransY = 0;
+    this.screenTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+    this.zoomTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+    this.finalTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
 };
 
 
@@ -115,6 +120,12 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
             }
         }
 
+        //this.contextDraw.putImageData(this.imageDataDraw, 0, 0);
+        //console.log(this.zoomTransform[0][0] + " " + this.zoomTransform[0][1] + " " +  this.zoomTransform[0][2] + "   " + this.zoomTransform[1][0] + " " + this.zoomTransform[1][1] + " " +  this.zoomTransform[1][2]);
+
+        //this.contextMain.setTransform(this.zoomTransform[0][0], 0, 0, this.zoomTransform[1][1], this.zoomTransform[0][2], this.zoomTransform[1][2]);
+        //this.contextMain.drawImage(this.canvasDraw, 0, 0);
+
         this.contextMain.putImageData(this.imageDataDraw, 0, 0);
     }
 };
@@ -165,4 +176,64 @@ papaya.viewer.ScreenSlice.prototype.getXDim = function () {
 
 papaya.viewer.ScreenSlice.prototype.getYDim = function () {
     return this.yDim;
+};
+
+
+
+papaya.viewer.ScreenSlice.prototype.updateZoomTransform = function (zoomFactor, xZoomTrans, yZoomTrans, xPanTrans, yPanTrans, viewer) {
+    var xTrans, yTrans, maxTranslateX, maxTranslateY;
+
+    xZoomTrans = (xZoomTrans + 0.5) * (zoomFactor - 1) * -1;
+    yZoomTrans = (yZoomTrans + 0.5) * (zoomFactor - 1) * -1;
+    xPanTrans = xPanTrans * (zoomFactor - 1);
+    yPanTrans = yPanTrans * (zoomFactor - 1);
+
+    // limit pan translation such that it cannot pan out of bounds of image
+    xTrans = xZoomTrans + xPanTrans;
+    yTrans = yZoomTrans + yPanTrans;
+    maxTranslateX = -(zoomFactor - 1.0) * this.xDim;
+    if (xTrans > 0) {
+        xTrans = 0;
+    } else if (xTrans < maxTranslateX) {
+        xTrans = maxTranslateX;
+    }
+
+    maxTranslateY = -(zoomFactor - 1.0) * this.yDim;
+    if (yTrans > 0) {
+        yTrans = 0;
+    } else if (yTrans < maxTranslateY) {
+        yTrans = maxTranslateY;
+    }
+
+    // update parent viewer with pan translation (may have been limited by step above)
+    if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+        viewer.panAmountX = (round((xTrans - xZoomTrans) / (zoomFactor - 1)));
+        viewer.panAmountY = (round((yTrans - yZoomTrans) / (zoomFactor - 1)));
+    } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+        viewer.panAmountX = (round((xTrans - xZoomTrans) / (zoomFactor - 1)));
+        viewer.panAmountZ = (round((yTrans - yZoomTrans) / (zoomFactor - 1)));
+    } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+        viewer.panAmountY = (round((xTrans - xZoomTrans) / (zoomFactor - 1)));
+        viewer.panAmountZ = (round((yTrans - yZoomTrans) / (zoomFactor - 1)));
+    }
+
+    // update transform
+    this.zoomTransform[0][0] = zoomFactor;
+    this.zoomTransform[0][1] = 0;
+    this.zoomTransform[0][2] = xTrans;
+    this.zoomTransform[1][0] = 0;
+    this.zoomTransform[1][1] = zoomFactor;
+    this.zoomTransform[1][2] = yTrans;
+
+    this.updateFinalTransform();
+};
+
+
+papaya.viewer.ScreenSlice.prototype.updateFinalTransform = function () {
+    var ctrOut, ctrIn;
+    for (ctrOut = 0; ctrOut < 3; ctrOut += 1) {
+        for (ctrIn = 0; ctrIn < 3; ctrIn += 1) {
+            this.finalTransform[ctrOut][ctrIn] = (this.screenTransform[ctrOut][0] * this.zoomTransform[0][ctrIn]) + (this.screenTransform[ctrOut][1] * this.zoomTransform[1][ctrIn]) + (this.screenTransform[ctrOut][2] * this.zoomTransform[2][ctrIn]);
+        }
+    }
 };

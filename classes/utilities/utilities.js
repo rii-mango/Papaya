@@ -152,6 +152,14 @@ function isControlKey(ke) {
 
 
 
+
+function isAltKey(ke) {
+    var keyCode = getKeyCode(ke);
+    return (keyCode === 18);
+}
+
+
+
 function fullyQualifiedVariableExists(dat) {
     var obj, ctr;
 

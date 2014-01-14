@@ -1,7 +1,7 @@
 
 /*jslint browser: true, node: true */
 /*global PAPAYA_SPACING, bind, papayaMain, isString, round, floor, getKeyCode, isControlKey, getMousePositionX,
-getMousePositionY, signum, wordwrap, getSizeString, formatNumber, papayaParams, deref */
+getMousePositionY, signum, wordwrap, getSizeString, formatNumber, papayaParams, deref, isAltKey */
 
 "use strict";
 
@@ -40,8 +40,21 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (width, height, params) 
     this.draggingSliceDir = 0;
     this.isDragging = false;
     this.isWindowControl = false;
+    this.isZoomMode = false;
+    this.zoomFactor = papaya.viewer.Viewer.ZOOM_FACTOR_MIN;
+    this.zoomFactorPrevious = papaya.viewer.Viewer.ZOOM_FACTOR_MIN;
+    this.zoomLocX = 0;
+    this.zoomLocY = 0;
+    this.zoomLocZ = 0;
+    this.panLocX = 0;
+    this.panLocY = 0;
+    this.panLocZ = 0;
+    this.panAmountX = 0;
+    this.panAmountY = 0;
+    this.panAmountZ = 0;
     this.previousMousePosition = new papaya.core.Point();
     this.isControlKeyDown = false;
+    this.isAltKeyDown = false;
     this.toggleMainCrosshairs = true;
     this.listenerMouseMove = bind(this, this.mouseMoveEvent);
     this.listenerMouseDown = bind(this, this.mouseDownEvent);
@@ -91,6 +104,8 @@ papaya.viewer.Viewer.ORIENTATION_CERTAINTY_UNKNOWN_COLOR = "red";
 papaya.viewer.Viewer.ORIENTATION_CERTAINTY_LOW_COLOR = "yellow";
 papaya.viewer.Viewer.ORIENTATION_CERTAINTY_HIGH_COLOR = "white";
 papaya.viewer.Viewer.UPDATE_TIMER_INTERVAL = 250;
+papaya.viewer.Viewer.ZOOM_FACTOR_MAX = 10.0;
+papaya.viewer.Viewer.ZOOM_FACTOR_MIN = 1.0;
 
 
 
@@ -262,8 +277,8 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
 
     if (this.insideScreenSlice(viewer.axialSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getYDim())) {
         if (!this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_AXIAL)) {
-            xImageLoc = (xLoc - viewer.axialSlice.xformTransX) / viewer.axialSlice.xformScaleX;
-            yImageLoc = (yLoc - viewer.axialSlice.xformTransY) / viewer.axialSlice.xformScaleY;
+            xImageLoc = (xLoc - viewer.axialSlice.finalTransform[0][2]) / viewer.axialSlice.finalTransform[0][0];
+            yImageLoc = (yLoc - viewer.axialSlice.finalTransform[1][2]) / viewer.axialSlice.finalTransform[1][1];
 
             if ((xImageLoc !== viewer.currentCoord.x) || (yImageLoc !== viewer.currentCoord.y)) {
                 viewer.currentCoord.x = xImageLoc;
@@ -273,8 +288,8 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
         }
     } else if (this.insideScreenSlice(viewer.coronalSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getZDim())) {
         if (!this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_CORONAL)) {
-            xImageLoc = (xLoc - viewer.coronalSlice.xformTransX) / viewer.coronalSlice.xformScaleX;
-            yImageLoc = (yLoc - viewer.coronalSlice.xformTransY) / viewer.coronalSlice.xformScaleY;
+            xImageLoc = (xLoc - viewer.coronalSlice.finalTransform[0][2]) / viewer.coronalSlice.finalTransform[0][0];
+            yImageLoc = (yLoc - viewer.coronalSlice.finalTransform[1][2]) / viewer.coronalSlice.finalTransform[1][1];
 
             if ((xImageLoc !== viewer.currentCoord.x) || (yImageLoc !== viewer.currentCoord.y)) {
                 viewer.currentCoord.x = xImageLoc;
@@ -284,8 +299,8 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
         }
     } else if (this.insideScreenSlice(viewer.sagittalSlice, xLoc, yLoc, viewer.volume.getYDim(), viewer.volume.getZDim())) {
         if (!this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL)) {
-            xImageLoc = (xLoc - viewer.sagittalSlice.xformTransX) / viewer.sagittalSlice.xformScaleX;
-            yImageLoc = (yLoc - viewer.sagittalSlice.xformTransY) / viewer.sagittalSlice.xformScaleY;
+            xImageLoc = (xLoc - viewer.sagittalSlice.finalTransform[0][2]) / viewer.sagittalSlice.finalTransform[0][0];
+            yImageLoc = (yLoc - viewer.sagittalSlice.finalTransform[1][2]) / viewer.sagittalSlice.finalTransform[1][1];
 
             if ((xImageLoc !== viewer.currentCoord.x) || (yImageLoc !== viewer.currentCoord.y)) {
                 temp = xImageLoc;
@@ -309,18 +324,18 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yL
         yLoc = yLoc - this.canvasRect.top;
 
         if (this.insideScreenSlice(viewer.axialSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getYDim())) {
-            xImageLoc = (xLoc - viewer.axialSlice.xformTransX) / viewer.axialSlice.xformScaleX;
-            yImageLoc = (yLoc - viewer.axialSlice.xformTransY) / viewer.axialSlice.xformScaleY;
+            xImageLoc = (xLoc - viewer.axialSlice.finalTransform[0][2]) / viewer.axialSlice.finalTransform[0][0];
+            yImageLoc = (yLoc - viewer.axialSlice.finalTransform[1][2]) / viewer.axialSlice.finalTransform[1][1];
             zImageLoc = viewer.axialSlice.currentSlice;
             found = true;
         } else if (this.insideScreenSlice(viewer.coronalSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getZDim())) {
-            xImageLoc = (xLoc - viewer.coronalSlice.xformTransX) / viewer.coronalSlice.xformScaleX;
-            zImageLoc = (yLoc - viewer.coronalSlice.xformTransY) / viewer.coronalSlice.xformScaleY;
+            xImageLoc = (xLoc - viewer.coronalSlice.finalTransform[0][2]) / viewer.coronalSlice.finalTransform[0][0];
+            zImageLoc = (yLoc - viewer.coronalSlice.finalTransform[1][2]) / viewer.coronalSlice.finalTransform[1][1];
             yImageLoc = viewer.coronalSlice.currentSlice;
             found = true;
         } else if (this.insideScreenSlice(viewer.sagittalSlice, xLoc, yLoc, viewer.volume.getYDim(), viewer.volume.getZDim())) {
-            yImageLoc = (xLoc - viewer.sagittalSlice.xformTransX) / viewer.sagittalSlice.xformScaleX;
-            zImageLoc = (yLoc - viewer.sagittalSlice.xformTransY) / viewer.sagittalSlice.xformScaleY;
+            yImageLoc = (xLoc - viewer.sagittalSlice.finalTransform[0][2]) / viewer.sagittalSlice.finalTransform[0][0];
+            zImageLoc = (yLoc - viewer.sagittalSlice.finalTransform[1][2]) / viewer.sagittalSlice.finalTransform[1][1];
             xImageLoc = viewer.sagittalSlice.currentSlice;
             found = true;
         }
@@ -338,10 +353,10 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yL
 papaya.viewer.Viewer.prototype.insideScreenSlice = function (screenSlice, xLoc, yLoc, xBound, yBound) {
     var xStart, xEnd, yStart, yEnd;
 
-    xStart = round(screenSlice.xformTransX);
-    xEnd = round(screenSlice.xformTransX + xBound * screenSlice.xformScaleX);
-    yStart = round(screenSlice.xformTransY);
-    yEnd = round(screenSlice.xformTransY + yBound * screenSlice.xformScaleY);
+    xStart = round(screenSlice.finalTransform[0][2]);
+    xEnd = round(screenSlice.finalTransform[0][2] + xBound * screenSlice.finalTransform[0][0]);
+    yStart = round(screenSlice.finalTransform[1][2]);
+    yEnd = round(screenSlice.finalTransform[1][2] + yBound * screenSlice.finalTransform[1][1]);
 
     return ((xLoc >= xStart) && (xLoc < xEnd) && (yLoc >= yStart) && (yLoc < yEnd));
 };
@@ -418,25 +433,34 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
 
     // draw screen slices
     this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.fillRect(this.mainImage.screenOffsetX, this.mainImage.screenOffsetY, this.mainImage.screenDim,
-        this.mainImage.screenDim);
-    this.context.setTransform(this.mainImage.xformScaleX, 0, 0, this.mainImage.xformScaleY, this.mainImage.xformTransX,
-        this.mainImage.xformTransY);
+    this.context.fillRect(this.mainImage.screenOffsetX, this.mainImage.screenOffsetY, this.mainImage.screenDim, this.mainImage.screenDim);
+    this.context.save();
+    this.context.beginPath();
+    this.context.rect(this.mainImage.screenOffsetX, this.mainImage.screenOffsetY, this.mainImage.screenDim, this.mainImage.screenDim);
+    this.context.clip();
+    this.context.setTransform(this.mainImage.finalTransform[0][0], 0, 0, this.mainImage.finalTransform[1][1], this.mainImage.finalTransform[0][2], this.mainImage.finalTransform[1][2]);
     this.context.drawImage(this.mainImage.canvasMain, 0, 0);
+    this.context.restore();
 
     this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.fillRect(this.lowerImageBot.screenOffsetX, this.lowerImageBot.screenOffsetY,
-        this.lowerImageBot.screenDim, this.lowerImageBot.screenDim);
-    this.context.setTransform(this.lowerImageBot.xformScaleX, 0, 0, this.lowerImageBot.xformScaleY,
-        this.lowerImageBot.xformTransX, this.lowerImageBot.xformTransY);
+    this.context.fillRect(this.lowerImageBot.screenOffsetX, this.lowerImageBot.screenOffsetY, this.lowerImageBot.screenDim, this.lowerImageBot.screenDim);
+    this.context.save();
+    this.context.beginPath();
+    this.context.rect(this.lowerImageBot.screenOffsetX, this.lowerImageBot.screenOffsetY, this.lowerImageBot.screenDim, this.lowerImageBot.screenDim);
+    this.context.clip();
+    this.context.setTransform(this.lowerImageBot.finalTransform[0][0], 0, 0, this.lowerImageBot.finalTransform[1][1], this.lowerImageBot.finalTransform[0][2], this.lowerImageBot.finalTransform[1][2]);
     this.context.drawImage(this.lowerImageBot.canvasMain, 0, 0);
+    this.context.restore();
 
     this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.fillRect(this.lowerImageTop.screenOffsetX, this.lowerImageTop.screenOffsetY,
-        this.lowerImageTop.screenDim, this.lowerImageTop.screenDim);
-    this.context.setTransform(this.lowerImageTop.xformScaleX, 0, 0, this.lowerImageTop.xformScaleY,
-        this.lowerImageTop.xformTransX, this.lowerImageTop.xformTransY);
+    this.context.fillRect(this.lowerImageTop.screenOffsetX, this.lowerImageTop.screenOffsetY, this.lowerImageTop.screenDim, this.lowerImageTop.screenDim);
+    this.context.save();
+    this.context.beginPath();
+    this.context.rect(this.lowerImageTop.screenOffsetX, this.lowerImageTop.screenOffsetY, this.lowerImageTop.screenDim, this.lowerImageTop.screenDim);
+    this.context.clip();
+    this.context.setTransform(this.lowerImageTop.finalTransform[0][0], 0, 0, this.lowerImageTop.finalTransform[1][1], this.lowerImageTop.finalTransform[0][2], this.lowerImageTop.finalTransform[1][2]);
     this.context.drawImage(this.lowerImageTop.canvasMain, 0, 0);
+    this.context.restore();
 
     if (papayaMain.preferences.showOrientation === "Yes") {
         this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -478,13 +502,13 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
             orientSlice = this.sagittalSlice;
         }
 
-        orientStartX = orientSlice.xformTransX;
-        orientEndX = floor(orientSlice.xformTransX + orientWidth * orientSlice.xformScaleX);
-        orientMidX = floor(orientSlice.xformTransX + (orientWidth / 2.0) * orientSlice.xformScaleX);
+        orientStartX = orientSlice.finalTransform[0][2];
+        orientEndX = floor(orientSlice.finalTransform[0][2] + orientWidth * orientSlice.finalTransform[0][0]);
+        orientMidX = floor(orientSlice.finalTransform[0][2] + (orientWidth / 2.0) * orientSlice.finalTransform[0][0]);
 
-        orientStartY = orientSlice.xformTransY;
-        orientEndY = floor(orientSlice.xformTransY + orientHeight * orientSlice.xformScaleY);
-        orientMidY = floor(orientSlice.xformTransY + (orientHeight / 2.0) * orientSlice.xformScaleY);
+        orientStartY = orientSlice.finalTransform[1][2];
+        orientEndY = floor(orientSlice.finalTransform[1][2] + orientHeight * orientSlice.finalTransform[1][1]);
+        orientMidY = floor(orientSlice.finalTransform[1][2] + (orientHeight / 2.0) * orientSlice.finalTransform[1][1]);
 
         this.context.fillText(top, orientMidX - (textWidth / 2), orientStartY
             + papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE * 1.5);
@@ -515,63 +539,94 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
     this.context.setTransform(1, 0, 0, 1, 0, 0);
     this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR;
     this.context.lineWidth = 1.0;
-    this.context.beginPath();
 
     if (((this.mainImage !== this.axialSlice) && (papayaMain.preferences.showCrosshairs !== 'Main'))
             || ((this.mainImage === this.axialSlice) && (papayaMain.preferences.showCrosshairs !== 'Lower')
             && this.toggleMainCrosshairs)) {
         // draw axial crosshairs
-        xLoc = floor(this.axialSlice.xformTransX + (this.currentCoord.x) * this.axialSlice.xformScaleX);
-        yStart = floor(this.axialSlice.xformTransY);
-        yEnd = floor(this.axialSlice.xformTransY + this.axialSlice.yDim * this.axialSlice.xformScaleY);
+        this.context.save();
+        this.context.beginPath();
+        this.context.rect(this.axialSlice.screenOffsetX, this.axialSlice.screenOffsetY, this.axialSlice.screenDim, this.axialSlice.screenDim);
+        this.context.closePath();
+        this.context.clip();
+
+        this.context.beginPath();
+
+        xLoc = floor(this.axialSlice.finalTransform[0][2] + (this.currentCoord.x) * this.axialSlice.finalTransform[0][0]);
+        yStart = floor(this.axialSlice.finalTransform[1][2]);
+        yEnd = floor(this.axialSlice.finalTransform[1][2] + this.axialSlice.yDim * this.axialSlice.finalTransform[1][1]);
         this.context.moveTo(xLoc + 0.5, yStart);
         this.context.lineTo(xLoc + 0.5, yEnd);
 
-        yLoc = floor(this.axialSlice.xformTransY + (this.currentCoord.y) * this.axialSlice.xformScaleY);
-        xStart = floor(this.axialSlice.xformTransX);
-        xEnd = floor(this.axialSlice.xformTransX + this.axialSlice.xDim * this.axialSlice.xformScaleX);
+        yLoc = floor(this.axialSlice.finalTransform[1][2] + (this.currentCoord.y) * this.axialSlice.finalTransform[1][1]);
+        xStart = floor(this.axialSlice.finalTransform[0][2]);
+        xEnd = floor(this.axialSlice.finalTransform[0][2] + this.axialSlice.xDim * this.axialSlice.finalTransform[0][0]);
         this.context.moveTo(xStart, yLoc + 0.5);
         this.context.lineTo(xEnd, yLoc + 0.5);
+
+        this.context.closePath();
+        this.context.stroke();
+        this.context.restore();
     }
+
 
     if (((this.mainImage !== this.coronalSlice) && (papayaMain.preferences.showCrosshairs !== 'Main'))
             || ((this.mainImage === this.coronalSlice) && (papayaMain.preferences.showCrosshairs !== 'Lower')
             && this.toggleMainCrosshairs)) {
         // draw coronal crosshairs
-        xLoc = floor(this.coronalSlice.xformTransX + this.currentCoord.x * this.coronalSlice.xformScaleX);
-        yStart = floor(this.coronalSlice.xformTransY);
-        yEnd = floor(this.coronalSlice.xformTransY + this.coronalSlice.yDim * this.coronalSlice.xformScaleY);
+        this.context.save();
+        this.context.beginPath();
+        this.context.rect(this.coronalSlice.screenOffsetX, this.coronalSlice.screenOffsetY, this.coronalSlice.screenDim, this.coronalSlice.screenDim);
+        this.context.closePath();
+        this.context.clip();
+
+        this.context.beginPath();
+
+        xLoc = floor(this.coronalSlice.finalTransform[0][2] + this.currentCoord.x * this.coronalSlice.finalTransform[0][0]);
+        yStart = floor(this.coronalSlice.finalTransform[1][2]);
+        yEnd = floor(this.coronalSlice.finalTransform[1][2] + this.coronalSlice.yDim * this.coronalSlice.finalTransform[1][1]);
         this.context.moveTo(xLoc + 0.5, yStart);
         this.context.lineTo(xLoc + 0.5, yEnd);
 
-        yLoc = floor(this.coronalSlice.xformTransY + this.currentCoord.z * this.coronalSlice.xformScaleY);
-        xStart = floor(this.coronalSlice.xformTransX);
-        xEnd = floor(this.coronalSlice.xformTransX + this.coronalSlice.xDim * this.coronalSlice.xformScaleX);
+        yLoc = floor(this.coronalSlice.finalTransform[1][2] + this.currentCoord.z * this.coronalSlice.finalTransform[1][1]);
+        xStart = floor(this.coronalSlice.finalTransform[0][2]);
+        xEnd = floor(this.coronalSlice.finalTransform[0][2] + this.coronalSlice.xDim * this.coronalSlice.finalTransform[0][0]);
         this.context.moveTo(xStart, yLoc + 0.5);
         this.context.lineTo(xEnd, yLoc + 0.5);
+
+        this.context.closePath();
+        this.context.stroke();
+        this.context.restore();
     }
 
     if (((this.mainImage !== this.sagittalSlice) && (papayaMain.preferences.showCrosshairs !== 'Main'))
             || ((this.mainImage === this.sagittalSlice) && (papayaMain.preferences.showCrosshairs !== 'Lower')
             && this.toggleMainCrosshairs)) {
         // draw sagittal crosshairs
-        xLoc = floor(this.sagittalSlice.xformTransX + this.currentCoord.y * this.sagittalSlice.xformScaleX);
-        yStart = floor(this.sagittalSlice.xformTransY);
-        yEnd = floor(this.sagittalSlice.xformTransY + this.sagittalSlice.yDim * this.sagittalSlice.xformScaleY);
+        this.context.save();
+        this.context.beginPath();
+        this.context.rect(this.sagittalSlice.screenOffsetX, this.sagittalSlice.screenOffsetY, this.sagittalSlice.screenDim, this.sagittalSlice.screenDim);
+        this.context.closePath();
+        this.context.clip();
+
+        this.context.beginPath();
+
+        xLoc = floor(this.sagittalSlice.finalTransform[0][2] + this.currentCoord.y * this.sagittalSlice.finalTransform[0][0]);
+        yStart = floor(this.sagittalSlice.finalTransform[1][2]);
+        yEnd = floor(this.sagittalSlice.finalTransform[1][2] + this.sagittalSlice.yDim * this.sagittalSlice.finalTransform[1][1]);
         this.context.moveTo(xLoc + 0.5, yStart);
         this.context.lineTo(xLoc + 0.5, yEnd);
 
-        yLoc = floor(this.sagittalSlice.xformTransY + this.currentCoord.z * this.sagittalSlice.xformScaleY);
-        xStart = floor(this.sagittalSlice.xformTransX);
-        xEnd = floor(this.sagittalSlice.xformTransX + this.sagittalSlice.xDim * this.sagittalSlice.xformScaleX);
+        yLoc = floor(this.sagittalSlice.finalTransform[1][2] + this.currentCoord.z * this.sagittalSlice.finalTransform[1][1]);
+        xStart = floor(this.sagittalSlice.finalTransform[0][2]);
+        xEnd = floor(this.sagittalSlice.finalTransform[0][2] + this.sagittalSlice.xDim * this.sagittalSlice.finalTransform[0][0]);
         this.context.moveTo(xStart, yLoc + 0.5);
         this.context.lineTo(xEnd, yLoc + 0.5);
-    }
 
-    // finish crosshairs drawing
-    this.context.closePath();
-    this.context.stroke();
-    this.context.restore();
+        this.context.closePath();
+        this.context.stroke();
+        this.context.restore()
+    }
 };
 
 
@@ -582,19 +637,23 @@ papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function (viewer
     //viewer.canvas.setAttribute("width", viewer.viewerDim * 1.5);
 
     this.getTransformParameters(viewer.mainImage, viewer.viewerDim, false);
-    viewer.mainImage.xformTransX += viewer.mainImage.screenOffsetX = 0;
-    viewer.mainImage.xformTransY += viewer.mainImage.screenOffsetY = 0;
+    viewer.mainImage.screenTransform[0][2] += viewer.mainImage.screenOffsetX = 0;
+    viewer.mainImage.screenTransform[1][2] += viewer.mainImage.screenOffsetY = 0;
 
     this.getTransformParameters(viewer.lowerImageBot, viewer.viewerDim, true);
-    viewer.lowerImageBot.xformTransX += viewer.lowerImageBot.screenOffsetX
+    viewer.lowerImageBot.screenTransform[0][2] += viewer.lowerImageBot.screenOffsetX
         = (viewer.viewerDim + (papaya.viewer.Viewer.GAP));
-    viewer.lowerImageBot.xformTransY += viewer.lowerImageBot.screenOffsetY
+    viewer.lowerImageBot.screenTransform[1][2] += viewer.lowerImageBot.screenOffsetY
         = (((viewer.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
 
     this.getTransformParameters(viewer.lowerImageTop, viewer.viewerDim, true);
-    viewer.lowerImageTop.xformTransX += viewer.lowerImageTop.screenOffsetX
+    viewer.lowerImageTop.screenTransform[0][2] += viewer.lowerImageTop.screenOffsetX
         = (viewer.viewerDim + (papaya.viewer.Viewer.GAP));
-    viewer.lowerImageTop.xformTransY += viewer.lowerImageTop.screenOffsetY = 0;
+    viewer.lowerImageTop.screenTransform[1][2] += viewer.lowerImageTop.screenOffsetY = 0;
+
+    viewer.axialSlice.updateFinalTransform();
+    viewer.coronalSlice.updateFinalTransform();
+    viewer.sagittalSlice.updateFinalTransform();
 };
 
 
@@ -620,10 +679,10 @@ papaya.viewer.Viewer.prototype.getTransformParameters = function (image, height,
     transY = (((lower ? height - papaya.viewer.Viewer.GAP : height) / bigScale) - (image.getYDim() * scaleY)) / 2;
 
     image.screenDim = (lower ? (height - papaya.viewer.Viewer.GAP) / 2 : height);
-    image.xformScaleX = scaleX;
-    image.xformScaleY = scaleY;
-    image.xformTransX = transX;
-    image.xformTransY = transY;
+    image.screenTransform[0][0] = scaleX;
+    image.screenTransform[1][1] = scaleY;
+    image.screenTransform[0][2] = transX;
+    image.screenTransform[1][2] = transY;
 };
 
 
@@ -656,6 +715,8 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
 
     if (isControlKey(ke)) {
         this.isControlKeyDown = true;
+    } else if (isAltKey(ke)) {
+        this.isAltKeyDown = true;
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_ROTATE_VIEWS) {
         this.rotateViews();
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_CENTER) {
@@ -689,7 +750,7 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
         if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
             this.incrementAxial(true);
         } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-            this.incrementCoronal(true );
+            this.incrementCoronal(true);
         } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
             this.incrementSagittal(false);
         }
@@ -734,6 +795,8 @@ papaya.viewer.Viewer.prototype.keyUpEvent = function (ke) {
 
     if (isControlKey(ke)) {
         this.isControlKeyDown = false;
+    } else if (isAltKey(ke)) {
+        this.isAltKeyDown = false;
     }
 };
 
@@ -769,10 +832,24 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
         if (me.handled !== true) {
             papayaMain.papayaToolbar.closeAllMenus();
 
+            this.previousMousePosition.x = getMousePositionX(me);
+            this.previousMousePosition.y = getMousePositionY(me);
+
             if ((me.which === 3) || this.isControlKeyDown) {
                 this.isWindowControl = true;
-                this.previousMousePosition.x = getMousePositionX(me);
-                this.previousMousePosition.y = getMousePositionY(me);
+            } else if (this.isAltKeyDown) {
+                this.isZoomMode = true;
+                // if (clickCount == 2) {
+                //     parentViewer.setZoomFactor(1, sliceDirection);
+                //} else {
+                if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                    this.setZoomLocation(this.currentCoord.x, this.currentCoord.y, papaya.viewer.ScreenSlice.DIRECTION_AXIAL);
+                } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                    this.setZoomLocation(this.currentCoord.x, this.currentCoord.z, papaya.viewer.ScreenSlice.DIRECTION_CORONAL);
+                } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                    this.setZoomLocation(this.currentCoord.y, this.currentCoord.z, papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL);
+                }
+                // }
             } else {
                 this.updatePosition(this, getMousePositionX(me), getMousePositionY(me), true);
                 this.resetUpdateTimer(me);
@@ -792,12 +869,13 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
 
     if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
         if (me.handled !== true) {
-            if (!this.isWindowControl) {
+            if (!this.isWindowControl && !this.isZoomMode) {
                 this.updatePosition(this, getMousePositionX(me), getMousePositionY(me));
             }
 
             this.isDragging = false;
             this.isWindowControl = false;
+            this.isZoomMode = false;
 
             me.handled = true;
         }
@@ -809,18 +887,26 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
 papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
     me.preventDefault();
 
-    var currentMouseX, currentMouseY;
+    var currentMouseX, currentMouseY, zoomFactorCurrent;
+
+    currentMouseX = getMousePositionX(me);
+    currentMouseY = getMousePositionY(me);
 
     if (this.isDragging) {
         if (this.isWindowControl) {
-            currentMouseX = getMousePositionX(me);
-            currentMouseY = getMousePositionY(me);
-
             this.windowLevelChanged(this.previousMousePosition.x - currentMouseX,
                 this.previousMousePosition.y - currentMouseY);
 
             this.previousMousePosition.x = currentMouseX;
             this.previousMousePosition.y = currentMouseY;
+        } else if (this.isZoomMode) {
+            zoomFactorCurrent = ((this.previousMousePosition.y - currentMouseY) * 0.05);
+            this.setZoomFactor(this.zoomFactorPrevious - zoomFactorCurrent, this.mainImage.sliceDirection);
+
+            this.axialSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocY, this.panAmountX, this.panAmountY, this);
+            this.coronalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocZ, this.panAmountX, this.panAmountZ, this);
+            this.sagittalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocY, this.zoomLocZ, this.panAmountY, this.panAmountZ, this);
+            this.drawViewer(true);
         } else {
             this.resetUpdateTimer(null);
             this.updatePosition(this, getMousePositionX(me), getMousePositionY(me));
@@ -1172,7 +1258,7 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
 
         this.gotoCoordinate(this.currentCoord);
     } else {
-
+        console.log("TODO");
     }
 };
 
@@ -1241,3 +1327,113 @@ papaya.viewer.Viewer.prototype.incrementSagittal = function (increment) {
 
     this.gotoCoordinate(this.currentCoord);
 };
+
+
+
+papaya.viewer.Viewer.prototype.setZoomFactor = function (val, sliceDirection) {
+    if (val > papaya.viewer.Viewer.ZOOM_FACTOR_MAX) {
+        val = papaya.viewer.Viewer.ZOOM_FACTOR_MAX;
+    } else if (val < papaya.viewer.Viewer.ZOOM_FACTOR_MIN) {
+        val = papaya.viewer.Viewer.ZOOM_FACTOR_MIN;
+    }
+
+    this.zoomFactor = val;
+
+    if (this.zoomFactor === 1) {
+        this.panAmountX = this.panAmountY = this.panAmountZ = 0;
+    }
+
+    this.axialSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocY, this.panAmountX, this.panAmountY, this);
+    this.coronalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocZ, this.panAmountX, this.panAmountZ, this);
+    this.sagittalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocY, this.zoomLocZ, this.panAmountY, this.panAmountZ, this);
+    this.drawViewer(true);
+};
+
+
+
+
+
+papaya.viewer.Viewer.prototype.getZoomString = function () {
+    return parseInt(this.zoomFactor * 100, 10);
+};
+
+
+
+papaya.viewer.Viewer.prototype.isZooming = function () {
+    return (this.zoomFactor > 1);
+};
+
+
+papaya.viewer.Viewer.prototype.setZoomLocation = function (xLoc, yLoc, sliceDirection) {
+    var temp;
+
+    if (this.zoomFactor === 1) {
+        if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+            this.zoomLocX = xLoc;
+            this.zoomLocY = yLoc;
+            this.zoomLocZ = this.axialSlice.currentSlice;
+        } else if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+            this.zoomLocX = xLoc;
+            this.zoomLocY = this.coronalSlice.currentSlice;
+            this.zoomLocZ = yLoc;
+        } else if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+            this.zoomLocX = this.sagittalSlice.currentSlice;
+            temp = xLoc;  // because of dumb IDE warning
+            this.zoomLocY = temp;
+            this.zoomLocZ = yLoc;
+        }
+
+        this.axialSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocY, this.panAmountX, this.panAmountY, this);
+        this.coronalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocZ, this.panAmountX, this.panAmountZ, this);
+        this.sagittalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocY, this.zoomLocZ, this.panAmountY, this.panAmountZ, this);
+        this.drawViewer(true);
+    }
+};
+
+
+
+papaya.viewer.Viewer.prototype.setStartPanLocation = function (xLoc, yLoc, sliceDirection) {
+    var temp;
+
+    if (this.zoomFactor > 1) {
+        if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+            this.panLocX = xLoc;
+            this.panLocY = yLoc;
+            this.panLocZ = this.axialSlice.currentSlice;
+        } else if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+            this.panLocX = xLoc;
+            this.panLocY = this.coronalSlice.currentSlice;
+            this.panLocZ = yLoc;
+        } else if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+            this.panLocX = this.sagittalSlice.currentSlice;
+            temp = xLoc;  // because of dumb IDE warning
+            this.panLocY = temp;
+            this.panLocZ = yLoc;
+        }
+    }
+};
+
+
+
+papaya.viewer.Viewer.prototype.setCurrentPanLocation = function (xLoc, yLoc, sliceDirection) {
+    if (this.zoomFactor > 1) {
+        if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+            this.panAmountX += xLoc - this.panLocX;
+            this.panAmountY += yLoc - this.panLocY;
+            this.panAmountZ = 0;
+        } else if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+            this.panAmountX += xLoc - this.panLocX;
+            this.panAmountY = 0;
+            this.panAmountZ += yLoc - this.panLocZ;
+        } else if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+            this.panAmountX = 0;
+            this.panAmountY += xLoc - this.panLocY;
+            this.panAmountZ += yLoc - this.panLocZ;
+        }
+
+        this.axialSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocY, this.panAmountX, this.panAmountY, this);
+        this.coronalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocZ, this.panAmountX, this.panAmountZ, this);
+        this.sagittalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocY, this.zoomLocZ, this.panAmountY, this.panAmountZ, this);
+        this.drawViewer(true);
+    }
+}
