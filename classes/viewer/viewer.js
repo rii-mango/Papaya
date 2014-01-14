@@ -192,6 +192,12 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
     this.canvas.addEventListener("touchstart", this.listenerMouseDown, false);
     this.canvas.addEventListener("touchend", this.listenerMouseUp, false);
 
+    // disable scroll
+    if (window.addEventListener) {
+        window.addEventListener('DOMMouseScroll', bind(this, this.scrolled), false);
+    }
+    window.onmousewheel = document.onmousewheel = bind(this, this.scrolled);
+
     this.setLongestDim(this.volume);
     this.calculateScreenSliceTransforms(this);
     this.currentCoord.setCoordinate(this.volume.getXDim() / 2, this.volume.getYDim() / 2, this.volume.getZDim() / 2);
@@ -660,49 +666,33 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_ORIGIN) {
         this.gotoCoordinate(this.volume.header.origin);
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_ARROW_UP) {
-        this.currentCoord.y -= 1;
-        this.gotoCoordinate(this.currentCoord);
+        this.incrementCoronal(false);
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_ARROW_DOWN) {
-        this.currentCoord.y += 1;
-        this.gotoCoordinate(this.currentCoord);
+        this.incrementCoronal(true);
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_ARROW_LEFT) {
-        this.currentCoord.x -= 1;
-        this.gotoCoordinate(this.currentCoord);
+        this.incrementSagittal(true);
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_ARROW_RIGHT) {
-        this.currentCoord.x += 1;
-        this.gotoCoordinate(this.currentCoord);
-    } else if ((keyCode === papaya.viewer.Viewer.KEYCODE_PAGE_DOWN)
-            || (keyCode === papaya.viewer.Viewer.KEYCODE_FORWARD_SLASH)) {
-        this.currentCoord.z += 1;
-        this.gotoCoordinate(this.currentCoord);
-    } else if ((keyCode === papaya.viewer.Viewer.KEYCODE_PAGE_UP)
-            || (keyCode === papaya.viewer.Viewer.KEYCODE_SINGLE_QUOTE)) {
-        this.currentCoord.z -= 1;
-        this.gotoCoordinate(this.currentCoord);
-    } else if ((keyCode === papaya.viewer.Viewer.KEYCODE_PAGE_DOWN)
-            || (keyCode === papaya.viewer.Viewer.KEYCODE_FORWARD_SLASH)) {
-        this.currentCoord.z += 1;
-        this.gotoCoordinate(this.currentCoord);
+        this.incrementSagittal(false);
+    } else if ((keyCode === papaya.viewer.Viewer.KEYCODE_PAGE_DOWN) || (keyCode === papaya.viewer.Viewer.KEYCODE_FORWARD_SLASH)) {
+        this.incrementAxial(true);
+    } else if ((keyCode === papaya.viewer.Viewer.KEYCODE_PAGE_UP) || (keyCode === papaya.viewer.Viewer.KEYCODE_SINGLE_QUOTE)) {
+        this.incrementAxial(false);
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_INCREMENT_MAIN) {
         if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-            this.currentCoord.z -= 1;
+            this.incrementAxial(false);
         } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-            this.currentCoord.y -= 1;
+            this.incrementCoronal(false);
         } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-            this.currentCoord.x += 1;
+            this.incrementSagittal(true);
         }
-
-        this.gotoCoordinate(this.currentCoord);
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_DECREMENT_MAIN) {
         if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-            this.currentCoord.z += 1;
+            this.incrementAxial(true);
         } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-            this.currentCoord.y += 1;
+            this.incrementCoronal(true );
         } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-            this.currentCoord.x -= 1;
+            this.incrementSagittal(false);
         }
-
-        this.gotoCoordinate(this.currentCoord);
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_TOGGLE_CROSSHAIRS) {
         if ((papayaMain.preferences.showCrosshairs === "All") || (papayaMain.preferences.showCrosshairs === "Main")) {
             this.toggleMainCrosshairs = !this.toggleMainCrosshairs;
@@ -936,6 +926,7 @@ papaya.viewer.Viewer.prototype.getCurrentValueAt = function (ctrX, ctrY, ctrZ) {
 
 
 
+
 papaya.viewer.Viewer.prototype.resetViewer = function () {
     this.initialized = false;
     this.loadingVolume = null;
@@ -966,6 +957,7 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     document.removeEventListener("touchmove", this.listenerTouchMove, false);
     document.removeEventListener("touchstart", this.listenerMouseDown, false);
     document.removeEventListener("touchend", this.listenerMouseUp, false);
+
     this.updateTimer = null;
     this.updateTimerEvent = null;
     this.drawEmptyViewer();
@@ -975,6 +967,8 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
 
     papayaMain.papayaToolbar.buildToolbar();
 };
+
+
 
 
 
@@ -1145,4 +1139,105 @@ papaya.viewer.Viewer.prototype.getOrientationCertaintyColor = function () {
 
 papaya.viewer.Viewer.prototype.isUsingAtlas = function (name) {
     return (name === this.atlas.currentAtlas);
+};
+
+
+
+papaya.viewer.Viewer.prototype.scrolled = function (e) {
+    e = e || window.event;
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+
+    e.returnValue = false;
+
+    if (papayaMain.preferences.scrollBehavior === "Increment Slice") {
+        if (e.wheelDelta < 0) {
+            if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                this.incrementAxial(false);
+            } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                this.incrementCoronal(false);
+            } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                this.incrementSagittal(false);
+            }
+        } else {
+            if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                this.incrementAxial(true);
+            } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                this.incrementCoronal(true);
+            } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                this.incrementSagittal(true);
+            }
+        }
+
+        this.gotoCoordinate(this.currentCoord);
+    } else {
+
+    }
+};
+
+
+
+papaya.viewer.Viewer.prototype.incrementAxial = function (increment) {
+    var max = this.volume.header.imageDimensions.zDim;
+
+    if (increment) {
+        this.currentCoord.z += 1;
+
+        if (this.currentCoord.z >= max) {
+            this.currentCoord.z = max - 1;
+        }
+    } else {
+        this.currentCoord.z -= 1;
+
+        if (this.currentCoord.z < 0) {
+            this.currentCoord.z = 0;
+        }
+    }
+
+    this.gotoCoordinate(this.currentCoord);
+};
+
+
+
+papaya.viewer.Viewer.prototype.incrementCoronal = function (increment) {
+    var max = this.volume.header.imageDimensions.yDim;
+
+    if (increment) {
+        this.currentCoord.y += 1;
+
+        if (this.currentCoord.y >= max) {
+            this.currentCoord.y = max - 1;
+        }
+    } else {
+        this.currentCoord.y -= 1;
+
+        if (this.currentCoord.y < 0) {
+            this.currentCoord.y = 0;
+        }
+    }
+
+    this.gotoCoordinate(this.currentCoord);
+};
+
+
+
+papaya.viewer.Viewer.prototype.incrementSagittal = function (increment) {
+    var max = this.volume.header.imageDimensions.xDim;
+
+    if (increment) {
+        this.currentCoord.x -= 1;
+
+        if (this.currentCoord.x < 0) {
+            this.currentCoord.x = 0;
+        }
+    } else {
+        this.currentCoord.x += 1;
+
+        if (this.currentCoord.x >= max) {
+            this.currentCoord.x = max - 1;
+        }
+    }
+
+    this.gotoCoordinate(this.currentCoord);
 };

@@ -13,6 +13,7 @@ papaya.viewer.Preferences = papaya.viewer.Preferences || function () {
     this.showCrosshairs = papaya.viewer.Preferences.DEFAULT_SHOW_CROSSHAIRS;
     this.atlasLocks = papaya.viewer.Preferences.DEFAULT_ATLAS_LOCKS;
     this.showOrientation = papaya.viewer.Preferences.DEFAULT_SHOW_ORIENTATION;
+    this.scrollBehavior = papaya.viewer.Preferences.DEFAULT_SCROLL;
 
     this.readPreferences();
 };
@@ -24,6 +25,7 @@ papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS = 365;
 papaya.viewer.Preferences.DEFAULT_SHOW_CROSSHAIRS = "All";
 papaya.viewer.Preferences.DEFAULT_ATLAS_LOCKS = "Mouse";
 papaya.viewer.Preferences.DEFAULT_SHOW_ORIENTATION = "Yes";
+papaya.viewer.Preferences.DEFAULT_SCROLL = "Increment Slice";
 
 
 
