@@ -32,7 +32,7 @@ function bind(scope, fn, args, appendArgs) {
 
 
 
-function round(val) {
+function roundFast(val) {
     return (0.5 + val) | 0;
 }
 
@@ -157,6 +157,19 @@ function isAltKey(ke) {
     var keyCode = getKeyCode(ke);
     return (keyCode === 18);
 }
+
+
+
+function isShiftKey(ke) {
+    var isShift = ke.shiftKey ? true : false;
+
+    if (!isShift && window.event) {
+        isShift = window.event.shiftKey ? true : false;
+    }
+
+    return isShift;
+}
+
 
 
 

@@ -32,9 +32,9 @@ papaya.volume.VoxelValue = papaya.volume.VoxelValue || function (imageData, imag
 
 papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
     if (useNN) {
-        ctrX = Math.round(ctrX);
-        ctrY = Math.round(ctrY);
-        ctrZ = Math.round(ctrZ);
+        ctrX = roundFast(ctrX);
+        ctrY = roundFast(ctrY);
+        ctrZ = roundFast(ctrZ);
         return (this.getVoxelAtOffset(this.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ), timepoint) * this.imageRange.globalScale) + this.imageRange.globalIntercept;
     }
 

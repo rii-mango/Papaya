@@ -24,9 +24,9 @@ papaya.volume.Orientation.DEFAULT = "XYZ+--";
 
 papaya.volume.Orientation.prototype.convertIndexToOffset = function (xLoc, yLoc, zLoc) {
     var locX, locY, locZ;
-    locX = round((xLoc * this.orientMat[0][0]) + (yLoc * this.orientMat[0][1]) + (zLoc * this.orientMat[0][2]) + (this.orientMat[0][3]));
-    locY = round((xLoc * this.orientMat[1][0]) + (yLoc * this.orientMat[1][1]) + (zLoc * this.orientMat[1][2]) + (this.orientMat[1][3]));
-    locZ = round((xLoc * this.orientMat[2][0]) + (yLoc * this.orientMat[2][1]) + (zLoc * this.orientMat[2][2]) + (this.orientMat[2][3]));
+    locX = roundFast((xLoc * this.orientMat[0][0]) + (yLoc * this.orientMat[0][1]) + (zLoc * this.orientMat[0][2]) + (this.orientMat[0][3]));
+    locY = roundFast((xLoc * this.orientMat[1][0]) + (yLoc * this.orientMat[1][1]) + (zLoc * this.orientMat[1][2]) + (this.orientMat[1][3]));
+    locZ = roundFast((xLoc * this.orientMat[2][0]) + (yLoc * this.orientMat[2][1]) + (zLoc * this.orientMat[2][2]) + (this.orientMat[2][3]));
 
     return (locX * this.xIncrement) + (locY * this.yIncrement) + (locZ * this.zIncrement);
 };
@@ -34,9 +34,9 @@ papaya.volume.Orientation.prototype.convertIndexToOffset = function (xLoc, yLoc,
 
 
 papaya.volume.Orientation.prototype.convertCoordinate = function (coord, coordConverted) {
-    coordConverted.x = round((coord.x * this.orientMat[0][0]) + (coord.y * this.orientMat[0][1]) + (coord.z * this.orientMat[0][2]) + (this.orientMat[0][3]));
-    coordConverted.y = round((coord.x * this.orientMat[1][0]) + (coord.y * this.orientMat[1][1]) + (coord.z * this.orientMat[1][2]) + (this.orientMat[1][3]));
-    coordConverted.z = round((coord.x * this.orientMat[2][0]) + (coord.y * this.orientMat[2][1]) + (coord.z * this.orientMat[2][2]) + (this.orientMat[2][3]));
+    coordConverted.x = roundFast((coord.x * this.orientMat[0][0]) + (coord.y * this.orientMat[0][1]) + (coord.z * this.orientMat[0][2]) + (this.orientMat[0][3]));
+    coordConverted.y = roundFast((coord.x * this.orientMat[1][0]) + (coord.y * this.orientMat[1][1]) + (coord.z * this.orientMat[1][2]) + (this.orientMat[1][3]));
+    coordConverted.z = roundFast((coord.x * this.orientMat[2][0]) + (coord.y * this.orientMat[2][1]) + (coord.z * this.orientMat[2][2]) + (this.orientMat[2][3]));
     return coordConverted;
 };
 

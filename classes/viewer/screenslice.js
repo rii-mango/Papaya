@@ -22,12 +22,6 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
     this.canvasMain.width = this.xDim;
     this.canvasMain.height = this.yDim;
     this.contextMain = this.canvasMain.getContext("2d");
-
-    //this.canvasDraw = document.createElement("canvas");
-    //this.canvasDraw.width = this.xDim;
-    //this.canvasDraw.height = this.yDim;
-    //this.contextDraw = this.canvasDraw.getContext("2d");
-
     this.imageDataDraw = this.contextMain.createImageData(this.xDim, this.yDim);
     this.screenOffsetX = 0;
     this.screenOffsetY = 0;
@@ -51,7 +45,7 @@ papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN = 0;
 papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldSpace) {
     var origin, voxelDims, ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha, timepoint;
 
-    slice = round(slice);
+    slice = Math.round(slice);
 
     if (force || (this.currentSlice !== slice)) {
         this.currentSlice = slice;
@@ -105,7 +99,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
                             || (this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMax))) {
                         value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX;  // screen value
                     } else {
-                        value = round(((value - this.screenVolumes[ctr].screenMin) * this.screenVolumes[ctr].screenRatio) + 0.5);  // screen value
+                        value = roundFast(((value - this.screenVolumes[ctr].screenMin) * this.screenVolumes[ctr].screenRatio) + 0.5);  // screen value
                     }
 
                     if ((thresholdAlpha > 0) || (ctr === 0)) {
@@ -119,12 +113,6 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
                 }
             }
         }
-
-        //this.contextDraw.putImageData(this.imageDataDraw, 0, 0);
-        //console.log(this.zoomTransform[0][0] + " " + this.zoomTransform[0][1] + " " +  this.zoomTransform[0][2] + "   " + this.zoomTransform[1][0] + " " + this.zoomTransform[1][1] + " " +  this.zoomTransform[1][2]);
-
-        //this.contextMain.setTransform(this.zoomTransform[0][0], 0, 0, this.zoomTransform[1][1], this.zoomTransform[0][2], this.zoomTransform[1][2]);
-        //this.contextMain.drawImage(this.canvasDraw, 0, 0);
 
         this.contextMain.putImageData(this.imageDataDraw, 0, 0);
     }
@@ -181,8 +169,8 @@ papaya.viewer.ScreenSlice.prototype.getYDim = function () {
 
 
 papaya.viewer.ScreenSlice.prototype.updateZoomTransform = function (zoomFactor, xZoomTrans, yZoomTrans, xPanTrans, yPanTrans, viewer) {
-    var xTrans, yTrans, maxTranslateX, maxTranslateY;
-
+    var xTrans, yTrans, maxTranslateX, maxTranslateY, temp;
+temp = xPanTrans;
     xZoomTrans = (xZoomTrans + 0.5) * (zoomFactor - 1) * -1;
     yZoomTrans = (yZoomTrans + 0.5) * (zoomFactor - 1) * -1;
     xPanTrans = xPanTrans * (zoomFactor - 1);
@@ -190,31 +178,35 @@ papaya.viewer.ScreenSlice.prototype.updateZoomTransform = function (zoomFactor, 
 
     // limit pan translation such that it cannot pan out of bounds of image
     xTrans = xZoomTrans + xPanTrans;
-    yTrans = yZoomTrans + yPanTrans;
-    maxTranslateX = -(zoomFactor - 1.0) * this.xDim;
+    /*
+    maxTranslateX = -1 * (zoomFactor - 1.0) * this.xDim;
     if (xTrans > 0) {
         xTrans = 0;
     } else if (xTrans < maxTranslateX) {
         xTrans = maxTranslateX;
     }
-
-    maxTranslateY = -(zoomFactor - 1.0) * this.yDim;
+*/
+    yTrans = yZoomTrans + yPanTrans;
+    /*
+    maxTranslateY = -1 * (zoomFactor - 1.0) * this.yDim;
     if (yTrans > 0) {
         yTrans = 0;
     } else if (yTrans < maxTranslateY) {
         yTrans = maxTranslateY;
     }
-
+*/
     // update parent viewer with pan translation (may have been limited by step above)
-    if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-        viewer.panAmountX = (round((xTrans - xZoomTrans) / (zoomFactor - 1)));
-        viewer.panAmountY = (round((yTrans - yZoomTrans) / (zoomFactor - 1)));
-    } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-        viewer.panAmountX = (round((xTrans - xZoomTrans) / (zoomFactor - 1)));
-        viewer.panAmountZ = (round((yTrans - yZoomTrans) / (zoomFactor - 1)));
-    } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-        viewer.panAmountY = (round((xTrans - xZoomTrans) / (zoomFactor - 1)));
-        viewer.panAmountZ = (round((yTrans - yZoomTrans) / (zoomFactor - 1)));
+    if (zoomFactor > 1) {
+        if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+            viewer.panAmountX = (Math.round((xTrans - xZoomTrans) / (zoomFactor - 1)));
+            viewer.panAmountY = (Math.round((yTrans - yZoomTrans) / (zoomFactor - 1)));
+        } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+            viewer.panAmountX = (Math.round((xTrans - xZoomTrans) / (zoomFactor - 1)));
+            viewer.panAmountZ = (Math.round((yTrans - yZoomTrans) / (zoomFactor - 1)));
+        } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+            viewer.panAmountY = (Math.round((xTrans - xZoomTrans) / (zoomFactor - 1)));
+            viewer.panAmountZ = (Math.round((yTrans - yZoomTrans) / (zoomFactor - 1)));
+        }
     }
 
     // update transform
