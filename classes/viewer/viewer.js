@@ -1463,7 +1463,6 @@ papaya.viewer.Viewer.prototype.setStartPanLocation = function (xLoc, yLoc, slice
 
 
 papaya.viewer.Viewer.prototype.setCurrentPanLocation = function (xLoc, yLoc, sliceDirection) {
-    console.log(this.selectedSlice.sliceDirection);
     if (this.zoomFactor > 1) {
         if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
             this.panAmountX += (xLoc - this.panLocX);
