@@ -35,10 +35,11 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ,
         ctrX = roundFast(ctrX);
         ctrY = roundFast(ctrY);
         ctrZ = roundFast(ctrZ);
-        return (this.getVoxelAtOffset(this.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ), timepoint) * this.imageRange.globalScale) + this.imageRange.globalIntercept;
+
+        return (this.getVoxelAtOffset(this.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ), timepoint) * this.dataScaleSlope) + this.dataScaleIntercept;
     }
 
-    return (this.getVoxelAtIndexLinear(ctrX, ctrY, ctrZ, timepoint) * this.imageRange.globalScale) + this.imageRange.globalIntercept;
+    return (this.getVoxelAtIndexLinear(ctrX, ctrY, ctrZ, timepoint) * this.dataScaleSlope) + this.dataScaleIntercept;
 };
 
 
@@ -219,7 +220,7 @@ papaya.volume.VoxelValue.prototype.checkSwap = function (val) {
     /*jslint bitwise: true */
 
     if (this.swap16) {
-        return ((val & 0xFF) << 8) | ((val >> 8) & 0xFF);
+        return ((((val & 0xFF) << 8) | ((val >> 8) & 0xFF)) << 16) >> 16;  // since JavaScript uses 32-bit always when bit shifting
     }
 
     if (this.swap32) {
