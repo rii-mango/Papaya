@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global round */
+/*global roundFast */
 
 "use strict";
 
@@ -169,8 +169,8 @@ papaya.viewer.ScreenSlice.prototype.getYDim = function () {
 
 
 papaya.viewer.ScreenSlice.prototype.updateZoomTransform = function (zoomFactor, xZoomTrans, yZoomTrans, xPanTrans, yPanTrans, viewer) {
-    var xTrans, yTrans, maxTranslateX, maxTranslateY, temp;
-temp = xPanTrans;
+    var xTrans, yTrans, maxTranslateX, maxTranslateY;
+
     xZoomTrans = (xZoomTrans + 0.5) * (zoomFactor - 1) * -1;
     yZoomTrans = (yZoomTrans + 0.5) * (zoomFactor - 1) * -1;
     xPanTrans = xPanTrans * (zoomFactor - 1);
@@ -178,23 +178,21 @@ temp = xPanTrans;
 
     // limit pan translation such that it cannot pan out of bounds of image
     xTrans = xZoomTrans + xPanTrans;
-    /*
     maxTranslateX = -1 * (zoomFactor - 1.0) * this.xDim;
     if (xTrans > 0) {
         xTrans = 0;
     } else if (xTrans < maxTranslateX) {
         xTrans = maxTranslateX;
     }
-*/
+
     yTrans = yZoomTrans + yPanTrans;
-    /*
     maxTranslateY = -1 * (zoomFactor - 1.0) * this.yDim;
     if (yTrans > 0) {
         yTrans = 0;
     } else if (yTrans < maxTranslateY) {
         yTrans = maxTranslateY;
     }
-*/
+
     // update parent viewer with pan translation (may have been limited by step above)
     if (zoomFactor > 1) {
         if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {

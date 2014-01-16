@@ -1,5 +1,5 @@
 /*jslint browser: true, node: true */
-/*global */
+/*global roundFast */
 
 "use strict";
 

@@ -14,7 +14,7 @@ papaya.ui.MenuItemSpacer = papaya.ui.MenuItemSpacer || function () {};
 
 
 papaya.ui.MenuItemSpacer.prototype.buildHTML = function (parentId) {
-    var html, thisHtml;
+    var html;
 
     html = "<div class='spacer unselectable'></div>";
     $("#" + parentId).append(html);
