@@ -38,10 +38,14 @@ function roundFast(val) {
 
 
 
-function floor(val) {
+function floorFast(val) {
     return val | 0;
 }
 
+
+function validDimBounds(val, dimBound) {
+    return (val < dimBound) ? val : dimBound - 1;
+}
 
 
 function isString(obj) {

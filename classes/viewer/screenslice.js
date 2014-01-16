@@ -13,7 +13,7 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
                                                                    screenVols) {
     this.screenVolumes = screenVols;
     this.sliceDirection = dir;
-    this.currentSlice = 0;
+    this.currentSlice = -1;
     this.xDim = width;
     this.yDim = height;
     this.xSize = widthSize;

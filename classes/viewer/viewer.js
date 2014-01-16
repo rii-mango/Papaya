@@ -1,7 +1,7 @@
 
 /*jslint browser: true, node: true */
-/*global PAPAYA_SPACING, bind, papayaMain, isString, roundFast, floor, getKeyCode, isControlKey, getMousePositionX,
-getMousePositionY, signum, wordwrap, getSizeString, formatNumber, papayaParams, deref, isAltKey, isShiftKey */
+/*global PAPAYA_SPACING, bind, papayaMain, isString, roundFast, floorFast, getKeyCode, isControlKey, getMousePositionX,
+getMousePositionY, signum, wordwrap, getSizeString, formatNumber, papayaParams, deref, isAltKey, isShiftKey, validDimBounds */
 
 "use strict";
 
@@ -222,7 +222,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
 
     this.setLongestDim(this.volume);
     this.calculateScreenSliceTransforms(this);
-    this.currentCoord.setCoordinate(this.volume.getXDim() / 2, this.volume.getYDim() / 2, this.volume.getZDim() / 2);
+    this.currentCoord.setCoordinate(floorFast(this.volume.getXDim() / 2), floorFast(this.volume.getYDim() / 2), floorFast(this.volume.getZDim() / 2));
 
     this.canvasRect = this.canvas.getBoundingClientRect();
 
@@ -324,13 +324,13 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
 
 
 papaya.viewer.Viewer.prototype.convertScreenToImageCoordinateX = function (xLoc, screenSlice) {
-    return roundFast((xLoc - screenSlice.finalTransform[0][2]) / screenSlice.finalTransform[0][0]);
+    return validDimBounds(floorFast((xLoc - screenSlice.finalTransform[0][2]) / screenSlice.finalTransform[0][0]), screenSlice.xDim);
 };
 
 
 
 papaya.viewer.Viewer.prototype.convertScreenToImageCoordinateY = function (yLoc, screenSlice) {
-    return roundFast((yLoc - screenSlice.finalTransform[1][2]) / screenSlice.finalTransform[1][1]);
+    return validDimBounds(floorFast((yLoc - screenSlice.finalTransform[1][2]) / screenSlice.finalTransform[1][1]), screenSlice.yDim);
 };
 
 
@@ -342,18 +342,18 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yL
         yLoc = yLoc - this.canvasRect.top;
 
         if (this.insideScreenSlice(viewer.axialSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getYDim())) {
-            xImageLoc = (xLoc - viewer.axialSlice.finalTransform[0][2]) / viewer.axialSlice.finalTransform[0][0];
-            yImageLoc = (yLoc - viewer.axialSlice.finalTransform[1][2]) / viewer.axialSlice.finalTransform[1][1];
+            xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.axialSlice);
+            yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.axialSlice);
             zImageLoc = viewer.axialSlice.currentSlice;
             found = true;
         } else if (this.insideScreenSlice(viewer.coronalSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getZDim())) {
-            xImageLoc = (xLoc - viewer.coronalSlice.finalTransform[0][2]) / viewer.coronalSlice.finalTransform[0][0];
-            zImageLoc = (yLoc - viewer.coronalSlice.finalTransform[1][2]) / viewer.coronalSlice.finalTransform[1][1];
+            xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.coronalSlice);
+            zImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.coronalSlice);
             yImageLoc = viewer.coronalSlice.currentSlice;
             found = true;
         } else if (this.insideScreenSlice(viewer.sagittalSlice, xLoc, yLoc, viewer.volume.getYDim(), viewer.volume.getZDim())) {
-            yImageLoc = (xLoc - viewer.sagittalSlice.finalTransform[0][2]) / viewer.sagittalSlice.finalTransform[0][0];
-            zImageLoc = (yLoc - viewer.sagittalSlice.finalTransform[1][2]) / viewer.sagittalSlice.finalTransform[1][1];
+            yImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.sagittalSlice);
+            zImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.sagittalSlice);
             xImageLoc = viewer.sagittalSlice.currentSlice;
             found = true;
         }
@@ -553,17 +553,17 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
         this.context.beginPath();
 
-        xLoc = floor(this.axialSlice.finalTransform[0][2] + (this.currentCoord.x) * this.axialSlice.finalTransform[0][0]);
-        yStart = floor(this.axialSlice.finalTransform[1][2]);
-        yEnd = floor(this.axialSlice.finalTransform[1][2] + this.axialSlice.yDim * this.axialSlice.finalTransform[1][1]);
-        this.context.moveTo(xLoc + 0.5, yStart);
-        this.context.lineTo(xLoc + 0.5, yEnd);
+        xLoc = (this.axialSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) * this.axialSlice.finalTransform[0][0]);
+        yStart = (this.axialSlice.finalTransform[1][2]);
+        yEnd = (this.axialSlice.finalTransform[1][2] + this.axialSlice.yDim * this.axialSlice.finalTransform[1][1]);
+        this.context.moveTo(xLoc, yStart);
+        this.context.lineTo(xLoc, yEnd);
 
-        yLoc = floor(this.axialSlice.finalTransform[1][2] + (this.currentCoord.y) * this.axialSlice.finalTransform[1][1]);
-        xStart = floor(this.axialSlice.finalTransform[0][2]);
-        xEnd = floor(this.axialSlice.finalTransform[0][2] + this.axialSlice.xDim * this.axialSlice.finalTransform[0][0]);
-        this.context.moveTo(xStart, yLoc + 0.5);
-        this.context.lineTo(xEnd, yLoc + 0.5);
+        yLoc = (this.axialSlice.finalTransform[1][2] + (this.currentCoord.y + 0.5) * this.axialSlice.finalTransform[1][1]);
+        xStart = (this.axialSlice.finalTransform[0][2]);
+        xEnd = (this.axialSlice.finalTransform[0][2] + this.axialSlice.xDim * this.axialSlice.finalTransform[0][0]);
+        this.context.moveTo(xStart, yLoc);
+        this.context.lineTo(xEnd, yLoc);
 
         this.context.closePath();
         this.context.stroke();
@@ -583,17 +583,17 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
         this.context.beginPath();
 
-        xLoc = floor(this.coronalSlice.finalTransform[0][2] + this.currentCoord.x * this.coronalSlice.finalTransform[0][0]);
-        yStart = floor(this.coronalSlice.finalTransform[1][2]);
-        yEnd = floor(this.coronalSlice.finalTransform[1][2] + this.coronalSlice.yDim * this.coronalSlice.finalTransform[1][1]);
-        this.context.moveTo(xLoc + 0.5, yStart);
-        this.context.lineTo(xLoc + 0.5, yEnd);
+        xLoc = (this.coronalSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) * this.coronalSlice.finalTransform[0][0]);
+        yStart = (this.coronalSlice.finalTransform[1][2]);
+        yEnd = (this.coronalSlice.finalTransform[1][2] + this.coronalSlice.yDim * this.coronalSlice.finalTransform[1][1]);
+        this.context.moveTo(xLoc, yStart);
+        this.context.lineTo(xLoc, yEnd);
 
-        yLoc = floor(this.coronalSlice.finalTransform[1][2] + this.currentCoord.z * this.coronalSlice.finalTransform[1][1]);
-        xStart = floor(this.coronalSlice.finalTransform[0][2]);
-        xEnd = floor(this.coronalSlice.finalTransform[0][2] + this.coronalSlice.xDim * this.coronalSlice.finalTransform[0][0]);
-        this.context.moveTo(xStart, yLoc + 0.5);
-        this.context.lineTo(xEnd, yLoc + 0.5);
+        yLoc = (this.coronalSlice.finalTransform[1][2] + (this.currentCoord.z + 0.5) * this.coronalSlice.finalTransform[1][1]);
+        xStart = (this.coronalSlice.finalTransform[0][2]);
+        xEnd = (this.coronalSlice.finalTransform[0][2] + this.coronalSlice.xDim * this.coronalSlice.finalTransform[0][0]);
+        this.context.moveTo(xStart, yLoc);
+        this.context.lineTo(xEnd, yLoc);
 
         this.context.closePath();
         this.context.stroke();
@@ -612,17 +612,17 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
         this.context.beginPath();
 
-        xLoc = floor(this.sagittalSlice.finalTransform[0][2] + this.currentCoord.y * this.sagittalSlice.finalTransform[0][0]);
-        yStart = floor(this.sagittalSlice.finalTransform[1][2]);
-        yEnd = floor(this.sagittalSlice.finalTransform[1][2] + this.sagittalSlice.yDim * this.sagittalSlice.finalTransform[1][1]);
-        this.context.moveTo(xLoc + 0.5, yStart);
-        this.context.lineTo(xLoc + 0.5, yEnd);
+        xLoc = (this.sagittalSlice.finalTransform[0][2] + (this.currentCoord.y + 0.5) * this.sagittalSlice.finalTransform[0][0]);
+        yStart = (this.sagittalSlice.finalTransform[1][2]);
+        yEnd = (this.sagittalSlice.finalTransform[1][2] + this.sagittalSlice.yDim * this.sagittalSlice.finalTransform[1][1]);
+        this.context.moveTo(xLoc, yStart);
+        this.context.lineTo(xLoc, yEnd);
 
-        yLoc = floor(this.sagittalSlice.finalTransform[1][2] + this.currentCoord.z * this.sagittalSlice.finalTransform[1][1]);
-        xStart = floor(this.sagittalSlice.finalTransform[0][2]);
-        xEnd = floor(this.sagittalSlice.finalTransform[0][2] + this.sagittalSlice.xDim * this.sagittalSlice.finalTransform[0][0]);
-        this.context.moveTo(xStart, yLoc + 0.5);
-        this.context.lineTo(xEnd, yLoc + 0.5);
+        yLoc = (this.sagittalSlice.finalTransform[1][2] + (this.currentCoord.z + 0.5) * this.sagittalSlice.finalTransform[1][1]);
+        xStart = (this.sagittalSlice.finalTransform[0][2]);
+        xEnd = (this.sagittalSlice.finalTransform[0][2] + this.sagittalSlice.xDim * this.sagittalSlice.finalTransform[0][0]);
+        this.context.moveTo(xStart, yLoc);
+        this.context.lineTo(xEnd, yLoc);
 
         this.context.closePath();
         this.context.stroke();
@@ -723,9 +723,9 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_ROTATE_VIEWS) {
         this.rotateViews();
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_CENTER) {
-        center = new papaya.core.Coordinate(Math.floor(this.volume.header.imageDimensions.xDim / 2),
-            Math.floor(this.volume.header.imageDimensions.yDim / 2),
-            Math.floor(this.volume.header.imageDimensions.zDim / 2));
+        center = new papaya.core.Coordinate(Math.floorFast(this.volume.header.imageDimensions.xDim / 2),
+            Math.floorFast(this.volume.header.imageDimensions.yDim / 2),
+            Math.floorFast(this.volume.header.imageDimensions.zDim / 2));
         this.gotoCoordinate(center);
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_ORIGIN) {
         this.gotoCoordinate(this.volume.header.origin);
