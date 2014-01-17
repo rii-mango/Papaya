@@ -723,9 +723,9 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_ROTATE_VIEWS) {
         this.rotateViews();
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_CENTER) {
-        center = new papaya.core.Coordinate(Math.floorFast(this.volume.header.imageDimensions.xDim / 2),
-            Math.floorFast(this.volume.header.imageDimensions.yDim / 2),
-            Math.floorFast(this.volume.header.imageDimensions.zDim / 2));
+        center = new papaya.core.Coordinate(Math.floor(this.volume.header.imageDimensions.xDim / 2),
+            Math.floor(this.volume.header.imageDimensions.yDim / 2),
+            Math.floor(this.volume.header.imageDimensions.zDim / 2));
         this.gotoCoordinate(center);
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_ORIGIN) {
         this.gotoCoordinate(this.volume.header.origin);
