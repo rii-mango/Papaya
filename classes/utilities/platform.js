@@ -15,6 +15,12 @@ console.warn = console.warn || function () {};
 console.error = console.error || function () {};
 console.info = console.info || function () {};
 
+var SCROLL_APROXIMATE_MAX_FIREFOX = 60;
+var SCROLL_APROXIMATE_MAX_SAFARI = 1200;
+var SCROLL_APROXIMATE_MAX_CHROME = 1200;
+
+
+var LAST_SCROLL_EVENT_TIMESTAMP = 0;
 
 
 var OSName = "Unknown OS";
@@ -35,25 +41,34 @@ if (navigator.appVersion.indexOf("Linux") !== -1) {
 }
 
 
-
+var browserIsFirefox = false;
+var browserIsSafari = false;
+var browserIsOpera = false;
+var browserIsChrome = false;
+var browserIsIE = false;
 function checkForBrowserCompatibility() {
     if (BrowserDetect.browser === "Firefox") {
+        browserIsFirefox = true;
         if (BrowserDetect.version < BROWSER_MIN_FIREFOX) {
             return ("Papaya requires Firefox version " + BROWSER_MIN_FIREFOX + " or higher.");
         }
     } else if (BrowserDetect.browser === "Chrome") {
+        browserIsChrome = true;
         if (BrowserDetect.version < BROWSER_MIN_CHROME) {
             return ("Papaya requires Chrome version " + BROWSER_MIN_CHROME + " or higher.");
         }
     } else if (BrowserDetect.browser === "Explorer") {
+        browserIsIE = true;
         if (BrowserDetect.version < BROWSER_MIN_IE) {
             return ("Papaya requires Internet Explorer version " + BROWSER_MIN_IE + " or higher.");
         }
     } else if (BrowserDetect.browser === "Safari") {
+        browserIsSafari = true;
         if (BrowserDetect.version < BROWSER_MIN_SAFARI) {
             return ("Papaya requires Safari version " + BROWSER_MIN_SAFARI + " or higher.");
         }
     } else if (BrowserDetect.browser === "Opera") {
+        browserIsOpera = true;
         if (BrowserDetect.version < BROWSER_MIN_OPERA) {
             return ("Papaya requires Opera version " + BROWSER_MIN_OPERA + " or higher.");
         }
@@ -115,6 +130,27 @@ function getMousePositionY(ev) {
 
     return ev.pageY;
 }
+
+
+// a somewhat more consistent scroll across platforms
+function getScrollSign(ev) {
+    var now = Date.now();
+
+    if ((now - LAST_SCROLL_EVENT_TIMESTAMP) > 50) {
+        LAST_SCROLL_EVENT_TIMESTAMP = now;
+
+        if (ev.wheelDelta) {
+            return ev.wheelDelta > 0 ? 1 : -1;
+        }
+
+        if (ev.detail) {
+            return ev.detail < 0 ? 1 : -1;
+        }
+    }
+
+    return 0;
+}
+
 
 
 

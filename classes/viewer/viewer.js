@@ -1,7 +1,8 @@
 
 /*jslint browser: true, node: true */
 /*global PAPAYA_SPACING, bind, papayaMain, isString, roundFast, floorFast, getKeyCode, isControlKey, getMousePositionX,
-getMousePositionY, signum, wordwrap, getSizeString, formatNumber, papayaParams, deref, isAltKey, isShiftKey, validDimBounds */
+getMousePositionY, signum, wordwrap, getSizeString, formatNumber, papayaParams, deref, isAltKey, isShiftKey, validDimBounds,
+ getScrollSign */
 
 "use strict";
 
@@ -54,7 +55,6 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (width, height, params) 
     this.panAmountX = 0;
     this.panAmountY = 0;
     this.panAmountZ = 0;
-    this.mouseWheelZoomPrimed = 0;
     this.previousMousePosition = new papaya.core.Point();
     this.isControlKeyDown = false;
     this.isAltKeyDown = false;
@@ -447,6 +447,10 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
 
     // intialize screen slices
     this.context.fillStyle = papaya.viewer.Viewer.BACKGROUND_COLOR;
+
+    //this.context.imageSmoothingEnabled = true;
+    //this.context.webkitImageSmoothingEnabled = true;
+    //this.context.mozImageSmoothingEnabled = true;
 
     // draw screen slices
     this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -1276,6 +1280,8 @@ papaya.viewer.Viewer.prototype.isUsingAtlas = function (name) {
 
 
 papaya.viewer.Viewer.prototype.scrolled = function (e) {
+    var scrollSign;
+
     e = e || window.event;
     if (e.preventDefault) {
         e.preventDefault();
@@ -1283,8 +1289,10 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
 
     e.returnValue = false;
 
+    scrollSign = getScrollSign(e);
+
     if (papayaMain.preferences.scrollBehavior === "Increment Slice") {
-        if (e.wheelDelta < 0) {
+        if (scrollSign < 0) {
             if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
                 this.incrementAxial(false);
             } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
@@ -1292,7 +1300,9 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
             } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
                 this.incrementSagittal(false);
             }
-        } else {
+
+            this.gotoCoordinate(this.currentCoord);
+        } else if (scrollSign > 0) {
             if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
                 this.incrementAxial(true);
             } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
@@ -1300,11 +1310,11 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
             } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
                 this.incrementSagittal(true);
             }
-        }
 
-        this.gotoCoordinate(this.currentCoord);
+            this.gotoCoordinate(this.currentCoord);
+        }
     } else {
-        if (this.isZoomMode || (this.mouseWheelZoomPrimed > papaya.viewer.Viewer.MOUSE_SCROLL_THRESHLD)) {
+        if (scrollSign !== 0) {
             this.isZoomMode = true;
             if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
                 this.setZoomLocation(this.currentCoord.x, this.currentCoord.y, this.mainImage.sliceDirection);
@@ -1314,11 +1324,9 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
                 this.setZoomLocation(this.currentCoord.y, this.currentCoord.z, this.mainImage.sliceDirection);
             }
 
-            this.setZoomFactor(this.zoomFactorPrevious + (e.wheelDelta * 0.005));
+            this.setZoomFactor(this.zoomFactorPrevious + (scrollSign * 0.1 * this.zoomFactorPrevious));
             this.zoomFactorPrevious = this.zoomFactor;
         }
-
-        this.mouseWheelZoomPrimed += Math.abs(e.wheelDelta * 0.005);
     }
 };
 
