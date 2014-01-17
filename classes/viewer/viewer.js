@@ -1133,7 +1133,12 @@ papaya.viewer.Viewer.prototype.getFilename = function (index) {
 
 
 papaya.viewer.Viewer.prototype.getNiceFilename = function (index) {
-    return this.screenVolumes[index].volume.fileName.replace(".nii", "").replace(".gz", "");
+    var filename = this.screenVolumes[index].volume.fileName.replace(".nii", "").replace(".gz", "");
+    if (filename.length > 15) {
+        filename = filename.substr(0, 12) + "...";
+    }
+
+    return filename;
 };
 
 
@@ -1415,6 +1420,8 @@ papaya.viewer.Viewer.prototype.setZoomFactor = function (val) {
     this.coronalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocZ, this.panAmountX, this.panAmountZ, this);
     this.sagittalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocY, this.zoomLocZ, this.panAmountY, this.panAmountZ, this);
     this.drawViewer(true);
+
+    this.updateWindowTitle();
 };
 
 
