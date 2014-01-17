@@ -1038,7 +1038,7 @@ papaya.viewer.Viewer.prototype.getWorldCoordinateAtIndex = function (ctrX, ctrY,
 
 
 papaya.viewer.Viewer.prototype.getNextColorTable = function () {
-    var value = (this.screenVolumes.length - 1) % 5;
+    var value = (this.screenVolumes.length - 1) % papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES.length;
     return papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES[value].name;
 };
 
