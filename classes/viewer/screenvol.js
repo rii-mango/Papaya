@@ -98,7 +98,7 @@ papaya.viewer.ScreenVolume.prototype.findImageRange = function () {
         for (ctrZ = 0; ctrZ < zDim; ctrZ += 1) {
             for (ctrY = 0; ctrY < yDim; ctrY += 1) {
                 for (ctrX = 0; ctrX < xDim; ctrX += 1) {
-                    value = this.volume.getVoxelAtIndex(ctrX, ctrY, ctrZ);
+                    value = this.volume.getVoxelAtIndex(ctrX, ctrY, ctrZ, 0, true);
 
                     if (value > max) {
                         max = value;
