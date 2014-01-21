@@ -234,6 +234,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
 
     papayaMain.papayaToolbar.buildToolbar();
     papayaMain.papayaToolbar.updateImageButtons();
+    this.updateWindowTitle();
 
     papayaMain.loadNext();
 };
@@ -271,6 +272,8 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
     }
 
     this.loadingVolume = null;
+
+    this.updateWindowTitle();
     papayaMain.loadNext();
 };
 
@@ -1203,7 +1206,7 @@ papaya.viewer.Viewer.prototype.updateWindowTitle = function () {
         title = (title + " " + this.getZoomString());
     }
 
-    window.document.title = title;
+    papayaMain.papayaToolbar.updateTitleBar(title);
 };
 
 

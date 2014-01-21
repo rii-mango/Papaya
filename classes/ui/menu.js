@@ -9,7 +9,7 @@ papaya.ui = papaya.ui || {};
 
 
 
-papaya.ui.Menu = papaya.ui.Menu || function (label, icons, callback, dataSource, modifier, isImageButton) {
+papaya.ui.Menu = papaya.ui.Menu || function (label, icons, callback, dataSource, modifier, isImageButton, isLabel) {
     this.label = label;
     this.icons = icons;
     this.callback = callback;
@@ -26,6 +26,7 @@ papaya.ui.Menu = papaya.ui.Menu || function (label, icons, callback, dataSource,
     this.menuId = (this.label + "Menu").replace(/ /g, "_").replace("...", "_") + modifier;
     this.isRight = (icons !== null);
     this.isImageButton = isImageButton;
+    this.isLabel = isLabel;
 };
 
 
@@ -50,6 +51,8 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
         }
 
         html += "' src='" + this.icons[this.dataSource.getIndex(this.label)] + "' /></span>";
+    } else if (this.isLabel) {
+        html = "<span id='" + this.buttonId + "' class='unselectable menuTitle' style='position: relative; top: 5; left: 40%; display: inline-block;'>" + this.label + "</span>";
     } else {
         html = "<span id='" + this.buttonId + "' class='unselectable menuLabel'>" + this.label + "</span>";
     }
@@ -88,7 +91,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
         buttonImgHtml.mouseup(function () {
             $(this).css({ 'border': '2px outset lightgray' });
         });
-    } else {
+    } else if (!this.isLabel) {
         buttonHtml.hover(function () {$(this).toggleClass('menuButtonHover'); });
     }
 

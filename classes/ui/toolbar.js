@@ -9,7 +9,9 @@ papaya.ui = papaya.ui || {};
 
 var papayaLoadableImages = papayaLoadableImages || [];
 
-papaya.ui.Toolbar = papaya.ui.Toolbar || function () {};
+papaya.ui.Toolbar = papaya.ui.Toolbar || function () {
+    this.titleBarId = null;
+};
 
 
 
@@ -34,6 +36,7 @@ papaya.ui.Toolbar.MENU_DATA = {
                 {"label": "Preferences", "action": "Preferences"}
             ]
             },
+        {"label": "", "icons": null, "labelOnly": "true" },
         {"label": "SPACE", "icons": [papaya.ui.Toolbar.ICON_IMAGESPACE, papaya.ui.Toolbar.ICON_WORLDSPACE], "items": [] }
     ]
 };
@@ -76,7 +79,7 @@ papaya.ui.Toolbar.IMAGE_INFO_DATA = {
 
 
 papaya.ui.Toolbar.prototype.buildToolbar = function () {
-    var ctr;
+    var ctr, menu;
 
     $(".menuIcon").remove();
     $(".menuLabel").remove();
@@ -84,7 +87,11 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
     this.buildOpenMenuItems();
 
     for (ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA.menus.length; ctr += 1) {
-        this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, papayaMain.papayaViewer, null, false);
+        menu = this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, papayaMain.papayaViewer, null, false);
+
+        if (papaya.ui.Toolbar.MENU_DATA.menus[ctr].labelOnly) {
+            this.titleBarId = menu.buttonId;
+        }
     }
 
     this.buildAtlasMenu();
@@ -96,7 +103,7 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
 papaya.ui.Toolbar.prototype.buildAtlasMenu = function () {
     if (papaya.data) {
         if (papaya.data.Atlas) {
-            var items = papaya.ui.Toolbar.MENU_DATA.menus[2].items;
+            var items = papaya.ui.Toolbar.MENU_DATA.menus[papaya.ui.Toolbar.MENU_DATA.menus.length - 1].items;
 
             items[0] = {"label": papaya.data.Atlas.labels.atlas.header.name, "action": "AtlasChanged-" + papaya.data.Atlas.labels.atlas.header.name, "type": "checkbox", "method": "isUsingAtlas"};
 
@@ -175,7 +182,7 @@ papaya.ui.Toolbar.prototype.menuContains = function (menuItems, name) {
 papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, dataSource, modifier, imageButton) {
     var menu, items;
 
-    menu = new papaya.ui.Menu(menuData.label, menuData.icons, bind(this, this.doAction), papayaMain.papayaViewer, modifier, imageButton);
+    menu = new papaya.ui.Menu(menuData.label, menuData.icons, bind(this, this.doAction), papayaMain.papayaViewer, modifier, imageButton, menuData.labelOnly);
 
     if (topLevelButtonId) {
         menu.setMenuButton(topLevelButtonId);
@@ -316,4 +323,10 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             papayaMain.papayaViewer.drawViewer(true);
         }
     }
+};
+
+
+
+papaya.ui.Toolbar.prototype.updateTitleBar = function (title) {
+    document.getElementById(this.titleBarId).innerHTML = title;
 };
