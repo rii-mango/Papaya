@@ -112,6 +112,7 @@ papaya.viewer.Viewer.UPDATE_TIMER_INTERVAL = 250;
 papaya.viewer.Viewer.ZOOM_FACTOR_MAX = 10.0;
 papaya.viewer.Viewer.ZOOM_FACTOR_MIN = 1.0;
 papaya.viewer.Viewer.MOUSE_SCROLL_THRESHLD = 0.25;
+papaya.viewer.Viewer.TITLE_MAX_LENGTH = 30;
 
 
 
@@ -1138,9 +1139,13 @@ papaya.viewer.Viewer.prototype.getFilename = function (index) {
 
 
 papaya.viewer.Viewer.prototype.getNiceFilename = function (index) {
-    var filename = this.screenVolumes[index].volume.fileName.replace(".nii", "").replace(".gz", "");
-    if (filename.length > 15) {
-        filename = filename.substr(0, 12) + "...";
+    var truncateText, filename;
+
+    truncateText = "...";
+    filename = this.screenVolumes[index].volume.fileName.replace(".nii", "").replace(".gz", "");
+
+    if (filename.length > papaya.viewer.Viewer.TITLE_MAX_LENGTH) {
+        filename = filename.substr(0, papaya.viewer.Viewer.TITLE_MAX_LENGTH - truncateText.length) + truncateText;
     }
 
     return filename;
