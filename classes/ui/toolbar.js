@@ -9,7 +9,9 @@ papaya.ui = papaya.ui || {};
 
 var papayaLoadableImages = papayaLoadableImages || [];
 
-papaya.ui.Toolbar = papaya.ui.Toolbar || function () {};
+papaya.ui.Toolbar = papaya.ui.Toolbar || function () {
+    this.imageMenus = null;
+};
 
 
 
@@ -231,6 +233,7 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
     var ctr, screenVol, dataUrl, data;
 
     $(".imageButton").remove();
+    this.imageMenus = [];
 
     for (ctr = papayaMain.papayaViewer.screenVolumes.length - 1; ctr >= 0; ctr -= 1) {
         screenVol = papayaMain.papayaViewer.screenVolumes[ctr];
@@ -243,7 +246,7 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
         };
         data.menus[0].items = papaya.ui.Toolbar.IMAGE_MENU_DATA.items;
 
-        this.buildMenu(data.menus[0], null, screenVol, ctr.toString(), true);
+        this.imageMenus[ctr] = (this.buildMenu(data.menus[0], null, screenVol, ctr.toString(), true));
     }
 };
 
@@ -323,4 +326,16 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
 
 papaya.ui.Toolbar.prototype.updateTitleBar = function (title) {
     document.getElementById(PAPAYA_TITLEBAR_ID).innerHTML = title;
+};
+
+
+
+papaya.ui.Toolbar.prototype.showImageMenu = function (index) {
+    this.imageMenus[index].showMenu();
+};
+
+
+
+papaya.ui.Toolbar.prototype.updateImageMenuRange = function (index, min, max) {
+    this.imageMenus[index].updateRangeItem(min, max);
 };

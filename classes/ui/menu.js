@@ -15,6 +15,7 @@ papaya.ui.Menu = papaya.ui.Menu || function (label, icons, callback, dataSource,
     this.callback = callback;
     this.dataSource = dataSource;
     this.items = [];
+    this.rangeItem = null;
 
     if ((modifier === undefined) || (modifier === null)) {
         this.modifier = "";
@@ -127,6 +128,10 @@ papaya.ui.Menu.prototype.buildMenu = function () {
 
 
 papaya.ui.Menu.prototype.addMenuItem = function (menuitem) {
+    if (menuitem instanceof papaya.ui.MenuItemRange) {
+        this.rangeItem = menuitem;
+    }
+
     this.items.push(menuitem);
 };
 
@@ -159,5 +164,14 @@ papaya.ui.Menu.prototype.showMenu = function () {
     } else {
         this.callback(this.buttonId);
         $("#" + this.buttonId + " > img").attr("src", this.icons[this.dataSource.getIndex(this.label)]);
+    }
+};
+
+
+
+papaya.ui.Menu.prototype.updateRangeItem = function (min, max) {
+    if (this.rangeItem) {
+        $("#" + this.rangeItem.minId).val(min);
+        $("#" + this.rangeItem.maxId).val(max);
     }
 };

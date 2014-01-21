@@ -847,6 +847,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
             if ((me.which === 3) || this.isControlKeyDown) {
                 this.isWindowControl = true;
+                papayaMain.papayaToolbar.showImageMenu(this.getCurrentScreenVolIndex());
             } else if (this.isAltKeyDown && this.selectedSlice) {
                 this.isZoomMode = true;
 
@@ -1003,6 +1004,7 @@ papaya.viewer.Viewer.prototype.windowLevelChanged = function (contrastChange, br
     }
 
     this.currentScreenVolume.setScreenRange(minFinal, maxFinal);
+    papayaMain.papayaToolbar.updateImageMenuRange(this.getCurrentScreenVolIndex(), parseFloat(minFinal.toPrecision(7)), parseFloat(maxFinal.toPrecision(7)));
     this.drawViewer(true);
 };
 
