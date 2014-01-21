@@ -2,7 +2,7 @@
 /*jslint browser: true, node: true */
 /*global $, alert, PAPAYA_CONTAINER_ID, PAPAYA_VIEWER_ID, PAPAYA_TOOLBAR_ID, PAPAYA_DISPLAY_ID, PAPAYA_MINIMUM_SIZE,
 PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP, checkForBrowserCompatibility, getQueryParams,
-deref, resetComponents */
+deref, resetComponents, PAPAYA_TITLEBAR_ID */
 
 "use strict";
 
@@ -114,12 +114,14 @@ function resizeViewerComponents(resize) {
     var dims = getViewerDimensions(),
         toolbarHtml = $("#" + PAPAYA_TOOLBAR_ID),
         viewerHtml = $("#" + PAPAYA_VIEWER_ID),
-        displayHtml = $("#" + PAPAYA_DISPLAY_ID);
+        displayHtml = $("#" + PAPAYA_DISPLAY_ID),
+        titlebarHtml = $("#" + PAPAYA_TITLEBAR_ID);
 
     toolbarHtml.css({paddingLeft: dims.widthPadding + "px"});
     toolbarHtml.css({paddingBottom: PAPAYA_SPACING + "px"});
     toolbarHtml.css({width: dims.width + "px"});
     toolbarHtml.css({height: papaya.ui.Toolbar.SIZE + "px"});
+    titlebarHtml.css({width: dims.width + "px"});
 
     viewerHtml.css({height: "100%"});
     viewerHtml.css({width: dims.width + "px"});

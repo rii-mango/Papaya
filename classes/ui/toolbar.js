@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, papayaMain, fullyQualifiedVariableExists, PAPAYA_CONTAINER_ID, papayaParams */
+/*global $, bind, papayaMain, fullyQualifiedVariableExists, PAPAYA_CONTAINER_ID, papayaParams, PAPAYA_TITLEBAR_ID */
 
 "use strict";
 
@@ -9,9 +9,7 @@ papaya.ui = papaya.ui || {};
 
 var papayaLoadableImages = papayaLoadableImages || [];
 
-papaya.ui.Toolbar = papaya.ui.Toolbar || function () {
-    this.titleBarId = null;
-};
+papaya.ui.Toolbar = papaya.ui.Toolbar || function () {};
 
 
 
@@ -79,7 +77,7 @@ papaya.ui.Toolbar.IMAGE_INFO_DATA = {
 
 
 papaya.ui.Toolbar.prototype.buildToolbar = function () {
-    var ctr, menu;
+    var ctr;
 
     $(".menuIcon").remove();
     $(".menuLabel").remove();
@@ -87,11 +85,7 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
     this.buildOpenMenuItems();
 
     for (ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA.menus.length; ctr += 1) {
-        menu = this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, papayaMain.papayaViewer, null, false);
-
-        if (papaya.ui.Toolbar.MENU_DATA.menus[ctr].labelOnly) {
-            this.titleBarId = menu.buttonId;
-        }
+        this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, papayaMain.papayaViewer, null, false);
     }
 
     this.buildAtlasMenu();
@@ -328,5 +322,5 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
 
 
 papaya.ui.Toolbar.prototype.updateTitleBar = function (title) {
-    document.getElementById(this.titleBarId).innerHTML = title;
+    document.getElementById(PAPAYA_TITLEBAR_ID).innerHTML = title;
 };

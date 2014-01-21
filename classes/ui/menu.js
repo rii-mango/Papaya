@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, showMenu, papayaMain, PAPAYA_TOOLBAR_ID */
+/*global $, bind, showMenu, papayaMain, PAPAYA_TOOLBAR_ID, PAPAYA_TITLEBAR_ID */
 
 "use strict";
 
@@ -9,8 +9,8 @@ papaya.ui = papaya.ui || {};
 
 
 
-papaya.ui.Menu = papaya.ui.Menu || function (label, icons, callback, dataSource, modifier, isImageButton, isLabel) {
-    this.label = label;
+papaya.ui.Menu = papaya.ui.Menu || function (label, icons, callback, dataSource, modifier, isImageButton, isTitleBar) {
+    this.label = isTitleBar ? PAPAYA_TITLEBAR_ID : label;
     this.icons = icons;
     this.callback = callback;
     this.dataSource = dataSource;
@@ -22,21 +22,28 @@ papaya.ui.Menu = papaya.ui.Menu || function (label, icons, callback, dataSource,
         this.modifier = modifier;
     }
 
-    this.buttonId = this.label.replace(/ /g, "_").replace("...", "_") + modifier;
-    this.menuId = (this.label + "Menu").replace(/ /g, "_").replace("...", "_") + modifier;
+    this.buttonId = this.label.replace(/ /g, "_").replace("...", "_") + (modifier || "");
+    this.menuId = (this.label + "Menu").replace(/ /g, "_").replace("...", "_") + (modifier || "");
     this.isRight = (icons !== null);
     this.isImageButton = isImageButton;
-    this.isLabel = isLabel;
+    this.isTitleBar = isTitleBar;
+
+    if (this.isTitleBar) {
+        this.label = "";
+    }
 };
 
 
 
 papaya.ui.Menu.prototype.buildMenuButton = function () {
-    var html, menu, buttonHtml, buttonHtmlId, buttonImgHtml, buttonImgHtmlId;
+    var html, menu, buttonHtml, buttonHtmlId, buttonImgHtml, buttonImgHtmlId, toolbarId, toolbarHtml;
 
     buttonHtmlId = "#" + this.buttonId;
     buttonHtml = $(buttonHtmlId);
     buttonHtml.remove();
+
+    toolbarId = "#" + PAPAYA_TOOLBAR_ID;
+    toolbarHtml = $(toolbarId);
 
     html = null;
 
@@ -51,13 +58,13 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
         }
 
         html += "' src='" + this.icons[this.dataSource.getIndex(this.label)] + "' /></span>";
-    } else if (this.isLabel) {
-        html = "<span id='" + this.buttonId + "' class='unselectable menuTitle' style='position: relative; top: 5; left: 40%; display: inline-block;'>" + this.label + "</span>";
+    } else if (this.isTitleBar) {
+        html = "<div id='" + this.buttonId + "' class='unselectable menuTitle' style='position:absolute;top:20px;width:" + toolbarHtml.width() + "px;text-align:center;'>" + this.label + "</div>";
     } else {
         html = "<span id='" + this.buttonId + "' class='unselectable menuLabel'>" + this.label + "</span>";
     }
 
-    $("#" + PAPAYA_TOOLBAR_ID).append(html);
+    toolbarHtml.append(html);
     buttonHtml = $(buttonHtmlId);
     buttonHtml.click(bind(this, this.showMenu));
 
@@ -91,7 +98,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
         buttonImgHtml.mouseup(function () {
             $(this).css({ 'border': '2px outset lightgray' });
         });
-    } else if (!this.isLabel) {
+    } else if (!this.isTitleBar) {
         buttonHtml.hover(function () {$(this).toggleClass('menuButtonHover'); });
     }
 
