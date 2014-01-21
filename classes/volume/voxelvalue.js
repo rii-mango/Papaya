@@ -39,7 +39,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ,
         return (this.getVoxelAtOffset(this.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ), timepoint) * this.dataScaleSlope) + this.dataScaleIntercept;
     }
 
-    return (this.getVoxelAtIndexLinear(ctrX, ctrY, ctrZ, timepoint) * this.dataScaleSlope) + this.dataScaleIntercept;
+    return this.getVoxelAtIndexLinear(ctrX, ctrY, ctrZ, timepoint);
 };
 
 
@@ -208,7 +208,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc,
 
         value = tempVal1 + tempVal2;
     } else { // if(!interpolateX && !interpolateY && !interpolateZ)
-        value = this.getVoxelAtOffset(this.orientation.convertIndexToOffset(xLoc, yLoc, zLoc), timepoint);
+        value = (this.getVoxelAtOffset(this.orientation.convertIndexToOffset(xLoc, yLoc, zLoc), timepoint) * this.dataScaleSlope) + this.dataScaleIntercept;
     }
 
     return value;
