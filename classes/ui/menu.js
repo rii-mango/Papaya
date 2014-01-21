@@ -59,7 +59,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
 
         html += "' src='" + this.icons[this.dataSource.getIndex(this.label)] + "' /></span>";
     } else if (this.isTitleBar) {
-        html = "<div id='" + this.buttonId + "' class='unselectable menuTitle' style='position:absolute;top:20px;width:" + toolbarHtml.width() + "px;text-align:center;'>" + this.label + "</div>";
+        html = "<div id='" + this.buttonId + "' class='unselectable menuTitle' style='z-index:-1;position:absolute;top:20px;width:" + toolbarHtml.width() + "px;text-align:center;'>" + this.label + "</div>";
     } else {
         html = "<span id='" + this.buttonId + "' class='unselectable menuLabel'>" + this.label + "</span>";
     }
