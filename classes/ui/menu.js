@@ -9,9 +9,10 @@ papaya.ui = papaya.ui || {};
 
 
 
-papaya.ui.Menu = papaya.ui.Menu || function (label, icons, callback, dataSource, modifier, isImageButton, isTitleBar) {
-    this.label = isTitleBar ? PAPAYA_TITLEBAR_ID : label;
-    this.icons = icons;
+papaya.ui.Menu = papaya.ui.Menu || function (menuData, callback, dataSource, modifier) {
+    this.isTitleBar = menuData.titleBar;
+    this.label = this.isTitleBar ? PAPAYA_TITLEBAR_ID : menuData.label;
+    this.icons = menuData.icons;
     this.callback = callback;
     this.dataSource = dataSource;
     this.items = [];
@@ -25,11 +26,10 @@ papaya.ui.Menu = papaya.ui.Menu || function (label, icons, callback, dataSource,
 
     this.buttonId = this.label.replace(/ /g, "_").replace("...", "_") + (modifier || "");
     this.menuId = (this.label + "Menu").replace(/ /g, "_").replace("...", "_") + (modifier || "");
-    this.isRight = (icons !== null);
-    this.isImageButton = isImageButton;
-    this.isTitleBar = isTitleBar;
+    this.isRight = (menuData.icons !== null);
+    this.isImageButton = menuData.imageButton;
 
-    if (this.isTitleBar) {
+    if (this.isTitleBar) {  // if titleBar, clear label after IDs are constructed
         this.label = "";
     }
 };

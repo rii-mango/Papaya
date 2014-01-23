@@ -36,7 +36,7 @@ papaya.ui.Toolbar.MENU_DATA = {
                 {"label": "Preferences", "action": "Preferences"}
             ]
             },
-        {"label": "", "icons": null, "labelOnly": "true" },
+        {"label": "", "icons": null, "titleBar": "true" },
         {"label": "SPACE", "icons": [papaya.ui.Toolbar.ICON_IMAGESPACE, papaya.ui.Toolbar.ICON_WORLDSPACE], "items": [] }
     ]
 };
@@ -87,7 +87,7 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
     this.buildOpenMenuItems();
 
     for (ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA.menus.length; ctr += 1) {
-        this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, papayaMain.papayaViewer, null, false);
+        this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, papayaMain.papayaViewer, null);
     }
 
     this.buildAtlasMenu();
@@ -175,10 +175,10 @@ papaya.ui.Toolbar.prototype.menuContains = function (menuItems, name) {
 
 
 
-papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, dataSource, modifier, imageButton) {
+papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, dataSource, modifier) {
     var menu, items;
 
-    menu = new papaya.ui.Menu(menuData.label, menuData.icons, bind(this, this.doAction), papayaMain.papayaViewer, modifier, imageButton, menuData.labelOnly);
+    menu = new papaya.ui.Menu(menuData, bind(this, this.doAction), papayaMain.papayaViewer, modifier);
 
     if (topLevelButtonId) {
         menu.setMenuButton(topLevelButtonId);
@@ -188,7 +188,7 @@ papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, da
 
     items = menuData.items;
     if (items) {
-        this.buildMenuItems(menu, items, topLevelButtonId, dataSource, modifier, imageButton);
+        this.buildMenuItems(menu, items, topLevelButtonId, dataSource, modifier);
     }
 
     return menu;
@@ -196,7 +196,7 @@ papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, da
 
 
 
-papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelButtonId, dataSource, modifier, imageButton) {
+papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelButtonId, dataSource, modifier) {
     var ctrItems, item, menu2;
 
     if (modifier === undefined) {
@@ -221,7 +221,7 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
         menu.addMenuItem(item);
 
         if (itemData[ctrItems].items) {
-            menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier, imageButton);
+            menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier);
             item.callback = bind(menu2, menu2.showMenu);
         }
     }
@@ -241,12 +241,12 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
 
         data = {
             "menus" : [
-                {"label": "ImageButton", "icons": [dataUrl], "items": null}
+                {"label": "ImageButton", "icons": [dataUrl], "items": null, "imageButton": true}
             ]
         };
         data.menus[0].items = papaya.ui.Toolbar.IMAGE_MENU_DATA.items;
 
-        this.imageMenus[ctr] = (this.buildMenu(data.menus[0], null, screenVol, ctr.toString(), true));
+        this.imageMenus[ctr] = (this.buildMenu(data.menus[0], null, screenVol, ctr.toString()));
     }
 };
 
