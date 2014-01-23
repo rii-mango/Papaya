@@ -37,7 +37,7 @@ papaya.ui.Toolbar.MENU_DATA = {
             ]
             },
         {"label": "", "icons": null, "titleBar": "true" },
-        {"label": "SPACE", "icons": [papaya.ui.Toolbar.ICON_IMAGESPACE, papaya.ui.Toolbar.ICON_WORLDSPACE], "items": [] }
+        {"label": "SPACE", "icons": [papaya.ui.Toolbar.ICON_IMAGESPACE, papaya.ui.Toolbar.ICON_WORLDSPACE], "items": [], "menuOnHover": true }
     ]
 };
 

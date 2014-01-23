@@ -17,6 +17,7 @@ papaya.ui.Menu = papaya.ui.Menu || function (menuData, callback, dataSource, mod
     this.dataSource = dataSource;
     this.items = [];
     this.rangeItem = null;
+    this.menuOnHover = menuData.menuOnHover;
 
     if ((modifier === undefined) || (modifier === null)) {
         this.modifier = "";
@@ -67,14 +68,18 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
 
     toolbarHtml.append(html);
     buttonHtml = $(buttonHtmlId);
-    buttonHtml.click(bind(this, this.showMenu));
+    buttonImgHtmlId = "#" + this.buttonId + " > img";
+    buttonImgHtml = $(buttonImgHtmlId);
+
+    if (this.menuOnHover) {
+        buttonImgHtml.mouseover(bind(this, this.showMenu));
+    }
+
+    buttonHtml.click(bind(this, this.doClick));
 
     menu = this;
 
     if (this.icons) {
-        buttonImgHtmlId = "#" + this.buttonId + " > img";
-        buttonImgHtml = $(buttonImgHtmlId);
-
         buttonImgHtml.hover(
             function () {
                 if (menu.icons.length > 1) {
@@ -149,24 +154,33 @@ papaya.ui.Menu.prototype.showMenu = function () {
         menuHtml.remove();
 
         if (!isShowing) {
-            this.callback(this.buttonId);
-
-            if (this.icons) {
-                $("#" + this.buttonId + " > img").attr("src", this.icons[this.dataSource.getIndex(this.label)]);
-            }
-
             button = $("#" + this.buttonId);
             this.buildMenu();
             menuHtml = $(menuHtmlId);
             menuHtml.hide();
             showMenu(papayaMain.papayaViewer, button[0], menuHtml[0], this.isRight);
         }
-    } else {
-        this.callback(this.buttonId);
-        $("#" + this.buttonId + " > img").attr("src", this.icons[this.dataSource.getIndex(this.label)]);
     }
 };
 
+
+
+papaya.ui.Menu.prototype.doClick = function () {
+    var isShowing, menuHtml, menuHtmlId;
+    menuHtmlId = "#" + this.menuId;
+    menuHtml = $(menuHtmlId);
+    isShowing = menuHtml.is(":visible");
+
+    this.callback(this.buttonId);
+
+    if (this.icons) {
+        $("#" + this.buttonId + " > img").attr("src", this.icons[this.dataSource.getIndex(this.label)]);
+    }
+
+    if (!this.menuOnHover && !isShowing) {
+        this.showMenu();
+    }
+};
 
 
 papaya.ui.Menu.prototype.updateRangeItem = function (min, max) {
