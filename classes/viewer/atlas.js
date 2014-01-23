@@ -67,7 +67,6 @@ papaya.viewer.Atlas.prototype.readFinished = function () {
     this.parseLabels();
     this.parseDisplayColumns();
     this.maxLabels = this.findMaxLabelParts();
-    this.currentAtlas = this.name;
     this.probabilistic = this.atlasLabelData.atlas.header.type
         && ((this.atlasLabelData.atlas.header.type.toLowerCase() === papaya.viewer.Atlas.PROBABILISTIC[0])
             || (this.atlasLabelData.atlas.header.type.toLowerCase() === papaya.viewer.Atlas.PROBABILISTIC[1])
@@ -81,6 +80,7 @@ papaya.viewer.Atlas.prototype.readFinished = function () {
     }
 
     this.name = this.atlasLabelData.atlas.header.name;
+    this.currentAtlas = this.name;
 
     var params = papayaParams.atlas;
     if (params) {
