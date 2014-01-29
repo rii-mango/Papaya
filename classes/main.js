@@ -19,12 +19,12 @@ var papayaLoadableImages = papayaLoadableImages || [];
 papaya.Main = papaya.Main || function () {
     this.loadingImageIndex = 0;
     this.nestedViewer = false;
-    resetComponents();
+    this.resetComponents();
 };
 
 
 
-function resetComponents() {
+papaya.Main.prototype.resetComponents = function() {
     var containerHtml = $("#" + PAPAYA_CONTAINER_ID);
 
     containerHtml.css({height: "auto"});
@@ -37,26 +37,14 @@ function resetComponents() {
 
 
 
-function isShowingToolbar() {
-    return $("#" + PAPAYA_TOOLBAR_ID).length;
+papaya.Main.prototype.isKioskMode = function() {
+    return $("#" + PAPAYA_TOOLBAR_ID).length === 0;
 }
 
 
 
-function isShowingDisplay() {
-    return $("#" + PAPAYA_DISPLAY_ID).length;
-}
-
-
-
-function isShowingViewer() {
-    return $("#" + PAPAYA_VIEWER_ID).length;
-}
-
-
-
-function getViewerDimensions() {
-    var numAdditionalSections = 1,
+papaya.Main.prototype.getViewerDimensions = function() {
+    var numAdditionalSections = 2,
         parentHeight = PAPAYA_MINIMUM_SIZE,
         parentWidth = PAPAYA_MINIMUM_SIZE,
         containerHtml = $("#" + PAPAYA_CONTAINER_ID),
@@ -65,18 +53,14 @@ function getViewerDimensions() {
         widthPadding,
         dims;
 
-    if (isShowingDisplay()) {
+    if (!this.isKioskMode()) {
         numAdditionalSections += 1;
     }
 
-    if (isShowingToolbar()) {
-        numAdditionalSections += 1;
-    }
-
-    if (containerHtml.parent().get(0).tagName.toLowerCase() === "div") {
+    if (this.nestedViewer) {
         parentHeight = containerHtml.parent().height();
         parentWidth = containerHtml.parent().width();
-    } else if (containerHtml.parent().get(0).tagName.toLowerCase() === "body") {
+    } else {
         parentHeight = window.innerHeight;
         parentWidth = window.innerWidth;
     }
@@ -109,10 +93,10 @@ function getViewerDimensions() {
 
 
 
-function resizeViewerComponents(resize) {
+papaya.Main.prototype.resizeViewerComponents = function(resize) {
     papayaMain.papayaToolbar.closeAllMenus();
 
-    var dims = getViewerDimensions(),
+    var dims = this.getViewerDimensions(),
         toolbarHtml = $("#" + PAPAYA_TOOLBAR_ID),
         viewerHtml = $("#" + PAPAYA_VIEWER_ID),
         displayHtml = $("#" + PAPAYA_DISPLAY_ID),
@@ -154,28 +138,21 @@ function resizeViewerComponents(resize) {
 
 
 papaya.Main.prototype.buildViewer = function (params) {
-    var viewerHtml,
-        dims;
+    var viewerHtml, dims;
 
-    if (isShowingViewer()) {
-        viewerHtml = $("#" + PAPAYA_VIEWER_ID);
-        viewerHtml.html("");  // remove noscript message
-        dims = getViewerDimensions();
-        this.papayaViewer = new papaya.viewer.Viewer(dims.width, dims.height, params);
-        viewerHtml.append($(this.papayaViewer.canvas));
-    } else {
-        alert("You are missing a viewer div!");
-    }
+    viewerHtml = $("#" + PAPAYA_VIEWER_ID);
+    viewerHtml.html("");  // remove noscript message
+    dims = this.getViewerDimensions();
+    this.papayaViewer = new papaya.viewer.Viewer(dims.width, dims.height, params);
+    viewerHtml.append($(this.papayaViewer.canvas));
 };
 
 
 
 papaya.Main.prototype.buildDisplay = function () {
-    if (isShowingDisplay()) {
-        var dims = getViewerDimensions();
-        this.papayaDisplay = new papaya.viewer.Display(dims.width, PAPAYA_SECTION_HEIGHT);
-        $("#" + PAPAYA_DISPLAY_ID).append($(this.papayaDisplay.canvas));
-    }
+    var dims = this.getViewerDimensions();
+    this.papayaDisplay = new papaya.viewer.Display(dims.width, PAPAYA_SECTION_HEIGHT);
+    $("#" + PAPAYA_DISPLAY_ID).append($(this.papayaDisplay.canvas));
 };
 
 
@@ -299,7 +276,7 @@ function main() {
             papayaMain.papayaViewer.loadImage(papayaParams.encodedImages[0], false, true);
         }
 
-        resizeViewerComponents(false);
+        papayaMain.resizeViewerComponents(false);
     }
 }
 
@@ -310,5 +287,5 @@ window.onload = main;
 
 
 window.onresize = function () {
-    resizeViewerComponents(true);
+    papayaMain.resizeViewerComponents(true);
 };
