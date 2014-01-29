@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, fullyQualifiedVariableExists, PAPAYA_CONTAINER_ID, PAPAYA_TITLEBAR_ID */
+/*global $, bind, fullyQualifiedVariableExists, PAPAYA_DEFAULT_CONTAINER_ID, PAPAYA_DEFAULT_TITLEBAR_ID */
 
 "use strict";
 
@@ -11,7 +11,7 @@ var papayaLoadableImages = papayaLoadableImages || [];
 
 papaya.ui.Toolbar = papaya.ui.Toolbar || function (container) {
     this.container = container;
-    this.viewer = container.papayaViewer;
+    this.viewer = container.viewer;
     this.imageMenus = null;
 };
 
@@ -265,7 +265,7 @@ papaya.ui.Toolbar.prototype.closeAllMenus = function () {
     modalDialogHtml.hide(100);
     modalDialogHtml.remove();
 
-    $("#" + PAPAYA_CONTAINER_ID).removeClass("modalBackground");
+    $("#" + PAPAYA_DEFAULT_CONTAINER_ID).removeClass("modalBackground");
 };
 
 
@@ -327,7 +327,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
 
 
 papaya.ui.Toolbar.prototype.updateTitleBar = function (title) {
-    var elem = document.getElementById(PAPAYA_TITLEBAR_ID);
+    var elem = document.getElementById(PAPAYA_DEFAULT_TITLEBAR_ID);
 
     if (elem) {
         elem.innerHTML = title;

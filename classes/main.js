@@ -1,8 +1,8 @@
 
 /*jslint browser: true, node: true */
-/*global $, alert, PAPAYA_CONTAINER_ID, PAPAYA_VIEWER_ID, PAPAYA_TOOLBAR_ID, PAPAYA_DISPLAY_ID, PAPAYA_MINIMUM_SIZE,
+/*global $, alert, PAPAYA_DEFAULT_CONTAINER_ID, PAPAYA_DEFAULT_VIEWER_ID, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_DISPLAY_ID, PAPAYA_MINIMUM_SIZE,
 PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP, checkForBrowserCompatibility, getQueryParams,
-deref, resetComponents, PAPAYA_TITLEBAR_ID */
+deref, resetComponents, PAPAYA_DEFAULT_TITLEBAR_ID */
 
 "use strict";
 
@@ -13,9 +13,9 @@ var papayaLoadableImages = papayaLoadableImages || [];
 
 
 papaya.Container = papaya.Container || function () {
-    this.papayaViewer = null;
-    this.papayaDisplay = null;
-    this.papayaToolbar = null;
+    this.viewer = null;
+    this.display = null;
+    this.toolbar = null;
     this.preferences = null;
     this.params = [];
     this.loadingImageIndex = 0;
@@ -26,20 +26,20 @@ papaya.Container = papaya.Container || function () {
 
 
 papaya.Container.prototype.resetComponents = function() {
-    var containerHtml = $("#" + PAPAYA_CONTAINER_ID);
+    var containerHtml = $("#" + PAPAYA_DEFAULT_CONTAINER_ID);
 
     containerHtml.css({height: "auto"});
     containerHtml.css({width: "auto"});
     containerHtml.css({margin: "auto"});
 
-    $("#" + PAPAYA_VIEWER_ID).removeClass("checkForJS");
+    $("#" + PAPAYA_DEFAULT_VIEWER_ID).removeClass("checkForJS");
     $('head').append("<style>div#papayaViewer:before{ content:'' }</style>");
 };
 
 
 
 papaya.Container.prototype.isKioskMode = function() {
-    return $("#" + PAPAYA_TOOLBAR_ID).length === 0;
+    return $("#" + PAPAYA_DEFAULT_TOOLBAR_ID).length === 0;
 };
 
 
@@ -48,7 +48,7 @@ papaya.Container.prototype.getViewerDimensions = function() {
     var numAdditionalSections = 2,
         parentHeight = PAPAYA_MINIMUM_SIZE,
         parentWidth = PAPAYA_MINIMUM_SIZE,
-        containerHtml = $("#" + PAPAYA_CONTAINER_ID),
+        containerHtml = $("#" + PAPAYA_DEFAULT_CONTAINER_ID),
         height,
         width,
         widthPadding,
@@ -95,13 +95,13 @@ papaya.Container.prototype.getViewerDimensions = function() {
 
 
 papaya.Container.prototype.resizeViewerComponents = function(resize) {
-    this.papayaToolbar.closeAllMenus();
+    this.toolbar.closeAllMenus();
 
     var dims = this.getViewerDimensions(),
-        toolbarHtml = $("#" + PAPAYA_TOOLBAR_ID),
-        viewerHtml = $("#" + PAPAYA_VIEWER_ID),
-        displayHtml = $("#" + PAPAYA_DISPLAY_ID),
-        titlebarHtml = $("#" + PAPAYA_TITLEBAR_ID);
+        toolbarHtml = $("#" + PAPAYA_DEFAULT_TOOLBAR_ID),
+        viewerHtml = $("#" + PAPAYA_DEFAULT_VIEWER_ID),
+        displayHtml = $("#" + PAPAYA_DEFAULT_DISPLAY_ID),
+        titlebarHtml = $("#" + PAPAYA_DEFAULT_TITLEBAR_ID);
 
     toolbarHtml.css({paddingLeft: dims.widthPadding + "px"});
     toolbarHtml.css({paddingBottom: PAPAYA_SPACING + "px"});
@@ -114,24 +114,24 @@ papaya.Container.prototype.resizeViewerComponents = function(resize) {
     viewerHtml.css({paddingLeft: dims.widthPadding + "px"});
 
     if (resize) {
-        this.papayaViewer.resizeViewer(dims);
+        this.viewer.resizeViewer(dims);
     }
 
-    if (this.papayaDisplay) {
+    if (this.display) {
         displayHtml.css({height: PAPAYA_SECTION_HEIGHT + "px"});
         displayHtml.css({paddingLeft: dims.widthPadding + "px"});
-        this.papayaDisplay.canvas.width = dims.width;
+        this.display.canvas.width = dims.width;
     }
 
-    $("#" + PAPAYA_CONTAINER_ID).css({paddingTop: dims.heightPadding + "px"});
+    $("#" + PAPAYA_DEFAULT_CONTAINER_ID).css({paddingTop: dims.heightPadding + "px"});
 
-    if (this.papayaViewer.initialized) {
-        this.papayaViewer.drawViewer(true);
+    if (this.viewer.initialized) {
+        this.viewer.drawViewer(true);
     } else {
-        this.papayaViewer.drawEmptyViewer();
+        this.viewer.drawEmptyViewer();
 
-        if (this.papayaDisplay) {
-            this.papayaDisplay.drawEmptyDisplay();
+        if (this.display) {
+            this.display.drawEmptyDisplay();
         }
     }
 };
@@ -141,56 +141,56 @@ papaya.Container.prototype.resizeViewerComponents = function(resize) {
 papaya.Container.prototype.buildViewer = function (params) {
     var viewerHtml, dims;
 
-    viewerHtml = $("#" + PAPAYA_VIEWER_ID);
+    viewerHtml = $("#" + PAPAYA_DEFAULT_VIEWER_ID);
     viewerHtml.html("");  // remove noscript message
     dims = this.getViewerDimensions();
-    this.papayaViewer = new papaya.viewer.Viewer(this, dims.width, dims.height, params);
-    viewerHtml.append($(this.papayaViewer.canvas));
-    this.preferences.viewer = this.papayaViewer;
+    this.viewer= new papaya.viewer.Viewer(this, dims.width, dims.height, params);
+    viewerHtml.append($(this.viewer.canvas));
+    this.preferences.viewer = this.viewer;
 };
 
 
 
 papaya.Container.prototype.buildDisplay = function () {
     var dims = this.getViewerDimensions();
-    this.papayaDisplay = new papaya.viewer.Display(this, dims.width);
-    $("#" + PAPAYA_DISPLAY_ID).append($(this.papayaDisplay.canvas));
+    this.display = new papaya.viewer.Display(this, dims.width);
+    $("#" + PAPAYA_DEFAULT_DISPLAY_ID).append($(this.display.canvas));
 };
 
 
 
 papaya.Container.prototype.buildToolbar = function () {
-    this.papayaToolbar = new papaya.ui.Toolbar(this);
-    this.papayaToolbar.buildToolbar();
+    this.toolbar = new papaya.ui.Toolbar(this);
+    this.toolbar.buildToolbar();
 };
 
 
 
 papaya.Container.prototype.setUpDnD = function () {
     var container = this;
-    var containerHtml = $("#" + PAPAYA_CONTAINER_ID);
+    var containerHtml = $("#" + PAPAYA_DEFAULT_CONTAINER_ID);
 
     containerHtml[0].ondragover = function () {
-        container.papayaViewer.draggingOver = true;
-        if (!container.papayaViewer.initialized) {
-            container.papayaViewer.drawEmptyViewer();
+        container.viewer.draggingOver = true;
+        if (!container.viewer.initialized) {
+            container.viewer.drawEmptyViewer();
         }
 
         return false;
     };
 
     containerHtml[0].ondragleave = function () {
-        container.papayaViewer.draggingOver = false;
-        if (!container.papayaViewer.initialized) {
-            container.papayaViewer.drawEmptyViewer();
+        container.viewer.draggingOver = false;
+        if (!container.viewer.initialized) {
+            container.viewer.drawEmptyViewer();
         }
         return false;
     };
 
     containerHtml[0].ondragend = function () {
-        container.papayaViewer.draggingOver = false;
-        if (!container.papayaViewer.initialized) {
-            container.papayaViewer.drawEmptyViewer();
+        container.viewer.draggingOver = false;
+        if (!container.viewer.initialized) {
+            container.viewer.drawEmptyViewer();
         }
         return false;
     };
@@ -199,9 +199,9 @@ papaya.Container.prototype.setUpDnD = function () {
         e.preventDefault();
 
         if (e.dataTransfer.files.length > 1) {
-            container.papayaDisplay.drawError("Please drop one file at a time.");
+            container.display.drawError("Please drop one file at a time.");
         } else {
-            container.papayaViewer.loadImage(e.dataTransfer.files[0]);
+            container.viewer.loadImage(e.dataTransfer.files[0]);
         }
 
         return false;
@@ -215,11 +215,11 @@ papaya.Container.prototype.loadNext = function () {
 
     if (this.params.images) {
         if (this.loadingImageIndex < this.params.images.length) {
-            this.papayaViewer.loadImage(this.params.images[this.loadingImageIndex], true, false);
+            this.viewer.loadImage(this.params.images[this.loadingImageIndex], true, false);
         }
     } else if (this.params.encodedImages) {
         if (this.loadingImageIndex < this.params.encodedImages.length) {
-            this.papayaViewer.loadImage(this.params.encodedImages[this.loadingImageIndex], false, true);
+            this.viewer.loadImage(this.params.encodedImages[this.loadingImageIndex], false, true);
         }
     }
 };
@@ -240,11 +240,34 @@ papaya.Container.prototype.findLoadableImage = function (name) {
 
 
 
+function buildContainerHTML(containerHTML) {
+    var viewerHTML = containerHTML.find("#" + PAPAYA_DEFAULT_VIEWER_ID);
+
+}
+
+
+
+function findPapayaContainersHTML() {
+    var defaultContainer, containers;
+
+    defaultContainer = $("#" + PAPAYA_DEFAULT_CONTAINER_ID);
+    containers = $("." + PAPAYA_CLASS_NAME);
+
+    if (defaultContainer) {
+    } else if (containers && (containers.length > 0)) {
+
+    }
+}
+
+
+
 function main() {
     var container, message, viewerHtml, loadParams, loadUrl;
 
+    //findPapayaContainers();
+
     message = checkForBrowserCompatibility();
-    viewerHtml = $("#" + PAPAYA_VIEWER_ID);
+    viewerHtml = $("#" + PAPAYA_DEFAULT_VIEWER_ID);
 
     if (message !== null) {
         viewerHtml.removeClass("checkForJS");
@@ -263,7 +286,7 @@ function main() {
 
         getQueryParams(container.params);
 
-        container.nestedViewer = ($("#" + PAPAYA_CONTAINER_ID).parent()[0].tagName.toUpperCase() !== 'BODY');
+        container.nestedViewer = ($("#" + PAPAYA_DEFAULT_CONTAINER_ID).parent()[0].tagName.toUpperCase() !== 'BODY');
 
         container.buildViewer(container.params);
         container.buildDisplay();
@@ -273,11 +296,11 @@ function main() {
         loadUrl = viewerHtml.data("load-url");
 
         if (loadUrl) {
-            container.papayaViewer.loadImage(loadUrl, true, false);
+            container.viewer.loadImage(loadUrl, true, false);
         } else if (container.params.images) {
-            container.papayaViewer.loadImage(container.params.images[0], true, false);
+            container.viewer.loadImage(container.params.images[0], true, false);
         } else if (container.params.encodedImages) {
-            container.papayaViewer.loadImage(container.params.encodedImages[0], false, true);
+            container.viewer.loadImage(container.params.encodedImages[0], false, true);
         }
 
         container.resizeViewerComponents(false);
@@ -291,5 +314,5 @@ window.onload = main;
 
 
 window.onresize = function () {
-    papayaContainer.resizeViewerComponents(true);
+    papayaContainers[0].resizeViewerComponents(true);  // TODO
 };

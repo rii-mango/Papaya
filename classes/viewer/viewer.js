@@ -25,7 +25,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.atlas = null;
     this.initialized = false;
     this.loadingVolume = null;
-    this.volume = new papaya.volume.Volume(this.container.papayaDisplay);
+    this.volume = new papaya.volume.Volume(this.container.display);
     this.screenVolumes = [];
     this.currentScreenVolume = null;
     this.axialSlice = null;
@@ -135,7 +135,7 @@ papaya.viewer.Viewer.prototype.loadImage = function (name, forceUrl, forceEncode
 
 papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEncode) {
     var loadableImage = this.container.findLoadableImage(name, forceUrl, forceEncode);
-    this.volume = new papaya.volume.Volume(this.container.papayaDisplay);
+    this.volume = new papaya.volume.Volume(this.container.display);
 
     if (forceEncode) {
         this.volume.readEncodedData(name, bind(this, this.initializeViewer));
@@ -154,7 +154,7 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEn
 
 papaya.viewer.Viewer.prototype.loadOverlay = function (name, forceUrl, forceEncode) {
     var loadableImage = this.container.findLoadableImage(name);
-    this.loadingVolume = new papaya.volume.Volume(this.container.papayaDisplay);
+    this.loadingVolume = new papaya.volume.Volume(this.container.display);
 
     if (this.screenVolumes.length > papaya.viewer.Viewer.MAX_OVERLAYS) {
         this.loadingVolume.errorMessage = "Maximum number of overlays (" + papaya.viewer.Viewer.MAX_OVERLAYS + ") has been reached!";
@@ -182,8 +182,8 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
     if (this.volume.hasError()) {
         console.error(this.volume.errorMessage);
 
-        if (this.container.papayaDisplay) {
-            this.container.papayaDisplay.drawError(this.volume.errorMessage);
+        if (this.container.display) {
+            this.container.display.drawError(this.volume.errorMessage);
         }
         return;
     }
@@ -241,8 +241,8 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
     this.initialized = true;
     this.drawViewer();
 
-    this.container.papayaToolbar.buildToolbar();
-    this.container.papayaToolbar.updateImageButtons();
+    this.container.toolbar.buildToolbar();
+    this.container.toolbar.updateImageButtons();
     this.updateWindowTitle();
 
     this.container.loadNext();
@@ -254,7 +254,7 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
     var screenParams, parametric;
 
     if (this.loadingVolume.hasError()) {
-        this.container.papayaDisplay.drawError(this.loadingVolume.errorMessage);
+        this.container.display.drawError(this.loadingVolume.errorMessage);
         this.loadingVolume = null;
         return;
     }
@@ -265,8 +265,8 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
     this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, this.container.params, (parametric ? papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[0].name : this.getNextColorTable()), false);
     this.setCurrentScreenVol(this.screenVolumes.length - 1);
     this.drawViewer(true);
-    this.container.papayaToolbar.buildToolbar();
-    this.container.papayaToolbar.updateImageButtons();
+    this.container.toolbar.buildToolbar();
+    this.container.toolbar.updateImageButtons();
 
     //even if "parametric" is set to true we should not add another screenVolume if the value range does not cross zero
     if (parametric) {
@@ -275,8 +275,8 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
             this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, this.container.params, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
             this.setCurrentScreenVol(this.screenVolumes.length - 1);
             this.drawViewer(true);
-            this.container.papayaToolbar.buildToolbar();
-            this.container.papayaToolbar.updateImageButtons();
+            this.container.toolbar.buildToolbar();
+            this.container.toolbar.updateImageButtons();
         }
     }
 
@@ -349,7 +349,7 @@ papaya.viewer.Viewer.prototype.convertScreenToImageCoordinateY = function (yLoc,
 papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yLoc) {
     var xImageLoc, yImageLoc, zImageLoc, found;
 
-    if (this.container.papayaDisplay) {
+    if (this.container.display) {
         xLoc = xLoc - this.canvasRect.left;
         yLoc = yLoc - this.canvasRect.top;
 
@@ -371,9 +371,9 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yL
         }
 
         if (found) {
-            this.container.papayaDisplay.drawDisplay(xImageLoc, yImageLoc, zImageLoc);
+            this.container.display.drawDisplay(xImageLoc, yImageLoc, zImageLoc);
         } else {
-            this.container.papayaDisplay.drawEmptyDisplay();
+            this.container.display.drawEmptyDisplay();
         }
     }
 };
@@ -541,8 +541,8 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
         this.drawCrosshairs();
     }
 
-    if (this.container.papayaDisplay) {
-        this.container.papayaDisplay.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z,
+    if (this.container.display) {
+        this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z,
             this.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z));
     }
 };
@@ -726,7 +726,7 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
 
     this.keyPressIgnored = false;
 
-    if (this.container.papayaToolbar.isShowingMenus()) {
+    if (this.container.toolbar.isShowingMenus()) {
         return;
     }
 
@@ -859,7 +859,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
     if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
         if (me.handled !== true) {
-            this.container.papayaToolbar.closeAllMenus();
+            this.container.toolbar.closeAllMenus();
 
             this.previousMousePosition.x = getMousePositionX(me);
             this.previousMousePosition.y = getMousePositionY(me);
@@ -868,7 +868,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
             if ((me.which === 3) || this.isControlKeyDown) {
                 this.isWindowControl = true;
-                this.container.papayaToolbar.showImageMenu(this.getCurrentScreenVolIndex());
+                this.container.toolbar.showImageMenu(this.getCurrentScreenVolIndex());
             } else if (this.isAltKeyDown && this.selectedSlice) {
                 this.isZoomMode = true;
 
@@ -987,8 +987,8 @@ papaya.viewer.Viewer.prototype.mouseDoubleClickEvent = function () {
 
 
 papaya.viewer.Viewer.prototype.mouseOutEvent = function () {
-    if (this.container.papayaDisplay) {
-        this.container.papayaDisplay.drawEmptyDisplay();
+    if (this.container.display) {
+        this.container.display.drawEmptyDisplay();
     }
 };
 
@@ -1023,7 +1023,7 @@ papaya.viewer.Viewer.prototype.windowLevelChanged = function (contrastChange, br
     }
 
     this.currentScreenVolume.setScreenRange(minFinal, maxFinal);
-    this.container.papayaToolbar.updateImageMenuRange(this.getCurrentScreenVolIndex(), parseFloat(minFinal.toPrecision(7)), parseFloat(maxFinal.toPrecision(7)));
+    this.container.toolbar.updateImageMenuRange(this.getCurrentScreenVolIndex(), parseFloat(minFinal.toPrecision(7)), parseFloat(maxFinal.toPrecision(7)));
     this.drawViewer(true);
 };
 
@@ -1085,7 +1085,7 @@ papaya.viewer.Viewer.prototype.getCurrentValueAt = function (ctrX, ctrY, ctrZ) {
 papaya.viewer.Viewer.prototype.resetViewer = function () {
     this.initialized = false;
     this.loadingVolume = null;
-    this.volume = new papaya.volume.Volume(this.container.papayaDisplay);
+    this.volume = new papaya.volume.Volume(this.container.display);
     this.screenVolumes = [];
     this.currentScreenVolume = null;
     this.axialSlice = null;
@@ -1123,11 +1123,11 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     this.updateTimer = null;
     this.updateTimerEvent = null;
     this.drawEmptyViewer();
-    if (this.container.papayaDisplay) {
-        this.container.papayaDisplay.drawEmptyDisplay();
+    if (this.container.display) {
+        this.container.display.drawEmptyDisplay();
     }
 
-    this.container.papayaToolbar.buildToolbar();
+    this.container.toolbar.buildToolbar();
 };
 
 
@@ -1237,7 +1237,7 @@ papaya.viewer.Viewer.prototype.updateWindowTitle = function () {
         title = (title + " " + this.getZoomString());
     }
 
-    this.container.papayaToolbar.updateTitleBar(title);
+    this.container.toolbar.updateTitleBar(title);
 };
 
 

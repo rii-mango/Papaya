@@ -11,7 +11,7 @@ papaya.viewer = papaya.viewer || {};
 
 papaya.viewer.Display = papaya.viewer.Display || function (container, width) {
     this.container = container;
-    this.viewer = container.papayaViewer;
+    this.viewer = container.viewer;
     this.canvas = document.createElement("canvas");
     this.canvas.width = width;
     this.canvas.height = PAPAYA_SECTION_HEIGHT;

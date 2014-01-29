@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, showMenu, PAPAYA_TOOLBAR_ID, PAPAYA_TITLEBAR_ID, PAPAYA_VIEWER_ID */
+/*global $, bind, showMenu, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_TITLEBAR_ID, PAPAYA_DEFAULT_VIEWER_ID */
 
 "use strict";
 
@@ -12,7 +12,7 @@ papaya.ui = papaya.ui || {};
 papaya.ui.Menu = papaya.ui.Menu || function (viewer, menuData, callback, dataSource, modifier) {
     this.viewer = viewer;
     this.isTitleBar = menuData.titleBar;
-    this.label = this.isTitleBar ? PAPAYA_TITLEBAR_ID : menuData.label;
+    this.label = this.isTitleBar ? PAPAYA_DEFAULT_TITLEBAR_ID : menuData.label;
     this.icons = menuData.icons;
     this.callback = callback;
     this.dataSource = dataSource;
@@ -45,7 +45,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
     buttonHtml = $(buttonHtmlId);
     buttonHtml.remove();
 
-    toolbarId = "#" + PAPAYA_TOOLBAR_ID;
+    toolbarId = "#" + PAPAYA_DEFAULT_TOOLBAR_ID;
     toolbarHtml = $(toolbarId);
 
     html = null;
@@ -62,10 +62,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
 
         html += "' src='" + this.icons[this.dataSource.getIndex(this.label)] + "' /></span>";
     } else if (this.isTitleBar) {
-
-
-
-        html = "<div id='" + this.buttonId + "' class='unselectable menuTitle' style='z-index:-1;position:absolute;top:" + ($("#" + PAPAYA_VIEWER_ID).position().top - 1.25 * papaya.ui.Toolbar.SIZE)
+        html = "<div id='" + this.buttonId + "' class='unselectable menuTitle' style='z-index:-1;position:absolute;top:" + ($("#" + PAPAYA_DEFAULT_VIEWER_ID).position().top - 1.25 * papaya.ui.Toolbar.SIZE)
             + "px;width:" + toolbarHtml.width() + "px;text-align:center;'>" + this.label + "</div>";
     } else {
         html = "<span id='" + this.buttonId + "' class='unselectable menuLabel'>" + this.label + "</span>";
@@ -128,7 +125,7 @@ papaya.ui.Menu.prototype.buildMenu = function () {
     var ctr, html, buttonHtml;
 
     html = "<ul id='" + this.menuId + "' class='menu'></ul>";
-    $("#" + PAPAYA_TOOLBAR_ID).append(html);
+    $("#" + PAPAYA_DEFAULT_TOOLBAR_ID).append(html);
 
     for (ctr = 0; ctr < this.items.length; ctr += 1) {
         buttonHtml = this.items[ctr].buildHTML(this.menuId);
