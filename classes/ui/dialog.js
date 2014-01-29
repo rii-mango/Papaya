@@ -24,7 +24,7 @@ papaya.ui.Dialog = papaya.ui.Dialog || function (title, content, dataSource, cal
 
 
 papaya.ui.Dialog.prototype.showDialog = function () {
-    var ctr, ctrOpt, html, val, itemsHtml, thisHtml, thisHtmlId;
+    var ctr, ctrOpt, html, val, itemsHtml, thisHtml, thisHtmlId, disabled;
 
     thisHtmlId = "#" + this.id;
     thisHtml = $(thisHtmlId);
@@ -41,7 +41,14 @@ papaya.ui.Dialog.prototype.showDialog = function () {
             } else if (this.content.items[ctr].readonly) {
                 html += "<tr><td class='modalDialogContentLabel'>" + this.content.items[ctr].label + "</td><td class='modalDialogContentControl' id='" + this.content.items[ctr].field + "'></td></tr>";
             } else {
-                html += "<tr><td class='modalDialogContentLabel'>" + this.content.items[ctr].label + "</td><td class='modalDialogContentControl'><select id='" + this.content.items[ctr].field + "'>";
+                if (this.content.items[ctr].disabled && (deref(this.content.items[ctr].disabled) === true)) {
+                    disabled = "disabled='disabled'";
+                } else {
+                    disabled = "";
+                }
+
+                html += "<tr><td class='modalDialogContentLabel'>" + this.content.items[ctr].label + "</td><td class='modalDialogContentControl'><select " + disabled +
+                    + " id='" + this.content.items[ctr].field + "'>";
                 for (ctrOpt = 0; ctrOpt < this.content.items[ctr].options.length; ctrOpt += 1) {
                     html += "<option value='" + this.content.items[ctr].options[ctrOpt] + "'>" + this.content.items[ctr].options[ctrOpt] + "</option>";
                 }

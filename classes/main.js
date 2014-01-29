@@ -18,6 +18,7 @@ var papayaLoadableImages = papayaLoadableImages || [];
 
 papaya.Main = papaya.Main || function () {
     this.loadingImageIndex = 0;
+    this.nestedViewer = false;
     resetComponents();
 };
 
@@ -280,6 +281,8 @@ function main() {
         }
 
         getQueryParams(papayaParams);
+
+        papayaMain.nestedViewer = ($("#" + PAPAYA_CONTAINER_ID).parent()[0].tagName.toUpperCase() !== 'BODY');
 
         papayaMain.buildViewer(papayaParams);
         papayaMain.buildDisplay();

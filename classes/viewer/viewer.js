@@ -68,7 +68,11 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (width, height, params) 
     this.listenerKeyDown = bind(this, this.keyDownEvent);
     this.listenerKeyUp = bind(this, this.keyUpEvent);
     this.listenerTouchMove = bind(this, this.touchMoveEvent);
-    this.listenerScroll = bind(this, this.scrolled);
+
+    if (!papayaMain.nestedViewer) {
+        this.listenerScroll = bind(this, this.scrolled);
+    }
+
     this.updateTimer = null;
     this.updateTimerEvent = null;
     this.listenerContextMenu = function (e) { e.preventDefault(); return false; };
@@ -216,10 +220,12 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
     this.canvas.addEventListener("touchend", this.listenerMouseUp, false);
     this.canvas.addEventListener("dblclick", this.listenerMouseDoubleClick, false);
 
-    if (window.addEventListener) {
-        window.addEventListener('DOMMouseScroll', this.listenerScroll, false);
+    if (!papayaMain.nestedViewer) {
+        if (window.addEventListener) {
+            window.addEventListener('DOMMouseScroll', this.listenerScroll, false);
+        }
+        window.onmousewheel = document.onmousewheel = this.listenerScroll;
     }
-    window.onmousewheel = document.onmousewheel = this.listenerScroll;
 
     this.setLongestDim(this.volume);
     this.calculateScreenSliceTransforms(this);
@@ -892,7 +898,6 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
             this.isZoomMode = false;
             this.isPanning = false;
             this.selectedSlice = null;
-            this.mouseWheelZoomPrimed = 0;
 
             me.handled = true;
         }
@@ -954,7 +959,6 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
         }
     } else {
         this.updateCursorPosition(this, getMousePositionX(me), getMousePositionY(me));
-        this.mouseWheelZoomPrimed = 0;
         this.isZoomMode = false;
     }
 };
@@ -1095,7 +1099,11 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     document.removeEventListener("touchstart", this.listenerMouseDown, false);
     document.removeEventListener("touchend", this.listenerMouseUp, false);
     document.removeEventListener("dblclick", this.listenerMouseDoubleClick, false);
-    window.removeEventListener('DOMMouseScroll', this.listenerScroll, false);
+
+    if (!papayaMain.nestedViewer) {
+        window.removeEventListener('DOMMouseScroll', this.listenerScroll, false);
+    }
+
     window.onmousewheel = document.onmousewheel = null;
 
     this.updateTimer = null;

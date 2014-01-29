@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, showMenu, papayaMain, PAPAYA_TOOLBAR_ID, PAPAYA_TITLEBAR_ID */
+/*global $, bind, showMenu, papayaMain, PAPAYA_TOOLBAR_ID, PAPAYA_TITLEBAR_ID, PAPAYA_VIEWER_ID */
 
 "use strict";
 
@@ -61,7 +61,11 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
 
         html += "' src='" + this.icons[this.dataSource.getIndex(this.label)] + "' /></span>";
     } else if (this.isTitleBar) {
-        html = "<div id='" + this.buttonId + "' class='unselectable menuTitle' style='z-index:-1;position:absolute;top:20px;width:" + toolbarHtml.width() + "px;text-align:center;'>" + this.label + "</div>";
+
+
+
+        html = "<div id='" + this.buttonId + "' class='unselectable menuTitle' style='z-index:-1;position:absolute;top:" + ($("#" + PAPAYA_VIEWER_ID).position().top - 1.25 * papaya.ui.Toolbar.SIZE)
+            + "px;width:" + toolbarHtml.width() + "px;text-align:center;'>" + this.label + "</div>";
     } else {
         html = "<span id='" + this.buttonId + "' class='unselectable menuLabel'>" + this.label + "</span>";
     }

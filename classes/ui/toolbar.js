@@ -54,7 +54,7 @@ papaya.ui.Toolbar.PREFERENCES_DATA = {
         {"label": "Coordinate display of:", "field": "atlasLocks", "options": ["Mouse", "Crosshairs"]},
         {"label": "Show crosshairs:", "field": "showCrosshairs", "options": ["All", "Main", "Lower", "None"]},
         {"label": "Show orientation:", "field": "showOrientation", "options": ["Yes", "No"]},
-        {"label": "Scroll wheel behavior:", "field": "scrollBehavior", "options": ["Zoom", "Increment Slice"]}
+        {"label": "Scroll wheel behavior:", "field": "scrollBehavior", "options": ["Zoom", "Increment Slice"], "disabled": "papayaMain.nestedViewer"}
     ]
 };
 
