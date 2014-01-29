@@ -47,7 +47,7 @@ papaya.ui.Dialog.prototype.showDialog = function () {
                     disabled = "";
                 }
 
-                html += "<tr><td class='modalDialogContentLabel'>" + this.content.items[ctr].label + "</td><td class='modalDialogContentControl'><select " + disabled +
+                html += "<tr><td class='modalDialogContentLabel'>" + this.content.items[ctr].label + "</td><td class='modalDialogContentControl'><select " + disabled
                     + " id='" + this.content.items[ctr].field + "'>";
                 for (ctrOpt = 0; ctrOpt < this.content.items[ctr].options.length; ctrOpt += 1) {
                     html += "<option value='" + this.content.items[ctr].options[ctrOpt] + "'>" + this.content.items[ctr].options[ctrOpt] + "</option>";
