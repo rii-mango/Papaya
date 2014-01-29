@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, papayaMain */
+/*global $, bind */
 
 "use strict";
 
@@ -9,7 +9,8 @@ papaya.ui = papaya.ui || {};
 
 
 
-papaya.ui.MenuItemRange = papaya.ui.MenuItemRange || function (label, action, callback, dataSource, method, modifier) {
+papaya.ui.MenuItemRange = papaya.ui.MenuItemRange || function (viewer, label, action, callback, dataSource, method, modifier) {
+    this.viewer = viewer;
     this.label = label;
 
     this.modifier = "";
@@ -39,12 +40,12 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
 
     $("#" + this.minId).change(bind(this, function () {
         menuItemRange.updateDataSource(this);
-        papayaMain.papayaViewer.drawViewer(true);
+        this.viewer.drawViewer(true);
     }));
 
     $("#" + this.maxId).change(bind(this, function () {
         menuItemRange.updateDataSource(this);
-        papayaMain.papayaViewer.drawViewer(true);
+        this.viewer.drawViewer(true);
     }));
 };
 

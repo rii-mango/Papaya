@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global bind, isString, papayaMain, deref, papayaParams */
+/*global bind, isString, deref, papayaParams */
 
 "use strict";
 
@@ -8,12 +8,12 @@ var papaya = papaya || {};
 papaya.viewer = papaya.viewer || {};
 
 
-papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas) {
+papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas, container) {
     this.name = null;
     this.transformedname = null;
     this.labels = [];
     this.atlasLabelData = atlas.labels;
-    this.volume = new papaya.volume.Volume();
+    this.volume = new papaya.volume.Volume(container.papayaDisplay);
     this.displayColumns = null;
     this.returnLabels = null;
     this.transform = null;
@@ -21,7 +21,7 @@ papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas) {
     this.maxLabels = 0;
     this.probabilistic = false;
 
-    var loadableImage = papayaMain.findLoadableImage(atlas.labels.atlas.header.images.summaryimagefile);
+    var loadableImage = container.findLoadableImage(atlas.labels.atlas.header.images.summaryimagefile);
 
     if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
         this.volume.readEncodedData(loadableImage.encode, bind(this, this.readFinished));

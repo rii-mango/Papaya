@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global papayaMain, createCookie, readCookie */
+/*global createCookie, readCookie */
 
 "use strict";
 
@@ -10,6 +10,7 @@ papaya.volume = papaya.volume || {};
 
 
 papaya.viewer.Preferences = papaya.viewer.Preferences || function () {
+    this.viewer = null;
     this.showCrosshairs = papaya.viewer.Preferences.DEFAULT_SHOW_CROSSHAIRS;
     this.atlasLocks = papaya.viewer.Preferences.DEFAULT_ATLAS_LOCKS;
     this.showOrientation = papaya.viewer.Preferences.DEFAULT_SHOW_ORIENTATION;
@@ -31,7 +32,7 @@ papaya.viewer.Preferences.DEFAULT_SCROLL = "Increment Slice";
 
 papaya.viewer.Preferences.prototype.updatePreference = function (field, value) {
     this[field] = value;
-    papayaMain.papayaViewer.drawViewer(true);
+    this.viewer.drawViewer(true);
 
     createCookie(papaya.viewer.Preferences.COOKIE_PREFIX + field, value, papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS);
 };

@@ -10,7 +10,8 @@ papaya.volume = papaya.volume || {};
 
 
 
-papaya.volume.Volume = papaya.volume.Volume || function () {
+papaya.volume.Volume = papaya.volume.Volume || function (progressMeter) {
+    this.progressMeter = progressMeter;
     this.file = null;
     this.fileLength = 0;
     this.url = null;
@@ -269,7 +270,7 @@ papaya.volume.Volume.prototype.readData = function (vol, blob) {
 
 papaya.volume.Volume.prototype.decompress = function (vol) {
     if (vol.compressed) {
-        var gunzip = new Gunzip();
+        var gunzip = new Gunzip(this.progressMeter);
         gunzip.gunzip(vol.rawData, function (data) {vol.finishedDecompress(vol, data); });
 
         if (gunzip.hasError()) {

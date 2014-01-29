@@ -7,7 +7,7 @@ deref, resetComponents, PAPAYA_TITLEBAR_ID */
 "use strict";
 
 var papaya = papaya || {};
-var papayaMain = null;
+var papayaContainer = null;
 var papayaParams = papayaParams || {};
 
 papaya.viewer = papaya.viewer || {};
@@ -16,7 +16,11 @@ var papayaLoadableImages = papayaLoadableImages || [];
 
 
 
-papaya.Main = papaya.Main || function () {
+papaya.Container = papaya.Container || function () {
+    this.papayaViewer = null;
+    this.papayaDisplay = null;
+    this.papayaToolbar = null;
+    this.preferences = null;
     this.loadingImageIndex = 0;
     this.nestedViewer = false;
     this.resetComponents();
@@ -24,7 +28,7 @@ papaya.Main = papaya.Main || function () {
 
 
 
-papaya.Main.prototype.resetComponents = function() {
+papaya.Container.prototype.resetComponents = function() {
     var containerHtml = $("#" + PAPAYA_CONTAINER_ID);
 
     containerHtml.css({height: "auto"});
@@ -33,17 +37,17 @@ papaya.Main.prototype.resetComponents = function() {
 
     $("#" + PAPAYA_VIEWER_ID).removeClass("checkForJS");
     $('head').append("<style>div#papayaViewer:before{ content:'' }</style>");
-}
+};
 
 
 
-papaya.Main.prototype.isKioskMode = function() {
+papaya.Container.prototype.isKioskMode = function() {
     return $("#" + PAPAYA_TOOLBAR_ID).length === 0;
-}
+};
 
 
 
-papaya.Main.prototype.getViewerDimensions = function() {
+papaya.Container.prototype.getViewerDimensions = function() {
     var numAdditionalSections = 2,
         parentHeight = PAPAYA_MINIMUM_SIZE,
         parentWidth = PAPAYA_MINIMUM_SIZE,
@@ -89,12 +93,12 @@ papaya.Main.prototype.getViewerDimensions = function() {
     dims.heightPadding = PAPAYA_CONTAINER_PADDING_TOP;
 
     return dims;
-}
+};
 
 
 
-papaya.Main.prototype.resizeViewerComponents = function(resize) {
-    papayaMain.papayaToolbar.closeAllMenus();
+papaya.Container.prototype.resizeViewerComponents = function(resize) {
+    this.papayaToolbar.closeAllMenus();
 
     var dims = this.getViewerDimensions(),
         toolbarHtml = $("#" + PAPAYA_TOOLBAR_ID),
@@ -113,81 +117,83 @@ papaya.Main.prototype.resizeViewerComponents = function(resize) {
     viewerHtml.css({paddingLeft: dims.widthPadding + "px"});
 
     if (resize) {
-        papayaMain.papayaViewer.resizeViewer(dims);
+        this.papayaViewer.resizeViewer(dims);
     }
 
-    if (papayaMain.papayaDisplay) {
+    if (this.papayaDisplay) {
         displayHtml.css({height: PAPAYA_SECTION_HEIGHT + "px"});
         displayHtml.css({paddingLeft: dims.widthPadding + "px"});
-        papayaMain.papayaDisplay.canvas.width = dims.width;
+        this.papayaDisplay.canvas.width = dims.width;
     }
 
     $("#" + PAPAYA_CONTAINER_ID).css({paddingTop: dims.heightPadding + "px"});
 
-    if (papayaMain.papayaViewer.initialized) {
-        papayaMain.papayaViewer.drawViewer(true);
+    if (this.papayaViewer.initialized) {
+        this.papayaViewer.drawViewer(true);
     } else {
-        papayaMain.papayaViewer.drawEmptyViewer();
+        this.papayaViewer.drawEmptyViewer();
 
-        if (papayaMain.papayaDisplay) {
-            papayaMain.papayaDisplay.drawEmptyDisplay();
+        if (this.papayaDisplay) {
+            this.papayaDisplay.drawEmptyDisplay();
         }
     }
-}
+};
 
 
 
-papaya.Main.prototype.buildViewer = function (params) {
+papaya.Container.prototype.buildViewer = function (params) {
     var viewerHtml, dims;
 
     viewerHtml = $("#" + PAPAYA_VIEWER_ID);
     viewerHtml.html("");  // remove noscript message
     dims = this.getViewerDimensions();
-    this.papayaViewer = new papaya.viewer.Viewer(dims.width, dims.height, params);
+    this.papayaViewer = new papaya.viewer.Viewer(this, dims.width, dims.height, params);
     viewerHtml.append($(this.papayaViewer.canvas));
+    this.preferences.viewer = this.papayaViewer;
 };
 
 
 
-papaya.Main.prototype.buildDisplay = function () {
+papaya.Container.prototype.buildDisplay = function () {
     var dims = this.getViewerDimensions();
-    this.papayaDisplay = new papaya.viewer.Display(dims.width, PAPAYA_SECTION_HEIGHT);
+    this.papayaDisplay = new papaya.viewer.Display(this, dims.width);
     $("#" + PAPAYA_DISPLAY_ID).append($(this.papayaDisplay.canvas));
 };
 
 
 
-papaya.Main.prototype.buildToolbar = function () {
-    this.papayaToolbar = new papaya.ui.Toolbar();
+papaya.Container.prototype.buildToolbar = function () {
+    this.papayaToolbar = new papaya.ui.Toolbar(this);
     this.papayaToolbar.buildToolbar();
 };
 
 
 
-papaya.Main.prototype.setUpDnD = function () {
+papaya.Container.prototype.setUpDnD = function () {
+    var container = this;
     var containerHtml = $("#" + PAPAYA_CONTAINER_ID);
 
     containerHtml[0].ondragover = function () {
-        papayaMain.papayaViewer.draggingOver = true;
-        if (!papayaMain.papayaViewer.initialized) {
-            papayaMain.papayaViewer.drawEmptyViewer();
+        container.papayaViewer.draggingOver = true;
+        if (!container.papayaViewer.initialized) {
+            container.papayaViewer.drawEmptyViewer();
         }
 
         return false;
     };
 
     containerHtml[0].ondragleave = function () {
-        papayaMain.papayaViewer.draggingOver = false;
-        if (!papayaMain.papayaViewer.initialized) {
-            papayaMain.papayaViewer.drawEmptyViewer();
+        container.papayaViewer.draggingOver = false;
+        if (!container.papayaViewer.initialized) {
+            container.papayaViewer.drawEmptyViewer();
         }
         return false;
     };
 
     containerHtml[0].ondragend = function () {
-        papayaMain.papayaViewer.draggingOver = false;
-        if (!papayaMain.papayaViewer.initialized) {
-            papayaMain.papayaViewer.drawEmptyViewer();
+        container.papayaViewer.draggingOver = false;
+        if (!container.papayaViewer.initialized) {
+            container.papayaViewer.drawEmptyViewer();
         }
         return false;
     };
@@ -196,9 +202,9 @@ papaya.Main.prototype.setUpDnD = function () {
         e.preventDefault();
 
         if (e.dataTransfer.files.length > 1) {
-            papayaMain.papayaDisplay.drawError("Please drop one file at a time.");
+            container.papayaDisplay.drawError("Please drop one file at a time.");
         } else {
-            papayaMain.papayaViewer.loadImage(e.dataTransfer.files[0]);
+            container.papayaViewer.loadImage(e.dataTransfer.files[0]);
         }
 
         return false;
@@ -207,23 +213,23 @@ papaya.Main.prototype.setUpDnD = function () {
 
 
 
-papaya.Main.prototype.loadNext = function () {
+papaya.Container.prototype.loadNext = function () {
     this.loadingImageIndex += 1;
 
     if (papayaParams.images) {
         if (this.loadingImageIndex < papayaParams.images.length) {
-            papayaMain.papayaViewer.loadImage(papayaParams.images[this.loadingImageIndex], true, false);
+            this.papayaViewer.loadImage(papayaParams.images[this.loadingImageIndex], true, false);
         }
     } else if (papayaParams.encodedImages) {
         if (this.loadingImageIndex < papayaParams.encodedImages.length) {
-            papayaMain.papayaViewer.loadImage(papayaParams.encodedImages[this.loadingImageIndex], false, true);
+            this.papayaViewer.loadImage(papayaParams.encodedImages[this.loadingImageIndex], false, true);
         }
     }
 };
 
 
 
-papaya.Main.prototype.findLoadableImage = function (name) {
+papaya.Container.prototype.findLoadableImage = function (name) {
     var ctr;
 
     for (ctr = 0; ctr < papayaLoadableImages.length; ctr += 1) {
@@ -248,8 +254,8 @@ function main() {
         viewerHtml.addClass("checkBrowser");
         viewerHtml.html("<div class='checkBrowserMessage'>" + message + "</div>");
     } else {
-        papayaMain = new papaya.Main();
-        papayaMain.preferences = new papaya.viewer.Preferences();
+        papayaContainer = new papaya.Container();
+        papayaContainer.preferences = new papaya.viewer.Preferences();
 
         loadParams = viewerHtml.data("params");
 
@@ -259,24 +265,24 @@ function main() {
 
         getQueryParams(papayaParams);
 
-        papayaMain.nestedViewer = ($("#" + PAPAYA_CONTAINER_ID).parent()[0].tagName.toUpperCase() !== 'BODY');
+        papayaContainer.nestedViewer = ($("#" + PAPAYA_CONTAINER_ID).parent()[0].tagName.toUpperCase() !== 'BODY');
 
-        papayaMain.buildViewer(papayaParams);
-        papayaMain.buildDisplay();
-        papayaMain.buildToolbar();
-        papayaMain.setUpDnD();
+        papayaContainer.buildViewer(papayaParams);
+        papayaContainer.buildDisplay();
+        papayaContainer.buildToolbar();
+        papayaContainer.setUpDnD();
 
         loadUrl = viewerHtml.data("load-url");
 
         if (loadUrl) {
-            papayaMain.papayaViewer.loadImage(loadUrl, true, false);
+            papayaContainer.papayaViewer.loadImage(loadUrl, true, false);
         } else if (papayaParams.images) {
-            papayaMain.papayaViewer.loadImage(papayaParams.images[0], true, false);
+            papayaContainer.papayaViewer.loadImage(papayaParams.images[0], true, false);
         } else if (papayaParams.encodedImages) {
-            papayaMain.papayaViewer.loadImage(papayaParams.encodedImages[0], false, true);
+            papayaContainer.papayaViewer.loadImage(papayaParams.encodedImages[0], false, true);
         }
 
-        papayaMain.resizeViewerComponents(false);
+        papayaContainer.resizeViewerComponents(false);
     }
 }
 
@@ -287,5 +293,5 @@ window.onload = main;
 
 
 window.onresize = function () {
-    papayaMain.resizeViewerComponents(true);
+    papayaContainer.resizeViewerComponents(true);
 };

@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, isStringBlank, bind, PAPAYA_CONTAINER_ID, showModalDialog, papayaMain */
+/*global $, isStringBlank, bind, PAPAYA_CONTAINER_ID, showModalDialog */
 
 "use strict";
 
@@ -9,7 +9,9 @@ papaya.ui = papaya.ui || {};
 
 
 
-papaya.ui.Dialog = papaya.ui.Dialog || function (title, content, dataSource, callback, modifier) {
+papaya.ui.Dialog = papaya.ui.Dialog || function (container, title, content, dataSource, callback, modifier) {
+    this.container = container;
+    this.viewer = container.papayaViewer;
     this.title = title;
     this.modifier = "";
     if (!isStringBlank(modifier)) {
@@ -83,7 +85,7 @@ papaya.ui.Dialog.prototype.showDialog = function () {
     $("#" + PAPAYA_CONTAINER_ID).addClass("modalBackground");
 
     thisHtml = $(thisHtmlId);
-    showModalDialog(papayaMain.papayaViewer, thisHtml[0]);
+    showModalDialog(this.viewer, thisHtml[0]);
 };
 
 

@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, papayaMain, fullyQualifiedVariableExists, PAPAYA_CONTAINER_ID, papayaParams, PAPAYA_TITLEBAR_ID */
+/*global $, bind, fullyQualifiedVariableExists, PAPAYA_CONTAINER_ID, papayaParams, PAPAYA_TITLEBAR_ID */
 
 "use strict";
 
@@ -9,7 +9,9 @@ papaya.ui = papaya.ui || {};
 
 var papayaLoadableImages = papayaLoadableImages || [];
 
-papaya.ui.Toolbar = papaya.ui.Toolbar || function () {
+papaya.ui.Toolbar = papaya.ui.Toolbar || function (container) {
+    this.container = container;
+    this.viewer = container.papayaViewer;
     this.imageMenus = null;
 };
 
@@ -54,7 +56,7 @@ papaya.ui.Toolbar.PREFERENCES_DATA = {
         {"label": "Coordinate display of:", "field": "atlasLocks", "options": ["Mouse", "Crosshairs"]},
         {"label": "Show crosshairs:", "field": "showCrosshairs", "options": ["All", "Main", "Lower", "None"]},
         {"label": "Show orientation:", "field": "showOrientation", "options": ["Yes", "No"]},
-        {"label": "Scroll wheel behavior:", "field": "scrollBehavior", "options": ["Zoom", "Increment Slice"], "disabled": "papayaMain.nestedViewer"}
+        {"label": "Scroll wheel behavior:", "field": "scrollBehavior", "options": ["Zoom", "Increment Slice"], "disabled": "this.container.nestedViewer"}
     ]
 };
 
@@ -87,7 +89,7 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
     this.buildOpenMenuItems();
 
     for (ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA.menus.length; ctr += 1) {
-        this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, papayaMain.papayaViewer, null);
+        this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, this.viewer, null);
     }
 
     this.buildAtlasMenu();
@@ -178,7 +180,7 @@ papaya.ui.Toolbar.prototype.menuContains = function (menuItems, name) {
 papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, dataSource, modifier) {
     var menu, items;
 
-    menu = new papaya.ui.Menu(menuData, bind(this, this.doAction), papayaMain.papayaViewer, modifier);
+    menu = new papaya.ui.Menu(this.viewer, menuData, bind(this, this.doAction), this.viewer, modifier);
 
     if (topLevelButtonId) {
         menu.setMenuButton(topLevelButtonId);
@@ -209,13 +211,13 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
         if (itemData[ctrItems].type === "spacer") {
             item = new papaya.ui.MenuItemSpacer();
         } else if (itemData[ctrItems].type === "checkbox") {
-            item = new papaya.ui.MenuItemCheckBox(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+            item = new papaya.ui.MenuItemCheckBox(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
         } else if (itemData[ctrItems].type === "button") {
-            item = new papaya.ui.MenuItemFileChooser(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
+            item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
         } else if (itemData[ctrItems].type === "range") {
-            item = new papaya.ui.MenuItemRange(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+            item = new papaya.ui.MenuItemRange(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
         } else {
-            item = new papaya.ui.MenuItem(itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), modifier);
+            item = new papaya.ui.MenuItem(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), modifier);
         }
 
         menu.addMenuItem(item);
@@ -235,8 +237,8 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
     $(".imageButton").remove();
     this.imageMenus = [];
 
-    for (ctr = papayaMain.papayaViewer.screenVolumes.length - 1; ctr >= 0; ctr -= 1) {
-        screenVol = papayaMain.papayaViewer.screenVolumes[ctr];
+    for (ctr = this.viewer.screenVolumes.length - 1; ctr >= 0; ctr -= 1) {
+        screenVol = this.viewer.screenVolumes[ctr];
         dataUrl = screenVol.colorTable.icon;
 
         data = {
@@ -289,35 +291,35 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
     if (action) {
         if (action.startsWith("ImageButton")) {
             imageIndex = parseInt(action.substring(action.length - 1), 10);
-            papayaMain.papayaViewer.setCurrentScreenVol(imageIndex);
+            this.viewer.setCurrentScreenVol(imageIndex);
             this.updateImageButtons();
         } else if (action.startsWith("Open-")) {
             imageName = action.substring(action.indexOf("-") + 1);
-            papayaMain.papayaViewer.loadImage(imageName);
+            this.viewer.loadImage(imageName);
         } else if (action === "OpenImage") {
-            papayaMain.papayaViewer.loadImage(file);
+            this.viewer.loadImage(file);
         } else if (action.startsWith("ColorTable")) {
             colorTableName = action.substring(action.indexOf("-") + 1, action.lastIndexOf("-"));
             imageIndex = action.substring(action.lastIndexOf("-") + 1);
-            papayaMain.papayaViewer.screenVolumes[imageIndex].changeColorTable(colorTableName);
+            this.viewer.screenVolumes[imageIndex].changeColorTable(this.viewer, colorTableName);
             this.updateImageButtons();
         } else if (action.startsWith("CloseAllImages")) {
-            papayaMain.papayaViewer.resetViewer();
+            this.viewer.resetViewer();
             this.updateImageButtons();
         } else if (action === "Preferences") {
-            dialog = new papaya.ui.Dialog("Preferences", papaya.ui.Toolbar.PREFERENCES_DATA, papayaMain.preferences, bind(papayaMain.preferences, papayaMain.preferences.updatePreference));
+            dialog = new papaya.ui.Dialog(this.container, "Preferences", papaya.ui.Toolbar.PREFERENCES_DATA, this.container.preferences, bind(this.container.preferences, this.container.preferences.updatePreference));
             dialog.showDialog();
         } else if (action.startsWith("ImageInfo")) {
             imageIndex = action.substring(action.lastIndexOf("-") + 1);
-            dialog = new papaya.ui.Dialog("Image Info", papaya.ui.Toolbar.IMAGE_INFO_DATA, papayaMain.papayaViewer, null, imageIndex.toString());
+            dialog = new papaya.ui.Dialog(this.container, "Image Info", papaya.ui.Toolbar.IMAGE_INFO_DATA, this.viewer, null, imageIndex.toString());
             dialog.showDialog();
         } else if (action.startsWith("SPACE")) {
-            papayaMain.papayaViewer.toggleWorldSpace();
-            papayaMain.papayaViewer.drawViewer(true);
+            this.viewer.toggleWorldSpace();
+            this.viewer.drawViewer(true);
         } else if (action.startsWith("AtlasChanged")) {
             atlasName = action.substring(action.lastIndexOf("-") + 1);
-            papayaMain.papayaViewer.atlas.currentAtlas = atlasName;
-            papayaMain.papayaViewer.drawViewer(true);
+            this.viewer.atlas.currentAtlas = atlasName;
+            this.viewer.drawViewer(true);
         }
     }
 };

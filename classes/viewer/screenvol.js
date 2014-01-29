@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global papayaMain, papayaParams */
+/*global papayaParams */
 
 "use strict";
 
@@ -197,10 +197,10 @@ papaya.viewer.ScreenVolume.prototype.isUsingColorTable = function (lutName) {
 
 
 
-papaya.viewer.ScreenVolume.prototype.changeColorTable = function (lutName) {
+papaya.viewer.ScreenVolume.prototype.changeColorTable = function (viewer, lutName) {
     this.colorTable = new papaya.viewer.ColorTable(lutName, !this.isOverlay(), true);
     this.lutName = lutName;
-    papayaMain.papayaViewer.drawViewer(true);
+    viewer.drawViewer(true);
 };
 
 

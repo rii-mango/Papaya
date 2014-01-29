@@ -9,8 +9,9 @@ papaya.ui = papaya.ui || {};
 
 
 
-papaya.ui.MenuItemCheckBox = papaya.ui.MenuItemCheckBox || function (label, action, callback, dataSource, method,
+papaya.ui.MenuItemCheckBox = papaya.ui.MenuItemCheckBox || function (viewer, label, action, callback, dataSource, method,
                                                                      modifier) {
+    this.viewer = viewer;
     this.label = label;
 
     this.modifier = "";

@@ -9,7 +9,8 @@ papaya.ui = papaya.ui || {};
 
 
 
-papaya.ui.MenuItemFileChooser = papaya.ui.MenuItemFileChooser || function (label, action, callback) {
+papaya.ui.MenuItemFileChooser = papaya.ui.MenuItemFileChooser || function (viewer, label, action, callback) {
+    this.viewer = viewer;
     this.label = label;
     this.action = action;
     this.id = this.action.replace(/ /g, "_");

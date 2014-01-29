@@ -11,7 +11,7 @@ var GUNZIP_MAGIC_COOKIE1 = 31;
 var GUNZIP_MAGIC_COOKIE2 = 139;
 
 
-var Gunzip = function () {
+var Gunzip = function (progressMeter) {
     var GUNZIP_FLAG_NOT_SUPPORTED = "GZIP flag not supported!";
     var GUNZIP_INCORRECT_MAGIC_COOKIE = "Not a GZIP file!";
     var START_OFFSET_DEFAULT = 10;
@@ -765,10 +765,8 @@ var Gunzip = function () {
             index += i;
             timeoutCtr += i;
 
-            if (papayaMain) {
-                if (papayaMain.papayaDisplay) {
-                    papayaMain.papayaDisplay.drawProgress(index / inflatedSize);
-                }
+            if (progressMeter) {
+                progressMeter.drawProgress(index / inflatedSize);
             }
 
             if (timeoutCtr > PROCESS_TIMEOUT_BYTES) {

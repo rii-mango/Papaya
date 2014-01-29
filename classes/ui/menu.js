@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, showMenu, papayaMain, PAPAYA_TOOLBAR_ID, PAPAYA_TITLEBAR_ID, PAPAYA_VIEWER_ID */
+/*global $, bind, showMenu, PAPAYA_TOOLBAR_ID, PAPAYA_TITLEBAR_ID, PAPAYA_VIEWER_ID */
 
 "use strict";
 
@@ -9,7 +9,8 @@ papaya.ui = papaya.ui || {};
 
 
 
-papaya.ui.Menu = papaya.ui.Menu || function (menuData, callback, dataSource, modifier) {
+papaya.ui.Menu = papaya.ui.Menu || function (viewer, menuData, callback, dataSource, modifier) {
+    this.viewer = viewer;
     this.isTitleBar = menuData.titleBar;
     this.label = this.isTitleBar ? PAPAYA_TITLEBAR_ID : menuData.label;
     this.icons = menuData.icons;
@@ -162,7 +163,7 @@ papaya.ui.Menu.prototype.showMenu = function () {
             this.buildMenu();
             menuHtml = $(menuHtmlId);
             menuHtml.hide();
-            showMenu(papayaMain.papayaViewer, button[0], menuHtml[0], this.isRight);
+            showMenu(this.viewer, button[0], menuHtml[0], this.isRight);
         }
     }
 };

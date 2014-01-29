@@ -9,7 +9,8 @@ papaya.ui = papaya.ui || {};
 
 
 
-papaya.ui.MenuItem = papaya.ui.MenuItem || function (label, action, callback, modifier) {
+papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, callback, modifier) {
+    this.viewer = viewer;
     this.label = label;
 
     this.modifier = "";
