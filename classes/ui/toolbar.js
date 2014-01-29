@@ -325,7 +325,11 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
 
 
 papaya.ui.Toolbar.prototype.updateTitleBar = function (title) {
-    document.getElementById(PAPAYA_TITLEBAR_ID).innerHTML = title;
+    var elem = document.getElementById(PAPAYA_TITLEBAR_ID);
+
+    if (elem) {
+        elem.innerHTML = title;
+    }
 };
 
 

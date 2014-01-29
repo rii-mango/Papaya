@@ -55,6 +55,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (width, height, params) 
     this.panAmountX = 0;
     this.panAmountY = 0;
     this.panAmountZ = 0;
+    this.keyPressIgnored = false;
     this.previousMousePosition = new papaya.core.Point();
     this.isControlKeyDown = false;
     this.isAltKeyDown = false;
@@ -722,6 +723,8 @@ papaya.viewer.Viewer.prototype.setLongestDim = function (volume) {
 papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
     var keyCode, center;
 
+    this.keyPressIgnored = false;
+
     if (papayaMain.papayaToolbar.isShowingMenus()) {
         return;
     }
@@ -782,6 +785,26 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_SERIES_BACK) {
         this.currentScreenVolume.decrementTimepoint();
         this.timepointChanged();
+    } else {
+        this.keyPressIgnored = true;
+    }
+
+    if (!this.keyPressIgnored) {
+        ke.preventDefault();
+    }
+};
+
+
+
+papaya.viewer.Viewer.prototype.keyUpEvent = function (ke) {
+    //var keyCode = getKeyCode(ke);
+
+    this.isControlKeyDown = false;
+    this.isAltKeyDown = false;
+    this.isShiftKeyDown = false;
+
+    if (!this.keyPressIgnored) {
+        ke.preventDefault();
     }
 };
 
@@ -803,16 +826,6 @@ papaya.viewer.Viewer.prototype.rotateViews = function () {
 papaya.viewer.Viewer.prototype.timepointChanged = function () {
     this.drawViewer(true);
     this.updateWindowTitle();
-};
-
-
-
-papaya.viewer.Viewer.prototype.keyUpEvent = function () {
-    //var keyCode = getKeyCode(ke);
-
-    this.isControlKeyDown = false;
-    this.isAltKeyDown = false;
-    this.isShiftKeyDown = false;
 };
 
 
