@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global bind, isString, deref, papayaParams */
+/*global bind, isString, deref */
 
 "use strict";
 
@@ -9,6 +9,7 @@ papaya.viewer = papaya.viewer || {};
 
 
 papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas, container) {
+    this.container = container;
     this.name = null;
     this.transformedname = null;
     this.labels = [];
@@ -82,7 +83,7 @@ papaya.viewer.Atlas.prototype.readFinished = function () {
     this.name = this.atlasLabelData.atlas.header.name;
     this.currentAtlas = this.name;
 
-    var params = papayaParams.atlas;
+    var params = this.container.params.atlas;
     if (params) {
         if (params === this.transformedname) {
             this.currentAtlas = this.transformedname;

@@ -7,11 +7,7 @@ deref, resetComponents, PAPAYA_TITLEBAR_ID */
 "use strict";
 
 var papaya = papaya || {};
-var papayaContainer = null;
-var papayaParams = papayaParams || {};
-
-papaya.viewer = papaya.viewer || {};
-
+var papayaContainers = [];
 var papayaLoadableImages = papayaLoadableImages || [];
 
 
@@ -21,6 +17,7 @@ papaya.Container = papaya.Container || function () {
     this.papayaDisplay = null;
     this.papayaToolbar = null;
     this.preferences = null;
+    this.params = [];
     this.loadingImageIndex = 0;
     this.nestedViewer = false;
     this.resetComponents();
@@ -216,13 +213,13 @@ papaya.Container.prototype.setUpDnD = function () {
 papaya.Container.prototype.loadNext = function () {
     this.loadingImageIndex += 1;
 
-    if (papayaParams.images) {
-        if (this.loadingImageIndex < papayaParams.images.length) {
-            this.papayaViewer.loadImage(papayaParams.images[this.loadingImageIndex], true, false);
+    if (this.params.images) {
+        if (this.loadingImageIndex < this.params.images.length) {
+            this.papayaViewer.loadImage(this.params.images[this.loadingImageIndex], true, false);
         }
-    } else if (papayaParams.encodedImages) {
-        if (this.loadingImageIndex < papayaParams.encodedImages.length) {
-            this.papayaViewer.loadImage(papayaParams.encodedImages[this.loadingImageIndex], false, true);
+    } else if (this.params.encodedImages) {
+        if (this.loadingImageIndex < this.params.encodedImages.length) {
+            this.papayaViewer.loadImage(this.params.encodedImages[this.loadingImageIndex], false, true);
         }
     }
 };
@@ -244,7 +241,7 @@ papaya.Container.prototype.findLoadableImage = function (name) {
 
 
 function main() {
-    var message, viewerHtml, loadParams, loadUrl;
+    var container, message, viewerHtml, loadParams, loadUrl;
 
     message = checkForBrowserCompatibility();
     viewerHtml = $("#" + PAPAYA_VIEWER_ID);
@@ -254,35 +251,36 @@ function main() {
         viewerHtml.addClass("checkBrowser");
         viewerHtml.html("<div class='checkBrowserMessage'>" + message + "</div>");
     } else {
-        papayaContainer = new papaya.Container();
-        papayaContainer.preferences = new papaya.viewer.Preferences();
+        container = new papaya.Container();
+        papayaContainers.push(container);
+        container.preferences = new papaya.viewer.Preferences();
 
         loadParams = viewerHtml.data("params");
 
         if (loadParams) {
-            papayaParams = $.extend(papayaParams, window[loadParams]);
+            container.params = $.extend(container.params, window[loadParams]);
         }
 
-        getQueryParams(papayaParams);
+        getQueryParams(container.params);
 
-        papayaContainer.nestedViewer = ($("#" + PAPAYA_CONTAINER_ID).parent()[0].tagName.toUpperCase() !== 'BODY');
+        container.nestedViewer = ($("#" + PAPAYA_CONTAINER_ID).parent()[0].tagName.toUpperCase() !== 'BODY');
 
-        papayaContainer.buildViewer(papayaParams);
-        papayaContainer.buildDisplay();
-        papayaContainer.buildToolbar();
-        papayaContainer.setUpDnD();
+        container.buildViewer(container.params);
+        container.buildDisplay();
+        container.buildToolbar();
+        container.setUpDnD();
 
         loadUrl = viewerHtml.data("load-url");
 
         if (loadUrl) {
-            papayaContainer.papayaViewer.loadImage(loadUrl, true, false);
-        } else if (papayaParams.images) {
-            papayaContainer.papayaViewer.loadImage(papayaParams.images[0], true, false);
-        } else if (papayaParams.encodedImages) {
-            papayaContainer.papayaViewer.loadImage(papayaParams.encodedImages[0], false, true);
+            container.papayaViewer.loadImage(loadUrl, true, false);
+        } else if (container.params.images) {
+            container.papayaViewer.loadImage(container.params.images[0], true, false);
+        } else if (container.params.encodedImages) {
+            container.papayaViewer.loadImage(container.params.encodedImages[0], false, true);
         }
 
-        papayaContainer.resizeViewerComponents(false);
+        container.resizeViewerComponents(false);
     }
 }
 

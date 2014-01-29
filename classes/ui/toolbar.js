@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, fullyQualifiedVariableExists, PAPAYA_CONTAINER_ID, papayaParams, PAPAYA_TITLEBAR_ID */
+/*global $, bind, fullyQualifiedVariableExists, PAPAYA_CONTAINER_ID, PAPAYA_TITLEBAR_ID */
 
 "use strict";
 
@@ -116,7 +116,7 @@ papaya.ui.Toolbar.prototype.buildAtlasMenu = function () {
 papaya.ui.Toolbar.prototype.buildColorMenuItems = function () {
     var items, ctr, allColorTables, item, screenParams;
 
-    screenParams = papayaParams.luts;
+    screenParams = this.container.params.luts;
     if (screenParams) {
         for (ctr = 0; ctr < screenParams.length; ctr += 1) {
             papaya.viewer.ColorTable.addCustomLUT(screenParams[ctr]);

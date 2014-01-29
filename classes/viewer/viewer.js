@@ -1,7 +1,7 @@
 
 /*jslint browser: true, node: true */
 /*global PAPAYA_SPACING, bind, this.container, isString, roundFast, floorFast, getKeyCode, isControlKey, getMousePositionX,
-getMousePositionY, signum, wordwrap, getSizeString, formatNumber, papayaParams, deref, isAltKey, isShiftKey, validDimBounds,
+getMousePositionY, signum, wordwrap, getSizeString, formatNumber, deref, isAltKey, isShiftKey, validDimBounds,
  getScrollSign */
 
 "use strict";
@@ -198,7 +198,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         }
     }
 
-    this.screenVolumes[0] = new papaya.viewer.ScreenVolume(this.volume, papaya.viewer.ColorTable.DEFAULT_COLOR_TABLE.name, true);
+    this.screenVolumes[0] = new papaya.viewer.ScreenVolume(this.volume, this.container.params, papaya.viewer.ColorTable.DEFAULT_COLOR_TABLE.name, true);
     this.setCurrentScreenVol(0);
 
     this.mainImage = this.axialSlice = new papaya.viewer.ScreenSlice(this.volume, papaya.viewer.ScreenSlice.DIRECTION_AXIAL,
@@ -259,10 +259,10 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
         return;
     }
 
-    screenParams = papayaParams[this.loadingVolume.fileName];
+    screenParams = this.container.params[this.loadingVolume.fileName];
     parametric = (screenParams && screenParams.parametric);
 
-    this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, (parametric ? papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[0].name : this.getNextColorTable()), false);
+    this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, this.container.params, (parametric ? papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[0].name : this.getNextColorTable()), false);
     this.setCurrentScreenVol(this.screenVolumes.length - 1);
     this.drawViewer(true);
     this.container.papayaToolbar.buildToolbar();
@@ -272,7 +272,7 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
     if (parametric) {
         this.screenVolumes[this.screenVolumes.length - 1].findImageRange();
         if (this.screenVolumes[this.screenVolumes.length - 1].volume.header.imageRange.imageMin < 0) {
-            this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
+            this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, this.container.params, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
             this.setCurrentScreenVol(this.screenVolumes.length - 1);
             this.drawViewer(true);
             this.container.papayaToolbar.buildToolbar();

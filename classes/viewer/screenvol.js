@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global papayaParams */
+/*global */
 
 "use strict";
 
@@ -9,7 +9,7 @@ papaya.viewer = papaya.viewer || {};
 
 
 
-papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutName, baseImage, parametric) {
+papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params, lutName, baseImage, parametric) {
     /*jslint sub: true */
     this.volume = vol;
     this.lutName = lutName;
@@ -21,7 +21,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, lutNam
     this.alpha = 1.0;
     this.currentTimepoint = 0;
 
-    var screenParams = papayaParams[this.volume.fileName];
+    var screenParams = params[this.volume.fileName];
     if (screenParams) {
         if ((screenParams.min !== undefined) && (screenParams.max !== undefined)) {
             if (parametric) {
