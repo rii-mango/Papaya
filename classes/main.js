@@ -1,8 +1,9 @@
 
 /*jslint browser: true, node: true */
-/*global $, alert, PAPAYA_DEFAULT_CONTAINER_ID, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_MINIMUM_SIZE,
-PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP, checkForBrowserCompatibility, getQueryParams,
-deref, resetComponents */
+/*global $, PAPAYA_MINIMUM_SIZE, PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP,
+PAPAYA_CONTAINER_CLASS_NAME, PAPAYA_CHECK_FOR_JS_CLASS_NAME, PAPAYA_VIEWER_CLASS_NAME, PAPAYA_DISPLAY_CLASS_NAME,
+PAPAYA_TOOLBAR_CLASS_NAME, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_VIEWER_ID, PAPAYA_DEFAULT_DISPLAY_ID,
+PAPAYA_DEFAULT_CONTAINER_ID, checkForBrowserCompatibility, getQueryParams */
 
 "use strict";
 
@@ -133,6 +134,18 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
         }
     }
 };
+
+
+
+function removeCheckForJSClasses(containerHtml, viewerHtml) {
+    // old way, here for backwards compatibility
+    viewerHtml.removeClass(PAPAYA_CONTAINER_CLASS_NAME);
+    viewerHtml.removeClass(PAPAYA_CHECK_FOR_JS_CLASS_NAME);
+
+    // new way
+    containerHtml.removeClass(PAPAYA_CONTAINER_CLASS_NAME);
+    containerHtml.removeClass(PAPAYA_CHECK_FOR_JS_CLASS_NAME);
+}
 
 
 
@@ -284,7 +297,7 @@ function fillContainerHTML(containerHTML, isDefault) {
 
 
 function findParameters(containerHTML) {
-    var viewerHTML, params = null;
+    var viewerHTML, params;
 
     params = containerHTML.data("params");
 
@@ -297,17 +310,6 @@ function findParameters(containerHTML) {
     }
 
     return params;
-}
-
-
-function removeCheckForJSClasses(containerHtml, viewerHtml) {
-    // old way, here for backwards compatibility
-    viewerHtml.removeClass(PAPAYA_CONTAINER_CLASS_NAME);
-    viewerHtml.removeClass(PAPAYA_CHECK_FOR_JS_CLASS_NAME);
-
-    // new way
-    containerHtml.removeClass(PAPAYA_CONTAINER_CLASS_NAME);
-    containerHtml.removeClass(PAPAYA_CHECK_FOR_JS_CLASS_NAME);
 }
 
 

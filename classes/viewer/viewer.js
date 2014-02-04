@@ -1,8 +1,7 @@
 
 /*jslint browser: true, node: true */
-/*global PAPAYA_SPACING, bind, this.container, isString, roundFast, floorFast, getKeyCode, isControlKey, getMousePositionX,
-getMousePositionY, signum, wordwrap, getSizeString, formatNumber, deref, isAltKey, isShiftKey, validDimBounds,
- getScrollSign */
+/*global $, bind, PAPAYA_SPACING, floorFast, validDimBounds, roundFast, getKeyCode, isControlKey, isAltKey, isShiftKey,
+getMousePositionY, getMousePositionX, signum, formatNumber, wordwrap, getSizeString, getScrollSign */
 
 "use strict";
 

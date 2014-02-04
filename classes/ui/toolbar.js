@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, fullyQualifiedVariableExists, PAPAYA_DEFAULT_CONTAINER_ID */
+/*global $, bind, PAPAYA_TITLEBAR_CLASS_NAME */
 
 "use strict";
 

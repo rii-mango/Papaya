@@ -27,13 +27,6 @@ papaya.volume.ImageDimensions.prototype.getNumVoxelsSeries = function () {
 };
 
 
-
-papaya.volume.ImageDimensions.prototype.getNumVoxelsVolume = function () {
-    return this.cols * this.rows * this.slices;
-};
-
-
-
 papaya.volume.ImageDimensions.prototype.getNumVoxelsSlice = function () {
     return this.rows * this.cols;
 };

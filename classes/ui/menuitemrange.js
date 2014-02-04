@@ -40,12 +40,12 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
 
     $("#" + this.minId).change(bind(this, function () {
         menuItemRange.updateDataSource(this);
-        this.viewer.drawViewer(true);
+        menuItemRange.viewer.drawViewer(true);
     }));
 
     $("#" + this.maxId).change(bind(this, function () {
         menuItemRange.updateDataSource(this);
-        this.viewer.drawViewer(true);
+        menuItemRange.viewer.drawViewer(true);
     }));
 };
 
