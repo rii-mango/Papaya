@@ -10,7 +10,7 @@ PAPAYA_DEFAULT_CONTAINER_ID, checkForBrowserCompatibility, getQueryParams */
 var papaya = papaya || {};
 var papayaContainers = [];
 var papayaLoadableImages = papayaLoadableImages || [];
-
+var papayaLastHoveredViewer = null;
 
 
 papaya.Container = papaya.Container || function (containerHtml) {

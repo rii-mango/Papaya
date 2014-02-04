@@ -1,7 +1,8 @@
 
 /*jslint browser: true, node: true */
 /*global $, bind, PAPAYA_SPACING, floorFast, validDimBounds, roundFast, getKeyCode, isControlKey, isAltKey, isShiftKey,
-getMousePositionY, getMousePositionX, signum, formatNumber, wordwrap, getSizeString, getScrollSign */
+getMousePositionY, getMousePositionX, signum, formatNumber, wordwrap, getSizeString, getScrollSign, papayaContainers,
+papayaLastHoveredViewer:true */
 
 "use strict";
 
@@ -729,6 +730,10 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
         return;
     }
 
+    if ((papayaContainers.length > 1) && (papayaLastHoveredViewer !== this)) {
+        return;
+    }
+
     keyCode = getKeyCode(ke);
 
     if (isControlKey(ke)) {
@@ -790,6 +795,7 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
     }
 
     if (!this.keyPressIgnored) {
+        ke.handled = true;
         ke.preventDefault();
     }
 };
@@ -799,11 +805,16 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
 papaya.viewer.Viewer.prototype.keyUpEvent = function (ke) {
     //var keyCode = getKeyCode(ke);
 
+    if ((papayaContainers.length > 1) && (papayaLastHoveredViewer !== this)) {
+        return;
+    }
+
     this.isControlKeyDown = false;
     this.isAltKeyDown = false;
     this.isShiftKeyDown = false;
 
     if (!this.keyPressIgnored) {
+        ke.handled = true;
         ke.preventDefault();
     }
 };
@@ -942,6 +953,8 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
 
     var currentMouseX, currentMouseY, zoomFactorCurrent;
 
+    papayaLastHoveredViewer = this;
+
     currentMouseX = getMousePositionX(me);
     currentMouseY = getMousePositionY(me);
 
@@ -986,6 +999,8 @@ papaya.viewer.Viewer.prototype.mouseDoubleClickEvent = function () {
 
 
 papaya.viewer.Viewer.prototype.mouseOutEvent = function () {
+    papayaLastHoveredViewer = null;
+
     if (this.container.display) {
         this.container.display.drawEmptyDisplay();
     }
