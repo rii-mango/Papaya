@@ -235,7 +235,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
 
     this.canvasRect = this.canvas.getBoundingClientRect();
 
-    this.context.fillStyle = "white";
+    this.context.fillStyle = $("body").css("background-color");
     this.context.fillRect(0, 0, this.canvasRect.right, this.canvasRect.bottom);
 
     this.initialized = true;

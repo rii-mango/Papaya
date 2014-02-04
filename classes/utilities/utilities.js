@@ -311,6 +311,11 @@ function getQueryParams(params) {
 
 // adapted from: http://stackoverflow.com/questions/724857/how-to-find-javascript-variable-by-its-name
 function deref(name) {
+    return derefIn(window, name);
+}
+
+
+function derefIn(parent, name) {
     var obj, M;
 
     if (!isString(name)) {
@@ -321,7 +326,7 @@ function deref(name) {
 
     if (M) {
         M = M[1].split('.');
-        obj = window[M.shift()];
+        obj = parent[M.shift()];
         while (obj && M.length) {
             obj = obj[M.shift()];
         }
@@ -329,3 +334,4 @@ function deref(name) {
 
     return obj || null;
 }
+

@@ -43,7 +43,7 @@ papaya.ui.Dialog.prototype.showDialog = function () {
             } else if (this.content.items[ctr].readonly) {
                 html += "<tr><td class='modalDialogContentLabel'>" + this.content.items[ctr].label + "</td><td class='modalDialogContentControl' id='" + this.content.items[ctr].field + "'></td></tr>";
             } else {
-                if (this.content.items[ctr].disabled && (deref(this.content.items[ctr].disabled) === true)) {
+                if (this.content.items[ctr].disabled && (derefIn(this, this.content.items[ctr].disabled)) === true) {
                     disabled = "disabled='disabled'";
                 } else {
                     disabled = "";

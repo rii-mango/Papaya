@@ -140,7 +140,7 @@ papaya.Container.prototype.buildViewer = function (params) {
     var dims;
 
     this.viewerHtml = this.containerHtml.find("." + PAPAYA_VIEWER_CLASS_NAME);
-    this.viewerHtml.removeClass("checkForJS");
+    removeCheckForJSClasses(this.containerHtml, this.viewerHtml);
     this.viewerHtml.html("");  // remove noscript message
     dims = this.getViewerDimensions();
     this.viewer = new papaya.viewer.Viewer(this, dims.width, dims.height, params);
@@ -267,6 +267,8 @@ function fillContainerHTML(containerHTML, isDefault) {
         } else {
             $("<div class='" + PAPAYA_DISPLAY_CLASS_NAME + "' id='" + PAPAYA_DEFAULT_DISPLAY_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_VIEWER_ID));
         }
+
+        console.log("This method of adding a Papaya container is deprecated.  Try simply <div class='papaya' data-params='params'></div> instead...");
     } else {
         containerHTML.attr("id", PAPAYA_DEFAULT_CONTAINER_ID + papayaContainers.length);
 
@@ -298,6 +300,17 @@ function findParameters(containerHTML) {
 }
 
 
+function removeCheckForJSClasses(containerHtml, viewerHtml) {
+    // old way, here for backwards compatibility
+    viewerHtml.removeClass(PAPAYA_CONTAINER_CLASS_NAME);
+    viewerHtml.removeClass(PAPAYA_CHECK_FOR_JS_CLASS_NAME);
+
+    // new way
+    containerHtml.removeClass(PAPAYA_CONTAINER_CLASS_NAME);
+    containerHtml.removeClass(PAPAYA_CHECK_FOR_JS_CLASS_NAME);
+}
+
+
 
 function buildContainer(containerHTML) {
     var container, message, viewerHtml, loadParams, loadUrl;
@@ -306,15 +319,17 @@ function buildContainer(containerHTML) {
     viewerHtml = containerHTML.find("." + PAPAYA_VIEWER_CLASS_NAME);
 
     if (message !== null) {
-        viewerHtml.removeClass("checkForJS");
-        viewerHtml.addClass("checkBrowser");
-        viewerHtml.html("<div class='checkBrowserMessage'>" + message + "</div>");
+        removeCheckForJSClasses(containerHTML, viewerHtml);
+        containerHTML.addClass("checkBrowser");
+        viewerHtml.addClass("checkBrowserMessage");
+        viewerHtml.html(message);
     } else {
         loadParams = findParameters(containerHTML);
 
         container = new papaya.Container(containerHTML);
         container.containerIndex = papayaContainers.length;
         container.preferences = new papaya.viewer.Preferences();
+        removeCheckForJSClasses(containerHTML, viewerHtml);
 
         if (loadParams) {
             container.params = $.extend(container.params, window[loadParams]);
@@ -363,8 +378,6 @@ function buildAllContainers() {
 
 
 
-
-
 function main() {
     buildAllContainers();
 }
@@ -376,5 +389,7 @@ window.onload = main;
 
 
 window.onresize = function () {
-    papayaContainers[0].resizeViewerComponents(true);  // TODO
+    if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
+        papayaContainers[0].resizeViewerComponents(true);
+    }
 };

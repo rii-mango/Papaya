@@ -9,6 +9,7 @@ var PAPAYA_DEFAULT_VIEWER_ID  = "papayaViewer",
     PAPAYA_TOOLBAR_CLASS_NAME = "papayaToolbarClass",
     PAPAYA_DISPLAY_CLASS_NAME = "papayaDisplayClass",
     PAPAYA_TITLEBAR_CLASS_NAME = "papayaTitlebarClass",
+    PAPAYA_CHECK_FOR_JS_CLASS_NAME = "checkForJS",
     PAPAYA_SPACING = 3,  // padding between slice views
     PAPAYA_SECTION_HEIGHT = 50,
     PAPAYA_CONTAINER_PADDING = 20,

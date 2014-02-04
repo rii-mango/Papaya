@@ -21,8 +21,10 @@ papaya.ui.Menu = papaya.ui.Menu || function (viewer, menuData, callback, dataSou
     this.menuOnHover = menuData.menuOnHover;
 
     if ((modifier === undefined) || (modifier === null)) {
+        this.imageIndex = -1;
         this.modifier = this.viewer.container.containerIndex;
     } else {
+        this.imageIndex = modifier;
         this.modifier = modifier + this.viewer.container.containerIndex;
     }
 
@@ -49,7 +51,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
         html = "<span id='" + this.buttonId + "' class='unselectable menuIcon" + (this.isImageButton ? " imageButton'" : "'") + (this.isRight ? " style='float:right'" : "") + ">" +
                 "<img style='width:" + papaya.viewer.ColorTable.ICON_SIZE + "px; height:" + papaya.viewer.ColorTable.ICON_SIZE + "px; vertical-align:bottom; ";
 
-        if (this.dataSource.isSelected(parseInt(this.modifier, 10))) {
+        if (this.dataSource.isSelected(parseInt(this.imageIndex, 10))) {
             html += "border:2px outset #FF5A3D;background-color:#eeeeee;padding:1px;";
         } else {
             html += "border:2px outset lightgray;background-color:#eeeeee;padding:1px;";
@@ -88,7 +90,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
                     }
                 },
                 bind(menu, function () {
-                    if (menu.dataSource.isSelected(parseInt(menu.modifier, 10)) && menu.dataSource.isSelectable()) {
+                    if (menu.dataSource.isSelected(parseInt(menu.imageIndex, 10)) && menu.dataSource.isSelectable()) {
                         $("#" + menu.buttonId + " > img").css({"border-color": "#FF5A3D"});
                     } else {
                         $("#" + menu.buttonId + " > img").css({"border-color": "lightgray"});
