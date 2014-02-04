@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, fullyQualifiedVariableExists, PAPAYA_DEFAULT_CONTAINER_ID, PAPAYA_DEFAULT_TITLEBAR_ID */
+/*global $, bind, fullyQualifiedVariableExists, PAPAYA_DEFAULT_CONTAINER_ID */
 
 "use strict";
 
@@ -83,8 +83,9 @@ papaya.ui.Toolbar.IMAGE_INFO_DATA = {
 papaya.ui.Toolbar.prototype.buildToolbar = function () {
     var ctr;
 
-    $(".menuIcon").remove();
-    $(".menuLabel").remove();
+    this.container.toolbarHtml.find(".menuIcon").remove();
+    this.container.toolbarHtml.find(".menuLabel").remove();
+    this.container.toolbarHtml.find(".menuTitle").remove();
 
     this.buildOpenMenuItems();
 
@@ -94,6 +95,8 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
 
     this.buildAtlasMenu();
     this.buildColorMenuItems();
+
+    this.container.titlebarHtml = this.container.containerHtml.find("." + PAPAYA_TITLEBAR_CLASS_NAME);
 };
 
 
@@ -234,7 +237,8 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
 papaya.ui.Toolbar.prototype.updateImageButtons = function () {
     var ctr, screenVol, dataUrl, data;
 
-    $(".imageButton").remove();
+    this.container.toolbarHtml.find(".imageButton").remove();
+
     this.imageMenus = [];
 
     for (ctr = this.viewer.screenVolumes.length - 1; ctr >= 0; ctr -= 1) {
@@ -257,15 +261,15 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
 papaya.ui.Toolbar.prototype.closeAllMenus = function () {
     var menuHtml, modalDialogHtml;
 
-    menuHtml = $(".menu");
+    menuHtml = this.container.toolbarHtml.find(".menu");
     menuHtml.hide(100);
     menuHtml.remove();
 
-    modalDialogHtml = $(".modalDialog");
+    modalDialogHtml = this.container.toolbarHtml.find(".modalDialog");
     modalDialogHtml.hide(100);
     modalDialogHtml.remove();
 
-    $("#" + PAPAYA_DEFAULT_CONTAINER_ID).removeClass("modalBackground");
+    this.container.containerHtml.removeClass("modalBackground");
 };
 
 
@@ -273,8 +277,8 @@ papaya.ui.Toolbar.prototype.closeAllMenus = function () {
 papaya.ui.Toolbar.prototype.isShowingMenus = function () {
     var menuVisible, dialogVisible;
 
-    menuVisible = $(".menu").is(":visible");
-    dialogVisible = $(".modalDialog").is(":visible");
+    menuVisible = this.container.toolbarHtml.find(".menu").is(":visible");
+    dialogVisible = this.container.toolbarHtml.find(".modalDialog").is(":visible");
 
     return (menuVisible || dialogVisible);
 };
@@ -327,7 +331,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
 
 
 papaya.ui.Toolbar.prototype.updateTitleBar = function (title) {
-    var elem = document.getElementById(PAPAYA_DEFAULT_TITLEBAR_ID);
+    var elem = this.container.titlebarHtml[0];
 
     if (elem) {
         elem.innerHTML = title;

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="stylesheet" type="text/css" href="../css/reset.css" />
+    <link rel="stylesheet" type="text/css" href="../css/main.css" />
+
+    <script type="text/javascript" src="../jquery/jquery.js"></script>
+
+    <script type="text/javascript" src="../classes/constants.js"></script>
+
+    <script type="text/javascript" src="../classes/data/sample-image.js"></script>
+    <script type="text/javascript" src="../classes/data/talairach-atlas.js"></script>
+    <script type="text/javascript" src="../classes/data/talairach-atlas-image.js"></script>
+
+    <script type="text/javascript" src="../classes/core/coordinate.js"></script>
+    <script type="text/javascript" src="../classes/core/dimensions.js"></script>
+    <script type="text/javascript" src="../classes/core/point.js"></script>
+
+    <script type="text/javascript" src="../classes/volume/header.js"></script>
+    <script type="text/javascript" src="../classes/volume/imagedata.js"></script>
+    <script type="text/javascript" src="../classes/volume/imagedescription.js"></script>
+    <script type="text/javascript" src="../classes/volume/imagedimensions.js"></script>
+    <script type="text/javascript" src="../classes/volume/imagerange.js"></script>
+    <script type="text/javascript" src="../classes/volume/imagetype.js"></script>
+    <script type="text/javascript" src="../classes/volume/orientation.js"></script>
+    <script type="text/javascript" src="../classes/volume/transform.js"></script>
+    <script type="text/javascript" src="../classes/volume/volume.js"></script>
+    <script type="text/javascript" src="../classes/volume/voxeldimensions.js"></script>
+    <script type="text/javascript" src="../classes/volume/voxelvalue.js"></script>
+
+    <script type="text/javascript" src="../classes/volume/nifti/header-nifti.js"></script>
+    <script type="text/javascript" src="../classes/volume/nifti/nifti.js"></script>
+
+    <script type="text/javascript" src="../classes/viewer/atlas.js"></script>
+    <script type="text/javascript" src="../classes/viewer/colortable.js"></script>
+    <script type="text/javascript" src="../classes/viewer/display.js"></script>
+    <script type="text/javascript" src="../classes/viewer/preferences.js"></script>
+    <script type="text/javascript" src="../classes/viewer/screenslice.js"></script>
+    <script type="text/javascript" src="../classes/viewer/screenvol.js"></script>
+    <script type="text/javascript" src="../classes/viewer/viewer.js"></script>
+
+    <script type="text/javascript" src="../classes/ui/dialog.js"></script>
+    <script type="text/javascript" src="../classes/ui/menu.js"></script>
+    <script type="text/javascript" src="../classes/ui/menuitem.js"></script>
+    <script type="text/javascript" src="../classes/ui/menuitemcheckbox.js"></script>
+    <script type="text/javascript" src="../classes/ui/menuitemfilechooser.js"></script>
+    <script type="text/javascript" src="../classes/ui/menuitemrange.js"></script>
+    <script type="text/javascript" src="../classes/ui/menuitemspacer.js"></script>
+    <script type="text/javascript" src="../classes/ui/toolbar.js"></script>
+
+    <script type="text/javascript" src="../classes/main.js"></script>
+
+    <script type="text/javascript" src="../classes/utilities/base64-binary.js"></script>
+    <script type="text/javascript" src="../classes/utilities/browser.js"></script>
+    <script type="text/javascript" src="../classes/utilities/gunzip.js"></script>
+    <script type="text/javascript" src="../classes/utilities/numerics.js"></script>
+    <script type="text/javascript" src="../classes/utilities/platform.js"></script>
+    <script type="text/javascript" src="../classes/utilities/utilities.js"></script>
+
+    <script type="text/javascript">
+        /*
+         DON'T ADD THIS!  This is here for debugging purposes only; papaya-builder adds this for you
+         automatically.  This structure is used to manage image data references used by the File menu (and also
+         atlas image data references).
+         */
+        var papayaLoadableImages = [
+            {"nicename": "Sample Image", "name": "sample_image", "encode": "sample_image"},
+            {"nicename": "Atlas", "name": "Talairach_labels_1mm", "encode": "Talairach_labels_1mm", "hide": true}
+        ];
+
+        /*
+         Here you can specify what images you want to load or what options you want to apply automatically. You
+         need to reference the variable name in 'data-params' below.
+         */
+        var params = [];
+        params["worldSpace"] = true;
+        params["images"] = ["sample_image", "data/zstat.nii.gz"];
+        params["luts"] = [{"name": "Custom", "data":[[0, 1, 0, 0], [.5, 1, 1, 0], [1, 1, 1, 1]]}];
+        params["zstat.nii.gz"] = {"min": 4, "max": 8, "lut": "Custom", "alpha": 0.5};
+        params["atlas"] = "MNI (Nearest Grey Matter)";
+    </script>
+
+    <title>Old</title>
+</head>
+
+<body>
+<div id="papayaContainer">
+    <div id="papayaToolbar"></div>
+    <div id="papayaViewer" class="checkForJS" data-params="params"></div>
+    <div id="papayaDisplay"></div>
+</div>
+</body>
+</html>

@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, showMenu, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_TITLEBAR_ID, PAPAYA_DEFAULT_VIEWER_ID */
+/*global $, bind, showMenu */
 
 "use strict";
 
@@ -12,7 +12,7 @@ papaya.ui = papaya.ui || {};
 papaya.ui.Menu = papaya.ui.Menu || function (viewer, menuData, callback, dataSource, modifier) {
     this.viewer = viewer;
     this.isTitleBar = menuData.titleBar;
-    this.label = this.isTitleBar ? PAPAYA_DEFAULT_TITLEBAR_ID : menuData.label;
+    this.label = menuData.label;
     this.icons = menuData.icons;
     this.callback = callback;
     this.dataSource = dataSource;
@@ -21,32 +21,27 @@ papaya.ui.Menu = papaya.ui.Menu || function (viewer, menuData, callback, dataSou
     this.menuOnHover = menuData.menuOnHover;
 
     if ((modifier === undefined) || (modifier === null)) {
-        this.modifier = "";
+        this.modifier = this.viewer.container.containerIndex;
     } else {
-        this.modifier = modifier;
+        this.modifier = modifier + this.viewer.container.containerIndex;
     }
 
-    this.buttonId = this.label.replace(/ /g, "_").replace("...", "_") + (modifier || "");
-    this.menuId = (this.label + "Menu").replace(/ /g, "_").replace("...", "_") + (modifier || "");
+    this.buttonId = this.label.replace(/ /g, "_").replace("...", "_") + (this.modifier || "");
+    this.menuId = (this.label + "Menu").replace(/ /g, "_").replace("...", "_") + (this.modifier || "");
     this.isRight = (menuData.icons !== null);
     this.isImageButton = menuData.imageButton;
-
-    if (this.isTitleBar) {  // if titleBar, clear label after IDs are constructed
-        this.label = "";
-    }
 };
 
 
 
 papaya.ui.Menu.prototype.buildMenuButton = function () {
-    var html, menu, buttonHtml, buttonHtmlId, buttonImgHtml, buttonImgHtmlId, toolbarId, toolbarHtml;
+    var html, menu, buttonHtml, buttonHtmlId, buttonImgHtml, buttonImgHtmlId, toolbarHtml;
 
     buttonHtmlId = "#" + this.buttonId;
     buttonHtml = $(buttonHtmlId);
     buttonHtml.remove();
 
-    toolbarId = "#" + PAPAYA_DEFAULT_TOOLBAR_ID;
-    toolbarHtml = $(toolbarId);
+    toolbarHtml = this.viewer.container.toolbarHtml;
 
     html = null;
 
@@ -60,54 +55,57 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
             html += "border:2px outset lightgray;background-color:#eeeeee;padding:1px;";
         }
 
-        html += "' src='" + this.icons[this.dataSource.getIndex(this.label)] + "' /></span>";
+        html += ("' src='" + this.icons[this.dataSource.getIndex(this.label)] + "' /></span>");
     } else if (this.isTitleBar) {
-        html = "<div id='" + this.buttonId + "' class='unselectable menuTitle' style='z-index:-1;position:absolute;top:" + ($("#" + PAPAYA_DEFAULT_VIEWER_ID).position().top - 1.25 * papaya.ui.Toolbar.SIZE)
+        html = "<div class='unselectable menuTitle " + PAPAYA_TITLEBAR_CLASS_NAME + "' style='z-index:-1;position:absolute;top:" + (this.viewer.container.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE)
             + "px;width:" + toolbarHtml.width() + "px;text-align:center;'>" + this.label + "</div>";
     } else {
         html = "<span id='" + this.buttonId + "' class='unselectable menuLabel'>" + this.label + "</span>";
     }
 
     toolbarHtml.append(html);
-    buttonHtml = $(buttonHtmlId);
-    buttonImgHtmlId = "#" + this.buttonId + " > img";
-    buttonImgHtml = $(buttonImgHtmlId);
 
-    if (this.menuOnHover) {
-        buttonImgHtml.mouseover(bind(this, this.showMenu));
-    }
+    if (!this.isTitleBar) {
+        buttonHtml = $(buttonHtmlId);
+        buttonImgHtmlId = "#" + this.buttonId + " > img";
+        buttonImgHtml = $(buttonImgHtmlId);
 
-    buttonHtml.click(bind(this, this.doClick));
+        if (this.menuOnHover) {
+            buttonImgHtml.mouseover(bind(this, this.showMenu));
+        }
 
-    menu = this;
+        buttonHtml.click(bind(this, this.doClick));
 
-    if (this.icons) {
-        buttonImgHtml.hover(
-            function () {
-                if (menu.icons.length > 1) {
-                    $(this).css({"border-color": "gray"});
-                } else {
-                    $(this).css({"border-color": "#FF5A3D"});
-                }
-            },
-            bind(menu, function () {
-                if (menu.dataSource.isSelected(parseInt(menu.modifier, 10)) && menu.dataSource.isSelectable()) {
-                    $("#" + menu.buttonId + " > img").css({"border-color": "#FF5A3D"});
-                } else {
-                    $("#" + menu.buttonId + " > img").css({"border-color": "lightgray"});
-                }
-            })
-        );
+        menu = this;
 
-        buttonImgHtml.mousedown(function () {
-            $(this).css({ 'border': '2px inset lightgray' });
-        });
+        if (this.icons) {
+            buttonImgHtml.hover(
+                function () {
+                    if (menu.icons.length > 1) {
+                        $(this).css({"border-color": "gray"});
+                    } else {
+                        $(this).css({"border-color": "#FF5A3D"});
+                    }
+                },
+                bind(menu, function () {
+                    if (menu.dataSource.isSelected(parseInt(menu.modifier, 10)) && menu.dataSource.isSelectable()) {
+                        $("#" + menu.buttonId + " > img").css({"border-color": "#FF5A3D"});
+                    } else {
+                        $("#" + menu.buttonId + " > img").css({"border-color": "lightgray"});
+                    }
+                })
+            );
 
-        buttonImgHtml.mouseup(function () {
-            $(this).css({ 'border': '2px outset lightgray' });
-        });
-    } else if (!this.isTitleBar) {
-        buttonHtml.hover(function () {$(this).toggleClass('menuButtonHover'); });
+            buttonImgHtml.mousedown(function () {
+                $(this).css({ 'border': '2px inset lightgray' });
+            });
+
+            buttonImgHtml.mouseup(function () {
+                $(this).css({ 'border': '2px outset lightgray' });
+            });
+        } else if (!this.isTitleBar) {
+            buttonHtml.hover(function () {$(this).toggleClass('menuButtonHover'); });
+        }
     }
 
     return this.buttonId;
@@ -125,7 +123,7 @@ papaya.ui.Menu.prototype.buildMenu = function () {
     var ctr, html, buttonHtml;
 
     html = "<ul id='" + this.menuId + "' class='menu'></ul>";
-    $("#" + PAPAYA_DEFAULT_TOOLBAR_ID).append(html);
+    this.viewer.container.toolbarHtml.append(html);
 
     for (ctr = 0; ctr < this.items.length; ctr += 1) {
         buttonHtml = this.items[ctr].buildHTML(this.menuId);

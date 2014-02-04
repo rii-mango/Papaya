@@ -213,10 +213,10 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
     this.canvas.addEventListener("mousemove", this.listenerMouseMove, false);
     this.canvas.addEventListener("mousedown", this.listenerMouseDown, false);
     this.canvas.addEventListener("mouseout", this.listenerMouseOut, false);
-    document.addEventListener("mouseup", this.listenerMouseUp, false);
+    this.canvas.addEventListener("mouseup", this.listenerMouseUp, false);
     document.addEventListener("keydown", this.listenerKeyDown, true);
     document.addEventListener("keyup", this.listenerKeyUp, true);
-    document.addEventListener("contextmenu", this.listenerContextMenu, false);
+    this.canvas.addEventListener("contextmenu", this.listenerContextMenu, false);
     this.canvas.addEventListener("touchmove", this.listenerTouchMove, false);
     this.canvas.addEventListener("touchstart", this.listenerMouseDown, false);
     this.canvas.addEventListener("touchend", this.listenerMouseUp, false);
@@ -1105,14 +1105,14 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     this.canvas.removeEventListener("mousemove", this.listenerMouseMove, false);
     this.canvas.removeEventListener("mousedown", this.listenerMouseDown, false);
     this.canvas.removeEventListener("mouseout", this.listenerMouseOut, false);
-    document.removeEventListener("mouseup", this.listenerMouseUp, false);
+    this.canvas.removeEventListener("mouseup", this.listenerMouseUp, false);
     document.removeEventListener("keydown", this.listenerKeyDown, true);
     document.removeEventListener("keyup", this.listenerKeyUp, true);
-    document.removeEventListener("contextmenu", this.listenerContextMenu, false);
-    document.removeEventListener("touchmove", this.listenerTouchMove, false);
-    document.removeEventListener("touchstart", this.listenerMouseDown, false);
-    document.removeEventListener("touchend", this.listenerMouseUp, false);
-    document.removeEventListener("dblclick", this.listenerMouseDoubleClick, false);
+    this.canvas.removeEventListener("contextmenu", this.listenerContextMenu, false);
+    this.canvas.removeEventListener("touchmove", this.listenerTouchMove, false);
+    this.canvas.removeEventListener("touchstart", this.listenerMouseDown, false);
+    this.canvas.removeEventListener("touchend", this.listenerMouseUp, false);
+    this.canvas.removeEventListener("dblclick", this.listenerMouseDoubleClick, false);
 
     if (!this.container.nestedViewer) {
         window.removeEventListener('DOMMouseScroll', this.listenerScroll, false);

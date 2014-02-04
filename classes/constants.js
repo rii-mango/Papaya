@@ -2,10 +2,15 @@
 var PAPAYA_DEFAULT_VIEWER_ID  = "papayaViewer",
     PAPAYA_DEFAULT_DISPLAY_ID = "papayaDisplay",
     PAPAYA_DEFAULT_TOOLBAR_ID = "papayaToolbar",
-    PAPAYA_DEFAULT_TITLEBAR_ID = "papayaTitlebar",
     PAPAYA_DEFAULT_CONTAINER_ID = "papayaContainer",
-    PAPAYA_CLASS_NAME = "papaya",
+
+    PAPAYA_CONTAINER_CLASS_NAME = "papaya",
+    PAPAYA_VIEWER_CLASS_NAME = "papayaViewerClass",
+    PAPAYA_TOOLBAR_CLASS_NAME = "papayaToolbarClass",
+    PAPAYA_DISPLAY_CLASS_NAME = "papayaDisplayClass",
+    PAPAYA_TITLEBAR_CLASS_NAME = "papayaTitlebarClass",
     PAPAYA_SPACING = 3,  // padding between slice views
     PAPAYA_SECTION_HEIGHT = 50,
-    PAPAYA_CONTAINER_PADDING_TOP = 20,
+    PAPAYA_CONTAINER_PADDING = 20,
+    PAPAYA_CONTAINER_PADDING_TOP = PAPAYA_CONTAINER_PADDING,
     PAPAYA_MINIMUM_SIZE = 500;

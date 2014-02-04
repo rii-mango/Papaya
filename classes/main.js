@@ -1,8 +1,8 @@
 
 /*jslint browser: true, node: true */
-/*global $, alert, PAPAYA_DEFAULT_CONTAINER_ID, PAPAYA_DEFAULT_VIEWER_ID, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_DISPLAY_ID, PAPAYA_MINIMUM_SIZE,
+/*global $, alert, PAPAYA_DEFAULT_CONTAINER_ID, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_MINIMUM_SIZE,
 PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP, checkForBrowserCompatibility, getQueryParams,
-deref, resetComponents, PAPAYA_DEFAULT_TITLEBAR_ID */
+deref, resetComponents */
 
 "use strict";
 
@@ -12,7 +12,13 @@ var papayaLoadableImages = papayaLoadableImages || [];
 
 
 
-papaya.Container = papaya.Container || function () {
+papaya.Container = papaya.Container || function (containerHtml) {
+    this.containerHtml = containerHtml;
+    this.containerIndex = null;
+    this.toolbarHtml = null;
+    this.viewerHtml = null;
+    this.displayHtml = null;
+    this.titlebarHtml = null;
     this.viewer = null;
     this.display = null;
     this.toolbar = null;
@@ -25,30 +31,25 @@ papaya.Container = papaya.Container || function () {
 
 
 
-papaya.Container.prototype.resetComponents = function() {
-    var containerHtml = $("#" + PAPAYA_DEFAULT_CONTAINER_ID);
-
-    containerHtml.css({height: "auto"});
-    containerHtml.css({width: "auto"});
-    containerHtml.css({margin: "auto"});
-
-    $("#" + PAPAYA_DEFAULT_VIEWER_ID).removeClass("checkForJS");
+papaya.Container.prototype.resetComponents = function () {
+    this.containerHtml.css({height: "auto"});
+    this.containerHtml.css({width: "auto"});
+    this.containerHtml.css({margin: "auto"});
     $('head').append("<style>div#papayaViewer:before{ content:'' }</style>");
 };
 
 
 
-papaya.Container.prototype.isKioskMode = function() {
-    return $("#" + PAPAYA_DEFAULT_TOOLBAR_ID).length === 0;
+papaya.Container.prototype.isKioskMode = function () {
+    return false;
 };
 
 
 
-papaya.Container.prototype.getViewerDimensions = function() {
+papaya.Container.prototype.getViewerDimensions = function () {
     var numAdditionalSections = 2,
         parentHeight = PAPAYA_MINIMUM_SIZE,
         parentWidth = PAPAYA_MINIMUM_SIZE,
-        containerHtml = $("#" + PAPAYA_DEFAULT_CONTAINER_ID),
         height,
         width,
         widthPadding,
@@ -59,8 +60,8 @@ papaya.Container.prototype.getViewerDimensions = function() {
     }
 
     if (this.nestedViewer) {
-        parentHeight = containerHtml.parent().height();
-        parentWidth = containerHtml.parent().width();
+        parentHeight = this.containerHtml.parent().height();
+        parentWidth = this.containerHtml.parent().width();
     } else {
         parentHeight = window.innerHeight;
         parentWidth = window.innerWidth;
@@ -68,12 +69,12 @@ papaya.Container.prototype.getViewerDimensions = function() {
 
     if (parentHeight < PAPAYA_MINIMUM_SIZE) {
         parentHeight = PAPAYA_MINIMUM_SIZE;
-        containerHtml.parent().height(PAPAYA_MINIMUM_SIZE);
+        this.containerHtml.parent().height(PAPAYA_MINIMUM_SIZE);
     }
 
     if (parentWidth < PAPAYA_MINIMUM_SIZE) {
         parentWidth = PAPAYA_MINIMUM_SIZE;
-        containerHtml.parent().width(PAPAYA_MINIMUM_SIZE);
+        this.containerHtml.parent().width(PAPAYA_MINIMUM_SIZE);
     }
 
     height = parentHeight - PAPAYA_SECTION_HEIGHT * numAdditionalSections;
@@ -94,36 +95,33 @@ papaya.Container.prototype.getViewerDimensions = function() {
 
 
 
-papaya.Container.prototype.resizeViewerComponents = function(resize) {
+papaya.Container.prototype.resizeViewerComponents = function (resize) {
     this.toolbar.closeAllMenus();
 
-    var dims = this.getViewerDimensions(),
-        toolbarHtml = $("#" + PAPAYA_DEFAULT_TOOLBAR_ID),
-        viewerHtml = $("#" + PAPAYA_DEFAULT_VIEWER_ID),
-        displayHtml = $("#" + PAPAYA_DEFAULT_DISPLAY_ID),
-        titlebarHtml = $("#" + PAPAYA_DEFAULT_TITLEBAR_ID);
+    var dims = this.getViewerDimensions();
 
-    toolbarHtml.css({paddingLeft: dims.widthPadding + "px"});
-    toolbarHtml.css({paddingBottom: PAPAYA_SPACING + "px"});
-    toolbarHtml.css({width: dims.width + "px"});
-    toolbarHtml.css({height: papaya.ui.Toolbar.SIZE + "px"});
-    titlebarHtml.css({width: dims.width + "px"});
+    this.toolbarHtml.css({paddingLeft: dims.widthPadding + "px"});
+    this.toolbarHtml.css({paddingBottom: PAPAYA_SPACING + "px"});
+    this.toolbarHtml.css({width: dims.width + "px"});
+    this.toolbarHtml.css({height: papaya.ui.Toolbar.SIZE + "px"});
 
-    viewerHtml.css({height: "100%"});
-    viewerHtml.css({width: dims.width + "px"});
-    viewerHtml.css({paddingLeft: dims.widthPadding + "px"});
+    this.titlebarHtml.css({width: dims.width + "px"});
+
+    this.viewerHtml.css({height: "100%"});
+    this.viewerHtml.css({width: dims.width + "px"});
+    this.viewerHtml.css({paddingLeft: dims.widthPadding + "px"});
 
     if (resize) {
         this.viewer.resizeViewer(dims);
     }
 
     if (this.display) {
-        displayHtml.css({height: PAPAYA_SECTION_HEIGHT + "px"});
-        displayHtml.css({paddingLeft: dims.widthPadding + "px"});
+        this.displayHtml.css({height: PAPAYA_SECTION_HEIGHT + "px"});
+        this.displayHtml.css({paddingLeft: dims.widthPadding + "px"});
         this.display.canvas.width = dims.width;
     }
 
-    $("#" + PAPAYA_DEFAULT_CONTAINER_ID).css({paddingTop: dims.heightPadding + "px"});
+    this.containerHtml.css({paddingTop: dims.heightPadding + "px"});
 
     if (this.viewer.initialized) {
         this.viewer.drawViewer(true);
@@ -139,27 +137,32 @@ papaya.Container.prototype.resizeViewerComponents = function(resize) {
 
 
 papaya.Container.prototype.buildViewer = function (params) {
-    var viewerHtml, dims;
+    var dims;
 
-    viewerHtml = $("#" + PAPAYA_DEFAULT_VIEWER_ID);
-    viewerHtml.html("");  // remove noscript message
+    this.viewerHtml = this.containerHtml.find("." + PAPAYA_VIEWER_CLASS_NAME);
+    this.viewerHtml.removeClass("checkForJS");
+    this.viewerHtml.html("");  // remove noscript message
     dims = this.getViewerDimensions();
-    this.viewer= new papaya.viewer.Viewer(this, dims.width, dims.height, params);
-    viewerHtml.append($(this.viewer.canvas));
+    this.viewer = new papaya.viewer.Viewer(this, dims.width, dims.height, params);
+    this.viewerHtml.append($(this.viewer.canvas));
     this.preferences.viewer = this.viewer;
 };
 
 
 
 papaya.Container.prototype.buildDisplay = function () {
-    var dims = this.getViewerDimensions();
+    var dims;
+
+    this.displayHtml = this.containerHtml.find("." + PAPAYA_DISPLAY_CLASS_NAME);
+    dims = this.getViewerDimensions();
     this.display = new papaya.viewer.Display(this, dims.width);
-    $("#" + PAPAYA_DEFAULT_DISPLAY_ID).append($(this.display.canvas));
+    this.displayHtml.append($(this.display.canvas));
 };
 
 
 
 papaya.Container.prototype.buildToolbar = function () {
+    this.toolbarHtml = this.containerHtml.find("." + PAPAYA_TOOLBAR_CLASS_NAME);
     this.toolbar = new papaya.ui.Toolbar(this);
     this.toolbar.buildToolbar();
 };
@@ -168,9 +171,8 @@ papaya.Container.prototype.buildToolbar = function () {
 
 papaya.Container.prototype.setUpDnD = function () {
     var container = this;
-    var containerHtml = $("#" + PAPAYA_DEFAULT_CONTAINER_ID);
 
-    containerHtml[0].ondragover = function () {
+    this.containerHtml[0].ondragover = function () {
         container.viewer.draggingOver = true;
         if (!container.viewer.initialized) {
             container.viewer.drawEmptyViewer();
@@ -179,7 +181,7 @@ papaya.Container.prototype.setUpDnD = function () {
         return false;
     };
 
-    containerHtml[0].ondragleave = function () {
+    this.containerHtml[0].ondragleave = function () {
         container.viewer.draggingOver = false;
         if (!container.viewer.initialized) {
             container.viewer.drawEmptyViewer();
@@ -187,7 +189,7 @@ papaya.Container.prototype.setUpDnD = function () {
         return false;
     };
 
-    containerHtml[0].ondragend = function () {
+    this.containerHtml[0].ondragend = function () {
         container.viewer.draggingOver = false;
         if (!container.viewer.initialized) {
             container.viewer.drawEmptyViewer();
@@ -195,7 +197,7 @@ papaya.Container.prototype.setUpDnD = function () {
         return false;
     };
 
-    containerHtml[0].ondrop = function (e) {
+    this.containerHtml[0].ondrop = function (e) {
         e.preventDefault();
 
         if (e.dataTransfer.files.length > 1) {
@@ -240,45 +242,79 @@ papaya.Container.prototype.findLoadableImage = function (name) {
 
 
 
-function buildContainerHTML(containerHTML) {
-    var viewerHTML = containerHTML.find("#" + PAPAYA_DEFAULT_VIEWER_ID);
+function fillContainerHTML(containerHTML, isDefault) {
+    var toolbarHTML, viewerHTML, displayHTML;
 
-}
+    if (isDefault) {
+        toolbarHTML = containerHTML.find("#" + PAPAYA_DEFAULT_TOOLBAR_ID);
+        viewerHTML = containerHTML.find("#" + PAPAYA_DEFAULT_VIEWER_ID);
+        displayHTML = containerHTML.find("#" + PAPAYA_DEFAULT_DISPLAY_ID);
 
+        if (toolbarHTML) {
+            toolbarHTML.addClass(PAPAYA_TOOLBAR_CLASS_NAME);
+        } else {
+            containerHTML.prepend("<div class='" + PAPAYA_TOOLBAR_CLASS_NAME + "' id='" + PAPAYA_DEFAULT_TOOLBAR_ID + "'></div>");
+        }
 
+        if (viewerHTML) {
+            viewerHTML.addClass(PAPAYA_VIEWER_CLASS_NAME);
+        } else {
+            $("<div class='" + PAPAYA_VIEWER_CLASS_NAME + "' id='" + PAPAYA_DEFAULT_VIEWER_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_TOOLBAR_ID));
+        }
 
-function findPapayaContainersHTML() {
-    var defaultContainer, containers;
+        if (displayHTML) {
+            displayHTML.addClass(PAPAYA_DISPLAY_CLASS_NAME);
+        } else {
+            $("<div class='" + PAPAYA_DISPLAY_CLASS_NAME + "' id='" + PAPAYA_DEFAULT_DISPLAY_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_VIEWER_ID));
+        }
+    } else {
+        containerHTML.attr("id", PAPAYA_DEFAULT_CONTAINER_ID + papayaContainers.length);
 
-    defaultContainer = $("#" + PAPAYA_DEFAULT_CONTAINER_ID);
-    containers = $("." + PAPAYA_CLASS_NAME);
-
-    if (defaultContainer) {
-    } else if (containers && (containers.length > 0)) {
-
+        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_TOOLBAR_ID + papayaContainers.length) + "' class='" + PAPAYA_TOOLBAR_CLASS_NAME + "'></div>");
+        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_VIEWER_ID + papayaContainers.length) + "' class='" + PAPAYA_VIEWER_CLASS_NAME + "'></div>");
+        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_DISPLAY_ID + papayaContainers.length) + "' class='" + PAPAYA_DISPLAY_CLASS_NAME + "'></div>");
     }
+
+    return viewerHTML;
 }
 
 
 
-function main() {
+
+function findParameters(containerHTML) {
+    var viewerHTML, params = null;
+
+    params = containerHTML.data("params");
+
+    if (!params) {
+        viewerHTML = containerHTML.find("." + PAPAYA_VIEWER_CLASS_NAME);
+
+        if (viewerHTML) {
+            params = viewerHTML.data("params");
+        }
+    }
+
+    return params;
+}
+
+
+
+function buildContainer(containerHTML) {
     var container, message, viewerHtml, loadParams, loadUrl;
 
-    //findPapayaContainers();
-
     message = checkForBrowserCompatibility();
-    viewerHtml = $("#" + PAPAYA_DEFAULT_VIEWER_ID);
+    viewerHtml = containerHTML.find("." + PAPAYA_VIEWER_CLASS_NAME);
 
     if (message !== null) {
         viewerHtml.removeClass("checkForJS");
         viewerHtml.addClass("checkBrowser");
         viewerHtml.html("<div class='checkBrowserMessage'>" + message + "</div>");
     } else {
-        container = new papaya.Container();
-        papayaContainers.push(container);
-        container.preferences = new papaya.viewer.Preferences();
+        loadParams = findParameters(containerHTML);
 
-        loadParams = viewerHtml.data("params");
+        container = new papaya.Container(containerHTML);
+        container.containerIndex = papayaContainers.length;
+        container.preferences = new papaya.viewer.Preferences();
 
         if (loadParams) {
             container.params = $.extend(container.params, window[loadParams]);
@@ -286,7 +322,7 @@ function main() {
 
         getQueryParams(container.params);
 
-        container.nestedViewer = ($("#" + PAPAYA_DEFAULT_CONTAINER_ID).parent()[0].tagName.toUpperCase() !== 'BODY');
+        container.nestedViewer = (containerHTML.parent()[0].tagName.toUpperCase() !== 'BODY');
 
         container.buildViewer(container.params);
         container.buildDisplay();
@@ -304,7 +340,33 @@ function main() {
         }
 
         container.resizeViewerComponents(false);
+
+        papayaContainers.push(container);
     }
+}
+
+
+
+function buildAllContainers() {
+    var defaultContainer = $("#" + PAPAYA_DEFAULT_CONTAINER_ID);
+
+    if (defaultContainer.length > 0) {
+        fillContainerHTML(defaultContainer, true);
+        buildContainer(defaultContainer);
+    } else {
+        $("." + PAPAYA_CONTAINER_CLASS_NAME).each(function () {
+            fillContainerHTML($(this), false);
+            buildContainer($(this));
+        });
+    }
+}
+
+
+
+
+
+function main() {
+    buildAllContainers();
 }
 
 
