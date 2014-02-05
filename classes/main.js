@@ -382,6 +382,10 @@ function buildAllContainers() {
 
 
 function main() {
+    setTimeout(function () {  // setTimeout necessary in Chrome
+        window.scrollTo(0, 0);
+    }, 0);
+
     buildAllContainers();
 }
 
