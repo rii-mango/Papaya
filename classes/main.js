@@ -64,7 +64,7 @@ papaya.Container.prototype.getViewerDimensions = function () {
 
     if (parentHeight < PAPAYA_MINIMUM_SIZE) {
         parentHeight = PAPAYA_MINIMUM_SIZE;
-        this.containerHtml.parent().height(PAPAYA_MINIMUM_SIZE);
+        this.containerHtml.parent().height(PAPAYA_MINIMUM_SIZE * 0.9);
     }
 
     if (parentWidth < PAPAYA_MINIMUM_SIZE) {
