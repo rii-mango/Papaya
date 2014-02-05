@@ -340,3 +340,26 @@ function printStackTrace() {
     var err = new Error();
     console.log(err.stack);
 }
+
+
+function getOffsetRect(elem) {
+    // (1)
+    var box = elem.getBoundingClientRect();
+
+    var body = document.body;
+    var docElem = document.documentElement;
+
+    // (2)
+    var scrollTop = window.pageYOffset || docElem.scrollTop;
+    var scrollLeft = window.pageXOffset || docElem.scrollLeft;
+
+    // (3)
+    var clientTop = docElem.clientTop || body.clientTop || 0;
+    var clientLeft = docElem.clientLeft || body.clientLeft || 0;
+
+    // (4)
+    var top  = box.top +  scrollTop - clientTop;
+    var left = box.left + scrollLeft - clientLeft;
+
+    return { top: Math.round(top), left: Math.round(left) };
+}

@@ -241,10 +241,10 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
     this.calculateScreenSliceTransforms(this);
     this.currentCoord.setCoordinate(floorFast(this.volume.getXDim() / 2), floorFast(this.volume.getYDim() / 2), floorFast(this.volume.getZDim() / 2));
 
-    this.canvasRect = this.canvas.getBoundingClientRect();
+    this.canvasRect = getOffsetRect(this.canvas);
 
     this.context.fillStyle = $("body").css("background-color");
-    this.context.fillRect(0, 0, this.canvasRect.right, this.canvasRect.bottom);
+    this.context.fillRect(0, 0, this.canvas.offsetWidth, this.canvas.offsetHeight);
 
     this.initialized = true;
     this.drawViewer();
