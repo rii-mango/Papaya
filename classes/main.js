@@ -304,7 +304,7 @@ function fillContainerHTML(containerHTML, isDefault, params) {
     } else {
         containerHTML.attr("id", PAPAYA_DEFAULT_CONTAINER_ID + papayaContainers.length);
 
-        if (!params.kioskMode) {
+        if (!params || (params.kioskMode === undefined) || !params.kioskMode) {
             containerHTML.append("<div id='" + (PAPAYA_DEFAULT_TOOLBAR_ID + papayaContainers.length) + "' class='" + PAPAYA_TOOLBAR_CLASS_NAME + "'></div>");
         }
 
