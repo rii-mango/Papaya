@@ -2,7 +2,7 @@
 /*jslint browser: true, node: true */
 /*global $, bind, PAPAYA_SPACING, floorFast, validDimBounds, roundFast, getKeyCode, isControlKey, isAltKey, isShiftKey,
 getMousePositionY, getMousePositionX, signum, formatNumber, wordwrap, getSizeString, getScrollSign, papayaContainers,
-papayaLastHoveredViewer:true */
+papayaLastHoveredViewer:true, getOffsetRect */
 
 "use strict";
 
@@ -939,6 +939,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
     }
 
     this.updateWindowTitle();
+    this.container.toolbar.closeAllMenus();
 };
 
 

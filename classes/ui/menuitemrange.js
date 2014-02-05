@@ -29,7 +29,7 @@ papaya.ui.MenuItemRange = papaya.ui.MenuItemRange || function (viewer, label, ac
 
 
 papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
-    var range, html, menuItemRange;
+    var range, html, menuItemRange, minHtml, maxHtml;
 
     range = this.dataSource[this.method]();
     html = "<li id='" + this.id + "'><span class='unselectable'>" + this.label + ": &nbsp;<input type='text' size='6' style='width:55px' id='" + this.minId + "' value='" + range[0] + "' /> to <input type='text' size='6' style='width:55px' id='" + this.maxId + "' value='" + range[1] + "' /></span></li>";
@@ -38,20 +38,38 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
 
     menuItemRange = this;
 
-    $("#" + this.minId).change(bind(this, function () {
-        menuItemRange.updateDataSource(this);
+    minHtml = $("#" + this.minId);
+    maxHtml = $("#" + this.maxId);
+
+    minHtml.change(bind(this, function () {
+        menuItemRange.updateDataSource(this, true);
         menuItemRange.viewer.drawViewer(true);
     }));
 
-    $("#" + this.maxId).change(bind(this, function () {
-        menuItemRange.updateDataSource(this);
+    maxHtml.change(bind(this, function () {
+        menuItemRange.updateDataSource(this, false);
         menuItemRange.viewer.drawViewer(true);
+    }));
+
+    minHtml.focus();
+    minHtml.select();
+
+    minHtml.keyup(bind(this, function (e) {
+        if (e.keyCode === 13) {
+            menuItemRange.viewer.container.toolbar.closeAllMenus();
+        }
+    }));
+
+    maxHtml.keyup(bind(this, function (e) {
+        if (e.keyCode === 13) {
+            menuItemRange.viewer.container.toolbar.closeAllMenus();
+        }
     }));
 };
 
 
 
-papaya.ui.MenuItemRange.prototype.updateDataSource = function (menuItemRange) {
+papaya.ui.MenuItemRange.prototype.updateDataSource = function (menuItemRange, minChanged) {
     var max, min, maxHtml, minHtml;
 
     minHtml = $("#" + menuItemRange.minId);
@@ -71,4 +89,9 @@ papaya.ui.MenuItemRange.prototype.updateDataSource = function (menuItemRange) {
     maxHtml.val(max);
 
     menuItemRange.dataSource.setScreenRange(min, max);
+
+    if (minChanged) {
+        maxHtml.focus();
+        maxHtml.select();
+    }
 };
