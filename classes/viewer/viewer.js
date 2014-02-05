@@ -70,6 +70,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.listenerKeyDown = bind(this, this.keyDownEvent);
     this.listenerKeyUp = bind(this, this.keyUpEvent);
     this.listenerTouchMove = bind(this, this.touchMoveEvent);
+    this.initialCoordinate = null;
 
     if (!this.container.nestedViewer) {
         this.listenerScroll = bind(this, this.scrolled);
@@ -176,6 +177,13 @@ papaya.viewer.Viewer.prototype.loadOverlay = function (name, forceUrl, forceEnco
 
 
 
+
+papaya.viewer.Viewer.prototype.atlasLoaded = function () {
+    this.goToInitialCoordinate();
+};
+
+
+
 papaya.viewer.Viewer.prototype.initializeViewer = function () {
     var papayaDataType, papayaDataTalairachAtlasType;
 
@@ -194,7 +202,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         papayaDataTalairachAtlasType = (typeof papaya.data.Atlas);
 
         if (papayaDataTalairachAtlasType !== "undefined") {
-            this.atlas = new papaya.viewer.Atlas(papaya.data.Atlas, this.container);
+            this.atlas = new papaya.viewer.Atlas(papaya.data.Atlas, this.container, bind(this, papaya.viewer.Viewer.prototype.atlasLoaded));
         }
     }
 
@@ -244,6 +252,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
     this.container.toolbar.buildToolbar();
     this.container.toolbar.updateImageButtons();
     this.updateWindowTitle();
+    this.goToInitialCoordinate();
 
     this.container.loadNext();
 };
@@ -283,6 +292,8 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
     this.loadingVolume = null;
 
     this.updateWindowTitle();
+    this.goToInitialCoordinate();
+
     this.container.loadNext();
 };
 
@@ -1075,6 +1086,15 @@ papaya.viewer.Viewer.prototype.getWorldCoordinateAtIndex = function (ctrX, ctrY,
 
 
 
+papaya.viewer.Viewer.prototype.getIndexCoordinateAtWorld = function (ctrX, ctrY, ctrZ, coord) {
+    coord.setCoordinate((ctrX / this.volume.header.voxelDimensions.xSize) + this.volume.header.origin.x,
+        -1 * ((ctrY / this.volume.header.voxelDimensions.ySize) - this.volume.header.origin.y),
+        -1 * ((ctrZ / this.volume.header.voxelDimensions.zSize) - this.volume.header.origin.z), true);
+    return coord;
+};
+
+
+
 papaya.viewer.Viewer.prototype.getNextColorTable = function () {
     var value = (this.screenVolumes.length - 1) % papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES.length;
     return papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES[value].name;
@@ -1305,6 +1325,33 @@ papaya.viewer.Viewer.prototype.processParams = function (params) {
 
     if (params.showOrientation) {
         this.container.preferences.showOrientation = "Yes";
+    }
+
+    if (params.coordinate) {
+        this.initialCoordinate = params.coordinate;
+    }
+};
+
+
+
+papaya.viewer.Viewer.prototype.goToInitialCoordinate = function () {
+    var coord;
+
+    if (this.initialCoordinate) {
+        coord = new papaya.core.Coordinate();
+
+        if (this.worldSpace) {
+            this.getIndexCoordinateAtWorld(this.initialCoordinate[0], this.initialCoordinate[1], this.initialCoordinate[2], coord);
+        } else {
+            coord.setCoordinate(this.initialCoordinate[0], this.initialCoordinate[1], this.initialCoordinate[2], true);
+        }
+
+        this.gotoCoordinate(coord);
+
+        if (this.container.display) {
+            this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z,
+                this.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z));
+        }
     }
 };
 

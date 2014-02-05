@@ -178,6 +178,7 @@ papaya.Container.prototype.buildToolbar = function () {
     this.toolbarHtml = this.containerHtml.find("." + PAPAYA_TOOLBAR_CLASS_NAME);
     this.toolbar = new papaya.ui.Toolbar(this);
     this.toolbar.buildToolbar();
+    this.toolbar.updateImageButtons();
 };
 
 

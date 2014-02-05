@@ -8,8 +8,9 @@ var papaya = papaya || {};
 papaya.viewer = papaya.viewer || {};
 
 
-papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas, container) {
+papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas, container, callback) {
     this.container = container;
+    this.callback = callback;
     this.name = null;
     this.transformedname = null;
     this.labels = [];
@@ -89,6 +90,8 @@ papaya.viewer.Atlas.prototype.readFinished = function () {
             this.currentAtlas = this.transformedname;
         }
     }
+
+    this.callback();
 };
 
 

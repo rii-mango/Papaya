@@ -335,3 +335,8 @@ function derefIn(parent, name) {
     return obj || null;
 }
 
+
+function printStackTrace() {
+    var err = new Error();
+    console.log(err.stack);
+}
