@@ -38,7 +38,7 @@ usage: papaya-builder [options]
 ```
 
 ###Usage
-See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for a full list of configurable parameters.  See the `tests` directory for several example use cases.
+See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for a full list of configurable parameters.  See the [`tests`](https://github.com/rii-mango/Papaya/tree/master/tests) directory for several example use cases.
 
 ####Basic usage (loads a blank viewer)
 ```html
