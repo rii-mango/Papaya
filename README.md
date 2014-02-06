@@ -38,7 +38,7 @@ usage: papaya-builder [options]
 ```
 
 ###Usage
-See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for a full list of configurable parameters.
+See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for a full list of configurable parameters.  See the `tests` directory for several example use cases.
 
 ####Basic usage (loads a blank viewer)
 ```html
@@ -55,11 +55,7 @@ See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for
     </head>
 
     <body>
-        <div id="papayaContainer">
-            <div id="papayaToolbar"></div>
-            <div id="papayaViewer" class="checkForJS"></div>
-            <div id="papayaDisplay"></div>
-        </div>
+        <div class="papaya"></div>
     </body>
 </html>
 ```
@@ -78,7 +74,7 @@ See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for
 
 ...
 
-<div id="papayaViewer" class="checkForJS" data-params="params"></div>
+<div class="papaya"></div>
 
 ```
 
