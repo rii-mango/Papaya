@@ -71,7 +71,7 @@ See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for
 
 ...
 
-<div class="papaya"></div>
+<div class="papaya" data-params="params"></div>
 
 ```
 
