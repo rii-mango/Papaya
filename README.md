@@ -46,9 +46,6 @@ See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-        <meta name="apple-mobile-web-app-capable" content="yes">
         <link rel="stylesheet" type="text/css" href="papaya.css" />
         <script type="text/javascript" src="papaya.js"></script>
         <title>Papaya Viewer</title>
