@@ -21,7 +21,7 @@ Quickstart Guide
 ------
 
 ###Development
-Load `debug.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
+Load `tests/minimal.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
 
 
 ###Building
