@@ -26,6 +26,7 @@ papaya.volume.Volume = papaya.volume.Volume || function (progressMeter) {
     this.transform = null;
     this.isLoaded = false;
     this.numTimepoints = 1;
+    this.loaded = false;
 };
 
 
@@ -136,19 +137,20 @@ papaya.volume.Volume.prototype.readURL = function (url, callback) {
                         vol.fileLength = vol.rawData.byteLength;
                         vol.decompress(vol);
                     } else {
-                        vol.errorMessage = "There was a problem reading that file:\n\nResponse status = " + xhr.status;
+                        vol.errorMessage = "There was a problem reading that file (" + vol.fileName + "):\n\nResponse status = " + xhr.status;
                         vol.finishedLoad();
                     }
                 }
             };
+
             xhr.send(null);
         } else {
-            vol.errorMessage = "There was a problem reading that file:\n\nResponse type is not supported.";
+            vol.errorMessage = "There was a problem reading that file (" + vol.fileName + "):\n\nResponse type is not supported.";
             vol.finishedLoad();
         }
     } catch (err) {
         if (vol !== null) {
-            vol.errorMessage = "There was a problem reading that file:\n\n" + err.message;
+            vol.errorMessage = "There was a problem reading that file (" + vol.fileName + "):\n\n" + err.message;
             vol.finishedLoad();
         }
     }
@@ -312,14 +314,17 @@ papaya.volume.Volume.prototype.finishedReadData = function (vol) {
 
 
 papaya.volume.Volume.prototype.finishedLoad = function () {
-    if (this.onFinishedRead) {
-        if (!this.hasError()) {
-            this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
-        }
+    if (!this.loaded) {
+        this.loaded = true;
+        if (this.onFinishedRead) {
+            if (!this.hasError()) {
+                this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
+                this.numTimepoints = this.header.imageDimensions.timepoints || 1;
+            }
 
-        this.isLoaded = true;
-        this.numTimepoints = this.header.imageDimensions.timepoints || 1;
-        this.rawData = null;
-        this.onFinishedRead(this);
+            this.isLoaded = true;
+            this.rawData = null;
+            this.onFinishedRead(this);
+        }
     }
 };

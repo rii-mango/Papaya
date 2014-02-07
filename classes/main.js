@@ -220,18 +220,30 @@ papaya.Container.prototype.setUpDnD = function () {
 
 
 
+papaya.Container.prototype.clearParams = function () {
+    this.params = [];
+};
+
+
+
 papaya.Container.prototype.loadNext = function () {
+    var loadingNext = false;
+
     this.loadingImageIndex += 1;
 
     if (this.params.images) {
         if (this.loadingImageIndex < this.params.images.length) {
+            loadingNext = true;
             this.viewer.loadImage(this.params.images[this.loadingImageIndex], true, false);
         }
     } else if (this.params.encodedImages) {
         if (this.loadingImageIndex < this.params.encodedImages.length) {
+            loadingNext = true;
             this.viewer.loadImage(this.params.encodedImages[this.loadingImageIndex], false, true);
         }
     }
+
+    return loadingNext;
 };
 
 
