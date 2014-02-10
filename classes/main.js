@@ -312,6 +312,8 @@ papaya.Container.prototype.expandViewer = function () {
 
 
 papaya.Container.prototype.collapseViewer = function () {
+    var ctr;
+
     if (this.collapsable) {
         this.nestedViewer = true;
         this.collapsable = false;
@@ -336,6 +338,10 @@ papaya.Container.prototype.collapseViewer = function () {
         }), 0);
 
         this.resizeViewerComponents(true);
+
+        for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
+            papayaContainers[ctr].updateViewerSize();
+        }
     }
 };
 
