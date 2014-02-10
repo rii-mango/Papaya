@@ -110,11 +110,9 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
         this.viewer.resizeViewer(dims);
     }
 
-    if (this.display) {
-        this.displayHtml.css({height: PAPAYA_SECTION_HEIGHT + "px"});
-        this.displayHtml.css({paddingLeft: dims.widthPadding + "px"});
-        this.display.canvas.width = dims.width;
-    }
+    this.displayHtml.css({height: PAPAYA_SECTION_HEIGHT + "px"});
+    this.displayHtml.css({paddingLeft: dims.widthPadding + "px"});
+    this.display.canvas.width = dims.width;
 
     this.containerHtml.css({paddingTop: dims.heightPadding + "px"});
 
@@ -122,12 +120,19 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
         this.viewer.drawViewer(true);
     } else {
         this.viewer.drawEmptyViewer();
-
-        if (this.display) {
-            this.display.drawEmptyDisplay();
-        }
+        this.display.drawEmptyDisplay();
     }
 };
+
+
+
+
+papaya.Container.prototype.updateViewerSize = function () {
+    this.toolbar.closeAllMenus();
+    this.viewer.resizeViewer(this.getViewerDimensions());
+    this.viewer.updateOffsetRect();
+};
+
 
 
 
@@ -414,5 +419,11 @@ window.onload = main;
 window.onresize = function () {
     if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
         papayaContainers[0].resizeViewerComponents(true);
+    } else {
+        var ctr;
+
+        for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
+            papayaContainers[ctr].updateViewerSize();
+        }
     }
 };

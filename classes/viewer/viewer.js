@@ -228,7 +228,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.calculateScreenSliceTransforms(this);
         this.currentCoord.setCoordinate(floorFast(this.volume.getXDim() / 2), floorFast(this.volume.getYDim() / 2), floorFast(this.volume.getZDim() / 2));
 
-        this.canvasRect = getOffsetRect(this.canvas);
+        this.updateOffsetRect();
 
         this.context.fillStyle = $("body").css("background-color");
         this.context.fillRect(0, 0, this.canvas.offsetWidth, this.canvas.offsetHeight);
@@ -245,6 +245,12 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
             this.loadAtlas();
         }
     }
+};
+
+
+
+papaya.viewer.Viewer.prototype.updateOffsetRect = function () {
+    this.canvasRect = getOffsetRect(this.canvas);
 };
 
 
@@ -666,27 +672,27 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
 
 
-papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function (viewer) {
-    viewer.viewerDim = viewer.canvas.height;
+papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function () {
+    this.viewerDim = this.canvas.height;
 
-    this.getTransformParameters(viewer.mainImage, viewer.viewerDim, false);
-    viewer.mainImage.screenTransform[0][2] += viewer.mainImage.screenOffsetX = 0;
-    viewer.mainImage.screenTransform[1][2] += viewer.mainImage.screenOffsetY = 0;
+    this.getTransformParameters(this.mainImage, this.viewerDim, false);
+    this.mainImage.screenTransform[0][2] += this.mainImage.screenOffsetX = 0;
+    this.mainImage.screenTransform[1][2] += this.mainImage.screenOffsetY = 0;
 
-    this.getTransformParameters(viewer.lowerImageBot, viewer.viewerDim, true);
-    viewer.lowerImageBot.screenTransform[0][2] += viewer.lowerImageBot.screenOffsetX
-        = (viewer.viewerDim + (papaya.viewer.Viewer.GAP));
-    viewer.lowerImageBot.screenTransform[1][2] += viewer.lowerImageBot.screenOffsetY
-        = (((viewer.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
+    this.getTransformParameters(this.lowerImageBot, this.viewerDim, true);
+    this.lowerImageBot.screenTransform[0][2] += this.lowerImageBot.screenOffsetX
+        = (this.viewerDim + (papaya.viewer.Viewer.GAP));
+    this.lowerImageBot.screenTransform[1][2] += this.lowerImageBot.screenOffsetY
+        = (((this.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
 
-    this.getTransformParameters(viewer.lowerImageTop, viewer.viewerDim, true);
-    viewer.lowerImageTop.screenTransform[0][2] += viewer.lowerImageTop.screenOffsetX
-        = (viewer.viewerDim + (papaya.viewer.Viewer.GAP));
-    viewer.lowerImageTop.screenTransform[1][2] += viewer.lowerImageTop.screenOffsetY = 0;
+    this.getTransformParameters(this.lowerImageTop, this.viewerDim, true);
+    this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX
+        = (this.viewerDim + (papaya.viewer.Viewer.GAP));
+    this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY = 0;
 
-    viewer.axialSlice.updateFinalTransform();
-    viewer.coronalSlice.updateFinalTransform();
-    viewer.sagittalSlice.updateFinalTransform();
+    this.axialSlice.updateFinalTransform();
+    this.coronalSlice.updateFinalTransform();
+    this.sagittalSlice.updateFinalTransform();
 };
 
 
@@ -844,7 +850,7 @@ papaya.viewer.Viewer.prototype.rotateViews = function () {
     this.lowerImageBot = this.lowerImageTop;
     this.lowerImageTop = this.mainImage;
     this.mainImage = temp;
-    this.calculateScreenSliceTransforms(this);
+    this.calculateScreenSliceTransforms();
     this.drawViewer();
 };
 
@@ -1075,7 +1081,7 @@ papaya.viewer.Viewer.prototype.resizeViewer = function (dims) {
     this.canvas.height = dims.height;
 
     if (this.initialized) {
-        this.calculateScreenSliceTransforms(this);
+        this.calculateScreenSliceTransforms();
         this.canvasRect = this.canvas.getBoundingClientRect();
         this.drawViewer(true);
     }
