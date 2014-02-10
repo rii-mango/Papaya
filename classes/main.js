@@ -497,7 +497,11 @@ window.onresize = function () {
         var ctr;
 
         for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
-            papayaContainers[ctr].updateViewerSize();
+            if (papayaContainers[ctr].collapsable) {
+                papayaContainers[ctr].resizeViewerComponents(true);
+            } else {
+                papayaContainers[ctr].updateViewerSize();
+            }
         }
     }
 };
