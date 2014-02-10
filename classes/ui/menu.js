@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, PAPAYA_TITLEBAR_CLASS_NAME, bind, showMenu */
+/*global $, PAPAYA_TITLEBAR_CLASS_NAME, bind, showMenu, derefIn */
 
 "use strict";
 
@@ -11,6 +11,7 @@ papaya.ui = papaya.ui || {};
 
 papaya.ui.Menu = papaya.ui.Menu || function (viewer, menuData, callback, dataSource, modifier) {
     this.viewer = viewer;
+    this.method = menuData.method;
     this.isTitleBar = menuData.titleBar;
     this.label = menuData.label;
     this.icons = menuData.icons;
@@ -57,7 +58,11 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
             html += "border:2px outset lightgray;background-color:#eeeeee;padding:1px;";
         }
 
-        html += ("' src='" + this.icons[this.dataSource.getIndex(this.label)] + "' /></span>");
+        if (this.method) {
+            html += ("' src='" + this.icons[bind(this.viewer, derefIn(this.viewer, this.method))() ? 1 : 0] + "' /></span>");
+        } else {
+            html += ("' src='" + this.icons[0] + "' /></span>");
+        }
     } else if (this.isTitleBar) {
         html = "<div class='unselectable menuTitle " + PAPAYA_TITLEBAR_CLASS_NAME + "' style='z-index:-1;position:absolute;top:" + (this.viewer.container.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE)
             + "px;width:" + toolbarHtml.width() + "px;text-align:center;'>" + this.label + "</div>";
@@ -176,13 +181,18 @@ papaya.ui.Menu.prototype.doClick = function () {
     this.callback(this.buttonId);
 
     if (this.icons) {
-        $("#" + this.buttonId + " > img").attr("src", this.icons[this.dataSource.getIndex(this.label)]);
+        if (this.method) {
+            $("#" + this.buttonId + " > img").attr("src", this.icons[bind(this.viewer, derefIn(this.viewer, this.method))() ? 1 : 0]);
+        } else {
+            $("#" + this.buttonId + " > img").attr("src", this.icons[0]);
+        }
     }
 
     if (!this.menuOnHover && !isShowing) {
         this.showMenu();
     }
 };
+
 
 
 papaya.ui.Menu.prototype.updateRangeItem = function (min, max) {

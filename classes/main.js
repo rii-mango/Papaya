@@ -3,7 +3,7 @@
 /*global $, PAPAYA_MINIMUM_SIZE, PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP,
 PAPAYA_CONTAINER_CLASS_NAME, PAPAYA_CHECK_FOR_JS_CLASS_NAME, PAPAYA_VIEWER_CLASS_NAME, PAPAYA_DISPLAY_CLASS_NAME,
 PAPAYA_TOOLBAR_CLASS_NAME, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_VIEWER_ID, PAPAYA_DEFAULT_DISPLAY_ID,
-PAPAYA_DEFAULT_CONTAINER_ID, checkForBrowserCompatibility, getQueryParams */
+PAPAYA_DEFAULT_CONTAINER_ID, checkForBrowserCompatibility, getQueryParams, bind */
 
 "use strict";
 
@@ -27,6 +27,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.params = [];
     this.loadingImageIndex = 0;
     this.nestedViewer = false;
+    this.collapsable = false;
     this.resetComponents();
 };
 
@@ -263,6 +264,79 @@ papaya.Container.prototype.findLoadableImage = function (name) {
     }
 
     return null;
+};
+
+
+
+papaya.Container.prototype.expandViewer = function () {
+    if (this.nestedViewer) {
+        this.nestedViewer = false;
+        this.collapsable = true;
+
+        $(document.body).children().hide();
+        this.containerHtml.show();
+
+        this.originalStyle = {};
+        this.originalStyle.width = document.body.style.width;
+        this.originalStyle.height = document.body.style.height;
+        this.originalStyle.marginTop = document.body.style.marginTop;
+        this.originalStyle.marginRight = document.body.style.marginRight;
+        this.originalStyle.marginBottom = document.body.style.marginBottom;
+        this.originalStyle.marginLeft = document.body.style.marginLeft;
+        this.originalStyle.paddingTop = document.body.style.paddingTop;
+        this.originalStyle.paddingRight = document.body.style.paddingRight;
+        this.originalStyle.paddingBottom = document.body.style.paddingBottom;
+        this.originalStyle.paddingLeft = document.body.style.paddingLeft;
+
+        document.body.style.marginTop = 0;
+        document.body.style.marginBottom = 0;
+        document.body.style.marginLeft = 'auto';
+        document.body.style.marginRight = 'auto';
+        document.body.style.padding = 0;
+
+        document.body.style.width = "100%";
+        document.body.style.height = "100%";
+
+        this.containerHtml.after('<div style="display:none" class="collapsable"></div>');
+        $(document.body).prepend(this.containerHtml);
+
+        setTimeout(bind(this, function () {
+            window.scrollTo(0, 0);
+            this.viewer.addScroll();
+        }), 0);
+
+        this.resizeViewerComponents(true);
+    }
+};
+
+
+
+papaya.Container.prototype.collapseViewer = function () {
+    if (this.collapsable) {
+        this.nestedViewer = true;
+        this.collapsable = false;
+
+        document.body.style.width = this.originalStyle.width;
+        document.body.style.height = this.originalStyle.height;
+        document.body.style.marginTop = this.originalStyle.marginTop;
+        document.body.style.marginRight = this.originalStyle.marginRight;
+        document.body.style.marginBottom = this.originalStyle.marginBottom;
+        document.body.style.marginLeft = this.originalStyle.marginLeft;
+        document.body.style.paddingTop = this.originalStyle.paddingTop;
+        document.body.style.paddingRight = this.originalStyle.paddingRight;
+        document.body.style.paddingBottom = this.originalStyle.paddingBottom;
+        document.body.style.paddingLeft = this.originalStyle.paddingLeft;
+
+        $(".collapsable").replaceWith(this.containerHtml);
+        $(document.body).children().show();
+
+        setTimeout(bind(this, function () {
+            window.scrollTo(0, 0);
+            this.viewer.removeScroll();
+        }), 0);
+
+        this.resizeViewerComponents(true);
+    }
 };
 
 
