@@ -1324,16 +1324,6 @@ papaya.viewer.Viewer.prototype.isSelectable = function () {
 
 
 
-papaya.viewer.Viewer.prototype.getIndex = function (name) {
-    if (name === "SPACE") {
-        return (this.worldSpace ? 1 : 0);
-    }
-
-    return 0;
-};
-
-
-
 papaya.viewer.Viewer.prototype.processParams = function (params) {
     if (params.worldSpace) {
         this.worldSpace = true;
