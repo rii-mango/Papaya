@@ -127,6 +127,8 @@
         params2["atlas"] = "MNI (Nearest Grey Matter)";
         params2["coordinate"] = [-27, -63, 10];
 
+        var params3 = [];
+        params3["images"] = ["sample_image"];
 
         function secondViewerLoaded() {
             $("#secondViewer").show();
@@ -211,7 +213,7 @@
 <div id="thirdViewer" class="smallViewer left hidden"></div>
 
 <p class="loremipsum">
-    <a href="#" onclick='addViewer("thirdViewer", params1, thirdViewerLoaded)'><strong>Click here to load the viewer...</strong></a>
+    <a href="#" onclick='addViewer("thirdViewer", params3, thirdViewerLoaded); return false;'><strong>Click here to load the viewer...</strong></a>
     Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore
     magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis
     nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse
