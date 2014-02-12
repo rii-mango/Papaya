@@ -84,7 +84,7 @@ papaya.ui.Dialog.prototype.showDialog = function () {
     }
 
     $("#" + this.id + "-Ok").click(bind(this, this.doOk));
-    $("#" + PAPAYA_DEFAULT_CONTAINER_ID).addClass(PAPAYA_DIALOG_BACKGROUND);
+    this.container.containerHtml.addClass(PAPAYA_DIALOG_BACKGROUND);
 
     thisHtml = $(thisHtmlId);
     showModalDialog(this.viewer, thisHtml[0]);
@@ -97,7 +97,7 @@ papaya.ui.Dialog.prototype.doOk = function () {
 
     modalDialogHtml.hide(100);
     modalDialogHtml.remove();
-    $("#" + PAPAYA_DEFAULT_CONTAINER_ID).removeClass(PAPAYA_DIALOG_BACKGROUND);
+    this.container.containerHtml.removeClass(PAPAYA_DIALOG_BACKGROUND);
 };
 
 
