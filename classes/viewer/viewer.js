@@ -182,7 +182,7 @@ papaya.viewer.Viewer.prototype.atlasLoaded = function () {
 
 
 papaya.viewer.Viewer.prototype.initializeViewer = function () {
-    var message;
+    var message, bgColor;
 
     if (this.volume.hasError()) {
         message = this.volume.errorMessage;
@@ -222,7 +222,13 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
 
         this.updateOffsetRect();
 
-        this.context.fillStyle = $("body").css("background-color");
+        bgColor = $("body").css("background-color");
+
+        if (bgColor === "rgba(0, 0, 0, 0)") {
+            bgColor = "white";
+        }
+
+        this.context.fillStyle = bgColor;
         this.context.fillRect(0, 0, this.canvas.offsetWidth, this.canvas.offsetHeight);
 
         this.initialized = true;

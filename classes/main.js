@@ -542,4 +542,4 @@ window.onresize = function () {
             }
         }
     }
-};
+}
