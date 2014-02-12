@@ -126,15 +126,14 @@
         params2["zstat.nii.gz"] = {"min": 4, "max": 8, "lut": "Green Overlay"};
         params2["atlas"] = "MNI (Nearest Grey Matter)";
         params2["coordinate"] = [-27, -63, 10];
-        params2["kioskMode"] = true;
 
 
         function secondViewerLoaded() {
-            $("#secondViewer").removeClass("hidden");
+            $("#secondViewer").show();
         }
 
         function thirdViewerLoaded() {
-            $("#thirdViewer").removeClass("hidden");
+            $("#thirdViewer").show();
         }
     </script>
 

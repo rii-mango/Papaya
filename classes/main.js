@@ -4,7 +4,7 @@
  PAPAYA_CONTAINER_CLASS_NAME, PAPAYA_UTILS_CHECKFORJS_CSS, PAPAYA_VIEWER_CSS, PAPAYA_DISPLAY_CSS,
  PAPAYA_TOOLBAR_CSS, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_VIEWER_ID, PAPAYA_DEFAULT_DISPLAY_ID,
  PAPAYA_DEFAULT_CONTAINER_ID, checkForBrowserCompatibility, getQueryParams, bind, PAPAYA_UTILS_UNSUPPORTED_CSS,
- PAPAYA_UTILS_UNSUPPORTED_MESSAGE_CSS, PAPAYA_CONTAINER_COLLAPSABLE */
+ PAPAYA_UTILS_UNSUPPORTED_MESSAGE_CSS, PAPAYA_CONTAINER_COLLAPSABLE, PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT */
 
 "use strict";
 
@@ -279,6 +279,7 @@ papaya.Container.prototype.expandViewer = function () {
         this.nestedViewer = false;
         this.collapsable = true;
 
+        $(":hidden").addClass(PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT);
         $(document.body).children().hide();
         this.containerHtml.show();
 
@@ -336,7 +337,8 @@ papaya.Container.prototype.collapseViewer = function () {
         document.body.style.paddingLeft = this.originalStyle.paddingLeft;
 
         $("." + PAPAYA_CONTAINER_COLLAPSABLE).replaceWith(this.containerHtml);
-        $(document.body).children().show();
+        $(document.body).children(":not(." + PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT + ")").show();
+        $(".testTemp").removeClass(PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT);
 
         setTimeout(bind(this, function () {
             window.scrollTo(0, 0);
