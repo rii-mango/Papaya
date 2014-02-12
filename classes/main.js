@@ -307,12 +307,13 @@ papaya.Container.prototype.expandViewer = function () {
         this.containerHtml.after('<div style="display:none" class="' + PAPAYA_CONTAINER_COLLAPSABLE + '"></div>');
         $(document.body).prepend(this.containerHtml);
 
+        this.resizeViewerComponents(true);
+        this.viewer.updateOffsetRect();
+
         setTimeout(bind(this, function () {
             window.scrollTo(0, 0);
             this.viewer.addScroll();
         }), 0);
-
-        this.resizeViewerComponents(true);
     }
 };
 
@@ -338,7 +339,7 @@ papaya.Container.prototype.collapseViewer = function () {
 
         $("." + PAPAYA_CONTAINER_COLLAPSABLE).replaceWith(this.containerHtml);
         $(document.body).children(":not(." + PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT + ")").show();
-        $(".testTemp").removeClass(PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT);
+        $("." + PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT).removeClass(PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT);
 
         setTimeout(bind(this, function () {
             window.scrollTo(0, 0);
