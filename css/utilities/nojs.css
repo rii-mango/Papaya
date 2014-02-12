@@ -1,0 +1,22 @@
+
+/* This is the old deprecated way to display the "JavaScript required" message. */
+
+.checkForJS {
+    width: 90%;
+    height: 90%;
+    margin: 25px auto;
+    background-color: black;
+}
+
+
+.checkForJS:before {
+    position: relative;
+    content: "Papaya requires JavaScript...";
+    display: block;
+    top: 45%;
+    color: red;
+    margin: 0 auto;
+    font-size: 18px;
+    font-family: sans-serif;
+    text-align: center;
+}

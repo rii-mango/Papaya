@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind */
+/*global $, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE */
 
 "use strict";
 
@@ -32,9 +32,9 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
     var range, html, menuItemRange, minHtml, maxHtml;
 
     range = this.dataSource[this.method]();
-    html = "<li id='" + this.id + "'><span class='unselectable'>" + this.label + ": &nbsp;<input type='text' size='6' style='width:55px' id='" + this.minId + "' value='" + range[0] + "' /> to <input type='text' size='6' style='width:55px' id='" + this.maxId + "' value='" + range[1] + "' /></span></li>";
+    html = "<li id='" + this.id + "'><span class='" + PAPAYA_MENU_UNSELECTABLE + "'>" + this.label + ": &nbsp;<input type='text' size='6' style='width:55px' id='" + this.minId + "' value='" + range[0] + "' /> to <input type='text' size='6' style='width:55px' id='" + this.maxId + "' value='" + range[1] + "' /></span></li>";
     $("#" + parentId).append(html);
-    $("#" + this.id).hover(function () {$(this).toggleClass('menuHover'); });
+    $("#" + this.id).hover(function () {$(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
 
     menuItemRange = this;
 

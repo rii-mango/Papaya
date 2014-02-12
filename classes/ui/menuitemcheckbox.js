@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind */
+/*global $, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE */
 
 "use strict";
 
@@ -44,11 +44,11 @@ papaya.ui.MenuItemCheckBox.prototype.buildHTML = function (parentId) {
     }
 
     html = "<li id='" + this.id + "'><input type='radio' class='ColorTableGroup' name='ColorTableGroup' id='" + this.id
-        + "' value='" + this.id  + "' " + checked + "><span class='unselectable'>&nbsp;" + this.label + "</span></li>";
+        + "' value='" + this.id  + "' " + checked + "><span class='" + PAPAYA_MENU_UNSELECTABLE + "'>&nbsp;" + this.label + "</span></li>";
     $("#" + parentId).append(html);
     thisHtml = $("#" + this.id);
     thisHtml.click(bind(this, this.doAction));
-    thisHtml.hover(function () { $(this).toggleClass('menuHover'); });
+    thisHtml.hover(function () { $(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
 };
 
 

@@ -1,9 +1,10 @@
 
 /*jslint browser: true, node: true */
 /*global $, PAPAYA_MINIMUM_SIZE, PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP,
-PAPAYA_CONTAINER_CLASS_NAME, PAPAYA_CHECK_FOR_JS_CLASS_NAME, PAPAYA_VIEWER_CLASS_NAME, PAPAYA_DISPLAY_CLASS_NAME,
-PAPAYA_TOOLBAR_CLASS_NAME, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_VIEWER_ID, PAPAYA_DEFAULT_DISPLAY_ID,
-PAPAYA_DEFAULT_CONTAINER_ID, checkForBrowserCompatibility, getQueryParams, bind */
+ PAPAYA_CONTAINER_CLASS_NAME, PAPAYA_UTILS_CHECKFORJS_CSS, PAPAYA_VIEWER_CSS, PAPAYA_DISPLAY_CSS,
+ PAPAYA_TOOLBAR_CSS, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_VIEWER_ID, PAPAYA_DEFAULT_DISPLAY_ID,
+ PAPAYA_DEFAULT_CONTAINER_ID, checkForBrowserCompatibility, getQueryParams, bind, PAPAYA_UTILS_UNSUPPORTED_CSS,
+ PAPAYA_UTILS_UNSUPPORTED_MESSAGE_CSS*/
 
 "use strict";
 
@@ -145,11 +146,11 @@ papaya.Container.prototype.updateViewerSize = function () {
 function removeCheckForJSClasses(containerHtml, viewerHtml) {
     // old way, here for backwards compatibility
     viewerHtml.removeClass(PAPAYA_CONTAINER_CLASS_NAME);
-    viewerHtml.removeClass(PAPAYA_CHECK_FOR_JS_CLASS_NAME);
+    viewerHtml.removeClass(PAPAYA_UTILS_CHECKFORJS_CSS);
 
     // new way
     containerHtml.removeClass(PAPAYA_CONTAINER_CLASS_NAME);
-    containerHtml.removeClass(PAPAYA_CHECK_FOR_JS_CLASS_NAME);
+    containerHtml.removeClass(PAPAYA_UTILS_CHECKFORJS_CSS);
 }
 
 
@@ -157,7 +158,7 @@ function removeCheckForJSClasses(containerHtml, viewerHtml) {
 papaya.Container.prototype.buildViewer = function (params) {
     var dims;
 
-    this.viewerHtml = this.containerHtml.find("." + PAPAYA_VIEWER_CLASS_NAME);
+    this.viewerHtml = this.containerHtml.find("." + PAPAYA_VIEWER_CSS);
     removeCheckForJSClasses(this.containerHtml, this.viewerHtml);
     this.viewerHtml.html("");  // remove noscript message
     dims = this.getViewerDimensions();
@@ -171,7 +172,7 @@ papaya.Container.prototype.buildViewer = function (params) {
 papaya.Container.prototype.buildDisplay = function () {
     var dims;
 
-    this.displayHtml = this.containerHtml.find("." + PAPAYA_DISPLAY_CLASS_NAME);
+    this.displayHtml = this.containerHtml.find("." + PAPAYA_DISPLAY_CSS);
     dims = this.getViewerDimensions();
     this.display = new papaya.viewer.Display(this, dims.width);
     this.displayHtml.append($(this.display.canvas));
@@ -180,7 +181,7 @@ papaya.Container.prototype.buildDisplay = function () {
 
 
 papaya.Container.prototype.buildToolbar = function () {
-    this.toolbarHtml = this.containerHtml.find("." + PAPAYA_TOOLBAR_CLASS_NAME);
+    this.toolbarHtml = this.containerHtml.find("." + PAPAYA_TOOLBAR_CSS);
     this.toolbar = new papaya.ui.Toolbar(this);
     this.toolbar.buildToolbar();
     this.toolbar.updateImageButtons();
@@ -358,7 +359,7 @@ function findParameters(containerHTML) {
     paramsName = containerHTML.data("params");
 
     if (!paramsName) {
-        viewerHTML = containerHTML.find("." + PAPAYA_VIEWER_CLASS_NAME);
+        viewerHTML = containerHTML.find("." + PAPAYA_VIEWER_CSS);
 
         if (viewerHTML) {
             paramsName = viewerHTML.data("params");
@@ -385,21 +386,21 @@ function fillContainerHTML(containerHTML, isDefault, params) {
         displayHTML = containerHTML.find("#" + PAPAYA_DEFAULT_DISPLAY_ID);
 
         if (toolbarHTML) {
-            toolbarHTML.addClass(PAPAYA_TOOLBAR_CLASS_NAME);
+            toolbarHTML.addClass(PAPAYA_TOOLBAR_CSS);
         } else {
-            containerHTML.prepend("<div class='" + PAPAYA_TOOLBAR_CLASS_NAME + "' id='" + PAPAYA_DEFAULT_TOOLBAR_ID + "'></div>");
+            containerHTML.prepend("<div class='" + PAPAYA_TOOLBAR_CSS + "' id='" + PAPAYA_DEFAULT_TOOLBAR_ID + "'></div>");
         }
 
         if (viewerHTML) {
-            viewerHTML.addClass(PAPAYA_VIEWER_CLASS_NAME);
+            viewerHTML.addClass(PAPAYA_VIEWER_CSS);
         } else {
-            $("<div class='" + PAPAYA_VIEWER_CLASS_NAME + "' id='" + PAPAYA_DEFAULT_VIEWER_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_TOOLBAR_ID));
+            $("<div class='" + PAPAYA_VIEWER_CSS + "' id='" + PAPAYA_DEFAULT_VIEWER_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_TOOLBAR_ID));
         }
 
         if (displayHTML) {
-            displayHTML.addClass(PAPAYA_DISPLAY_CLASS_NAME);
+            displayHTML.addClass(PAPAYA_DISPLAY_CSS);
         } else {
-            $("<div class='" + PAPAYA_DISPLAY_CLASS_NAME + "' id='" + PAPAYA_DEFAULT_DISPLAY_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_VIEWER_ID));
+            $("<div class='" + PAPAYA_DISPLAY_CSS + "' id='" + PAPAYA_DEFAULT_DISPLAY_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_VIEWER_ID));
         }
 
         console.log("This method of adding a Papaya container is deprecated.  Try simply <div class='papaya' data-params='params'></div> instead...");
@@ -407,11 +408,11 @@ function fillContainerHTML(containerHTML, isDefault, params) {
         containerHTML.attr("id", PAPAYA_DEFAULT_CONTAINER_ID + papayaContainers.length);
 
         if (!params || (params.kioskMode === undefined) || !params.kioskMode) {
-            containerHTML.append("<div id='" + (PAPAYA_DEFAULT_TOOLBAR_ID + papayaContainers.length) + "' class='" + PAPAYA_TOOLBAR_CLASS_NAME + "'></div>");
+            containerHTML.append("<div id='" + (PAPAYA_DEFAULT_TOOLBAR_ID + papayaContainers.length) + "' class='" + PAPAYA_TOOLBAR_CSS + "'></div>");
         }
 
-        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_VIEWER_ID + papayaContainers.length) + "' class='" + PAPAYA_VIEWER_CLASS_NAME + "'></div>");
-        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_DISPLAY_ID + papayaContainers.length) + "' class='" + PAPAYA_DISPLAY_CLASS_NAME + "'></div>");
+        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_VIEWER_ID + papayaContainers.length) + "' class='" + PAPAYA_VIEWER_CSS + "'></div>");
+        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_DISPLAY_ID + papayaContainers.length) + "' class='" + PAPAYA_DISPLAY_CSS + "'></div>");
     }
 
     return viewerHTML;
@@ -423,12 +424,12 @@ function buildContainer(containerHTML, params) {
     var container, message, viewerHtml, loadUrl;
 
     message = checkForBrowserCompatibility();
-    viewerHtml = containerHTML.find("." + PAPAYA_VIEWER_CLASS_NAME);
+    viewerHtml = containerHTML.find("." + PAPAYA_VIEWER_CSS);
 
     if (message !== null) {
         removeCheckForJSClasses(containerHTML, viewerHtml);
-        containerHTML.addClass("checkBrowser");
-        viewerHtml.addClass("checkBrowserMessage");
+        containerHTML.addClass(PAPAYA_UTILS_UNSUPPORTED_CSS);
+        viewerHtml.addClass(PAPAYA_UTILS_UNSUPPORTED_MESSAGE_CSS);
         viewerHtml.html(message);
     } else {
         container = new papaya.Container(containerHTML);

@@ -1,6 +1,7 @@
 
 /*jslint browser: true, node: true */
-/*global $, PAPAYA_TITLEBAR_CLASS_NAME, bind, showMenu, derefIn */
+/*global $, PAPAYA_TITLEBAR_CSS, bind, showMenu, derefIn, PAPAYA_MENU_CSS, PAPAYA_MENU_LABEL_CSS,
+ PAPAYA_MENU_TITLEBAR_CSS, PAPAYA_MENU_ICON_CSS, PAPAYA_MENU_BUTTON_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE */
 
 "use strict";
 
@@ -49,7 +50,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
     html = null;
 
     if (this.icons) {
-        html = "<span id='" + this.buttonId + "' class='unselectable menuIcon" + (this.isImageButton ? " imageButton'" : "'") + (this.isRight ? " style='float:right'" : "") + ">" +
+        html = "<span id='" + this.buttonId + "' class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_ICON_CSS + (this.isImageButton ? " imageButton'" : "'") + (this.isRight ? " style='float:right'" : "") + ">" +
                 "<img style='width:" + papaya.viewer.ColorTable.ICON_SIZE + "px; height:" + papaya.viewer.ColorTable.ICON_SIZE + "px; vertical-align:bottom; ";
 
         if (this.dataSource.isSelected(parseInt(this.imageIndex, 10))) {
@@ -64,10 +65,10 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
             html += ("' src='" + this.icons[0] + "' /></span>");
         }
     } else if (this.isTitleBar) {
-        html = "<div class='unselectable menuTitle " + PAPAYA_TITLEBAR_CLASS_NAME + "' style='z-index:-1;position:absolute;top:" + (this.viewer.container.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE)
+        html = "<div class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_TITLEBAR_CSS + " " + PAPAYA_TITLEBAR_CSS + "' style='z-index:-1;position:absolute;top:" + (this.viewer.container.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE)
             + "px;width:" + toolbarHtml.width() + "px;text-align:center;'>" + this.label + "</div>";
     } else {
-        html = "<span id='" + this.buttonId + "' class='unselectable menuLabel'>" + this.label + "</span>";
+        html = "<span id='" + this.buttonId + "' class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_LABEL_CSS + "'>" + this.label + "</span>";
     }
 
     toolbarHtml.append(html);
@@ -111,7 +112,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
                 $(this).css({ 'border': '2px outset lightgray' });
             });
         } else if (!this.isTitleBar) {
-            buttonHtml.hover(function () {$(this).toggleClass('menuButtonHover'); });
+            buttonHtml.hover(function () {$(this).toggleClass(PAPAYA_MENU_BUTTON_HOVERING_CSS); });
         }
     }
 
@@ -129,7 +130,7 @@ papaya.ui.Menu.prototype.setMenuButton = function (buttonId) {
 papaya.ui.Menu.prototype.buildMenu = function () {
     var ctr, html, buttonHtml;
 
-    html = "<ul id='" + this.menuId + "' class='menu'></ul>";
+    html = "<ul id='" + this.menuId + "' class='" + PAPAYA_MENU_CSS + "'></ul>";
     this.viewer.container.toolbarHtml.append(html);
 
     for (ctr = 0; ctr < this.items.length; ctr += 1) {

@@ -1,0 +1,11 @@
+
+.papaya-toolbar ul {
+    margin: 0;
+    list-style: none;
+}
+
+
+.papaya-toolbar input[type=file]{
+    text-align: right;
+    display:none;
+}

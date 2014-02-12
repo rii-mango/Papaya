@@ -1,0 +1,19 @@
+
+.papaya-viewer {
+    line-height: 1;
+}
+
+
+.papaya-viewer div, .papaya-viewer canvas {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    font-size: 100%;
+    vertical-align: baseline;
+}
+
+
+.papaya-viewer canvas {
+    cursor: crosshair;
+}

@@ -1,0 +1,74 @@
+
+.papaya-menu {
+    width: 220px;
+    background: #222;
+    z-index: 100;
+    position: absolute;
+    border: solid 2px darkgray;
+    padding: 4px;
+}
+
+
+.papaya-menu  li {
+    font-size: 12px;
+    font-family: sans-serif;
+    padding: 4px 2px;
+    color: #B5CBD3;
+    cursor: pointer;
+}
+
+
+.papaya-menu-label {
+    font-size: 14px;
+    font-family: sans-serif;
+    font-weight: bold;
+    padding: 2px 8px;
+    cursor: pointer;
+    vertical-align: text-bottom;
+}
+
+
+.papaya-menu-titlebar {
+    font-size: 16px;
+    font-family: sans-serif;
+    padding: 3px 8px 0px 8px;
+    cursor: default;
+    vertical-align: text-bottom;
+    color:white;
+}
+
+
+.papaya-menu-icon {
+    margin-left: 5px;
+}
+
+
+.papaya-menu-hovering {
+    background-color: #444;
+}
+
+
+.papaya-menu-spacer {
+    height: 5px;
+}
+
+
+.papaya-menu-unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+
+.papaya-menu-button-hovering {
+    background-color: #DDD;
+}
+
+
+.papaya-menu-filechooser {
+    cursor: pointer;
+    width: 200px;
+    display: inline-block;
+}

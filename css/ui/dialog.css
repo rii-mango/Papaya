@@ -1,0 +1,56 @@
+
+.papaya-dialog {
+    width: 400px;
+    height: 500px;
+    background: #222;
+    position: absolute;
+    z-index: 100;
+    border: solid 2px darkgray;
+    padding: 6px;
+    font-size: 14px;
+    font-family: sans-serif;
+    color: #B5CBD3;
+}
+
+
+.papaya-dialog-content {
+    margin: 20px;
+    width: 360px;
+    height: 420px;
+    color: white;
+}
+
+
+.papaya-dialog-content table {
+    margin: 0 auto;
+}
+
+
+.papaya-dialog-content-label {
+    text-align: right;
+    padding: 5px;
+    color: #B5CBD3;
+}
+
+
+.papaya-dialog-content-control {
+    text-align: left;
+    padding: 5px;
+}
+
+
+.papaya-dialog-title {
+    color: #B5CBD3;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+
+.papaya-dialog-button {
+    text-align: right;
+}
+
+
+.papaya-dialog-background {
+    opacity: 0.5;
+}

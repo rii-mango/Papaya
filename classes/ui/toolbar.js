@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, PAPAYA_TITLEBAR_CLASS_NAME, derefIn */
+/*global $, bind, PAPAYA_TITLEBAR_CSS, derefIn, PAPAYA_DIALOG_CSS */
 
 "use strict";
 
@@ -102,7 +102,7 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
     this.buildAtlasMenu();
     this.buildColorMenuItems();
 
-    this.container.titlebarHtml = this.container.containerHtml.find("." + PAPAYA_TITLEBAR_CLASS_NAME);
+    this.container.titlebarHtml = this.container.containerHtml.find("." + PAPAYA_TITLEBAR_CSS);
 };
 
 
@@ -277,7 +277,7 @@ papaya.ui.Toolbar.prototype.closeAllMenus = function () {
     menuHtml.hide(100);
     menuHtml.remove();
 
-    modalDialogHtml = this.container.toolbarHtml.find(".modalDialog");
+    modalDialogHtml = this.container.toolbarHtml.find("." + PAPAYA_DIALOG_CSS);
     modalDialogHtml.hide(100);
     modalDialogHtml.remove();
 
@@ -290,7 +290,7 @@ papaya.ui.Toolbar.prototype.isShowingMenus = function () {
     var menuVisible, dialogVisible;
 
     menuVisible = this.container.toolbarHtml.find(".menu").is(":visible");
-    dialogVisible = this.container.toolbarHtml.find(".modalDialog").is(":visible");
+    dialogVisible = this.container.toolbarHtml.find("." + PAPAYA_DIALOG_CSS).is(":visible");
 
     return (menuVisible || dialogVisible);
 };

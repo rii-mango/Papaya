@@ -1,6 +1,8 @@
 
 /*jslint browser: true, node: true */
-/*global $, isStringBlank, derefIn, bind, PAPAYA_DEFAULT_CONTAINER_ID, showModalDialog */
+/*global $, isStringBlank, derefIn, bind, PAPAYA_DEFAULT_CONTAINER_ID, showModalDialog, PAPAYA_DIALOG_CSS,
+  PAPAYA_DIALOG_CONTENT_CSS, PAPAYA_DIALOG_CONTENT_LABEL_CSS, PAPAYA_DIALOG_CONTENT_CONTROL_CSS,
+  PAPAYA_DIALOG_TITLE_CSS, PAPAYA_DIALOG_BUTTON_CSS, PAPAYA_DIALOG_BACKGROUND */
 
 "use strict";
 
@@ -32,16 +34,16 @@ papaya.ui.Dialog.prototype.showDialog = function () {
     thisHtml = $(thisHtmlId);
     thisHtml.remove();
 
-    html = "<div id='" + this.id + "' class='modalDialog'><span class='modalTitle'>" + this.title + "</span>";
+    html = "<div id='" + this.id + "' class='" + PAPAYA_DIALOG_CSS + "'><span class='" + PAPAYA_DIALOG_TITLE_CSS + "'>" + this.title + "</span>";
 
     if (this.content) {
-        html += "<div class='modalDialogContent'><table>";
+        html += "<div class='" + PAPAYA_DIALOG_CONTENT_CSS + "'><table>";
 
         for (ctr = 0; ctr < this.content.items.length; ctr += 1) {
             if (this.content.items[ctr].spacer) {
-                html += "<tr><td class='modalDialogContentLabel'>&nbsp;</td><td class='modalDialogContentControl'>&nbsp;</td></tr>";
+                html += "<tr><td class='" + PAPAYA_DIALOG_CONTENT_LABEL_CSS + "'>&nbsp;</td><td class='" + PAPAYA_DIALOG_CONTENT_CONTROL_CSS + "'>&nbsp;</td></tr>";
             } else if (this.content.items[ctr].readonly) {
-                html += "<tr><td class='modalDialogContentLabel'>" + this.content.items[ctr].label + "</td><td class='modalDialogContentControl' id='" + this.content.items[ctr].field + "'></td></tr>";
+                html += "<tr><td class='" + PAPAYA_DIALOG_CONTENT_LABEL_CSS + "'>" + this.content.items[ctr].label + "</td><td class='" + PAPAYA_DIALOG_CONTENT_CONTROL_CSS + "' id='" + this.content.items[ctr].field + "'></td></tr>";
             } else {
                 if (this.content.items[ctr].disabled && (derefIn(this, this.content.items[ctr].disabled)) === true) {
                     disabled = "disabled='disabled'";
@@ -49,7 +51,7 @@ papaya.ui.Dialog.prototype.showDialog = function () {
                     disabled = "";
                 }
 
-                html += "<tr><td class='modalDialogContentLabel'>" + this.content.items[ctr].label + "</td><td class='modalDialogContentControl'><select " + disabled
+                html += "<tr><td class='" + PAPAYA_DIALOG_CONTENT_LABEL_CSS + "'>" + this.content.items[ctr].label + "</td><td class='" + PAPAYA_DIALOG_CONTENT_CONTROL_CSS + "'><select " + disabled
                     + " id='" + this.content.items[ctr].field + "'>";
                 for (ctrOpt = 0; ctrOpt < this.content.items[ctr].options.length; ctrOpt += 1) {
                     html += "<option value='" + this.content.items[ctr].options[ctrOpt] + "'>" + this.content.items[ctr].options[ctrOpt] + "</option>";
@@ -62,7 +64,7 @@ papaya.ui.Dialog.prototype.showDialog = function () {
         html += "</table></div>";
     }
 
-    html += "<div class='modalDialogButtonToolbar'><button type='button' id='" + this.id + "-Ok" + "'>Ok</button></div></div>";
+    html += "<div class='" + PAPAYA_DIALOG_BUTTON_CSS + "'><button type='button' id='" + this.id + "-Ok" + "'>Ok</button></div></div>";
 
     $("body").append(html);
 
@@ -82,7 +84,7 @@ papaya.ui.Dialog.prototype.showDialog = function () {
     }
 
     $("#" + this.id + "-Ok").click(bind(this, this.doOk));
-    $("#" + PAPAYA_DEFAULT_CONTAINER_ID).addClass("modalBackground");
+    $("#" + PAPAYA_DEFAULT_CONTAINER_ID).addClass(PAPAYA_DIALOG_BACKGROUND);
 
     thisHtml = $(thisHtmlId);
     showModalDialog(this.viewer, thisHtml[0]);
@@ -91,11 +93,11 @@ papaya.ui.Dialog.prototype.showDialog = function () {
 
 
 papaya.ui.Dialog.prototype.doOk = function () {
-    var modalDialogHtml = $(".modalDialog");
+    var modalDialogHtml = $("." + PAPAYA_DIALOG_CSS);
 
     modalDialogHtml.hide(100);
     modalDialogHtml.remove();
-    $("#" + PAPAYA_DEFAULT_CONTAINER_ID).removeClass("modalBackground");
+    $("#" + PAPAYA_DEFAULT_CONTAINER_ID).removeClass(PAPAYA_DIALOG_BACKGROUND);
 };
 
 

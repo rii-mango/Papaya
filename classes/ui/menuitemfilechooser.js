@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind */
+/*global $, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE, PAPAYA_MENU_FILECHOOSER */
 
 "use strict";
 
@@ -20,10 +20,10 @@ papaya.ui.MenuItemFileChooser = papaya.ui.MenuItemFileChooser || function (viewe
 
 
 papaya.ui.MenuItemFileChooser.prototype.buildHTML = function (parentId) {
-    var html = "<li id='" + this.id + "'><span class='unselectable'><label class='fileChooser' for='fileChooser'>" + this.label + "</label><input type='file' id='fileChooser' name='files' /></span></li>";
+    var html = "<li id='" + this.id + "'><span class='" + PAPAYA_MENU_UNSELECTABLE + "'><label class='" + PAPAYA_MENU_FILECHOOSER + "' for='fileChooser'>" + this.label + "</label><input type='file' id='fileChooser' name='files' /></span></li>";
     $("#" + parentId).append(html);
     $("#fileChooser")[0].onchange = bind(this, function () {
         this.callback(this.action, document.getElementById('fileChooser').files[0]);
     });
-    $("#" + this.id).hover(function () {$(this).toggleClass('menuHover'); });
+    $("#" + this.id).hover(function () {$(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
 };

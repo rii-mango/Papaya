@@ -1,16 +1,49 @@
 
+// Main CSS classes
+var PAPAYA_CONTAINER_CLASS_NAME = "papaya",
+    PAPAYA_VIEWER_CSS = "papaya-viewer",
+    PAPAYA_TOOLBAR_CSS = "papaya-toolbar",
+    PAPAYA_DISPLAY_CSS = "papaya-display",
+    PAPAYA_TITLEBAR_CSS = "papaya-titlebar";
+
+
+// Dialog CSS classes
+var PAPAYA_DIALOG_CSS = "papaya-dialog",
+    PAPAYA_DIALOG_CONTENT_CSS = "papaya-dialog-content",
+    PAPAYA_DIALOG_CONTENT_LABEL_CSS = "papaya-dialog-content-label",
+    PAPAYA_DIALOG_CONTENT_CONTROL_CSS = "papaya-dialog-content-control",
+    PAPAYA_DIALOG_TITLE_CSS = "papaya-dialog-title",
+    PAPAYA_DIALOG_BUTTON_CSS = "papaya-dialog-button",
+    PAPAYA_DIALOG_BACKGROUND = "papaya-dialog-background";
+
+
+// Menu CSS classes
+var PAPAYA_MENU_CSS = "papaya-menu",
+    PAPAYA_MENU_LABEL_CSS = "papaya-menu-label",
+    PAPAYA_MENU_TITLEBAR_CSS = "papaya-menu-titlebar",
+    PAPAYA_MENU_ICON_CSS = "papaya-menu-icon",
+    PAPAYA_MENU_HOVERING_CSS = "papaya-menu-hovering",
+    PAPAYA_MENU_SPACER_CSS = "papaya-menu-spacer",
+    PAPAYA_MENU_UNSELECTABLE = "papaya-menu-unselectable",
+    PAPAYA_MENU_FILECHOOSER = "papaya-menu-filechooser",
+    PAPAYA_MENU_BUTTON_HOVERING_CSS = "papaya-menu-button-hovering";
+
+
+// Utils CSS classes
+var PAPAYA_UTILS_CHECKFORJS_CSS = "checkForJS",
+    PAPAYA_UTILS_UNSUPPORTED_CSS = "papaya-utils-unsupported",
+    PAPAYA_UTILS_UNSUPPORTED_MESSAGE_CSS = "papaya-utils-unsupported-message";
+
+
+// Deprecated IDs
 var PAPAYA_DEFAULT_VIEWER_ID  = "papayaViewer",
     PAPAYA_DEFAULT_DISPLAY_ID = "papayaDisplay",
     PAPAYA_DEFAULT_TOOLBAR_ID = "papayaToolbar",
-    PAPAYA_DEFAULT_CONTAINER_ID = "papayaContainer",
+    PAPAYA_DEFAULT_CONTAINER_ID = "papayaContainer";
 
-    PAPAYA_CONTAINER_CLASS_NAME = "papaya",
-    PAPAYA_VIEWER_CLASS_NAME = "papayaViewerClass",
-    PAPAYA_TOOLBAR_CLASS_NAME = "papayaToolbarClass",
-    PAPAYA_DISPLAY_CLASS_NAME = "papayaDisplayClass",
-    PAPAYA_TITLEBAR_CLASS_NAME = "papayaTitlebarClass",
-    PAPAYA_CHECK_FOR_JS_CLASS_NAME = "checkForJS",
-    PAPAYA_SPACING = 3,  // padding between slice views
+
+// Misc constants
+var PAPAYA_SPACING = 3,
     PAPAYA_SECTION_HEIGHT = 50,
     PAPAYA_CONTAINER_PADDING = 20,
     PAPAYA_CONTAINER_PADDING_TOP = PAPAYA_CONTAINER_PADDING,

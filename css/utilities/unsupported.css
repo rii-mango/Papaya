@@ -1,0 +1,19 @@
+
+.papaya-utils-unsupported {
+    width: 90%;
+    height: 90%;
+    margin: 25px auto;
+    background-color: black;
+}
+
+
+.papaya-utils-unsupported-message {
+    position: relative;
+    display: block;
+    top: 45%;
+    color: red;
+    margin: 0 auto;
+    font-size: 18px;
+    font-family: sans-serif;
+    text-align: center;
+}

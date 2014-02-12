@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, isStringBlank, bind */
+/*global $, isStringBlank, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE */
 
 "use strict";
 
@@ -28,7 +28,7 @@ papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, call
 papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
     var html, thisHtml;
 
-    html = "<li id='" + this.id + "'><span class='unselectable'>" + this.label + "</span></li>";
+    html = "<li id='" + this.id + "'><span class='" + PAPAYA_MENU_UNSELECTABLE + "'>" + this.label + "</span></li>";
     $("#" + parentId).append(html);
 
     thisHtml = $("#" + this.id);
@@ -37,7 +37,7 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
             this.doAction();
         }));
 
-    thisHtml.hover(function () {$(this).toggleClass('menuHover'); });
+    thisHtml.hover(function () {$(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
 };
 
 
