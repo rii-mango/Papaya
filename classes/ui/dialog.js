@@ -2,7 +2,7 @@
 /*jslint browser: true, node: true */
 /*global $, isStringBlank, derefIn, bind, PAPAYA_DEFAULT_CONTAINER_ID, showModalDialog, PAPAYA_DIALOG_CSS,
   PAPAYA_DIALOG_CONTENT_CSS, PAPAYA_DIALOG_CONTENT_LABEL_CSS, PAPAYA_DIALOG_CONTENT_CONTROL_CSS,
-  PAPAYA_DIALOG_TITLE_CSS, PAPAYA_DIALOG_BUTTON_CSS, PAPAYA_DIALOG_BACKGROUND */
+  PAPAYA_DIALOG_TITLE_CSS, PAPAYA_DIALOG_BUTTON_CSS, PAPAYA_DIALOG_BACKGROUND, PAPAYA_DIALOG_STOPSCROLL */
 
 "use strict";
 
@@ -66,6 +66,7 @@ papaya.ui.Dialog.prototype.showDialog = function () {
 
     html += "<div class='" + PAPAYA_DIALOG_BUTTON_CSS + "'><button type='button' id='" + this.id + "-Ok" + "'>Ok</button></div></div>";
 
+    $("body").append('<div class="' + PAPAYA_DIALOG_BACKGROUND + '"></div>');
     $("body").append(html);
 
     for (ctr = 0; ctr < this.content.items.length; ctr += 1) {
@@ -84,20 +85,28 @@ papaya.ui.Dialog.prototype.showDialog = function () {
     }
 
     $("#" + this.id + "-Ok").click(bind(this, this.doOk));
-    this.container.containerHtml.addClass(PAPAYA_DIALOG_BACKGROUND);
 
     thisHtml = $(thisHtmlId);
     showModalDialog(this.viewer, thisHtml[0]);
+    $("body").addClass(PAPAYA_DIALOG_STOPSCROLL);
+
 };
 
 
 
 papaya.ui.Dialog.prototype.doOk = function () {
-    var modalDialogHtml = $("." + PAPAYA_DIALOG_CSS);
+    var modalDialogHtml, modelDialogBackgroundHtml;
+
+    modalDialogHtml = $("." + PAPAYA_DIALOG_CSS);
+    modelDialogBackgroundHtml = $("." + PAPAYA_DIALOG_BACKGROUND);
 
     modalDialogHtml.hide(100);
+    modelDialogBackgroundHtml.hide(100);
+
     modalDialogHtml.remove();
-    this.container.containerHtml.removeClass(PAPAYA_DIALOG_BACKGROUND);
+    modelDialogBackgroundHtml.remove();
+
+    $("body").removeClass(PAPAYA_DIALOG_STOPSCROLL);
 };
 
 

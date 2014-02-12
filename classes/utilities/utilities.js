@@ -116,17 +116,19 @@ var showMenu = function (viewer, el, menu, right) {
 
 
 var showModalDialog = function (viewer, dialog) {
-    var viewerOffset, viewerWidth, viewerHeight, dialogWidth, dialogHeight, left, top;
+    var viewerWidth, viewerHeight, dialogWidth, dialogHeight, left, top;
 
-    viewerOffset = $(viewer.canvas).offset();
-    viewerWidth = $(viewer.canvas).outerWidth();
-    viewerHeight = $(viewer.canvas).outerHeight();
+    var docElem = document.documentElement;
+    var scrollTop = window.pageYOffset || docElem.scrollTop;
+
+    viewerWidth = $(window).outerWidth();
+    viewerHeight = $(window).outerHeight();
 
     dialogWidth = $(dialog).outerWidth();
     dialogHeight = $(dialog).outerHeight();
 
-    left = viewerOffset.left + (viewerWidth / 2) - (dialogWidth / 2) + "px";
-    top = viewerOffset.top + (viewerHeight / 2) - (dialogHeight / 2) + "px";
+    left = (viewerWidth / 2) - (dialogWidth / 2) + "px";
+    top = scrollTop + (viewerHeight / 2) - (dialogHeight / 2) + "px";
 
     $(dialog).css({
         position: 'absolute',
@@ -358,7 +360,7 @@ function getOffsetRect(elem) {
     var clientLeft = docElem.clientLeft || body.clientLeft || 0;
 
     // (4)
-    var top  = box.top +  scrollTop - clientTop;
+    var top  = box.top + scrollTop - clientTop;
     var left = box.left + scrollLeft - clientLeft;
 
     return { top: Math.round(top), left: Math.round(left) };

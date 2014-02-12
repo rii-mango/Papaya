@@ -52,5 +52,16 @@
 
 
 .papaya-dialog-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    width: 100%;
+    height: 100%;
     opacity: 0.5;
+}
+
+.papaya-dialog-stopscroll {
+    height: 100%;
+    overflow: hidden;
 }

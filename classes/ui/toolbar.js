@@ -1,7 +1,7 @@
 
 /*jslint browser: true, node: true */
 /*global $, bind, PAPAYA_TITLEBAR_CSS, derefIn, PAPAYA_DIALOG_CSS, PAPAYA_MENU_ICON_CSS, PAPAYA_MENU_LABEL_CSS,
- PAPAYA_MENU_BUTTON_CSS, PAPAYA_MENU_CSS */
+ PAPAYA_MENU_BUTTON_CSS, PAPAYA_MENU_CSS, PAPAYA_DIALOG_BACKGROUND, PAPAYA_MENU_TITLEBAR_CSS */
 
 "use strict";
 
@@ -272,7 +272,7 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
 
 
 papaya.ui.Toolbar.prototype.closeAllMenus = function () {
-    var menuHtml, modalDialogHtml;
+    var menuHtml, modalDialogHtml, modalDialogBackgroundHtml;
 
     menuHtml = this.container.toolbarHtml.find("." + PAPAYA_MENU_CSS);
     menuHtml.hide(100);
@@ -282,7 +282,9 @@ papaya.ui.Toolbar.prototype.closeAllMenus = function () {
     modalDialogHtml.hide(100);
     modalDialogHtml.remove();
 
-    this.container.containerHtml.removeClass("modalBackground");
+    modalDialogBackgroundHtml = this.container.toolbarHtml.find("." + PAPAYA_DIALOG_BACKGROUND);
+    modalDialogBackgroundHtml.hide(100);
+    modalDialogBackgroundHtml.remove();
 };
 
 
