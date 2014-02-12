@@ -1,6 +1,7 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, PAPAYA_TITLEBAR_CSS, derefIn, PAPAYA_DIALOG_CSS */
+/*global $, bind, PAPAYA_TITLEBAR_CSS, derefIn, PAPAYA_DIALOG_CSS, PAPAYA_MENU_ICON_CSS, PAPAYA_MENU_LABEL_CSS,
+ PAPAYA_MENU_BUTTON_CSS, PAPAYA_MENU_CSS */
 
 "use strict";
 
@@ -89,9 +90,9 @@ papaya.ui.Toolbar.IMAGE_INFO_DATA = {
 papaya.ui.Toolbar.prototype.buildToolbar = function () {
     var ctr;
 
-    this.container.toolbarHtml.find(".menuIcon").remove();
-    this.container.toolbarHtml.find(".menuLabel").remove();
-    this.container.toolbarHtml.find(".menuTitle").remove();
+    this.container.toolbarHtml.find(PAPAYA_MENU_ICON_CSS).remove();
+    this.container.toolbarHtml.find(PAPAYA_MENU_LABEL_CSS).remove();
+    this.container.toolbarHtml.find(PAPAYA_MENU_TITLEBAR_CSS).remove();
 
     this.buildOpenMenuItems();
 
@@ -249,7 +250,7 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
 papaya.ui.Toolbar.prototype.updateImageButtons = function () {
     var ctr, screenVol, dataUrl, data;
 
-    this.container.toolbarHtml.find(".imageButton").remove();
+    this.container.toolbarHtml.find("." + PAPAYA_MENU_BUTTON_CSS).remove();
 
     this.imageMenus = [];
 
@@ -273,7 +274,7 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
 papaya.ui.Toolbar.prototype.closeAllMenus = function () {
     var menuHtml, modalDialogHtml;
 
-    menuHtml = this.container.toolbarHtml.find(".menu");
+    menuHtml = this.container.toolbarHtml.find("." + PAPAYA_MENU_CSS);
     menuHtml.hide(100);
     menuHtml.remove();
 
@@ -289,7 +290,7 @@ papaya.ui.Toolbar.prototype.closeAllMenus = function () {
 papaya.ui.Toolbar.prototype.isShowingMenus = function () {
     var menuVisible, dialogVisible;
 
-    menuVisible = this.container.toolbarHtml.find(".menu").is(":visible");
+    menuVisible = this.container.toolbarHtml.find("." + PAPAYA_MENU_CSS).is(":visible");
     dialogVisible = this.container.toolbarHtml.find("." + PAPAYA_DIALOG_CSS).is(":visible");
 
     return (menuVisible || dialogVisible);

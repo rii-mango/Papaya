@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE */
+/*global $, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE, PAPAYA_MENU_COLORTABLE_CSS */
 
 "use strict";
 
@@ -43,7 +43,7 @@ papaya.ui.MenuItemCheckBox.prototype.buildHTML = function (parentId) {
         checked = "checked='checked'";
     }
 
-    html = "<li id='" + this.id + "'><input type='radio' class='ColorTableGroup' name='ColorTableGroup' id='" + this.id
+    html = "<li id='" + this.id + "'><input type='radio' class='" + PAPAYA_MENU_COLORTABLE_CSS + "' name='" + PAPAYA_MENU_COLORTABLE_CSS + "' id='" + this.id
         + "' value='" + this.id  + "' " + checked + "><span class='" + PAPAYA_MENU_UNSELECTABLE + "'>&nbsp;" + this.label + "</span></li>";
     $("#" + parentId).append(html);
     thisHtml = $("#" + this.id);
@@ -54,7 +54,7 @@ papaya.ui.MenuItemCheckBox.prototype.buildHTML = function (parentId) {
 
 
 papaya.ui.MenuItemCheckBox.prototype.doAction = function () {
-    $(".ColorTableGroup").removeAttr('checked');
+    $("." + PAPAYA_MENU_COLORTABLE_CSS).removeAttr('checked');
     $("#" + this.id + " > input")[0].checked = true;
     this.callback(this.action, null, true);
 };

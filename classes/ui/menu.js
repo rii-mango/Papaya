@@ -1,7 +1,8 @@
 
 /*jslint browser: true, node: true */
 /*global $, PAPAYA_TITLEBAR_CSS, bind, showMenu, derefIn, PAPAYA_MENU_CSS, PAPAYA_MENU_LABEL_CSS,
- PAPAYA_MENU_TITLEBAR_CSS, PAPAYA_MENU_ICON_CSS, PAPAYA_MENU_BUTTON_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE */
+ PAPAYA_MENU_TITLEBAR_CSS, PAPAYA_MENU_ICON_CSS, PAPAYA_MENU_BUTTON_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE,
+ PAPAYA_MENU_BUTTON_CSS */
 
 "use strict";
 
@@ -50,7 +51,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
     html = null;
 
     if (this.icons) {
-        html = "<span id='" + this.buttonId + "' class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_ICON_CSS + (this.isImageButton ? " imageButton'" : "'") + (this.isRight ? " style='float:right'" : "") + ">" +
+        html = "<span id='" + this.buttonId + "' class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_ICON_CSS + " " + (this.isImageButton ? PAPAYA_MENU_BUTTON_CSS : "") + "'" + (this.isRight ? " style='float:right'" : "") + ">" +
                 "<img style='width:" + papaya.viewer.ColorTable.ICON_SIZE + "px; height:" + papaya.viewer.ColorTable.ICON_SIZE + "px; vertical-align:bottom; ";
 
         if (this.dataSource.isSelected(parseInt(this.imageIndex, 10))) {

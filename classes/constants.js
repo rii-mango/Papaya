@@ -1,10 +1,20 @@
 
-// Main CSS classes
+// Base CSS classes
 var PAPAYA_CONTAINER_CLASS_NAME = "papaya",
-    PAPAYA_VIEWER_CSS = "papaya-viewer",
-    PAPAYA_TOOLBAR_CSS = "papaya-toolbar",
-    PAPAYA_DISPLAY_CSS = "papaya-display",
+    PAPAYA_CONTAINER_COLLAPSABLE = "papaya-collapsable";
+
+
+// Viewer CSS classes
+var PAPAYA_VIEWER_CSS = "papaya-viewer";
+
+
+// Toolbar CSS classes
+var PAPAYA_TOOLBAR_CSS = "papaya-toolbar",
     PAPAYA_TITLEBAR_CSS = "papaya-titlebar";
+
+
+// Display CSS classes
+var PAPAYA_DISPLAY_CSS = "papaya-display";
 
 
 // Dialog CSS classes
@@ -26,7 +36,9 @@ var PAPAYA_MENU_CSS = "papaya-menu",
     PAPAYA_MENU_SPACER_CSS = "papaya-menu-spacer",
     PAPAYA_MENU_UNSELECTABLE = "papaya-menu-unselectable",
     PAPAYA_MENU_FILECHOOSER = "papaya-menu-filechooser",
-    PAPAYA_MENU_BUTTON_HOVERING_CSS = "papaya-menu-button-hovering";
+    PAPAYA_MENU_BUTTON_CSS = "papaya-menu-button",
+    PAPAYA_MENU_BUTTON_HOVERING_CSS = "papaya-menu-button-hovering",
+    PAPAYA_MENU_COLORTABLE_CSS = "papaya-menu-colortable";
 
 
 // Utils CSS classes
