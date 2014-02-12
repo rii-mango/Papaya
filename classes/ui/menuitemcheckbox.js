@@ -21,7 +21,7 @@ papaya.ui.MenuItemCheckBox = papaya.ui.MenuItemCheckBox || function (viewer, lab
 
     this.action = action + this.modifier;
     this.method = method;
-    this.id = this.action.replace(/ /g, "_").replace(/\(/g, "").replace(/\)/g, "");
+    this.id = this.action.replace(/ /g, "_").replace(/\(/g, "").replace(/\)/g, "") + this.viewer.container.containerIndex;
     this.callback = callback;
     this.dataSource = dataSource;
 };

@@ -19,8 +19,8 @@ papaya.ui.MenuItemRange = papaya.ui.MenuItemRange || function (viewer, label, ac
     }
 
     this.action = action + this.modifier;
-    this.minId = this.action.replace(/ /g, "_") + "Min";
-    this.maxId = this.action.replace(/ /g, "_") + "Max";
+    this.minId = this.action.replace(/ /g, "_") + "Min" + this.viewer.container.containerIndex;
+    this.maxId = this.action.replace(/ /g, "_") + "Max" + this.viewer.container.containerIndex;
     this.callback = callback;
     this.dataSource = dataSource;
     this.method = method;

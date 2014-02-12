@@ -1,4 +1,6 @@
 
+/* Used to display an error message if the browser is not supported. */
+
 .papaya-utils-unsupported {
     width: 90%;
     height: 90%;
