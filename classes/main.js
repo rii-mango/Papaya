@@ -65,7 +65,12 @@ papaya.Container.prototype.getViewerDimensions = function () {
 
     if (parentHeight < PAPAYA_MINIMUM_SIZE) {
         parentHeight = PAPAYA_MINIMUM_SIZE;
-        this.containerHtml.parent().height(PAPAYA_MINIMUM_SIZE * 0.9);
+
+        if (this.kioskMode) {
+            this.containerHtml.parent().height(PAPAYA_MINIMUM_SIZE * 0.8);
+        } else {
+            this.containerHtml.parent().height(PAPAYA_MINIMUM_SIZE * 0.9);
+        }
     }
 
     if (parentWidth < PAPAYA_MINIMUM_SIZE) {
@@ -477,6 +482,28 @@ function buildAllContainers() {
             fillContainerHTML($(this), false, params);
             buildContainer($(this), params);
         });
+    }
+}
+
+
+
+function addViewer(parentName, params, callback) {
+    var container, parent;
+
+    parent = $("#" + parentName);
+    container = $('<div class="papaya"></div>');
+
+    parent.html(container);
+
+    // remove parent click handler
+    parent[0].onclick = '';
+    parent.off("click");
+
+    fillContainerHTML(container, false, params);
+    buildContainer(container, params);
+
+    if (callback) {
+        callback();
     }
 }
 
