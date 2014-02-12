@@ -278,6 +278,7 @@ papaya.Container.prototype.expandViewer = function () {
     if (this.nestedViewer) {
         this.nestedViewer = false;
         this.collapsable = true;
+        this.tempScrollTop = $(window).scrollTop();
 
         $(":hidden").addClass(PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT);
         $(document.body).children().hide();
@@ -341,16 +342,16 @@ papaya.Container.prototype.collapseViewer = function () {
         $(document.body).children(":not(." + PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT + ")").show();
         $("." + PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT).removeClass(PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT);
 
-        setTimeout(bind(this, function () {
-            window.scrollTo(0, 0);
-            this.viewer.removeScroll();
-        }), 0);
-
         this.resizeViewerComponents(true);
 
         for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
             papayaContainers[ctr].updateViewerSize();
         }
+
+        setTimeout(bind(this, function () {
+            $(window).scrollTop(this.tempScrollTop);
+            this.viewer.removeScroll();
+        }), 0);
     }
 };
 
