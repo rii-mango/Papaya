@@ -62,6 +62,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.isAltKeyDown = false;
     this.isShiftKeyDown = false;
     this.toggleMainCrosshairs = true;
+
     this.listenerMouseMove = bind(this, this.mouseMoveEvent);
     this.listenerMouseDown = bind(this, this.mouseDownEvent);
     this.listenerMouseOut = bind(this, this.mouseOutEvent);
@@ -513,25 +514,27 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
     this.context.drawImage(this.mainImage.canvasMain, 0, 0);
     this.context.restore();
 
-    this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.fillRect(this.lowerImageBot.screenOffsetX, this.lowerImageBot.screenOffsetY, this.lowerImageBot.screenDim, this.lowerImageBot.screenDim);
-    this.context.save();
-    this.context.beginPath();
-    this.context.rect(this.lowerImageBot.screenOffsetX, this.lowerImageBot.screenOffsetY, this.lowerImageBot.screenDim, this.lowerImageBot.screenDim);
-    this.context.clip();
-    this.context.setTransform(this.lowerImageBot.finalTransform[0][0], 0, 0, this.lowerImageBot.finalTransform[1][1], this.lowerImageBot.finalTransform[0][2], this.lowerImageBot.finalTransform[1][2]);
-    this.context.drawImage(this.lowerImageBot.canvasMain, 0, 0);
-    this.context.restore();
+    if (!this.container.singleSliceView) {
+        this.context.setTransform(1, 0, 0, 1, 0, 0);
+        this.context.fillRect(this.lowerImageBot.screenOffsetX, this.lowerImageBot.screenOffsetY, this.lowerImageBot.screenDim, this.lowerImageBot.screenDim);
+        this.context.save();
+        this.context.beginPath();
+        this.context.rect(this.lowerImageBot.screenOffsetX, this.lowerImageBot.screenOffsetY, this.lowerImageBot.screenDim, this.lowerImageBot.screenDim);
+        this.context.clip();
+        this.context.setTransform(this.lowerImageBot.finalTransform[0][0], 0, 0, this.lowerImageBot.finalTransform[1][1], this.lowerImageBot.finalTransform[0][2], this.lowerImageBot.finalTransform[1][2]);
+        this.context.drawImage(this.lowerImageBot.canvasMain, 0, 0);
+        this.context.restore();
 
-    this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.fillRect(this.lowerImageTop.screenOffsetX, this.lowerImageTop.screenOffsetY, this.lowerImageTop.screenDim, this.lowerImageTop.screenDim);
-    this.context.save();
-    this.context.beginPath();
-    this.context.rect(this.lowerImageTop.screenOffsetX, this.lowerImageTop.screenOffsetY, this.lowerImageTop.screenDim, this.lowerImageTop.screenDim);
-    this.context.clip();
-    this.context.setTransform(this.lowerImageTop.finalTransform[0][0], 0, 0, this.lowerImageTop.finalTransform[1][1], this.lowerImageTop.finalTransform[0][2], this.lowerImageTop.finalTransform[1][2]);
-    this.context.drawImage(this.lowerImageTop.canvasMain, 0, 0);
-    this.context.restore();
+        this.context.setTransform(1, 0, 0, 1, 0, 0);
+        this.context.fillRect(this.lowerImageTop.screenOffsetX, this.lowerImageTop.screenOffsetY, this.lowerImageTop.screenDim, this.lowerImageTop.screenDim);
+        this.context.save();
+        this.context.beginPath();
+        this.context.rect(this.lowerImageTop.screenOffsetX, this.lowerImageTop.screenOffsetY, this.lowerImageTop.screenDim, this.lowerImageTop.screenDim);
+        this.context.clip();
+        this.context.setTransform(this.lowerImageTop.finalTransform[0][0], 0, 0, this.lowerImageTop.finalTransform[1][1], this.lowerImageTop.finalTransform[0][2], this.lowerImageTop.finalTransform[1][2]);
+        this.context.drawImage(this.lowerImageTop.canvasMain, 0, 0);
+        this.context.restore();
+    }
 
     if (this.container.preferences.showOrientation === "Yes") {
         this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -595,9 +598,9 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
     this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR;
     this.context.lineWidth = 1.0;
 
-    if (((this.mainImage !== this.axialSlice) && (this.container.preferences.showCrosshairs !== 'Main'))
+    if ((((this.mainImage !== this.axialSlice) && (this.container.preferences.showCrosshairs !== 'Main'))
             || ((this.mainImage === this.axialSlice) && (this.container.preferences.showCrosshairs !== 'Lower')
-            && this.toggleMainCrosshairs)) {
+            && this.toggleMainCrosshairs)) && (!this.container.singleSliceView || (this.axialSlice === this.mainImage))) {
         // draw axial crosshairs
         this.context.save();
         this.context.beginPath();
@@ -625,9 +628,9 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
     }
 
 
-    if (((this.mainImage !== this.coronalSlice) && (this.container.preferences.showCrosshairs !== 'Main'))
+    if ((((this.mainImage !== this.coronalSlice) && (this.container.preferences.showCrosshairs !== 'Main'))
             || ((this.mainImage === this.coronalSlice) && (this.container.preferences.showCrosshairs !== 'Lower')
-            && this.toggleMainCrosshairs)) {
+            && this.toggleMainCrosshairs)) && (!this.container.singleSliceView || (this.coronalSlice === this.mainImage))) {
         // draw coronal crosshairs
         this.context.save();
         this.context.beginPath();
@@ -654,9 +657,9 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.context.restore();
     }
 
-    if (((this.mainImage !== this.sagittalSlice) && (this.container.preferences.showCrosshairs !== 'Main'))
+    if ((((this.mainImage !== this.sagittalSlice) && (this.container.preferences.showCrosshairs !== 'Main'))
             || ((this.mainImage === this.sagittalSlice) && (this.container.preferences.showCrosshairs !== 'Lower')
-            && this.toggleMainCrosshairs)) {
+            && this.toggleMainCrosshairs)) && (!this.container.singleSliceView || (this.sagittalSlice === this.mainImage))) {
         // draw sagittal crosshairs
         this.context.save();
         this.context.beginPath();

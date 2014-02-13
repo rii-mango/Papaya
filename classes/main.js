@@ -30,6 +30,8 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.loadingImageIndex = 0;
     this.nestedViewer = false;
     this.collapsable = false;
+    this.singleSliceView = false;
+
     this.resetComponents();
 };
 
@@ -51,7 +53,8 @@ papaya.Container.prototype.getViewerDimensions = function () {
         height,
         width,
         widthPadding,
-        dims;
+        dims,
+        ratio;
 
     if (!this.kioskMode) {
         numAdditionalSections += 1;
@@ -80,12 +83,13 @@ papaya.Container.prototype.getViewerDimensions = function () {
         this.containerHtml.parent().width(PAPAYA_MINIMUM_SIZE);
     }
 
+    ratio = (this.singleSliceView ? 1 : 1.5);
     height = parentHeight - PAPAYA_SECTION_HEIGHT * numAdditionalSections;
-    width = height * 1.5;
+    width = height * ratio;
 
     if (width > parentWidth) {
         width = parentWidth - PAPAYA_SPACING * 2;
-        height = Math.ceil(width / 1.5);
+        height = Math.ceil(width / ratio);
     }
 
     widthPadding = (parentWidth - width) / 2;
@@ -453,6 +457,7 @@ function buildContainer(containerHTML, params) {
 
         container.nestedViewer = (containerHTML.parent()[0].tagName.toUpperCase() !== 'BODY');
         container.kioskMode = (container.params.kioskMode === true);
+        container.singleSliceView = (container.params.singleSliceView === true);
 
         container.buildViewer(container.params);
         container.buildDisplay();
