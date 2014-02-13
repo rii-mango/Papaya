@@ -350,6 +350,7 @@ papaya.Container.prototype.collapseViewer = function () {
 
         for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
             papayaContainers[ctr].updateViewerSize();
+            papayaContainers[ctr].viewer.drawViewer(true);
         }
 
         setTimeout(function () {
