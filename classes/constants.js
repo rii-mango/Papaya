@@ -2,7 +2,8 @@
 // Base CSS classes
 var PAPAYA_CONTAINER_CLASS_NAME = "papaya",
     PAPAYA_CONTAINER_COLLAPSABLE = "papaya-collapsable",
-    PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT = "papaya-collapsable-exempt";
+    PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT = "papaya-collapsable-exempt",
+    PAPAYA_CONTAINER_FULLSCREEN = "papaya-fullscreen";
 
 
 // Viewer CSS classes
