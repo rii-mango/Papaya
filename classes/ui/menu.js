@@ -80,7 +80,8 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
         buttonImgHtml = $(buttonImgHtmlId);
 
         if (this.menuOnHover) {
-            buttonImgHtml.mouseover(bind(this, this.showMenu));
+            buttonImgHtml.mouseenter(bind(this, function () { this.showHoverMenuTimeout = setTimeout(bind(this, this.showMenu), 500); }));
+            buttonImgHtml.mouseleave(bind(this, function () { clearTimeout(this.showHoverMenuTimeout);  this.showHoverMenuTimeout = null; }));
         }
 
         buttonHtml.click(bind(this, this.doClick));
