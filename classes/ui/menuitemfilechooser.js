@@ -21,12 +21,19 @@ papaya.ui.MenuItemFileChooser = papaya.ui.MenuItemFileChooser || function (viewe
 
 
 papaya.ui.MenuItemFileChooser.prototype.buildHTML = function (parentId) {
-    var html = "<li id='" + this.id + "'><span class='" + PAPAYA_MENU_UNSELECTABLE + "'><label class='"
+    var filechooser, html;
+
+    filechooser = this;
+
+    html = "<li id='" + this.id + "'><span class='" + PAPAYA_MENU_UNSELECTABLE + "'><label class='"
         + PAPAYA_MENU_FILECHOOSER + "' for='" + this.fileChooserId + "'>" + this.label
         + "</label><input type='file' id='" + this.fileChooserId + "' name='files' /></span></li>";
+
     $("#" + parentId).append(html);
-    $("#" + this.fileChooserId)[0].onchange = bind(this, function () {
-        this.callback(this.action, document.getElementById(this.fileChooserId).files[0]);
+
+    $("#" + this.fileChooserId)[0].onchange = bind(filechooser, function () {
+        filechooser.callback(filechooser.action, document.getElementById(filechooser.fileChooserId).files[0]);
     });
+
     $("#" + this.id).hover(function () {$(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
 };

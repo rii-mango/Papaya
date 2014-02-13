@@ -275,6 +275,8 @@ papaya.Container.prototype.findLoadableImage = function (name) {
 
 
 papaya.Container.prototype.expandViewer = function () {
+    var container = this;
+
     if (this.nestedViewer) {
         this.nestedViewer = false;
         this.collapsable = true;
@@ -311,17 +313,19 @@ papaya.Container.prototype.expandViewer = function () {
         this.resizeViewerComponents(true);
         this.viewer.updateOffsetRect();
 
-        setTimeout(bind(this, function () {
+        setTimeout(function () {
             window.scrollTo(0, 0);
-            this.viewer.addScroll();
-        }), 0);
+            container.viewer.addScroll();
+        }, 0);
     }
 };
 
 
 
 papaya.Container.prototype.collapseViewer = function () {
-    var ctr;
+    var ctr, container;
+
+    container = this;
 
     if (this.collapsable) {
         this.nestedViewer = true;
@@ -348,10 +352,10 @@ papaya.Container.prototype.collapseViewer = function () {
             papayaContainers[ctr].updateViewerSize();
         }
 
-        setTimeout(bind(this, function () {
-            $(window).scrollTop(this.tempScrollTop);
-            this.viewer.removeScroll();
-        }), 0);
+        setTimeout(function () {
+            $(window).scrollTop(container.tempScrollTop);
+            container.viewer.removeScroll();
+        }, 0);
     }
 };
 
@@ -542,4 +546,4 @@ window.onresize = function () {
             }
         }
     }
-}
+};

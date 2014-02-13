@@ -79,14 +79,14 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
         buttonImgHtmlId = "#" + this.buttonId + " > img";
         buttonImgHtml = $(buttonImgHtmlId);
 
+        menu = this;
+
         if (this.menuOnHover) {
-            buttonImgHtml.mouseenter(bind(this, function () { this.showHoverMenuTimeout = setTimeout(bind(this, this.showMenu), 500); }));
-            buttonImgHtml.mouseleave(bind(this, function () { clearTimeout(this.showHoverMenuTimeout);  this.showHoverMenuTimeout = null; }));
+            buttonImgHtml.mouseenter(function () { menu.showHoverMenuTimeout = setTimeout(bind(menu, menu.showMenu), 500); });
+            buttonImgHtml.mouseleave(function () { clearTimeout(menu.showHoverMenuTimeout); menu.showHoverMenuTimeout = null; });
         }
 
         buttonHtml.click(bind(this, this.doClick));
-
-        menu = this;
 
         if (this.icons) {
             buttonImgHtml.hover(

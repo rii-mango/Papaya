@@ -28,11 +28,13 @@ papaya.ui.Dialog = papaya.ui.Dialog || function (container, title, content, data
 
 
 papaya.ui.Dialog.prototype.showDialog = function () {
-    var ctr, ctrOpt, html, val, itemsHtml, thisHtml, thisHtmlId, disabled;
+    var ctr, ctrOpt, html, val, itemsHtml, thisHtml, thisHtmlId, disabled, bodyHtml;
 
     thisHtmlId = "#" + this.id;
     thisHtml = $(thisHtmlId);
     thisHtml.remove();
+
+    bodyHtml = $("body");
 
     html = "<div id='" + this.id + "' class='" + PAPAYA_DIALOG_CSS + "'><span class='" + PAPAYA_DIALOG_TITLE_CSS + "'>" + this.title + "</span>";
 
@@ -66,8 +68,8 @@ papaya.ui.Dialog.prototype.showDialog = function () {
 
     html += "<div class='" + PAPAYA_DIALOG_BUTTON_CSS + "'><button type='button' id='" + this.id + "-Ok" + "'>Ok</button></div></div>";
 
-    $("body").append('<div class="' + PAPAYA_DIALOG_BACKGROUND + '"></div>');
-    $("body").append(html);
+    bodyHtml.append('<div class="' + PAPAYA_DIALOG_BACKGROUND + '"></div>');
+    bodyHtml.append(html);
 
     for (ctr = 0; ctr < this.content.items.length; ctr += 1) {
         if (this.content.items[ctr].readonly) {
@@ -88,8 +90,7 @@ papaya.ui.Dialog.prototype.showDialog = function () {
 
     thisHtml = $(thisHtmlId);
     showModalDialog(this.viewer, thisHtml[0]);
-    $("body").addClass(PAPAYA_DIALOG_STOPSCROLL);
-
+    bodyHtml.addClass(PAPAYA_DIALOG_STOPSCROLL);
 };
 
 
