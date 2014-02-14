@@ -88,14 +88,16 @@
         params["worldSpace"] = true;
         params["images"] = ["sample_image"];
         params["atlas"] = "MNI (Nearest Grey Matter)";
+        params["orthogonal"] = false;
+        params["mainView"] = "sagittal";
     </script>
 
-    <title>Nested</title>
+    <title>Single View</title>
 </head>
 
 <body>
-    <div style="width:600px; height:600px; margin:auto;">
-        <div class="papaya" data-params="params"></div>
-    </div>
+<div style="width:600px; height:600px; margin:auto;">
+    <div class="papaya" data-params="params"></div>
+</div>
 </body>
 </html>
