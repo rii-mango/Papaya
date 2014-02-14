@@ -86,11 +86,9 @@
          */
         var params = [];
         params["worldSpace"] = true;
-        params["images"] = ["sample_image", "data/zstat.nii.gz"];
-        params["luts"] = [{"name": "Custom", "data":[[0, 1, 0, 0], [.5, 1, 1, 0], [1, 1, 1, 1]]}];
-        params["zstat.nii.gz"] = {"min": 4, "max": 8, "lut": "Custom", "alpha": 0.5};
+        params["images"] = ["sample_image"];
         params["atlas"] = "MNI (Nearest Grey Matter)";
-        params["singleSliceView"] = true;
+        params["orthogonal"] = false;
     </script>
 
     <title>Nested</title>

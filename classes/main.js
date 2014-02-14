@@ -5,7 +5,7 @@
  PAPAYA_TOOLBAR_CSS, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_VIEWER_ID, PAPAYA_DEFAULT_DISPLAY_ID,
  PAPAYA_DEFAULT_CONTAINER_ID, checkForBrowserCompatibility, getQueryParams, bind, PAPAYA_UTILS_UNSUPPORTED_CSS,
  PAPAYA_UTILS_UNSUPPORTED_MESSAGE_CSS, PAPAYA_CONTAINER_COLLAPSABLE, PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT,
- PAPAYA_CONTAINER_FULLSCREEN*/
+ PAPAYA_CONTAINER_FULLSCREEN */
 
 "use strict";
 
@@ -30,7 +30,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.loadingImageIndex = 0;
     this.nestedViewer = false;
     this.collapsable = false;
-    this.singleSliceView = false;
+    this.orthogonal = true;
 
     this.resetComponents();
 };
@@ -83,7 +83,7 @@ papaya.Container.prototype.getViewerDimensions = function () {
         this.containerHtml.parent().width(PAPAYA_MINIMUM_SIZE);
     }
 
-    ratio = (this.singleSliceView ? 1 : 1.5);
+    ratio = (this.orthogonal ? 1.5 : 1);
     height = parentHeight - PAPAYA_SECTION_HEIGHT * numAdditionalSections;
     width = height * ratio;
 
@@ -457,7 +457,10 @@ function buildContainer(containerHTML, params) {
 
         container.nestedViewer = (containerHTML.parent()[0].tagName.toUpperCase() !== 'BODY');
         container.kioskMode = (container.params.kioskMode === true);
-        container.singleSliceView = (container.params.singleSliceView === true);
+
+        if (container.params.orthogonal !== undefined) {  // default is true
+            container.orthogonal = container.params.orthogonal;
+        }
 
         container.buildViewer(container.params);
         container.buildDisplay();
