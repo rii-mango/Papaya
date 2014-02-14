@@ -86,7 +86,7 @@ papaya.viewer.Display.prototype.drawEmptyDisplay = function () {
 
 papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
     var locY, val, viewerOrigin, height, atlasNumLabels, atlasLabelWidth, atlasLabel, ctr, metricsAtlas, sizeRatio,
-        viewerVoxelDims, labelColorThresh, halfWidth, coordinateItemWidth, smallViewer, index;
+        viewerVoxelDims, labelColorThresh, halfWidth, coordinateItemWidth, smallViewer;
 
     if (this.canDraw()) {
         // initialize
