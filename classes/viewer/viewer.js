@@ -1709,19 +1709,21 @@ papaya.viewer.Viewer.prototype.sliceSliderControlChanged = function () {
 
 
 papaya.viewer.Viewer.prototype.updateSliceSliderControl = function () {
-    this.sliceSliderControl.prop("min", "0");
-    this.sliceSliderControl.prop("step", "1");
-
     if (this.sliceSliderControl) {
-        if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-            this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.zDim - 1).toString());
-            this.sliceSliderControl.val(this.currentCoord.z);
-        } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-            this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.yDim - 1).toString());
-            this.sliceSliderControl.val(this.currentCoord.y);
-        } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-            this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.xDim - 1).toString());
-            this.sliceSliderControl.val(this.currentCoord.x);
+        this.sliceSliderControl.prop("min", "0");
+        this.sliceSliderControl.prop("step", "1");
+
+        if (this.sliceSliderControl) {
+            if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.zDim - 1).toString());
+                this.sliceSliderControl.val(this.currentCoord.z);
+            } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.yDim - 1).toString());
+                this.sliceSliderControl.val(this.currentCoord.y);
+            } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.xDim - 1).toString());
+                this.sliceSliderControl.val(this.currentCoord.x);
+            }
         }
     }
 };

@@ -290,6 +290,19 @@ papaya.Container.prototype.findLoadableImage = function (name) {
 
 
 
+function setToFullPage() {
+    document.body.style.marginTop = 0;
+    document.body.style.marginBottom = 0;
+    document.body.style.marginLeft = 'auto';
+    document.body.style.marginRight = 'auto';
+    document.body.style.padding = 0;
+    document.body.style.overflow = 'hidden';
+    document.body.style.width = "100%";
+    document.body.style.height = "100%";
+}
+
+
+
 papaya.Container.prototype.expandViewer = function () {
     var container = this;
 
@@ -315,14 +328,7 @@ papaya.Container.prototype.expandViewer = function () {
         this.originalStyle.paddingLeft = document.body.style.paddingLeft;
         this.originalStyle.overflow = document.body.style.overflow;
 
-        document.body.style.marginTop = 0;
-        document.body.style.marginBottom = 0;
-        document.body.style.marginLeft = 'auto';
-        document.body.style.marginRight = 'auto';
-        document.body.style.padding = 0;
-        document.body.style.overflow = 'hidden';
-        document.body.style.width = "100%";
-        document.body.style.height = "100%";
+        setToFullPage();
 
         this.containerHtml.after('<div style="display:none" class="' + PAPAYA_CONTAINER_COLLAPSABLE + '"></div>');
         $(document.body).prepend(this.containerHtml);
@@ -336,7 +342,6 @@ papaya.Container.prototype.expandViewer = function () {
         }, 0);
     }
 };
-
 
 
 papaya.Container.prototype.collapseViewer = function () {
@@ -441,7 +446,7 @@ function fillContainerHTML(containerHTML, isDefault, params) {
         containerHTML.append("<div id='" + (PAPAYA_DEFAULT_VIEWER_ID + papayaContainers.length) + "' class='" + PAPAYA_VIEWER_CSS + "'></div>");
         containerHTML.append("<div id='" + (PAPAYA_DEFAULT_DISPLAY_ID + papayaContainers.length) + "' class='" + PAPAYA_DISPLAY_CSS + "'></div>");
 
-        if ((params.orthogonal !== undefined) && !params.orthogonal) {
+        if (params && (params.orthogonal !== undefined) && !params.orthogonal) {
             if (isInputRangeSupported()) {
                 containerHTML.append("<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "' class='" + PAPAYA_SLIDER_CSS + "'><input type='range' /></div>");
             }
@@ -529,6 +534,7 @@ function buildAllContainers() {
     if ((papayaContainers.length === 0) || ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer)) {
         $("html").addClass(PAPAYA_CONTAINER_FULLSCREEN);
         $("body").addClass(PAPAYA_CONTAINER_FULLSCREEN);
+        setToFullPage();
     }
 }
 
