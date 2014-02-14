@@ -9,3 +9,13 @@
     text-align: right;
     display:none;
 }
+
+.papaya-slider-slice {
+    margin: 2px auto;
+    padding: 0 5px;
+}
+
+.papaya-slider-slice input[type=range] {
+    width: 100%;
+    margin: 0 auto;
+}

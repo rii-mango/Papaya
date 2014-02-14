@@ -184,3 +184,11 @@ function isPlatformLittleEndian() {
     new DataView(buffer).setInt16(0, 256, true);
     return new Int16Array(buffer)[0] === 256;
 }
+
+
+
+function isInputRangeSupported() {
+    var test = document.createElement("input");
+    test.setAttribute("type", "range");
+    return (test.type === "range");
+}

@@ -12,7 +12,8 @@ var PAPAYA_VIEWER_CSS = "papaya-viewer";
 
 // Toolbar CSS classes
 var PAPAYA_TOOLBAR_CSS = "papaya-toolbar",
-    PAPAYA_TITLEBAR_CSS = "papaya-titlebar";
+    PAPAYA_TITLEBAR_CSS = "papaya-titlebar",
+    PAPAYA_SLIDER_CSS = "papaya-slider-slice";
 
 
 // Display CSS classes
@@ -54,7 +55,8 @@ var PAPAYA_UTILS_CHECKFORJS_CSS = "checkForJS",
 var PAPAYA_DEFAULT_VIEWER_ID  = "papayaViewer",
     PAPAYA_DEFAULT_DISPLAY_ID = "papayaDisplay",
     PAPAYA_DEFAULT_TOOLBAR_ID = "papayaToolbar",
-    PAPAYA_DEFAULT_CONTAINER_ID = "papayaContainer";
+    PAPAYA_DEFAULT_CONTAINER_ID = "papayaContainer",
+    PAPAYA_DEFAULT_SLIDER_ID = "papayaSliceSlider";
 
 
 // Misc constants
