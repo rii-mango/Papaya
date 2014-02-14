@@ -2,7 +2,7 @@
 /*jslint browser: true, node: true */
 /*global $, PAPAYA_TITLEBAR_CSS, bind, showMenu, derefIn, PAPAYA_MENU_CSS, PAPAYA_MENU_LABEL_CSS,
  PAPAYA_MENU_TITLEBAR_CSS, PAPAYA_MENU_ICON_CSS, PAPAYA_MENU_BUTTON_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE,
- PAPAYA_MENU_BUTTON_CSS */
+ PAPAYA_MENU_BUTTON_CSS, getNiceForegroundColor */
 
 "use strict";
 
@@ -67,7 +67,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
         }
     } else if (this.isTitleBar) {
         html = "<div class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_TITLEBAR_CSS + " " + PAPAYA_TITLEBAR_CSS + "' style='z-index:-1;position:absolute;top:" + (this.viewer.container.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE)
-            + "px;width:" + toolbarHtml.width() + "px;text-align:center;'>" + this.label + "</div>";
+            + "px;width:" + toolbarHtml.width() + "px;text-align:center;color:" + getNiceForegroundColor(this.viewer.bgColor) + "'>" + this.label + "</div>";
     } else {
         html = "<span id='" + this.buttonId + "' class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_LABEL_CSS + "'>" + this.label + "</span>";
     }

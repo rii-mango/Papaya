@@ -113,8 +113,6 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
     this.toolbarHtml.css({width: dims.width + "px"});
     this.toolbarHtml.css({height: papaya.ui.Toolbar.SIZE + "px"});
 
-    this.titlebarHtml.css({width: dims.width + "px"});
-
     this.viewerHtml.css({height: "100%"});
     this.viewerHtml.css({width: dims.width + "px"});
     this.viewerHtml.css({paddingLeft: dims.widthPadding + "px"});
@@ -139,6 +137,8 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
         this.viewer.drawEmptyViewer();
         this.display.drawEmptyDisplay();
     }
+
+    this.titlebarHtml.css({width: dims.width + "px", top: (this.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE)});
 };
 
 
@@ -535,6 +535,7 @@ function buildAllContainers() {
         $("html").addClass(PAPAYA_CONTAINER_FULLSCREEN);
         $("body").addClass(PAPAYA_CONTAINER_FULLSCREEN);
         setToFullPage();
+        papayaContainers[0].resizeViewerComponents(false);
     }
 }
 

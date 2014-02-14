@@ -90,9 +90,9 @@ papaya.ui.Toolbar.IMAGE_INFO_DATA = {
 papaya.ui.Toolbar.prototype.buildToolbar = function () {
     var ctr;
 
-    this.container.toolbarHtml.find(PAPAYA_MENU_ICON_CSS).remove();
-    this.container.toolbarHtml.find(PAPAYA_MENU_LABEL_CSS).remove();
-    this.container.toolbarHtml.find(PAPAYA_MENU_TITLEBAR_CSS).remove();
+    this.container.toolbarHtml.find("." + PAPAYA_MENU_ICON_CSS).remove();
+    this.container.toolbarHtml.find("." + PAPAYA_MENU_LABEL_CSS).remove();
+    this.container.toolbarHtml.find("." + PAPAYA_TITLEBAR_CSS).remove();
 
     this.buildOpenMenuItems();
 
@@ -357,6 +357,8 @@ papaya.ui.Toolbar.prototype.updateTitleBar = function (title) {
     if (elem) {
         elem.innerHTML = title;
     }
+
+    this.container.titlebarHtml.css({top: (this.container.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE)});
 };
 
 

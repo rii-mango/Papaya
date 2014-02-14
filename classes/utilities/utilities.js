@@ -365,3 +365,29 @@ function getOffsetRect(elem) {
 
     return { top: Math.round(top), left: Math.round(left) };
 }
+
+
+
+function getColorComponents(rgbStr) {
+    if (rgbStr) {
+        return rgbStr.match(/\d+/g);
+    }
+
+    return [0, 0, 0, 255];
+}
+
+
+
+function getNiceForegroundColor(rgbStr) {
+    var colors = getColorComponents(rgbStr);
+
+    var avg = (parseInt(colors[0]) + parseInt(colors[1]) + parseInt(colors[2])) / 3;
+
+    if (avg > 127) {
+        colors[0] = colors[1] = colors[2] = 0;
+    } else {
+        colors[0] = colors[1] = colors[2] = 255;
+    }
+
+    return ("rgb(" + colors[0] + ", " + colors[1] + ", " + colors[2] + ")");
+}

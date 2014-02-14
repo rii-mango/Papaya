@@ -63,6 +63,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.isShiftKeyDown = false;
     this.toggleMainCrosshairs = true;
     this.sliceSliderControl = null;
+    this.bgColor = null;
 
     this.listenerMouseMove = bind(this, this.mouseMoveEvent);
     this.listenerMouseDown = bind(this, this.mouseDownEvent);
@@ -184,7 +185,7 @@ papaya.viewer.Viewer.prototype.atlasLoaded = function () {
 
 
 papaya.viewer.Viewer.prototype.initializeViewer = function () {
-    var message, bgColor, viewer;
+    var message, viewer;
 
     viewer = this;
 
@@ -252,13 +253,13 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
 
         this.updateOffsetRect();
 
-        bgColor = $("body").css("background-color");
+        this.bgColor = $("body").css("background-color");
 
-        if (bgColor === "rgba(0, 0, 0, 0)") {
-            bgColor = "white";
+        if (this.bgColor === "rgba(0, 0, 0, 0)") {
+            this.bgColor = "rgba(255, 255, 255, 255)";
         }
 
-        this.context.fillStyle = bgColor;
+        this.context.fillStyle = this.bgColor;
         this.context.fillRect(0, 0, this.canvas.offsetWidth, this.canvas.offsetHeight);
 
         this.initialized = true;
