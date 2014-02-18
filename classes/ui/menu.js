@@ -55,7 +55,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
                 "<img style='width:" + papaya.viewer.ColorTable.ICON_SIZE + "px; height:" + papaya.viewer.ColorTable.ICON_SIZE + "px; vertical-align:bottom; ";
 
         if (this.dataSource.isSelected(parseInt(this.imageIndex, 10))) {
-            html += "border:2px outset #FF5A3D;background-color:#eeeeee;padding:1px;";
+            html += "border:2px solid #FF5A3D;background-color:#eeeeee;padding:1px;";
         } else {
             html += "border:2px outset lightgray;background-color:#eeeeee;padding:1px;";
         }
@@ -99,9 +99,9 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
                 },
                 bind(menu, function () {
                     if (menu.dataSource.isSelected(parseInt(menu.imageIndex, 10)) && menu.dataSource.isSelectable()) {
-                        $("#" + menu.buttonId + " > img").css({"border-color": "#FF5A3D"});
+                        $("#" + menu.buttonId + " > img").css({"border": "2px solid #FF5A3D"});
                     } else {
-                        $("#" + menu.buttonId + " > img").css({"border-color": "lightgray"});
+                        $("#" + menu.buttonId + " > img").css({"border": "2px outset lightgray"});
                     }
                 })
             );
