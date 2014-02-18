@@ -1256,6 +1256,7 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
         this.container.display.drawEmptyDisplay();
     }
 
+    this.updateSliceSliderControl();
     this.container.toolbar.buildToolbar();
 };
 
@@ -1711,20 +1712,29 @@ papaya.viewer.Viewer.prototype.sliceSliderControlChanged = function () {
 
 papaya.viewer.Viewer.prototype.updateSliceSliderControl = function () {
     if (this.sliceSliderControl) {
-        this.sliceSliderControl.prop("min", "0");
-        this.sliceSliderControl.prop("step", "1");
+        if (this.initialized) {
+            this.sliceSliderControl.prop("disabled", false);
+            this.sliceSliderControl.prop("min", "0");
+            this.sliceSliderControl.prop("step", "1");
 
-        if (this.sliceSliderControl) {
-            if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.zDim - 1).toString());
-                this.sliceSliderControl.val(this.currentCoord.z);
-            } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.yDim - 1).toString());
-                this.sliceSliderControl.val(this.currentCoord.y);
-            } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-                this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.xDim - 1).toString());
-                this.sliceSliderControl.val(this.currentCoord.x);
+            if (this.sliceSliderControl) {
+                if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                    this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.zDim - 1).toString());
+                    this.sliceSliderControl.val(this.currentCoord.z);
+                } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                    this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.yDim - 1).toString());
+                    this.sliceSliderControl.val(this.currentCoord.y);
+                } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                    this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.xDim - 1).toString());
+                    this.sliceSliderControl.val(this.currentCoord.x);
+                }
             }
+        } else {
+            this.sliceSliderControl.prop("disabled", true);
+            this.sliceSliderControl.prop("min", "0");
+            this.sliceSliderControl.prop("step", "1");
+            this.sliceSliderControl.prop("max", "1");
+            this.sliceSliderControl.val(0);
         }
     }
 };
