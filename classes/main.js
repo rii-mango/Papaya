@@ -77,11 +77,15 @@ papaya.Container.prototype.getViewerDimensions = function () {
         } else {
             this.containerHtml.parent().height(PAPAYA_MINIMUM_SIZE * 0.9);
         }
+    } else if (!this.nestedViewer) {
+        this.containerHtml.parent().height("100%");
     }
 
     if (parentWidth < PAPAYA_MINIMUM_SIZE) {
         parentWidth = PAPAYA_MINIMUM_SIZE;
         this.containerHtml.parent().width(PAPAYA_MINIMUM_SIZE);
+    } else if (!this.nestedViewer) {
+        this.containerHtml.parent().width("100%");
     }
 
     ratio = (this.orthogonal ? 1.5 : 1);
