@@ -545,7 +545,10 @@ function buildAllContainers() {
         $("html").addClass(PAPAYA_CONTAINER_FULLSCREEN);
         $("body").addClass(PAPAYA_CONTAINER_FULLSCREEN);
         setToFullPage();
-        papayaContainers[0].resizeViewerComponents(false);
+
+        if (papayaContainers.length > 0) {
+            papayaContainers[0].resizeViewerComponents(false);
+        }
     }
 }
 
