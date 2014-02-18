@@ -255,7 +255,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
 
         this.bgColor = $("body").css("background-color");
 
-        if (this.bgColor === "rgba(0, 0, 0, 0)") {
+        if ((this.bgColor === "rgba(0, 0, 0, 0)") || ((this.bgColor === "transparent"))) {
             this.bgColor = "rgba(255, 255, 255, 255)";
         }
 
