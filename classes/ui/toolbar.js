@@ -45,7 +45,7 @@ papaya.ui.Toolbar.MENU_DATA = {
             ]
             },
         {"label": "", "icons": null, "titleBar": "true" },
-        {"label": "EXPAND", "icons": [papaya.ui.Toolbar.ICON_EXPAND, papaya.ui.Toolbar.ICON_COLLAPSE], "items": [], "method": "isCollapsable", "required": "container.nestedViewer" },
+        {"label": "EXPAND", "icons": [papaya.ui.Toolbar.ICON_EXPAND, papaya.ui.Toolbar.ICON_COLLAPSE], "items": [], "method": "isCollapsable", "required": "isNestedViewer" },
         {"label": "SPACE", "icons": [papaya.ui.Toolbar.ICON_IMAGESPACE, papaya.ui.Toolbar.ICON_WORLDSPACE], "items": [], "method": "isWorldMode", "menuOnHover": true }
     ]
 };
@@ -89,6 +89,9 @@ papaya.ui.Toolbar.IMAGE_INFO_DATA = {
 
 papaya.ui.Toolbar.prototype.buildToolbar = function () {
     var ctr;
+
+    this.imageMenus = null;
+    this.spaceMenu = null;
 
     this.container.toolbarHtml.find("." + PAPAYA_MENU_ICON_CSS).remove();
     this.container.toolbarHtml.find("." + PAPAYA_MENU_LABEL_CSS).remove();
@@ -190,7 +193,7 @@ papaya.ui.Toolbar.prototype.menuContains = function (menuItems, name) {
 papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, dataSource, modifier) {
     var menu = null, items;
 
-    if (!menuData.required || ((derefIn(this, menuData.required)) === true)) {
+    if (!menuData.required || ((bind(this.container, derefIn(this.container, menuData.required)))() === true)) {
         menu = new papaya.ui.Menu(this.viewer, menuData, bind(this, this.doAction), this.viewer, modifier);
 
         if (menuData.label === "SPACE") {

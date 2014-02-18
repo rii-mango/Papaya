@@ -385,6 +385,12 @@ papaya.Container.prototype.collapseViewer = function () {
 
 
 
+papaya.Container.prototype.isNestedViewer = function () {
+    return (this.nestedViewer || this.collapsable);
+};
+
+
+
 function findParameters(containerHTML) {
     var viewerHTML, paramsName, loadedParams = null;
 
