@@ -836,7 +836,7 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
         return;
     }
 
-    if ((papayaContainers.length > 1) && (papayaLastHoveredViewer !== this)) {
+    if (((papayaContainers.length > 1) || papayaContainers[0].nestedViewer) && (papayaLastHoveredViewer !== this)) {
         return;
     }
 
