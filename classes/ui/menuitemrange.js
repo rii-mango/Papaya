@@ -34,7 +34,7 @@ papaya.ui.MenuItemRange = papaya.ui.MenuItemRange || function (viewer, label, ac
 
 
 papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
-    var menuItem, range, html, menuItemRange, minHtml, maxHtml, minSliderId, minSliderHtml, maxSliderId, maxSliderHtml, sliderId, sliderHtml;
+    var range, html, menuItemRange, minHtml, maxHtml, minSliderId, minSliderHtml, maxSliderId, maxSliderHtml, sliderId, sliderHtml;
 
     minSliderId = this.id + "SliderMin";
     maxSliderId = this.id + "SliderMax";

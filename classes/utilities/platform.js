@@ -15,10 +15,6 @@ console.warn = console.warn || function () {};
 console.error = console.error || function () {};
 console.info = console.info || function () {};
 
-var SCROLL_APROXIMATE_MAX_FIREFOX = 60;
-var SCROLL_APROXIMATE_MAX_SAFARI = 1200;
-var SCROLL_APROXIMATE_MAX_CHROME = 1200;
-
 
 var LAST_SCROLL_EVENT_TIMESTAMP = 0;
 
