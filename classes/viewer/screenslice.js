@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global roundFast */
+/*global roundFast, Float32Array */
 
 "use strict";
 
@@ -29,6 +29,7 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
     this.screenTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
     this.zoomTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
     this.finalTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+    this.imageData = [];
 };
 
 
@@ -91,6 +92,9 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
                         }
                     }
 
+                    index = ((ctrY * this.xDim) + ctrX) * 4;
+                    this.imageData[index] = value;
+
                     if ((!this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMin))
                             || (this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMin)) || isNaN(value)) {
                         value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN;  // screen value
@@ -103,8 +107,6 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
                     }
 
                     if ((thresholdAlpha > 0) || (ctr === 0)) {
-                        index = ((ctrY * this.xDim) + ctrX) * 4;
-
                         this.imageDataDraw.data[index] = (this.imageDataDraw.data[index] * (1 - layerAlpha) + this.screenVolumes[ctr].colorTable.lookupRed(value) * layerAlpha);
                         this.imageDataDraw.data[index + 1] = (this.imageDataDraw.data[index + 1] * (1 - layerAlpha) + this.screenVolumes[ctr].colorTable.lookupGreen(value) * layerAlpha);
                         this.imageDataDraw.data[index + 2] = (this.imageDataDraw.data[index + 2] * (1 - layerAlpha) + this.screenVolumes[ctr].colorTable.lookupBlue(value) * layerAlpha);

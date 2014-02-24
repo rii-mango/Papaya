@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, Ext, CanvasRenderingContext2D, getKeyCode, OSName */
+/*global $, Ext, CanvasRenderingContext2D, getKeyCode, OSName, getMousePositionX */
 
 "use strict";
 
@@ -390,4 +390,18 @@ function getNiceForegroundColor(rgbStr) {
     }
 
     return ("rgb(" + colors[0] + ", " + colors[1] + ", " + colors[2] + ")");
+}
+
+
+
+function getRelativeMousePositionFromParentX(elem, ev) {
+    var parentOffset = elem.parent().offset();
+    return getMousePositionX(ev) - parentOffset.left;
+}
+
+
+
+function getRelativeMousePositionX(elem, ev) {
+    var parentOffset = elem.offset();
+    return getMousePositionX(ev) - parentOffset.left;
 }

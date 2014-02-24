@@ -207,8 +207,8 @@ papaya.viewer.ScreenVolume.prototype.changeColorTable = function (viewer, lutNam
 
 papaya.viewer.ScreenVolume.prototype.getRange = function () {
     var range = new Array(2);
-    range[0] = this.screenMin;
-    range[1] = this.screenMax;
+    range[0] = ((this.colorTable.minLUT / (255.0 / (this.screenMax - this.screenMin))) + this.screenMin);
+    range[1] = ((this.colorTable.maxLUT / (255.0 / (this.screenMax - this.screenMin))) + this.screenMin);
     return range;
 };
 
@@ -224,9 +224,28 @@ papaya.viewer.ScreenVolume.prototype.incrementTimepoint = function () {
 };
 
 
+
 papaya.viewer.ScreenVolume.prototype.decrementTimepoint = function () {
     this.currentTimepoint -= 1;
     if (this.currentTimepoint < 0) {
         this.currentTimepoint = 0;
     }
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.updateMinLUT = function (minLUTnew) {
+    this.colorTable.updateMinLUT(minLUTnew);
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.updateMaxLUT = function (maxLUTnew) {
+    this.colorTable.updateMaxLUT(maxLUTnew);
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.updateLUT = function (minLUTnew, maxLUTnew) {
+    this.colorTable.updateLUT(minLUTnew, maxLUTnew);
 };

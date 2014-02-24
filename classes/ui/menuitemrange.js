@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE */
+/*global $, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE, getRelativeMousePositionX, getRelativeMousePositionFromParentX */
 
 "use strict";
 
@@ -13,6 +13,7 @@ papaya.ui.MenuItemRange = papaya.ui.MenuItemRange || function (viewer, label, ac
     this.viewer = viewer;
     this.label = label;
 
+    this.index = modifier;
     this.modifier = "";
     if (modifier !== undefined) {
         this.modifier = "-" + modifier;
@@ -24,31 +25,110 @@ papaya.ui.MenuItemRange = papaya.ui.MenuItemRange || function (viewer, label, ac
     this.callback = callback;
     this.dataSource = dataSource;
     this.method = method;
+    this.id = label + this.modifier + this.viewer.container.containerIndex;
+
+    this.grabOffset = 0;
+    this.screenVol = this.viewer.screenVolumes[this.index];
 };
 
 
 
 papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
-    var range, html, menuItemRange, minHtml, maxHtml;
+    var menuItem, range, html, menuItemRange, minHtml, maxHtml, minSliderId, minSliderHtml, maxSliderId, maxSliderHtml, sliderId, sliderHtml;
 
+    minSliderId = this.id + "SliderMin";
+    maxSliderId = this.id + "SliderMax";
+    sliderId = this.id + "Slider";
     range = this.dataSource[this.method]();
-    html = "<li id='" + this.id + "'><span class='" + PAPAYA_MENU_UNSELECTABLE + "'>" + this.label + ": &nbsp;<input type='text' size='6' style='width:55px' id='" + this.minId + "' value='" + range[0] + "' /> to <input type='text' size='6' style='width:55px' id='" + this.maxId + "' value='" + range[1] + "' /></span></li>";
-    $("#" + parentId).append(html);
-    $("#" + this.id).hover(function () {$(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
 
-    menuItemRange = this;
+    html = "<li id='" + this.id + "'>" +
+                "<span class='" + PAPAYA_MENU_UNSELECTABLE + "' style=''>" +
+                    "<input type='text' size='4' style='width:40px;margin-right:5px;' id='" + this.minId + "' value='" + range[0] + "' />" +
+                    "<div style='display:inline-block;position:relative;width:" + (papaya.viewer.ColorTable.COLOR_BAR_WIDTH + papaya.viewer.ColorTable.ARROW_ICON_WIDTH) + "px;top:-12px;'>" +
+                        "<img id='" + minSliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE + "' style='position:absolute;top:5px;left:0;z-index:99' src='" + papaya.viewer.ColorTable.ARROW_ICON + "' />" +
+                        "<img id='" + maxSliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE + "' style='position:absolute;top:5px;left:" + (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1) + "px;z-index:99' src='" + papaya.viewer.ColorTable.ARROW_ICON + "' />" +
+                        "<img id='" + sliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE + "' style='position:absolute;top:0;left:" + (parseInt(papaya.viewer.ColorTable.ARROW_ICON_WIDTH / 2, 10)) + "px;' src='" + this.viewer.screenVolumes[parseInt(this.index, 10)].colorTable.colorBar + "' />" +
+                    "</div>" +
+                    "<input type='text' size='4' style='width:40px;margin-left:5px;' id='" + this.maxId + "' value='" + range[1] + "' />" +
+                "</span>" +
+           "</li>";
+
+    $("#" + parentId).append(html);
 
     minHtml = $("#" + this.minId);
     maxHtml = $("#" + this.maxId);
+    minSliderHtml = $("#" + minSliderId);
+    maxSliderHtml = $("#" + maxSliderId);
+    sliderHtml = $("#" + sliderId);
+
+    menuItemRange = this;
+
+    minSliderHtml.mousedown(function (ev) {
+        menuItemRange.grabOffset = getRelativeMousePositionX(minSliderHtml, ev);
+        $(window).mousemove(function (ev) {
+            var val, maxVal;
+
+            maxVal = (menuItemRange.screenVol.colorTable.maxLUT / papaya.viewer.ColorTable.LUT_MAX) * (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1);
+            val = (getRelativeMousePositionFromParentX(minSliderHtml, ev) - menuItemRange.grabOffset);
+
+            if (val < 0) {
+                val = 0;
+            } else if (val > 99) {
+                val = 99;
+            } else if (val > maxVal) {
+                val = maxVal;
+            }
+
+            menuItemRange.screenVol.updateMinLUT(Math.round((val / (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1)) * papaya.viewer.ColorTable.LUT_MAX));
+            minSliderHtml.css({"left": val + "px"});
+            menuItemRange.viewer.drawViewer(true);
+            minHtml.val(menuItemRange.dataSource[menuItemRange.method]()[0]);
+            menuItemRange.screenVol.colorTable.updateColorBar();
+            sliderHtml.attr("src", menuItemRange.screenVol.colorTable.colorBar);
+        });
+    });
+
+    maxSliderHtml.mousedown(function (ev) {
+        menuItemRange.grabOffset = getRelativeMousePositionX(maxSliderHtml, ev);
+        $(window).mousemove(function (ev) {
+            var val, minVal;
+
+            minVal = (menuItemRange.screenVol.colorTable.minLUT / papaya.viewer.ColorTable.LUT_MAX) * (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1);
+            val = (getRelativeMousePositionFromParentX(maxSliderHtml, ev) - menuItemRange.grabOffset);
+
+            if (val < 0) {
+                val = 0;
+            } else if (val > 99) {
+                val = 99;
+            } else if (val < minVal) {
+                val = minVal;
+            }
+
+            menuItemRange.screenVol.updateMaxLUT(Math.round((val / (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1)) * papaya.viewer.ColorTable.LUT_MAX));
+            maxSliderHtml.css({"left": val + "px"});
+            menuItemRange.viewer.drawViewer(true);
+            maxHtml.val(menuItemRange.dataSource[menuItemRange.method]()[1]);
+            menuItemRange.screenVol.colorTable.updateColorBar();
+            sliderHtml.attr("src", menuItemRange.screenVol.colorTable.colorBar);
+        });
+    });
+
+    $(window).mouseup(function () {
+        $(window).unbind("mousemove");
+    });
+
+    $("#" + this.id).hover(function () {$(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
 
     minHtml.change(bind(this, function () {
         menuItemRange.updateDataSource(this, true);
         menuItemRange.viewer.drawViewer(true);
+        menuItemRange.resetSlider();
     }));
 
     maxHtml.change(bind(this, function () {
         menuItemRange.updateDataSource(this, false);
         menuItemRange.viewer.drawViewer(true);
+        menuItemRange.resetSlider();
     }));
 
     minHtml.focus();
@@ -94,4 +174,27 @@ papaya.ui.MenuItemRange.prototype.updateDataSource = function (menuItemRange, mi
         maxHtml.focus();
         maxHtml.select();
     }
+};
+
+
+
+papaya.ui.MenuItemRange.prototype.resetSlider = function () {
+    var minSliderId, minSliderHtml, maxSliderId, maxSliderHtml, sliderId, sliderHtml;
+
+    minSliderId = this.id + "SliderMin";
+    maxSliderId = this.id + "SliderMax";
+    sliderId = this.id + "Slider";
+    minSliderHtml = $("#" + minSliderId);
+    maxSliderHtml = $("#" + maxSliderId);
+    sliderHtml = $("#" + sliderId);
+
+    minSliderHtml.css({"left": 0});
+    maxSliderHtml.css({"left": (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1) + "px"});
+
+    this.screenVol.colorTable.minLUT = 0;
+    this.screenVol.colorTable.maxLUT = papaya.viewer.ColorTable.LUT_MAX;
+
+    this.screenVol.updateLUT(this.screenVol.colorTable.minLUT, this.screenVol.colorTable.maxLUT);
+    this.screenVol.colorTable.updateColorBar();
+    sliderHtml.attr("src", this.screenVol.colorTable.colorBar);
 };

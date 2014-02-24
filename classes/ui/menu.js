@@ -52,7 +52,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
 
     if (this.icons) {
         html = "<span id='" + this.buttonId + "' class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_ICON_CSS + " " + (this.isImageButton ? PAPAYA_MENU_BUTTON_CSS : "") + "'" + (this.isRight ? " style='float:right'" : "") + ">" +
-                "<img style='width:" + papaya.viewer.ColorTable.ICON_SIZE + "px; height:" + papaya.viewer.ColorTable.ICON_SIZE + "px; vertical-align:bottom; ";
+                "<img class='" + PAPAYA_MENU_UNSELECTABLE + "' style='width:" + papaya.viewer.ColorTable.ICON_SIZE + "px; height:" + papaya.viewer.ColorTable.ICON_SIZE + "px; vertical-align:bottom; ";
 
         if (this.dataSource.isSelected(parseInt(this.imageIndex, 10))) {
             html += "border:2px solid #FF5A3D;background-color:#eeeeee;padding:1px;";

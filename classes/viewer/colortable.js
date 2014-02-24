@@ -25,15 +25,23 @@ papaya.viewer.ColorTable = papaya.viewer.ColorTable || function (lutName, baseIm
     this.knotMax = this.lut[this.lut.length - 1];
     this.useGradation = gradation;
 
-    this.canvas = document.createElement("canvas");
-    this.canvas.width = papaya.viewer.ColorTable.ICON_SIZE;
-    this.canvas.height = papaya.viewer.ColorTable.ICON_SIZE;
-    this.context = this.canvas.getContext("2d");
-    this.imageData = this.context.createImageData(papaya.viewer.ColorTable.ICON_SIZE, papaya.viewer.ColorTable.ICON_SIZE);
+    this.canvasIcon = document.createElement("canvas");
+    this.canvasIcon.width = papaya.viewer.ColorTable.ICON_SIZE;
+    this.canvasIcon.height = papaya.viewer.ColorTable.ICON_SIZE;
+    this.contextIcon = this.canvasIcon.getContext("2d");
+    this.imageDataIcon = this.contextIcon.createImageData(papaya.viewer.ColorTable.ICON_SIZE, papaya.viewer.ColorTable.ICON_SIZE);
     this.icon = null;
 
-    this.updateLUT(papaya.viewer.ColorTable.LUT_MAX, papaya.viewer.ColorTable.LUT_MIN);
+    this.canvasBar = document.createElement("canvas");
+    this.canvasBar.width = papaya.viewer.ColorTable.COLOR_BAR_WIDTH;
+    this.canvasBar.height = papaya.viewer.ColorTable.COLOR_BAR_HEIGHT;
+    this.contextBar = this.canvasBar.getContext("2d");
+    this.imageDataBar = this.contextBar.createImageData(papaya.viewer.ColorTable.COLOR_BAR_WIDTH, papaya.viewer.ColorTable.COLOR_BAR_HEIGHT);
+    this.colorBar = null;
+
+    this.updateLUT(papaya.viewer.ColorTable.LUT_MIN, papaya.viewer.ColorTable.LUT_MAX);
     this.updateIcon();
+    this.updateColorBar();
 };
 
 
@@ -48,6 +56,9 @@ papaya.viewer.ColorTable.TABLE_RED2WHITE = {"name": "Red Overlay", "data": [[0, 
 papaya.viewer.ColorTable.TABLE_GREEN2WHITE = {"name": "Green Overlay", "data": [[0, 0, 0.75, 0], [0.5, 0.5, 1, 0], [0.95, 1, 1, 0], [1, 1, 1, 1]]};
 papaya.viewer.ColorTable.TABLE_BLUE2WHITE = {"name": "Blue Overlay", "data": [[0, 0, 0, 1], [0.5, 0, 0.5, 1], [0.95, 0, 1, 1], [1, 1, 1, 1]]};
 
+papaya.viewer.ColorTable.ARROW_ICON = "data:image/gif;base64,R0lGODlhCwARAPfGMf//////zP//mf//Zv//M///AP/M///MzP/Mmf/MZv/MM//MAP+Z//+ZzP+Zmf+ZZv+ZM/+ZAP9m//9mzP9mmf9mZv9mM/9mAP8z//8zzP8zmf8zZv8zM/8zAP8A//8AzP8Amf8AZv8AM/8AAMz//8z/zMz/mcz/Zsz/M8z/AMzM/8zMzMzMmczMZszMM8zMAMyZ/8yZzMyZmcyZZsyZM8yZAMxm/8xmzMxmmcxmZsxmM8xmAMwz/8wzzMwzmcwzZswzM8wzAMwA/8wAzMwAmcwAZswAM8wAAJn//5n/zJn/mZn/Zpn/M5n/AJnM/5nMzJnMmZnMZpnMM5nMAJmZ/5mZzJmZmZmZZpmZM5mZAJlm/5lmzJlmmZlmZplmM5lmAJkz/5kzzJkzmZkzZpkzM5kzAJkA/5kAzJkAmZkAZpkAM5kAAGb//2b/zGb/mWb/Zmb/M2b/AGbM/2bMzGbMmWbMZmbMM2bMAGaZ/2aZzGaZmWaZZmaZM2aZAGZm/2ZmzGZmmWZmZmZmM2ZmAGYz/2YzzGYzmWYzZmYzM2YzAGYA/2YAzGYAmWYAZmYAM2YAADP//zP/zDP/mTP/ZjP/MzP/ADPM/zPMzDPMmTPMZjPMMzPMADOZ/zOZzDOZmTOZZjOZMzOZADNm/zNmzDNmmTNmZjNmMzNmADMz/zMzzDMzmTMzZjMzMzMzADMA/zMAzDMAmTMAZjMAMzMAAAD//wD/zAD/mQD/ZgD/MwD/AADM/wDMzADMmQDMZgDMMwDMAACZ/wCZzACZmQCZZgCZMwCZAABm/wBmzABmmQBmZgBmMwBmAAAz/wAzzAAzmQAzZgAzMwAzAAAA/wAAzAAAmQAAZgAAM+4AAN0AALsAAKoAAIgAAHcAAFUAAEQAACIAABEAAADuAADdAAC7AACqAACIAAB3AABVAABEAAAiAAARAAAA7gAA3QAAuwAAqgAAiAAAdwAAVQAARAAAIgAAEe7u7t3d3bu7u6qqqoiIiHd3d1VVVURERCIiIhEREQAAACH5BAEAAMYALAAAAAALABEAAAg/AI0JFGhvoEGC+vodRKgv4UF7DSMqZBixoUKIFSv2w5jRIseOGztK/JgxpMiEJDWmHHkSZUuTIvvt60ezps2AADs=";
+papaya.viewer.ColorTable.ARROW_ICON_WIDTH = 11;
+
 papaya.viewer.ColorTable.DEFAULT_COLOR_TABLE = papaya.viewer.ColorTable.TABLE_GRAYSCALE;
 papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES = [papaya.viewer.ColorTable.TABLE_RED2YELLOW, papaya.viewer.ColorTable.TABLE_BLUE2GREEN];
 papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES = [
@@ -55,6 +66,7 @@ papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES = [
     papaya.viewer.ColorTable.TABLE_GREEN2WHITE,
     papaya.viewer.ColorTable.TABLE_BLUE2WHITE
 ];
+
 papaya.viewer.ColorTable.TABLE_ALL = [
     papaya.viewer.ColorTable.TABLE_GRAYSCALE,
     papaya.viewer.ColorTable.TABLE_SPECTRUM,
@@ -70,6 +82,8 @@ papaya.viewer.ColorTable.TABLE_ALL = [
 papaya.viewer.ColorTable.LUT_MIN = 0;
 papaya.viewer.ColorTable.LUT_MAX = 255;
 papaya.viewer.ColorTable.ICON_SIZE = 18;
+papaya.viewer.ColorTable.COLOR_BAR_WIDTH = 100;
+papaya.viewer.ColorTable.COLOR_BAR_HEIGHT = 15;
 
 
 
@@ -95,7 +109,19 @@ papaya.viewer.ColorTable.addCustomLUT = function (lut) {
 
 
 
-papaya.viewer.ColorTable.prototype.updateLUT = function (maxLUTnew, minLUTnew) {
+papaya.viewer.ColorTable.prototype.updateMinLUT = function (minLUTnew) {
+    this.updateLUT(minLUTnew, this.maxLUT);
+};
+
+
+
+papaya.viewer.ColorTable.prototype.updateMaxLUT = function (maxLUTnew) {
+    this.updateLUT(this.minLUT, maxLUTnew);
+};
+
+
+
+papaya.viewer.ColorTable.prototype.updateLUT = function (minLUTnew, maxLUTnew) {
     var range, ctr, ctrKnot, value;
 
     this.maxLUT = maxLUTnew;
@@ -187,13 +213,36 @@ papaya.viewer.ColorTable.prototype.updateIcon = function () {
             index = ((ctrY * papaya.viewer.ColorTable.ICON_SIZE) + ctrX) * 4;
             value = Math.round(ctrX * step);
 
-            this.imageData.data[index] = this.lookupRed(value);
-            this.imageData.data[index + 1] = this.lookupGreen(value);
-            this.imageData.data[index + 2] = this.lookupBlue(value);
-            this.imageData.data[index + 3] = 255;
+            this.imageDataIcon.data[index] = this.lookupRed(value);
+            this.imageDataIcon.data[index + 1] = this.lookupGreen(value);
+            this.imageDataIcon.data[index + 2] = this.lookupBlue(value);
+            this.imageDataIcon.data[index + 3] = 255;
         }
     }
 
-    this.context.putImageData(this.imageData, 0, 0);
-    this.icon = this.canvas.toDataURL();
+    this.contextIcon.putImageData(this.imageDataIcon, 0, 0);
+    this.icon = this.canvasIcon.toDataURL();
+};
+
+
+
+papaya.viewer.ColorTable.prototype.updateColorBar = function () {
+    var step, ctrY, ctrX, index, value;
+
+    step = papaya.viewer.ColorTable.LUT_MAX / papaya.viewer.ColorTable.COLOR_BAR_WIDTH;
+
+    for (ctrY = 0; ctrY < papaya.viewer.ColorTable.COLOR_BAR_HEIGHT; ctrY += 1) {
+        for (ctrX = 0; ctrX < papaya.viewer.ColorTable.COLOR_BAR_WIDTH; ctrX += 1) {
+            index = ((ctrY * papaya.viewer.ColorTable.COLOR_BAR_WIDTH) + ctrX) * 4;
+            value = Math.round(ctrX * step);
+
+            this.imageDataBar.data[index] = this.lookupRed(value);
+            this.imageDataBar.data[index + 1] = this.lookupGreen(value);
+            this.imageDataBar.data[index + 2] = this.lookupBlue(value);
+            this.imageDataBar.data[index + 3] = 255;
+        }
+    }
+
+    this.contextBar.putImageData(this.imageDataBar, 0, 0);
+    this.colorBar = this.canvasBar.toDataURL();
 };
