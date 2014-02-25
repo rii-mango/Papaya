@@ -1006,7 +1006,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                     this.setZoomLocation();
                 }
             } else {
-                this.updatePosition(this, getMousePositionX(me), getMousePositionY(me), true);
+                this.updatePosition(this, getMousePositionX(me), getMousePositionY(me), false);
                 this.resetUpdateTimer(me);
             }
 
