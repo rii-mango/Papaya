@@ -41,12 +41,14 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
     sliderId = this.id + "Slider";
     range = this.dataSource[this.method]();
 
+    menuItemRange = this;
+
     html = "<li id='" + this.id + "'>" +
                 "<span class='" + PAPAYA_MENU_UNSELECTABLE + "' style=''>" +
                     "<input type='text' size='4' style='width:40px;margin-right:5px;' id='" + this.minId + "' value='" + range[0] + "' />" +
                     "<div style='display:inline-block;position:relative;width:" + (papaya.viewer.ColorTable.COLOR_BAR_WIDTH + papaya.viewer.ColorTable.ARROW_ICON_WIDTH) + "px;top:-12px;'>" +
-                        "<img id='" + minSliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE + "' style='position:absolute;top:5px;left:0;z-index:99' src='" + papaya.viewer.ColorTable.ARROW_ICON + "' />" +
-                        "<img id='" + maxSliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE + "' style='position:absolute;top:5px;left:" + (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1) + "px;z-index:99' src='" + papaya.viewer.ColorTable.ARROW_ICON + "' />" +
+                        "<img id='" + minSliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE + "' style='position:absolute;top:5px;left:" + (menuItemRange.screenVol.colorTable.minLUT / papaya.viewer.ColorTable.LUT_MAX) * (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1) + "px;z-index:99' src='" + papaya.viewer.ColorTable.ARROW_ICON + "' />" +
+                        "<img id='" + maxSliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE + "' style='position:absolute;top:5px;left:" + (menuItemRange.screenVol.colorTable.maxLUT / papaya.viewer.ColorTable.LUT_MAX) * (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1) + "px;z-index:99' src='" + papaya.viewer.ColorTable.ARROW_ICON + "' />" +
                         "<img id='" + sliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE + "' style='position:absolute;top:0;left:" + (parseInt(papaya.viewer.ColorTable.ARROW_ICON_WIDTH / 2, 10)) + "px;' src='" + this.viewer.screenVolumes[parseInt(this.index, 10)].colorTable.colorBar + "' />" +
                     "</div>" +
                     "<input type='text' size='4' style='width:40px;margin-left:5px;' id='" + this.maxId + "' value='" + range[1] + "' />" +
@@ -60,8 +62,6 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
     minSliderHtml = $("#" + minSliderId);
     maxSliderHtml = $("#" + maxSliderId);
     sliderHtml = $("#" + sliderId);
-
-    menuItemRange = this;
 
     minSliderHtml.mousedown(function (ev) {
         menuItemRange.grabOffset = getRelativeMousePositionX(minSliderHtml, ev);
@@ -195,10 +195,6 @@ papaya.ui.MenuItemRange.prototype.resetSlider = function () {
     minSliderHtml.css({"left": 0});
     maxSliderHtml.css({"left": (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1) + "px"});
 
-    this.screenVol.colorTable.minLUT = 0;
-    this.screenVol.colorTable.maxLUT = papaya.viewer.ColorTable.LUT_MAX;
-
-    this.screenVol.updateLUT(this.screenVol.colorTable.minLUT, this.screenVol.colorTable.maxLUT);
-    this.screenVol.colorTable.updateColorBar();
+    this.screenVol.resetDynamicRange();
     sliderHtml.attr("src", this.screenVol.colorTable.colorBar);
 };

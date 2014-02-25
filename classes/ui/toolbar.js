@@ -367,6 +367,7 @@ papaya.ui.Toolbar.prototype.updateTitleBar = function (title) {
 
 
 papaya.ui.Toolbar.prototype.showImageMenu = function (index) {
+    this.viewer.screenVolumes[index].resetDynamicRange();
     this.imageMenus[index].showMenu();
 };
 

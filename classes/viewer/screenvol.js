@@ -249,3 +249,11 @@ papaya.viewer.ScreenVolume.prototype.updateMaxLUT = function (maxLUTnew) {
 papaya.viewer.ScreenVolume.prototype.updateLUT = function (minLUTnew, maxLUTnew) {
     this.colorTable.updateLUT(minLUTnew, maxLUTnew);
 };
+
+
+papaya.viewer.ScreenVolume.prototype.resetDynamicRange = function () {
+    this.colorTable.minLUT = 0;
+    this.colorTable.maxLUT = papaya.viewer.ColorTable.LUT_MAX;
+    this.updateLUT(this.colorTable.minLUT, this.colorTable.maxLUT);
+    this.colorTable.updateColorBar();
+};
