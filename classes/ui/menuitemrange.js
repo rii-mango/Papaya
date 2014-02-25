@@ -124,57 +124,65 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
     $("#" + this.id).hover(function () {$(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
 
     minHtml.change(bind(this, function () {
-        menuItemRange.updateDataSource(this, true);
-        menuItemRange.viewer.drawViewer(true);
-        menuItemRange.resetSlider();
+        menuItemRange.rangeChanged(true);
     }));
 
     maxHtml.change(bind(this, function () {
-        menuItemRange.updateDataSource(this, false);
-        menuItemRange.viewer.drawViewer(true);
-        menuItemRange.resetSlider();
+        menuItemRange.rangeChanged(false);
     }));
-
-    minHtml.focus();
-    minHtml.select();
 
     minHtml.keyup(bind(this, function (e) {
         if (e.keyCode === 13) {
+            menuItemRange.rangeChanged(false);
             menuItemRange.viewer.container.toolbar.closeAllMenus();
         }
     }));
 
     maxHtml.keyup(bind(this, function (e) {
         if (e.keyCode === 13) {
+            menuItemRange.rangeChanged(false);
             menuItemRange.viewer.container.toolbar.closeAllMenus();
         }
     }));
+
+    setTimeout(function () {  // IE wasn't picking up on the focus
+        minHtml.focus();
+        minHtml.select();
+    }, 10);
 };
 
 
 
-papaya.ui.MenuItemRange.prototype.updateDataSource = function (menuItemRange, minChanged) {
+papaya.ui.MenuItemRange.prototype.rangeChanged = function (focusMax) {
+    this.updateDataSource(focusMax);
+    this.viewer.drawViewer(true);
+    this.resetSlider();
+};
+
+
+
+papaya.ui.MenuItemRange.prototype.updateDataSource = function (focusMax) {
     var max, min, maxHtml, minHtml;
 
-    minHtml = $("#" + menuItemRange.minId);
-    maxHtml = $("#" + menuItemRange.maxId);
+    minHtml = $("#" + this.minId);
+    maxHtml = $("#" + this.maxId);
 
     min = parseFloat(minHtml.val());
     if (isNaN(min)) {
-        min = menuItemRange.dataSource.screenMin;
+        min = this.dataSource.screenMin;
     }
 
     max = parseFloat(maxHtml.val());
     if (isNaN(max)) {
-        max = menuItemRange.dataSource.screenMax;
+        max = this.dataSource.screenMax;
     }
 
     minHtml.val(min);
     maxHtml.val(max);
 
-    menuItemRange.dataSource.setScreenRange(min, max);
+    this.dataSource.setScreenRange(min, max);
 
-    if (minChanged) {
+    if (focusMax) {
         maxHtml.focus();
         maxHtml.select();
     }
