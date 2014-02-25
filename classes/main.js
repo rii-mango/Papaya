@@ -136,7 +136,7 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
     this.containerHtml.css({paddingTop: dims.heightPadding + "px"});
 
     if (this.viewer.initialized) {
-        this.viewer.drawViewer(true);
+        this.viewer.drawViewer(false, true);
     } else {
         this.viewer.drawEmptyViewer();
         this.display.drawEmptyDisplay();

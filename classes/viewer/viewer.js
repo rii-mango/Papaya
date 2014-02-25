@@ -1606,7 +1606,7 @@ papaya.viewer.Viewer.prototype.setZoomFactor = function (val) {
     this.axialSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocY, this.panAmountX, this.panAmountY, this);
     this.coronalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocZ, this.panAmountX, this.panAmountZ, this);
     this.sagittalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocY, this.zoomLocZ, this.panAmountY, this.panAmountZ, this);
-    this.drawViewer(true);
+    this.drawViewer(false, true);
 
     this.updateWindowTitle();
 };
@@ -1626,6 +1626,7 @@ papaya.viewer.Viewer.prototype.isZooming = function () {
 };
 
 
+
 papaya.viewer.Viewer.prototype.setZoomLocation = function () {
     if (this.zoomFactor === 1) {
         this.zoomLocX = this.currentCoord.x;
@@ -1635,7 +1636,7 @@ papaya.viewer.Viewer.prototype.setZoomLocation = function () {
         this.axialSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocY, this.panAmountX, this.panAmountY, this);
         this.coronalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocZ, this.panAmountX, this.panAmountZ, this);
         this.sagittalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocY, this.zoomLocZ, this.panAmountY, this.panAmountZ, this);
-        this.drawViewer(true);
+        this.drawViewer(false, true);
     }
 };
 
@@ -1683,7 +1684,7 @@ papaya.viewer.Viewer.prototype.setCurrentPanLocation = function (xLoc, yLoc, sli
         this.axialSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocY, this.panAmountX, this.panAmountY, this);
         this.coronalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocZ, this.panAmountX, this.panAmountZ, this);
         this.sagittalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocY, this.zoomLocZ, this.panAmountY, this.panAmountZ, this);
-        this.drawViewer(true);
+        this.drawViewer(false, true);
     }
 };
 

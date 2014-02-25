@@ -1,7 +1,7 @@
 
 /*jslint browser: true, node: true */
 /*global $, bind, PAPAYA_TITLEBAR_CSS, derefIn, PAPAYA_DIALOG_CSS, PAPAYA_MENU_ICON_CSS, PAPAYA_MENU_LABEL_CSS,
- PAPAYA_MENU_BUTTON_CSS, PAPAYA_MENU_CSS, PAPAYA_DIALOG_BACKGROUND, PAPAYA_MENU_TITLEBAR_CSS */
+ PAPAYA_MENU_BUTTON_CSS, PAPAYA_MENU_CSS, PAPAYA_DIALOG_BACKGROUND, PAPAYA_MENU_TITLEBAR_CSS, isInputRangeSupported */
 
 "use strict";
 
@@ -50,11 +50,20 @@ papaya.ui.Toolbar.MENU_DATA = {
     ]
 };
 
-papaya.ui.Toolbar.IMAGE_MENU_DATA = {
+papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
     "items": [
         {"label": "Image Info", "action": "ImageInfo"},
-        {"label": "Range", "action": "ChangeRange", "type": "range", "method": "getRange"},
+        {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
+        {"label": "Transparency", "action": "ChangeAlpha", "type": "range", "method": "getAlpha"},
         {"label": "Color Table...", "action": "ColorTable", "items": [] }
+    ]
+};
+
+papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA = {
+    "items": [
+        {"label": "Image Info", "action": "ImageInfo"},
+        {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
+        papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items[3]
     ]
 };
 
@@ -137,7 +146,7 @@ papaya.ui.Toolbar.prototype.buildColorMenuItems = function () {
     }
 
     allColorTables = papaya.viewer.ColorTable.TABLE_ALL;
-    items = papaya.ui.Toolbar.IMAGE_MENU_DATA.items;
+    items = papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items;
 
     for (ctr = 0; ctr < items.length; ctr += 1) {
         if (items[ctr].label === "Color Table...") {
@@ -233,17 +242,23 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
             item = new papaya.ui.MenuItemCheckBox(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
         } else if (itemData[ctrItems].type === "button") {
             item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
-        } else if (itemData[ctrItems].type === "range") {
+        } else if (itemData[ctrItems].type === "displayrange") {
             item = new papaya.ui.MenuItemRange(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+        } else if (itemData[ctrItems].type === "range") {
+            if (isInputRangeSupported()) {
+                item = new papaya.ui.MenuItemSlider(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+            }
         } else {
             item = new papaya.ui.MenuItem(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), modifier);
         }
 
-        menu.addMenuItem(item);
+        if (item) {
+            menu.addMenuItem(item);
 
-        if (itemData[ctrItems].items) {
-            menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier);
-            item.callback = bind(menu2, menu2.showMenu);
+            if (itemData[ctrItems].items) {
+                menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier);
+                item.callback = bind(menu2, menu2.showMenu);
+            }
         }
     }
 };
@@ -266,7 +281,12 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
                 {"label": "ImageButton", "icons": [dataUrl], "items": null, "imageButton": true}
             ]
         };
-        data.menus[0].items = papaya.ui.Toolbar.IMAGE_MENU_DATA.items;
+
+        if (ctr === 0) {
+            data.menus[0].items = papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA.items;
+        } else {
+            data.menus[0].items = papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items;
+        }
 
         this.imageMenus[ctr] = (this.buildMenu(data.menus[0], null, screenVol, ctr.toString()));
     }
