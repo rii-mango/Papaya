@@ -531,7 +531,11 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
 
     this.context.save();
 
-    if (!skipUpdate) {
+    if (skipUpdate) {
+        this.axialSlice.repaint(this.currentCoord.z, force, this.worldSpace);
+        this.coronalSlice.repaint(this.currentCoord.y, force, this.worldSpace);
+        this.sagittalSlice.repaint(this.currentCoord.x, force, this.worldSpace);
+    } else {
         if (force || (this.draggingSliceDir !== papaya.viewer.ScreenSlice.DIRECTION_AXIAL)) {
             this.axialSlice.updateSlice(this.currentCoord.z, force, this.worldSpace);
         }

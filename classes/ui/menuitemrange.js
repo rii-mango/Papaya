@@ -81,7 +81,7 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
 
             menuItemRange.screenVol.updateMinLUT(Math.round((val / (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1)) * papaya.viewer.ColorTable.LUT_MAX));
             minSliderHtml.css({"left": val + "px"});
-            menuItemRange.viewer.drawViewer(true);
+            menuItemRange.viewer.drawViewer(false, true);
             minHtml.val(menuItemRange.dataSource[menuItemRange.method]()[0]);
             menuItemRange.screenVol.colorTable.updateColorBar();
             sliderHtml.attr("src", menuItemRange.screenVol.colorTable.colorBar);
@@ -108,7 +108,7 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
 
             menuItemRange.screenVol.updateMaxLUT(Math.round((val / (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1)) * papaya.viewer.ColorTable.LUT_MAX));
             maxSliderHtml.css({"left": val + "px"});
-            menuItemRange.viewer.drawViewer(true);
+            menuItemRange.viewer.drawViewer(false, true);
             maxHtml.val(menuItemRange.dataSource[menuItemRange.method]()[1]);
             menuItemRange.screenVol.colorTable.updateColorBar();
             sliderHtml.attr("src", menuItemRange.screenVol.colorTable.colorBar);

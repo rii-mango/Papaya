@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global roundFast, Float32Array */
+/*global roundFast, Float32Array, createArray */
 
 "use strict";
 
@@ -55,6 +55,10 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
 
         this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
 
+        if (this.imageData.length < this.screenVolumes.length) {
+            this.imageData = createArray(this.screenVolumes.length, this.xDim * this.yDim);
+        }
+
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
             timepoint = this.screenVolumes[ctr].currentTimepoint;
 
@@ -93,7 +97,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
                     }
 
                     index = ((ctrY * this.xDim) + ctrX) * 4;
-                    this.imageData[index] = value;
+                    this.imageData[ctr][index] = value;
 
                     if ((!this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMin))
                             || (this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMin)) || isNaN(value)) {
@@ -117,6 +121,53 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldS
         }
 
         this.contextMain.putImageData(this.imageDataDraw, 0, 0);
+    }
+};
+
+
+
+papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace) {
+    var ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha;
+
+    slice = Math.round(slice);
+
+    this.currentSlice = slice;
+
+    this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
+
+    if (this.imageData.length === this.screenVolumes.length) {
+        for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
+            for (ctrY = 0; ctrY < this.yDim; ctrY += 1) {
+                for (ctrX = 0; ctrX < this.xDim; ctrX += 1) {
+                    value = 0;
+                    thresholdAlpha = 255;
+                    layerAlpha = this.screenVolumes[ctr].alpha;
+
+                    index = ((ctrY * this.xDim) + ctrX) * 4;
+                    value = this.imageData[ctr][index];
+
+                    if ((!this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMin)) || (this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMin)) || isNaN(value)) {
+                        value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN;  // screen value
+                        thresholdAlpha = this.screenVolumes[ctr].isOverlay() ? 0 : 255;
+                    } else if ((!this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMax)) || (this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMax))) {
+                        value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX;  // screen value
+                    } else {
+                        value = roundFast(((value - this.screenVolumes[ctr].screenMin) * this.screenVolumes[ctr].screenRatio) + 0.5);  // screen value
+                    }
+
+                    if ((thresholdAlpha > 0) || (ctr === 0)) {
+                        this.imageDataDraw.data[index] = (this.imageDataDraw.data[index] * (1 - layerAlpha) + this.screenVolumes[ctr].colorTable.lookupRed(value) * layerAlpha);
+                        this.imageDataDraw.data[index + 1] = (this.imageDataDraw.data[index + 1] * (1 - layerAlpha) + this.screenVolumes[ctr].colorTable.lookupGreen(value) * layerAlpha);
+                        this.imageDataDraw.data[index + 2] = (this.imageDataDraw.data[index + 2] * (1 - layerAlpha) + this.screenVolumes[ctr].colorTable.lookupBlue(value) * layerAlpha);
+                        this.imageDataDraw.data[index + 3] = thresholdAlpha;
+                    }
+                }
+            }
+
+            this.contextMain.putImageData(this.imageDataDraw, 0, 0);
+        }
+    } else {
+        this.updateSlice(slice, force, worldSpace);
     }
 };
 
