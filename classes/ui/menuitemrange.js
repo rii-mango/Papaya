@@ -73,8 +73,8 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
 
             if (val < 0) {
                 val = 0;
-            } else if (val > 99) {
-                val = 99;
+            } else if (val >= papaya.viewer.ColorTable.COLOR_BAR_WIDTH) {
+                val = (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1);
             } else if (val > maxVal) {
                 val = maxVal;
             }
@@ -100,8 +100,8 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
 
             if (val < 0) {
                 val = 0;
-            } else if (val > 99) {
-                val = 99;
+            } else if (val >= papaya.viewer.ColorTable.COLOR_BAR_WIDTH) {
+                val = (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1);
             } else if (val < minVal) {
                 val = minVal;
             }
