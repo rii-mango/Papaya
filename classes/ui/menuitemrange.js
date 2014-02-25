@@ -86,6 +86,8 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
             menuItemRange.screenVol.colorTable.updateColorBar();
             sliderHtml.attr("src", menuItemRange.screenVol.colorTable.colorBar);
         });
+
+        return false;  // disable img drag
     });
 
     maxSliderHtml.mousedown(function (ev) {
@@ -111,6 +113,8 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
             menuItemRange.screenVol.colorTable.updateColorBar();
             sliderHtml.attr("src", menuItemRange.screenVol.colorTable.colorBar);
         });
+
+        return false;  // disable img drag
     });
 
     $(window).mouseup(function () {
