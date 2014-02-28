@@ -1,7 +1,8 @@
 
 /*jslint browser: true, node: true */
 /*global $, bind, PAPAYA_TITLEBAR_CSS, derefIn, PAPAYA_DIALOG_CSS, PAPAYA_MENU_ICON_CSS, PAPAYA_MENU_LABEL_CSS,
- PAPAYA_MENU_BUTTON_CSS, PAPAYA_MENU_CSS, PAPAYA_DIALOG_BACKGROUND, PAPAYA_MENU_TITLEBAR_CSS, isInputRangeSupported */
+ PAPAYA_MENU_BUTTON_CSS, PAPAYA_MENU_CSS, PAPAYA_DIALOG_BACKGROUND, PAPAYA_MENU_TITLEBAR_CSS, isInputRangeSupported,
+ launchCustomProtocol, PAPAYA_BROWSER, alert, confirm, getAbsoluteUrl */
 
 "use strict";
 
@@ -45,7 +46,7 @@ papaya.ui.Toolbar.MENU_DATA = {
             ]
             },
         {"label": "", "icons": null, "titleBar": "true" },
-        {"label": "EXPAND", "icons": [papaya.ui.Toolbar.ICON_EXPAND, papaya.ui.Toolbar.ICON_COLLAPSE], "items": [], "method": "isCollapsable", "required": "isNestedViewer" },
+        {"label": "EXPAND", "icons": [papaya.ui.Toolbar.ICON_EXPAND, papaya.ui.Toolbar.ICON_COLLAPSE], "items": [], "method": "isCollapsable", "required": "isExpandable" },
         {"label": "SPACE", "icons": [papaya.ui.Toolbar.ICON_IMAGESPACE, papaya.ui.Toolbar.ICON_WORLDSPACE], "items": [], "method": "isWorldMode", "menuOnHover": true }
     ]
 };
@@ -55,7 +56,8 @@ papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
         {"label": "Image Info", "action": "ImageInfo"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
         {"label": "Transparency", "action": "ChangeAlpha", "type": "range", "method": "getAlpha"},
-        {"label": "Color Table...", "action": "ColorTable", "items": [] }
+        {"label": "Color Table...", "action": "ColorTable", "items": [] },
+        {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango" }
     ]
 };
 
@@ -63,7 +65,8 @@ papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA = {
     "items": [
         {"label": "Image Info", "action": "ImageInfo"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
-        papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items[3]
+        papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items[3],
+        {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango"  }
     ]
 };
 
@@ -236,20 +239,22 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
     for (ctrItems = 0; ctrItems < itemData.length; ctrItems += 1) {
         item = null;
 
-        if (itemData[ctrItems].type === "spacer") {
-            item = new papaya.ui.MenuItemSpacer();
-        } else if (itemData[ctrItems].type === "checkbox") {
-            item = new papaya.ui.MenuItemCheckBox(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
-        } else if (itemData[ctrItems].type === "button") {
-            item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
-        } else if (itemData[ctrItems].type === "displayrange") {
-            item = new papaya.ui.MenuItemRange(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
-        } else if (itemData[ctrItems].type === "range") {
-            if (isInputRangeSupported()) {
-                item = new papaya.ui.MenuItemSlider(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+        if (!itemData[ctrItems].required || ((bind(this.container, derefIn(this.container, itemData[ctrItems].required)))() === true)) {
+            if (itemData[ctrItems].type === "spacer") {
+                item = new papaya.ui.MenuItemSpacer();
+            } else if (itemData[ctrItems].type === "checkbox") {
+                item = new papaya.ui.MenuItemCheckBox(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+            } else if (itemData[ctrItems].type === "button") {
+                item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
+            } else if (itemData[ctrItems].type === "displayrange") {
+                item = new papaya.ui.MenuItemRange(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+            } else if (itemData[ctrItems].type === "range") {
+                if (isInputRangeSupported()) {
+                    item = new papaya.ui.MenuItemSlider(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+                }
+            } else {
+                item = new papaya.ui.MenuItem(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), modifier);
             }
-        } else {
-            item = new papaya.ui.MenuItem(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), modifier);
         }
 
         if (item) {
@@ -367,6 +372,28 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
                 this.container.collapseViewer();
             } else {
                 this.container.expandViewer();
+            }
+        } else if (action.startsWith("OpenInMango")) {
+            imageIndex = parseInt(action.substring(action.lastIndexOf("-") + 1), 10);
+
+            if (imageIndex === 0) {
+                launchCustomProtocol(this.container, getAbsoluteUrl("mango", this.container.viewer.volume.url), this.customProtocolResult);
+            } else {
+                launchCustomProtocol(this.container, getAbsoluteUrl("mango", this.container.viewer.screenVolumes[imageIndex].volume.url) + "?" + "baseimage=" + this.container.viewer.volume.fileName + "&params=o", this.customProtocolResult);
+            }
+        }
+    }
+};
+
+
+
+papaya.ui.Toolbar.prototype.customProtocolResult = function (success) {
+    if (success === false) {
+        if ((PAPAYA_BROWSER.name === "Chrome") || (PAPAYA_BROWSER.name === "Internet Explorer")) {  // initiated by a setTimeout, so popup blocker will interfere with window.open
+            alert("Mango does not appear to be installed.  You can download Mango at:\n\nhttp://ric.uthscsa.edu/mango");
+        } else {
+            if (confirm("Mango does not appear to be installed.  Would you like to download it now?")) {
+                window.open("http://ric.uthscsa.edu/mango/mango.html");
             }
         }
     }

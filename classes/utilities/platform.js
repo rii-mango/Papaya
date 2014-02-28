@@ -1,14 +1,21 @@
 
 /*jslint browser: true, node: true */
-/*global BrowserDetect, File, ArrayBuffer, DataView, Int16Array */
+/*global $, BrowserDetect, File, ArrayBuffer, DataView, Int16Array, bowser, detectOs */
 
 "use strict";
 
-var BROWSER_MIN_FIREFOX = 7;
-var BROWSER_MIN_CHROME = 7;
-var BROWSER_MIN_SAFARI = 6;
-var BROWSER_MIN_IE = 10;
-var BROWSER_MIN_OPERA = 12;
+var BROWSER_MIN_FIREFOX = 7,  // slider controls only >=23
+    BROWSER_MIN_CHROME = 7,
+    BROWSER_MIN_SAFARI = 6,
+    BROWSER_MIN_IE = 10,
+    BROWSER_MIN_OPERA = 12;
+
+var LAST_SCROLL_EVENT_TIMESTAMP = 0;
+
+var PAPAYA_BROWSER = bowser;
+detectOs();
+
+// make sure console is present
 var console = console || {};
 console.log = console.log || function () {};
 console.warn = console.warn || function () {};
@@ -16,56 +23,41 @@ console.error = console.error || function () {};
 console.info = console.info || function () {};
 
 
-var LAST_SCROLL_EVENT_TIMESTAMP = 0;
 
-
-var OSName = "Unknown OS";
-if (navigator.appVersion.indexOf("Win") !== -1) {
-    OSName = "Windows";
-}
-
-if (navigator.appVersion.indexOf("Mac") !== -1) {
-    OSName = "MacOS";
-}
-
-if (navigator.appVersion.indexOf("X11") !== -1) {
-    OSName = "Linux";
-}
-
-if (navigator.appVersion.indexOf("Linux") !== -1) {
-    OSName = "Linux";
+function detectOs() {
+    if (navigator.appVersion.indexOf("Win") !== -1) {
+        PAPAYA_BROWSER.os = "Windows";
+    } else if (navigator.appVersion.indexOf("Mac") !== -1) {
+        PAPAYA_BROWSER.os = "MacOS";
+    } else if ((navigator.appVersion.indexOf("X11") !== -1) || (navigator.appVersion.indexOf("Linux") !== -1)) {
+        PAPAYA_BROWSER.os = "Linux";
+    } else {
+        PAPAYA_BROWSER.os = "Unknown";
+    }
 }
 
 
-var browserIsFirefox = false;
-var browserIsSafari = false;
-var browserIsOpera = false;
-var browserIsChrome = false;
-var browserIsIE = false;
+
+
 function checkForBrowserCompatibility() {
-    if (BrowserDetect.browser === "Firefox") {
-        browserIsFirefox = true;
-        if (BrowserDetect.version < BROWSER_MIN_FIREFOX) {
+    if (PAPAYA_BROWSER.name === "Firefox") {
+        if (PAPAYA_BROWSER.version < BROWSER_MIN_FIREFOX) {
             return ("Papaya requires Firefox version " + BROWSER_MIN_FIREFOX + " or higher.");
         }
-    } else if (BrowserDetect.browser === "Chrome") {
-        browserIsChrome = true;
-        if (BrowserDetect.version < BROWSER_MIN_CHROME) {
+    } else if (PAPAYA_BROWSER.name === "Chrome") {
+        if (PAPAYA_BROWSER.version < BROWSER_MIN_CHROME) {
             return ("Papaya requires Chrome version " + BROWSER_MIN_CHROME + " or higher.");
         }
-    } else if (BrowserDetect.browser === "Explorer") {
-        browserIsIE = true;
-        if (BrowserDetect.version < BROWSER_MIN_IE) {
+    } else if (PAPAYA_BROWSER.name === "Internet Explorer") {
+        if (PAPAYA_BROWSER.version < BROWSER_MIN_IE) {
             return ("Papaya requires Internet Explorer version " + BROWSER_MIN_IE + " or higher.");
         }
-    } else if (BrowserDetect.browser === "Safari") {
-        browserIsSafari = true;
-        if (BrowserDetect.version < BROWSER_MIN_SAFARI) {
+    } else if (PAPAYA_BROWSER.name === "Safari") {
+        if (PAPAYA_BROWSER.version < BROWSER_MIN_SAFARI) {
             return ("Papaya requires Safari version " + BROWSER_MIN_SAFARI + " or higher.");
         }
-    } else if (BrowserDetect.browser === "Opera") {
-        browserIsOpera = true;
-        if (BrowserDetect.version < BROWSER_MIN_OPERA) {
+    } else if (PAPAYA_BROWSER.name === "Opera") {
+        if (PAPAYA_BROWSER.version < BROWSER_MIN_OPERA) {
             return ("Papaya requires Opera version " + BROWSER_MIN_OPERA + " or higher.");
         }
     }
@@ -149,7 +141,6 @@ function getScrollSign(ev) {
 
 
 
-
 // Cross-browser slice method.
 var makeSlice = function (file, start, length) {
     var fileType = (typeof File);
@@ -188,3 +179,84 @@ function isInputRangeSupported() {
     test.setAttribute("type", "range");
     return (test.type === "range");
 }
+
+
+// adapted from: http://www.rajeshsegu.com/2012/09/browser-detect-custom-protocols/comment-page-1/
+function launchCustomProtocol(container, url, callback) {
+    var iframe, myWindow, success = false;
+
+    console.log("attempting to open " + url);
+
+    if (PAPAYA_BROWSER.name === "Internet Explorer") {
+        myWindow = window.open('', '', 'width=0,height=0');
+        myWindow.document.write("<iframe src='" + url + "'></iframe>");
+
+        setTimeout(function () {
+            try {
+                myWindow.location.href;
+                success = true;
+            } catch (ex) {
+                console.log(ex);
+            }
+
+            if (success) {
+                myWindow.setTimeout('window.close()', 100);
+            } else {
+                myWindow.close();
+            }
+
+            callback(success);
+        }, 100);
+    } else if (PAPAYA_BROWSER.name === "Firefox") {
+        try {
+            iframe = $("<iframe />");
+            iframe.css({"display": "none"});
+            iframe.appendTo("body");
+            iframe[0].contentWindow.location.href = url;
+
+            success = true;
+        } catch (ex) {
+            success = false;
+        }
+
+        iframe.remove();
+
+        callback(success);
+    } else if (PAPAYA_BROWSER.name === "Chrome") {
+        container.viewerHtml.css({"outline": 0});
+        container.viewerHtml.attr("tabindex", "1");
+        container.viewerHtml.focus();
+
+        container.viewerHtml.blur(function () {
+            success = true;
+            callback(true);  // true
+        });
+
+        location.href = url;
+
+        setTimeout(function () {
+            container.viewerHtml.off('blur');
+            container.viewerHtml.removeAttr("tabindex");
+
+            if (!success) {
+                callback(false);  // false
+            }
+        }, 1000);
+    } else if (PAPAYA_BROWSER.name === "Safari") {
+        if (papaya.mangoinstalled) {
+            location.href = url;
+            success = true;
+        } else {
+            success = false;
+        }
+
+        callback(success);
+    }
+}
+
+
+window.addEventListener('message', function (msg) {
+    if (msg.data === "mangoinstalled") {
+        papaya.mangoinstalled = true;
+    }
+}, false);

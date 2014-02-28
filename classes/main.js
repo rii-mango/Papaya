@@ -395,6 +395,18 @@ papaya.Container.prototype.isNestedViewer = function () {
 
 
 
+papaya.Container.prototype.canOpenInMango = function () {
+    return this.params.canOpenInMango;
+};
+
+
+
+papaya.Container.prototype.isExpandable = function () {
+    return this.params.expandable && this.isNestedViewer();
+};
+
+
+
 function findParameters(containerHTML) {
     var viewerHTML, paramsName, loadedParams = null;
 

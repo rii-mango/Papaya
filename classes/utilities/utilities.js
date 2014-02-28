@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, Ext, CanvasRenderingContext2D, getKeyCode, OSName, getMousePositionX */
+/*global $, Ext, CanvasRenderingContext2D, getKeyCode, OSName, getMousePositionX, PAPAYA_BROWSER */
 
 "use strict";
 
@@ -145,7 +145,7 @@ var showModalDialog = function (viewer, dialog) {
 function isControlKey(ke) {
     var keyCode = getKeyCode(ke);
 
-    if ((OSName === "MacOS") && (
+    if ((PAPAYA_BROWSER.os === "MacOS") && (
             (keyCode === 91) || // left command key
             (keyCode === 93) || // right command key
             (keyCode === 224)
@@ -153,7 +153,7 @@ function isControlKey(ke) {
         return true;
     }
 
-    return ((OSName !== "MacOS") && (keyCode === 17));
+    return ((PAPAYA_BROWSER.os !== "MacOS") && (keyCode === 17));
 }
 
 
@@ -418,4 +418,12 @@ function createArray(length) {
     }
 
     return arr;
+}
+
+
+// adapted from: http://stackoverflow.com/questions/14780350/convert-relative-path-to-absolute-using-javascript
+function getAbsoluteUrl(protocol, relative) {
+    var link = document.createElement("a");
+    link.href = relative;
+    return (protocol + "://" + link.host + link.pathname);
 }

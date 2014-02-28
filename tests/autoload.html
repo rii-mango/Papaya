@@ -74,12 +74,13 @@
 
         var params = [];
         params["worldSpace"] = true;
-        params["images"] = ["../data/sample_image.nii.gz", "data/zstat.nii.gz"];
+        params["images"] = ["../data/sample_image.nii.gz", "data/zstat test.nii.gz"];
         params["luts"] = [{"name": "Custom", "data":[[0, 1, 0, 0], [.5, 1, 1, 0], [1, 1, 1, 1]]}];
         params["zstat.nii.gz"] = {"min": 4, "max": 8, "lut": "Custom", "alpha": 0.5};
         params["atlas"] = "MNI (Nearest Grey Matter)";
         params["coordinate"] = [20, -26, -17];
         params["kioskMode"] = false;
+        params["canOpenInMango"] = true;
     </script>
 
     <title>Auto-load</title>
