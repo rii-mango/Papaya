@@ -421,9 +421,21 @@ function createArray(length) {
 }
 
 
-// adapted from: http://stackoverflow.com/questions/14780350/convert-relative-path-to-absolute-using-javascript
 function getAbsoluteUrl(protocol, relative) {
-    var link = document.createElement("a");
-    link.href = relative;
-    return (protocol + "://" + link.host + link.pathname);
+    var base, link, host, path;
+
+    base = window.location.href;
+    base = base.substring(0, base.lastIndexOf("/"));
+    link = document.createElement("a");
+    link.href = base + "/" +  relative;
+
+    host = link.host;
+    path = link.pathname;
+
+    if (path.charAt(0) !== '/') {
+        path = "/" + path;
+    }
+
+
+    return (protocol + "://" + host + path);
 }

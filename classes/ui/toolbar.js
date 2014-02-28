@@ -2,7 +2,7 @@
 /*jslint browser: true, node: true */
 /*global $, bind, PAPAYA_TITLEBAR_CSS, derefIn, PAPAYA_DIALOG_CSS, PAPAYA_MENU_ICON_CSS, PAPAYA_MENU_LABEL_CSS,
  PAPAYA_MENU_BUTTON_CSS, PAPAYA_MENU_CSS, PAPAYA_DIALOG_BACKGROUND, PAPAYA_MENU_TITLEBAR_CSS, isInputRangeSupported,
- launchCustomProtocol, PAPAYA_BROWSER, alert, confirm, getAbsoluteUrl */
+ launchCustomProtocol, PAPAYA_BROWSER, alert, confirm, getAbsoluteUrl, PAPAYA_CUSTOM_PROTOCOL */
 
 "use strict";
 
@@ -377,9 +377,9 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             imageIndex = parseInt(action.substring(action.lastIndexOf("-") + 1), 10);
 
             if (imageIndex === 0) {
-                launchCustomProtocol(this.container, getAbsoluteUrl("mango", this.container.viewer.volume.url), this.customProtocolResult);
+                launchCustomProtocol(this.container, getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL, this.container.viewer.volume.url), this.customProtocolResult);
             } else {
-                launchCustomProtocol(this.container, getAbsoluteUrl("mango", this.container.viewer.screenVolumes[imageIndex].volume.url) + "?" + "baseimage=" + this.container.viewer.volume.fileName + "&params=o", this.customProtocolResult);
+                launchCustomProtocol(this.container, getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL, this.container.viewer.screenVolumes[imageIndex].volume.url) + "?" + "baseimage=" + this.container.viewer.volume.fileName + "&params=o", this.customProtocolResult);
             }
         }
     }

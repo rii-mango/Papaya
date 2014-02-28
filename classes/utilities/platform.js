@@ -1,7 +1,7 @@
 
 /*jslint browser: true, node: true */
 /*global $, BrowserDetect, File, ArrayBuffer, DataView, Int16Array, bowser, detectOs, papaya, confirm, alert,
- createCookie, readCookie */
+ createCookie, readCookie, PAPAYA_MANGO_INSTALLED */
 
 "use strict";
 
@@ -12,8 +12,6 @@ var BROWSER_MIN_FIREFOX = 7,  // slider controls only >=23
     BROWSER_MIN_OPERA = 12;
 
 var LAST_SCROLL_EVENT_TIMESTAMP = 0;
-
-var PAPAYA_MANGO_INSTALLED = "mangoinstalled";
 
 var PAPAYA_BROWSER = bowser;
 detectOs();
@@ -244,7 +242,7 @@ function launchCustomProtocol(container, url, callback) {
             if (!success) {
                 callback(false);  // false
             }
-        }, 1000);
+        }, 2000);
     } else if (PAPAYA_BROWSER.name === "Safari") {
         cookie = readCookie(papaya.viewer.Preferences.COOKIE_PREFIX + PAPAYA_MANGO_INSTALLED);
 
