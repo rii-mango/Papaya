@@ -1,6 +1,7 @@
 
 /*jslint browser: true, node: true */
-/*global $, BrowserDetect, File, ArrayBuffer, DataView, Int16Array, bowser, detectOs */
+/*global $, BrowserDetect, File, ArrayBuffer, DataView, Int16Array, bowser, detectOs, papaya, confirm, alert,
+ createCookie, readCookie */
 
 "use strict";
 
@@ -11,6 +12,8 @@ var BROWSER_MIN_FIREFOX = 7,  // slider controls only >=23
     BROWSER_MIN_OPERA = 12;
 
 var LAST_SCROLL_EVENT_TIMESTAMP = 0;
+
+var PAPAYA_MANGO_INSTALLED = "mangoinstalled";
 
 var PAPAYA_BROWSER = bowser;
 detectOs();
@@ -183,7 +186,7 @@ function isInputRangeSupported() {
 
 // adapted from: http://www.rajeshsegu.com/2012/09/browser-detect-custom-protocols/comment-page-1/
 function launchCustomProtocol(container, url, callback) {
-    var iframe, myWindow, success = false;
+    var iframe, myWindow, cookie, success = false;
 
     console.log("attempting to open " + url);
 
@@ -243,11 +246,19 @@ function launchCustomProtocol(container, url, callback) {
             }
         }, 1000);
     } else if (PAPAYA_BROWSER.name === "Safari") {
-        if (papaya.mangoinstalled) {
-            location.href = url;
+        cookie = readCookie(papaya.viewer.Preferences.COOKIE_PREFIX + PAPAYA_MANGO_INSTALLED);
+
+        if (cookie || papaya.mangoinstalled) {
             success = true;
         } else {
-            success = false;
+            if (confirm("This feature requires that Mango is installed.  Continue?")) {
+                createCookie(papaya.viewer.Preferences.COOKIE_PREFIX + PAPAYA_MANGO_INSTALLED, true, papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS);
+                success = true;
+            }
+        }
+
+        if (success) {
+            location.href = url;
         }
 
         callback(success);
@@ -256,7 +267,7 @@ function launchCustomProtocol(container, url, callback) {
 
 
 window.addEventListener('message', function (msg) {
-    if (msg.data === "mangoinstalled") {
+    if (msg.data === PAPAYA_MANGO_INSTALLED) {
         papaya.mangoinstalled = true;
     }
 }, false);
