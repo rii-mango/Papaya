@@ -377,9 +377,13 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             imageIndex = parseInt(action.substring(action.lastIndexOf("-") + 1), 10);
 
             if (imageIndex === 0) {
-                launchCustomProtocol(this.container, getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL, this.container.viewer.volume.url), this.customProtocolResult);
+                if (this.container.viewer.volume.url) {
+                    launchCustomProtocol(this.container, getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL, this.container.viewer.volume.url), this.customProtocolResult);
+                }
             } else {
-                launchCustomProtocol(this.container, getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL, this.container.viewer.screenVolumes[imageIndex].volume.url) + "?" + "baseimage=" + this.container.viewer.volume.fileName + "&params=o", this.customProtocolResult);
+                if (this.container.viewer.screenVolumes[imageIndex].volume.url) {
+                    launchCustomProtocol(this.container, getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL, this.container.viewer.screenVolumes[imageIndex].volume.url) + "?" + "baseimage=" + this.container.viewer.volume.fileName + "&params=o", this.customProtocolResult);
+                }
             }
         }
     }
