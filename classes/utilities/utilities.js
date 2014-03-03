@@ -338,12 +338,6 @@ function derefIn(parent, name) {
 }
 
 
-function printStackTrace() {
-    var err = new Error();
-    console.log(err.stack);
-}
-
-
 function getOffsetRect(elem) {
     // (1)
     var box = elem.getBoundingClientRect();
