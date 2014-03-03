@@ -1,6 +1,7 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE, getRelativeMousePositionX, getRelativeMousePositionFromParentX */
+/*global $, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE, getRelativeMousePositionX,
+    getRelativeMousePositionFromParentX, PAPAYA_MENU_INPUT_FIELD, PAPAYA_BROWSER */
 
 "use strict";
 
@@ -45,13 +46,13 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
 
     html = "<li id='" + this.id + "'>" +
                 "<span class='" + PAPAYA_MENU_UNSELECTABLE + "' style=''>" +
-                    "<input type='text' size='4' style='width:40px;margin-right:5px;' id='" + this.minId + "' value='" + range[0] + "' />" +
+                    "<input class='" + PAPAYA_MENU_INPUT_FIELD + "' type='text' size='4' id='" + this.minId + "' value='" + range[0] + "' />" +
                     "<div style='display:inline-block;position:relative;width:" + (papaya.viewer.ColorTable.COLOR_BAR_WIDTH + papaya.viewer.ColorTable.ARROW_ICON_WIDTH) + "px;top:-12px;'>" +
                         "<img id='" + minSliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE + "' style='position:absolute;top:5px;left:" + (menuItemRange.screenVol.colorTable.minLUT / papaya.viewer.ColorTable.LUT_MAX) * (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1) + "px;z-index:99' src='" + papaya.viewer.ColorTable.ARROW_ICON + "' />" +
                         "<img id='" + maxSliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE + "' style='position:absolute;top:5px;left:" + (menuItemRange.screenVol.colorTable.maxLUT / papaya.viewer.ColorTable.LUT_MAX) * (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1) + "px;z-index:99' src='" + papaya.viewer.ColorTable.ARROW_ICON + "' />" +
                         "<img id='" + sliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE + "' style='position:absolute;top:0;left:" + (parseInt(papaya.viewer.ColorTable.ARROW_ICON_WIDTH / 2, 10)) + "px;' src='" + this.viewer.screenVolumes[parseInt(this.index, 10)].colorTable.colorBar + "' />" +
                     "</div>" +
-                    "<input type='text' size='4' style='width:40px;margin-left:5px;' id='" + this.maxId + "' value='" + range[1] + "' />" +
+                    "<input class='" + PAPAYA_MENU_INPUT_FIELD + "' type='text' size='4' id='" + this.maxId + "' value='" + range[1] + "' />" +
                 "</span>" +
            "</li>";
 
@@ -63,9 +64,10 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
     maxSliderHtml = $("#" + maxSliderId);
     sliderHtml = $("#" + sliderId);
 
-    minSliderHtml.mousedown(function (ev) {
+    minSliderHtml.bind(PAPAYA_BROWSER.ios ? 'touchstart' : 'mousedown', function (ev) {
         menuItemRange.grabOffset = getRelativeMousePositionX(minSliderHtml, ev);
-        $(window).mousemove(function (ev) {
+
+        $(window).bind(PAPAYA_BROWSER.ios ? 'touchmove' : 'mousemove', function (ev) {
             var val, maxVal;
 
             maxVal = (menuItemRange.screenVol.colorTable.maxLUT / papaya.viewer.ColorTable.LUT_MAX) * (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1);
@@ -90,9 +92,9 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
         return false;  // disable img drag
     });
 
-    maxSliderHtml.mousedown(function (ev) {
+    maxSliderHtml.bind(PAPAYA_BROWSER.ios ? 'touchstart' : 'mousedown', function (ev) {
         menuItemRange.grabOffset = getRelativeMousePositionX(maxSliderHtml, ev);
-        $(window).mousemove(function (ev) {
+        $(window).bind(PAPAYA_BROWSER.ios ? 'touchmove' : 'mousemove', function (ev) {
             var val, minVal;
 
             minVal = (menuItemRange.screenVol.colorTable.minLUT / papaya.viewer.ColorTable.LUT_MAX) * (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1);
@@ -117,8 +119,8 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
         return false;  // disable img drag
     });
 
-    $(window).mouseup(function () {
-        $(window).unbind("mousemove");
+    $(window).bind(PAPAYA_BROWSER.ios ? 'touchend' : 'mouseup', function () {
+        $(window).unbind(PAPAYA_BROWSER.ios ? 'touchmove' : 'mousemove');
     });
 
     $("#" + this.id).hover(function () {$(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
@@ -145,10 +147,12 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
         }
     }));
 
-    setTimeout(function () {  // IE wasn't picking up on the focus
-        minHtml.focus();
-        minHtml.select();
-    }, 10);
+    if (!PAPAYA_BROWSER.ios) {
+        setTimeout(function () {  // IE wasn't picking up on the focus
+            minHtml.focus();
+            minHtml.select();
+        }, 10);
+    }
 };
 
 

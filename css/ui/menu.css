@@ -74,3 +74,17 @@
     width: 200px;
     display: inline-block;
 }
+
+
+.papaya-menu-input {
+    width:40px;
+    margin-right:5px;
+}
+
+
+@media all and (device-width: 768px) and (device-height: 1024px) {
+    .papaya-menu-input {
+        width: 35px;
+        margin-right:4px;
+    }
+}

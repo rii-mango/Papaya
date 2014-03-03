@@ -75,7 +75,7 @@ papaya.ui.Toolbar.PREFERENCES_DATA = {
         {"label": "Coordinate display of:", "field": "atlasLocks", "options": ["Mouse", "Crosshairs"]},
         {"label": "Show crosshairs:", "field": "showCrosshairs", "options": ["All", "Main", "Lower", "None"]},
         {"label": "Show orientation:", "field": "showOrientation", "options": ["Yes", "No"]},
-        {"label": "Scroll wheel behavior:", "field": "scrollBehavior", "options": ["Zoom", "Increment Slice"], "disabled": "container.nestedViewer"}
+        {"label": "Scroll wheel behavior:", "field": "scrollBehavior", "options": ["Zoom", "Increment Slice"], "disabled": "container.disableScrollWheel"}
     ]
 };
 
@@ -396,8 +396,14 @@ papaya.ui.Toolbar.prototype.customProtocolResult = function (success) {
         if ((PAPAYA_BROWSER.name === "Chrome") || (PAPAYA_BROWSER.name === "Internet Explorer")) {  // initiated by a setTimeout, so popup blocker will interfere with window.open
             alert("Mango does not appear to be installed.  You can download Mango at:\n\nhttp://ric.uthscsa.edu/mango");
         } else {
-            if (confirm("Mango does not appear to be installed.  Would you like to download it now?")) {
-                window.open("http://ric.uthscsa.edu/mango/mango.html");
+            if (PAPAYA_BROWSER.ios) {
+                if (confirm("iMango does not appear to be installed.  Would you like to download it now?")) {
+                    window.open("http://itunes.apple.com/us/app/imango/id423626092");
+                }
+            } else {
+                if (confirm("Mango does not appear to be installed.  Would you like to download it now?")) {
+                    window.open("http://ric.uthscsa.edu/mango/mango.html");
+                }
             }
         }
     }

@@ -77,6 +77,10 @@ function getKeyCode(ev) {
 function getMousePositionX(ev) {
     var touch;
 
+    if (ev.originalEvent) {
+        ev = ev.originalEvent;
+    }
+
     if (ev.targetTouches) {
         if (ev.targetTouches.length === 1) {
             touch = ev.targetTouches[0];
@@ -186,8 +190,6 @@ function isInputRangeSupported() {
 function launchCustomProtocol(container, url, callback) {
     var iframe, myWindow, cookie, success = false;
 
-    console.log("attempting to open " + url);
-
     if (PAPAYA_BROWSER.name === "Internet Explorer") {
         myWindow = window.open('', '', 'width=0,height=0');
         myWindow.document.write("<iframe src='" + url + "'></iframe>");
@@ -243,13 +245,13 @@ function launchCustomProtocol(container, url, callback) {
                 callback(false);  // false
             }
         }, 2000);
-    } else if (PAPAYA_BROWSER.name === "Safari") {
+    } else {
         cookie = readCookie(papaya.viewer.Preferences.COOKIE_PREFIX + PAPAYA_MANGO_INSTALLED);
 
         if (cookie || papaya.mangoinstalled) {
             success = true;
         } else {
-            if (confirm("This feature requires that Mango is installed.  Continue?")) {
+            if (confirm("This feature requires that " + (PAPAYA_BROWSER.ios ? "iMango" : "Mango") + " is installed.  Continue?")) {
                 createCookie(papaya.viewer.Preferences.COOKIE_PREFIX + PAPAYA_MANGO_INSTALLED, true, papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS);
                 success = true;
             }

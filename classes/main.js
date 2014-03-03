@@ -5,7 +5,7 @@
  PAPAYA_TOOLBAR_CSS, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_VIEWER_ID, PAPAYA_DEFAULT_DISPLAY_ID,
  PAPAYA_DEFAULT_CONTAINER_ID, checkForBrowserCompatibility, getQueryParams, bind, PAPAYA_UTILS_UNSUPPORTED_CSS,
  PAPAYA_UTILS_UNSUPPORTED_MESSAGE_CSS, PAPAYA_CONTAINER_COLLAPSABLE, PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT,
- PAPAYA_CONTAINER_FULLSCREEN, PAPAYA_SLIDER_CSS, PAPAYA_DEFAULT_SLIDER_ID, isInputRangeSupported */
+ PAPAYA_CONTAINER_FULLSCREEN, PAPAYA_SLIDER_CSS, PAPAYA_DEFAULT_SLIDER_ID, isInputRangeSupported, PAPAYA_BROWSER */
 
 "use strict";
 
@@ -395,6 +395,12 @@ papaya.Container.prototype.isNestedViewer = function () {
 
 
 
+papaya.Container.prototype.disableScrollWheel = function () {
+    return (this.isNestedViewer() || PAPAYA_BROWSER.ios);
+};
+
+
+
 papaya.Container.prototype.canOpenInMango = function () {
     return this.params.canOpenInMango;
 };
@@ -588,7 +594,7 @@ function addViewer(parentName, params, callback) {
 
 
 
-function main() {
+function startPapaya() {
     setTimeout(function () {  // setTimeout necessary in Chrome
         window.scrollTo(0, 0);
     }, 0);
@@ -597,23 +603,45 @@ function main() {
 }
 
 
+function resizePapaya() {
+    var ctr;
 
-window.onload = main;
-
-
-
-window.onresize = function () {
     if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
-        papayaContainers[0].resizeViewerComponents(true);
+        if (!papayaContainers[0].toolbar.isShowingMenus()) {
+            papayaContainers[0].resizeViewerComponents(true);
+        }
     } else {
-        var ctr;
-
         for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
-            if (papayaContainers[ctr].collapsable) {
-                papayaContainers[ctr].resizeViewerComponents(true);
-            } else {
-                papayaContainers[ctr].updateViewerSize();
+            // iOS image menu triggers keyboard since it contains textfields.  The on-screen keyboard triggers a resize
+            // event. Because of this, we only resize on events when menus are not visible.
+            if (!papayaContainers[ctr].toolbar.isShowingMenus()) {
+                if (papayaContainers[ctr].collapsable) {
+                    papayaContainers[ctr].resizeViewerComponents(true);
+                } else {
+                    papayaContainers[ctr].updateViewerSize();
+                }
             }
         }
     }
+
+    setTimeout(function () {  // setTimeout necessary in Chrome
+        window.scrollTo(0, 0);
+    }, 0);
+}
+
+
+window.onload = startPapaya;
+
+
+window.onresize = resizePapaya;
+
+
+window.onorientationchange = function () {
+    var ctr;
+
+    for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
+        papayaContainers[ctr].toolbar.closeAllMenus();
+    }
+
+    resizePapaya();
 };

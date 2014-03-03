@@ -42,7 +42,8 @@ var PAPAYA_MENU_CSS = "papaya-menu",
     PAPAYA_MENU_FILECHOOSER = "papaya-menu-filechooser",
     PAPAYA_MENU_BUTTON_CSS = "papaya-menu-button",
     PAPAYA_MENU_BUTTON_HOVERING_CSS = "papaya-menu-button-hovering",
-    PAPAYA_MENU_COLORTABLE_CSS = "papaya-menu-colortable";
+    PAPAYA_MENU_COLORTABLE_CSS = "papaya-menu-colortable",
+    PAPAYA_MENU_INPUT_FIELD = "papaya-menu-input";
 
 
 // Utils CSS classes
@@ -67,4 +68,3 @@ var PAPAYA_SPACING = 3,
     PAPAYA_MINIMUM_SIZE = 500,
     PAPAYA_MANGO_INSTALLED = "mangoinstalled",
     PAPAYA_CUSTOM_PROTOCOL = "mango";
-;

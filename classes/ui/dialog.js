@@ -47,7 +47,7 @@ papaya.ui.Dialog.prototype.showDialog = function () {
             } else if (this.content.items[ctr].readonly) {
                 html += "<tr><td class='" + PAPAYA_DIALOG_CONTENT_LABEL_CSS + "'>" + this.content.items[ctr].label + "</td><td class='" + PAPAYA_DIALOG_CONTENT_CONTROL_CSS + "' id='" + this.content.items[ctr].field + "'></td></tr>";
             } else {
-                if (this.content.items[ctr].disabled && (derefIn(this, this.content.items[ctr].disabled)) === true) {
+                if (this.content.items[ctr].disabled && (bind(this.container, derefIn(this, this.content.items[ctr].disabled)))() === true) {
                     disabled = "disabled='disabled'";
                 } else {
                     disabled = "";
