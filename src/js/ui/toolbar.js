@@ -382,7 +382,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
                 }
             } else {
                 if (this.container.viewer.screenVolumes[imageIndex].volume.url) {
-                    launchCustomProtocol(this.container, getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL, this.container.viewer.screenVolumes[imageIndex].volume.url) + "?" + "baseimage=" + this.container.viewer.volume.fileName + "&params=o", this.customProtocolResult);
+                    launchCustomProtocol(this.container, getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL, this.container.viewer.screenVolumes[imageIndex].volume.url) + "?" + encodeURIComponent("baseimage=" + this.container.viewer.volume.fileName + "&params=o"), this.customProtocolResult);
                 }
             }
         }
