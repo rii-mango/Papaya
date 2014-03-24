@@ -112,14 +112,14 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrientationSform = function () {
 };
 
 
-papaya.volume.nifti.HeaderNIFTI.prototype.getOriginQform = function () {
-    return this.getOrigin(true, false);
-};
+//papaya.volume.nifti.HeaderNIFTI.prototype.getOriginQform = function () {
+//    return this.getOrigin(true, false);
+//};
 
 
-papaya.volume.nifti.HeaderNIFTI.prototype.getOriginSform = function () {
-    return this.getOrigin(false, true);
-};
+//papaya.volume.nifti.HeaderNIFTI.prototype.getOriginSform = function () {
+//    return this.getOrigin(false, true);
+//};
 
 
 papaya.volume.nifti.HeaderNIFTI.prototype.getQformMatCopy = function () {

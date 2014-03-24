@@ -350,7 +350,7 @@ papaya.volume.Volume.prototype.getOrigin = function () {
 
 papaya.volume.Volume.prototype.applyBestTransform = function () {
     var bestXform = this.header.getBestTransform();
-    console.log(bestXform);
+
     if (bestXform !== null) {
         this.transform.worldMatNifti = numeric.inv(bestXform);
         this.setOrigin(this.header.getBestTransformOrigin());
