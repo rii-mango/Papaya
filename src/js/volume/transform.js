@@ -30,10 +30,169 @@ papaya.volume.Transform = papaya.volume.Transform || function (mat, volume) {
 };
 
 
+/* Static pseudo-constants */
 
 papaya.volume.Transform.IDENTITY = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
+papaya.volume.Transform.EPSILON = 0.00001;
 
 
+
+/* Static class functions */
+
+papaya.volume.Transform.printTransform = function (mat) {
+    console.log(mat[0][0] + " " + mat[0][1] + " " + mat[0][2] + " " + mat[0][3]);
+    console.log(mat[1][0] + " " + mat[1][1] + " " + mat[1][2] + " " + mat[1][3]);
+    console.log(mat[2][0] + " " + mat[2][1] + " " + mat[2][2] + " " + mat[2][3]);
+    console.log(mat[3][0] + " " + mat[3][1] + " " + mat[3][2] + " " + mat[3][3]);
+};
+
+
+papaya.volume.Transform.decompose = function (mat) {
+    var xTrans, yTrans, zTrans, xRot, yRot, zRot, xScale, yScale, zScale, tempK1, tempK2, tempK3, tempK4, tempK5, tempK6,
+        tempM1, tempM2, tempM3, tempM4, tempM5, tempM6, tempM7, tempM8, tempM9, tempN1, tempN2, tempN3, tempN4, tempN5,
+        tempN6, xSkew, ySkew, zSkew, decomposedParams;
+
+    decomposedParams = [];
+
+    xTrans = papaya.volume.Transform.validateNum(mat[0][3]); // xTrans
+    yTrans = papaya.volume.Transform.validateNum(mat[1][3]); // yTrans
+    zTrans = papaya.volume.Transform.validateNum(mat[2][3]); // zTrans
+
+    xRot = papaya.volume.Transform.validateNum(Math.atan(mat[2][1] / mat[2][2])); // xRot
+
+    yRot = 0;
+
+    if (xRot === 0) {
+        yRot = papaya.volume.Transform.validateNum(Math.atan(-1 * Math.cos(xRot) * (mat[2][0] / mat[2][2])));
+    } else {
+        yRot = papaya.volume.Transform.validateNum(Math.atan(-1 * Math.sin(xRot) * (mat[2][0] / mat[2][1])));
+    }
+
+    if (yRot === 0) {
+        yRot = papaya.volume.Transform.EPSILON;
+    }
+
+    zScale = papaya.volume.Transform.validateScale(mat[2][2] / (Math.cos(yRot) * Math.cos(xRot))); // zScale
+
+    tempK1 = Math.cos(xRot);
+    tempK2 = (Math.sin(xRot) * Math.sin(yRot)) + (Math.sin(xRot) * (Math.cos(yRot) / Math.tan(yRot)));
+    tempK3 = (mat[1][0] * (Math.sin(xRot) / Math.tan(yRot))) + mat[1][1];
+    tempK4 = -1 * Math.sin(xRot);
+    tempK5 = (Math.cos(xRot) * Math.sin(yRot)) + (Math.cos(xRot) * (Math.cos(yRot) / Math.tan(yRot)));
+    tempK6 = (mat[1][0] * (Math.cos(xRot) / Math.tan(yRot))) + mat[1][2];
+
+    zRot = papaya.volume.Transform.validateNum(Math.atan((((tempK1 * tempK6) - (tempK3 * tempK4)) / ((tempK3 * tempK5) - (tempK2 * tempK6))))); // zRot
+
+    yScale = papaya.volume.Transform.validateScale((tempK3 / ((Math.cos(zRot) * tempK1) + (Math.sin(zRot) * tempK2)))); // yScale
+    xSkew = papaya.volume.Transform.validateNum((((yScale * Math.sin(zRot) * Math.cos(yRot)) - mat[1][0]) / (zScale * Math.sin(yRot)))); // xSkew
+
+    tempM1 = Math.cos(yRot) * Math.cos(zRot);
+    tempM2 = yScale * Math.cos(yRot) * Math.sin(zRot);
+    tempM3 = -1 * zScale * Math.sin(yRot);
+    tempM4 = (Math.sin(xRot) * Math.sin(yRot) * Math.cos(zRot)) - (Math.cos(xRot) * Math.sin(zRot));
+    tempM5 = (Math.sin(xRot) * Math.sin(yRot) * Math.sin(zRot)) + (Math.cos(xRot) * Math.cos(zRot));
+    tempM6 = zScale * Math.sin(xRot) * Math.cos(yRot);
+    tempM7 = (Math.cos(xRot) * Math.sin(yRot) * Math.cos(zRot)) + (Math.sin(xRot) * Math.sin(zRot));
+    tempM8 = (Math.cos(xRot) * Math.sin(yRot) * Math.sin(zRot)) - (Math.sin(xRot) * Math.cos(zRot));
+    tempM9 = zScale * Math.cos(xRot) * Math.cos(yRot);
+    tempN1 = (tempM2 * tempM4) - (tempM1 * tempM5);
+    tempN2 = (tempM3 * tempM4) - (tempM1 * tempM6);
+    tempN3 = (tempM4 * mat[0][0]) - (tempM1 * mat[0][1]);
+    tempN4 = (tempM2 * tempM7) - (tempM1 * tempM8);
+    tempN5 = (tempM3 * tempM7) - (tempM1 * tempM9);
+    tempN6 = (tempM7 * mat[0][0]) - (tempM1 * mat[0][2]);
+
+    ySkew = papaya.volume.Transform.validateNum((((tempN4 * tempN3) - (tempN6 * tempN1)) / ((tempN2 * tempN4) - (tempN1 * tempN5)))); // ySkew
+    zSkew = papaya.volume.Transform.validateNum((((tempN3 * tempN5) - (tempN2 * tempN6)) / ((tempN1 * tempN5) - (tempN2 * tempN4)))); // zSkew
+    xScale = papaya.volume.Transform.validateScale(((mat[0][0] - (zSkew * tempM2) - (ySkew * tempM3)) / tempM1)); // xScale
+
+    if (yRot === papaya.volume.Transform.EPSILON) {
+        yRot = 0;
+    }
+
+    xRot *= (180 / Math.PI);
+    yRot *= (180 / Math.PI);
+    zRot *= (180 / Math.PI);
+
+    decomposedParams[0] = papaya.volume.Transform.validateZero(xTrans);
+    decomposedParams[1] = papaya.volume.Transform.validateZero(yTrans);
+    decomposedParams[2] = papaya.volume.Transform.validateZero(zTrans);
+
+    decomposedParams[3] = papaya.volume.Transform.validateZero(xRot);
+    decomposedParams[4] = papaya.volume.Transform.validateZero(yRot);
+    decomposedParams[5] = papaya.volume.Transform.validateZero(zRot);
+
+    decomposedParams[6] = xScale;
+    decomposedParams[7] = yScale;
+    decomposedParams[8] = zScale;
+
+    decomposedParams[9] = papaya.volume.Transform.validateZero(xSkew);
+    decomposedParams[10] = papaya.volume.Transform.validateZero(ySkew);
+    decomposedParams[11] = papaya.volume.Transform.validateZero(zSkew);
+
+    return decomposedParams;
+};
+
+
+papaya.volume.Transform.hasRotations = function (mat) {
+    var decomp, epsilon, rotX, rotY, rotZ;
+
+    if (mat !== null) {
+        decomp = papaya.volume.Transform.decompose(mat);
+        epsilon = 0.01;
+
+        rotX = (Math.abs(1 - (Math.abs(decomp[3]) / 90.0)) % 1);
+        rotY = (Math.abs(1 - (Math.abs(decomp[4]) / 90.0)) % 1);
+        rotZ = (Math.abs(1 - (Math.abs(decomp[5]) / 90.0)) % 1);
+
+        return ((rotX > epsilon) || (rotY > epsilon) || (rotZ > epsilon));
+    }
+
+    return false;
+};
+
+
+papaya.volume.Transform.validateNum = function (num) {
+    if ((num === Number.POSITIVE_INFINITY) || (num === Number.NEGATIVE_INFINITY)) {
+        return 0;
+    }
+
+    if (isNaN(num)) {
+        return 0;
+    }
+
+    if (num === 0) {  // catch negative zeros
+        return 0;
+    }
+
+    return num;
+};
+
+
+papaya.volume.Transform.validateScale = function (num) {
+    if ((num === Number.POSITIVE_INFINITY) || (num === Number.NEGATIVE_INFINITY)) {
+        return 1;
+    }
+
+    if (isNaN(num)) {
+        return 1;
+    }
+
+    return num;
+};
+
+
+papaya.volume.Transform.validateZero = function (num) {
+    if (Math.abs(num) < papaya.volume.Transform.EPSILON) {
+        return 0;
+    }
+
+    return num;
+};
+
+
+
+/* Class functions */
 
 papaya.volume.Transform.prototype.updateSizeMat = function () {
     this.sizeMat[0][0] = this.voxelDimensions.xSize;
@@ -48,12 +207,9 @@ papaya.volume.Transform.prototype.updateSizeMat = function () {
 };
 
 
-
-
 papaya.volume.Transform.prototype.updateOrientMat = function () {
     this.orientMat = this.volume.header.orientation.orientMat;
 };
-
 
 
 papaya.volume.Transform.prototype.updateIndexTransform = function () {
@@ -64,7 +220,6 @@ papaya.volume.Transform.prototype.updateIndexTransform = function () {
         }
     }
 };
-
 
 
 papaya.volume.Transform.prototype.updateMmTransform = function () {
@@ -78,7 +233,6 @@ papaya.volume.Transform.prototype.updateMmTransform = function () {
 };
 
 
-
 papaya.volume.Transform.prototype.updateOriginMat = function () {
     this.originMat[0][0] = 1;
     this.originMat[1][1] = -1;
@@ -88,7 +242,6 @@ papaya.volume.Transform.prototype.updateOriginMat = function () {
     this.originMat[1][3] = this.volume.header.origin.y;
     this.originMat[2][3] = this.volume.header.origin.z;
 };
-
 
 
 papaya.volume.Transform.prototype.updateWorldMat = function () {
@@ -172,7 +325,6 @@ papaya.volume.Transform.prototype.updateWorldMat = function () {
 };
 
 
-
 papaya.volume.Transform.prototype.updateTransforms = function (mat) {
     this.mat = mat;
 
@@ -185,11 +337,9 @@ papaya.volume.Transform.prototype.updateTransforms = function (mat) {
 };
 
 
-
 papaya.volume.Transform.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
     return this.voxelValue.getVoxelAtIndex(ctrX, ctrY, ctrZ, timepoint, useNN);
 };
-
 
 
 papaya.volume.Transform.prototype.getVoxelAtCoordinate = function (xLoc, yLoc, zLoc, timepoint, useNN) {
@@ -206,7 +356,6 @@ papaya.volume.Transform.prototype.getVoxelAtCoordinate = function (xLoc, yLoc, z
 };
 
 
-
 papaya.volume.Transform.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, timepoint, useNN) {
     var xTrans, yTrans, zTrans;
     xTrans = ((xLoc * this.mmMat[0][0]) + (yLoc * this.mmMat[0][1]) + (zLoc * this.mmMat[0][2]) + (this.mmMat[0][3]));
@@ -218,13 +367,4 @@ papaya.volume.Transform.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, tim
     }
 
     return this.voxelValue.getVoxelAtIndex(xTrans, yTrans, zTrans, timepoint, useNN);
-};
-
-
-
-papaya.volume.Transform.printTransform = function (mat) {
-    console.log(mat[0][0] + " " + mat[0][1] + " " + mat[0][2] + " " + mat[0][3]);
-    console.log(mat[1][0] + " " + mat[1][1] + " " + mat[1][2] + " " + mat[1][3]);
-    console.log(mat[2][0] + " " + mat[2][1] + " " + mat[2][2] + " " + mat[2][3]);
-    console.log(mat[3][0] + " " + mat[3][1] + " " + mat[3][2] + " " + mat[3][3]);
 };

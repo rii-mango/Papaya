@@ -87,3 +87,14 @@ papaya.volume.Header.prototype.readData = function (headerType, data, compressed
 papaya.volume.Header.prototype.hasError = function () {
     return (this.errorMessage !== null);
 };
+
+
+
+papaya.volume.Header.prototype.getBestTransform = function () {
+    return this.fileFormat.getBestTransform();
+};
+
+
+papaya.volume.Header.prototype.getBestTransformOrigin = function () {
+    return this.fileFormat.getBestTransformOrigin();
+};

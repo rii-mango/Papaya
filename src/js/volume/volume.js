@@ -323,9 +323,7 @@ papaya.volume.Volume.prototype.finishedLoad = function () {
                 this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
                 this.numTimepoints = this.header.imageDimensions.timepoints || 1;
 
-                this.transform.worldMatNifti = numeric.inv(this.header.fileFormat.getSformMatCopy());
-                this.setOrigin(this.header.fileFormat.getOriginSform());
-                this.transform.updateWorldMat();
+                this.applyBestTransform();
             }
 
             this.isLoaded = true;
@@ -346,4 +344,16 @@ papaya.volume.Volume.prototype.setOrigin = function (coord) {
 
 papaya.volume.Volume.prototype.getOrigin = function () {
     return this.header.orientation.convertCoordinate(this.header.origin, new papaya.core.Coordinate(0, 0, 0));
+};
+
+
+
+papaya.volume.Volume.prototype.applyBestTransform = function () {
+    var bestXform = this.header.getBestTransform();
+    console.log(bestXform);
+    if (bestXform !== null) {
+        this.transform.worldMatNifti = numeric.inv(bestXform);
+        this.setOrigin(this.header.getBestTransformOrigin());
+        this.transform.updateWorldMat();
+    }
 };
