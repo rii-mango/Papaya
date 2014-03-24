@@ -559,7 +559,7 @@ function buildAllContainers() {
         });
     }
 
-    if ((papayaContainers.length === 0) || ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer)) {
+    if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
         $("html").addClass(PAPAYA_CONTAINER_FULLSCREEN);
         $("body").addClass(PAPAYA_CONTAINER_FULLSCREEN);
         setToFullPage();
