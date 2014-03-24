@@ -20,8 +20,10 @@ papaya.volume.Transform = papaya.volume.Transform || function (mat, volume) {
     this.sizeMatInverse = papaya.volume.Transform.IDENTITY.clone();
     this.mmMat = papaya.volume.Transform.IDENTITY.clone();
     this.worldMat = papaya.volume.Transform.IDENTITY.clone();
+    this.worldMatNifti = null;
     this.originMat = papaya.volume.Transform.IDENTITY.clone();
     this.tempMat = papaya.volume.Transform.IDENTITY.clone();
+    this.tempMat2 = papaya.volume.Transform.IDENTITY.clone();
     this.orientMat = papaya.volume.Transform.IDENTITY.clone();
 
     this.updateTransforms(mat);
@@ -49,7 +51,7 @@ papaya.volume.Transform.prototype.updateSizeMat = function () {
 
 
 papaya.volume.Transform.prototype.updateOrientMat = function () {
-    //this.orientMat = this.volume.header.orientation.orientMat;
+    this.orientMat = this.volume.header.orientation.orientMat;
 };
 
 
@@ -90,19 +92,81 @@ papaya.volume.Transform.prototype.updateOriginMat = function () {
 
 
 papaya.volume.Transform.prototype.updateWorldMat = function () {
-    var ctrOut, ctrIn;
+    var ctrOut, ctrIn, flipMat, originNiftiMat;
 
-    for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
-        for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
-            this.tempMat[ctrOut][ctrIn] = (this.indexMat[ctrOut][0] * this.originMat[0][ctrIn]) + (this.indexMat[ctrOut][1] * this.originMat[1][ctrIn])
-                + (this.indexMat[ctrOut][2] * this.originMat[2][ctrIn]) + (this.indexMat[ctrOut][3] * this.originMat[3][ctrIn]);
+    if (this.worldMatNifti) {
+        flipMat = [[ -1, 0, 0, this.imageDimensions.xDim - 1 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ]];
+
+        originNiftiMat = papaya.volume.Transform.IDENTITY.clone();
+        originNiftiMat[0][0] = -1;
+        originNiftiMat[1][1] = -1;
+        originNiftiMat[2][2] = -1;
+        originNiftiMat[3][3] = 1;
+        originNiftiMat[0][3] = this.volume.header.origin.x;
+        originNiftiMat[1][3] = this.volume.header.origin.y;
+        originNiftiMat[2][3] = this.volume.header.origin.z;
+
+        for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
+                this.tempMat[ctrOut][ctrIn] = (this.sizeMat[ctrOut][0] * originNiftiMat[0][ctrIn]) + (this.sizeMat[ctrOut][1] * originNiftiMat[1][ctrIn])
+                    + (this.sizeMat[ctrOut][2] * originNiftiMat[2][ctrIn]) + (this.sizeMat[ctrOut][3] * originNiftiMat[3][ctrIn]);
+            }
         }
-    }
 
-    for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
-        for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
-            this.worldMat[ctrOut][ctrIn] = (this.tempMat[ctrOut][0] * this.sizeMatInverse[0][ctrIn]) + (this.tempMat[ctrOut][1] * this.sizeMatInverse[1][ctrIn])
-                + (this.tempMat[ctrOut][2] * this.sizeMatInverse[2][ctrIn]) + (this.tempMat[ctrOut][3] * this.sizeMatInverse[3][ctrIn]);
+        for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
+                this.tempMat2[ctrOut][ctrIn] = (this.tempMat[ctrOut][0] * flipMat[0][ctrIn]) + (this.tempMat[ctrOut][1] * flipMat[1][ctrIn])
+                    + (this.tempMat[ctrOut][2] * flipMat[2][ctrIn]) + (this.tempMat[ctrOut][3] * flipMat[3][ctrIn]);
+            }
+        }
+
+        for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
+                this.tempMat[ctrOut][ctrIn] = (this.tempMat2[ctrOut][0] * this.mat[0][ctrIn]) + (this.tempMat2[ctrOut][1] * this.mat[1][ctrIn])
+                    + (this.tempMat2[ctrOut][2] * this.mat[2][ctrIn]) + (this.tempMat2[ctrOut][3] * this.mat[3][ctrIn]);
+            }
+        }
+
+        for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
+                this.tempMat2[ctrOut][ctrIn] = (this.tempMat[ctrOut][0] * flipMat[0][ctrIn]) + (this.tempMat[ctrOut][1] * flipMat[1][ctrIn])
+                    + (this.tempMat[ctrOut][2] * flipMat[2][ctrIn]) + (this.tempMat[ctrOut][3] * flipMat[3][ctrIn]);
+            }
+        }
+
+        for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
+                this.tempMat[ctrOut][ctrIn] = (this.tempMat2[ctrOut][0] * originNiftiMat[0][ctrIn]) + (this.tempMat2[ctrOut][1] * originNiftiMat[1][ctrIn])
+                    + (this.tempMat2[ctrOut][2] * originNiftiMat[2][ctrIn]) + (this.tempMat2[ctrOut][3] * originNiftiMat[3][ctrIn]);
+            }
+        }
+
+        for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
+                this.tempMat2[ctrOut][ctrIn] = (this.tempMat[ctrOut][0] * this.sizeMatInverse[0][ctrIn]) + (this.tempMat[ctrOut][1] * this.sizeMatInverse[1][ctrIn])
+                    + (this.tempMat[ctrOut][2] * this.sizeMatInverse[2][ctrIn]) + (this.tempMat[ctrOut][3] * this.sizeMatInverse[3][ctrIn]);
+            }
+        }
+
+        for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
+                this.worldMat[ctrOut][ctrIn] = (this.worldMatNifti[ctrOut][0] * this.tempMat2[0][ctrIn]) + (this.worldMatNifti[ctrOut][1] * this.tempMat2[1][ctrIn])
+                    + (this.worldMatNifti[ctrOut][2] * this.tempMat2[2][ctrIn]) + (this.worldMatNifti[ctrOut][3] * this.tempMat2[3][ctrIn]);
+            }
+        }
+    } else {
+        for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
+                this.tempMat[ctrOut][ctrIn] = (this.indexMat[ctrOut][0] * this.originMat[0][ctrIn]) + (this.indexMat[ctrOut][1] * this.originMat[1][ctrIn])
+                    + (this.indexMat[ctrOut][2] * this.originMat[2][ctrIn]) + (this.indexMat[ctrOut][3] * this.originMat[3][ctrIn]);
+            }
+        }
+
+        for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
+                this.worldMat[ctrOut][ctrIn] = (this.tempMat[ctrOut][0] * this.sizeMatInverse[0][ctrIn]) + (this.tempMat[ctrOut][1] * this.sizeMatInverse[1][ctrIn])
+                    + (this.tempMat[ctrOut][2] * this.sizeMatInverse[2][ctrIn]) + (this.tempMat[ctrOut][3] * this.sizeMatInverse[3][ctrIn]);
+            }
         }
     }
 };
@@ -154,4 +218,13 @@ papaya.volume.Transform.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, tim
     }
 
     return this.voxelValue.getVoxelAtIndex(xTrans, yTrans, zTrans, timepoint, useNN);
+};
+
+
+
+papaya.volume.Transform.printTransform = function (mat) {
+    console.log(mat[0][0] + " " + mat[0][1] + " " + mat[0][2] + " " + mat[0][3]);
+    console.log(mat[1][0] + " " + mat[1][1] + " " + mat[1][2] + " " + mat[1][3]);
+    console.log(mat[2][0] + " " + mat[2][1] + " " + mat[2][2] + " " + mat[2][3]);
+    console.log(mat[3][0] + " " + mat[3][1] + " " + mat[3][2] + " " + mat[3][3]);
 };

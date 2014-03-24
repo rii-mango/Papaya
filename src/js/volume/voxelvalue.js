@@ -72,7 +72,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc,
                 if (((ctrX === 1) && (xInt === (this.xDim - 1))) || ((ctrY === 1) && (yInt === (this.yDim - 1)))) {
                     offset = -1;
                 } else {
-                    offset = this.orientation.convertIndexToOffset(xInt + ctrX, yInt + ctrY, zInt);
+                    offset = this.orientation.convertIndexToOffset2(xInt + ctrX, yInt + ctrY, zInt);
                 }
 
                 if (offset !== -1) {
@@ -81,7 +81,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc,
                     if (zInt === (this.zDim - 1)) {
                         tempVal2 = 0;
                     } else {
-                        offset = this.orientation.convertIndexToOffset(xInt + ctrX, yInt + ctrY, zInt + 1);
+                        offset = this.orientation.convertIndexToOffset2(xInt + ctrX, yInt + ctrY, zInt + 1);
                         tempVal2 = (((this.getVoxelAtOffset(offset, timepoint)) * this.dataScaleSlope) + this.dataScaleIntercept) * fracZ;
                     }
 
@@ -101,7 +101,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc,
             if ((ctrX === 1) && (xInt === (this.xDim - 1))) {
                 offset = -1;
             } else {
-                offset = this.orientation.convertIndexToOffset(xInt + ctrX, yInt, zInt);
+                offset = this.orientation.convertIndexToOffset2(xInt + ctrX, yInt, zInt);
             }
 
             if (offset !== -1) {
@@ -110,7 +110,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc,
                 if (yInt === (this.yDim - 1)) {
                     tempVal2 = 0;
                 } else {
-                    offset = this.orientation.convertIndexToOffset(xInt + ctrX, yInt + 1, zInt);
+                    offset = this.orientation.convertIndexToOffset2(xInt + ctrX, yInt + 1, zInt);
                     tempVal2 = (((this.getVoxelAtOffset(offset, timepoint)) * this.dataScaleSlope) + this.dataScaleIntercept) * fracY;
                 }
 
@@ -126,7 +126,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc,
             if ((ctrX === 1) && (xInt === (this.xDim - 1))) {
                 offset = -1;
             } else {
-                offset = this.orientation.convertIndexToOffset(xInt + ctrX, yInt, zInt);
+                offset = this.orientation.convertIndexToOffset2(xInt + ctrX, yInt, zInt);
             }
 
             if (offset !== -1) {
@@ -135,7 +135,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc,
                 if (zInt === (this.zDim - 1)) {
                     tempVal2 = 0;
                 } else {
-                    offset = this.orientation.convertIndexToOffset(xInt + ctrX, yInt, zInt + 1);
+                    offset = this.orientation.convertIndexToOffset2(xInt + ctrX, yInt, zInt + 1);
                     tempVal2 = (((this.getVoxelAtOffset(offset, timepoint)) * this.dataScaleSlope) + this.dataScaleIntercept) * fracZ;
                 }
 
@@ -151,7 +151,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc,
             if ((ctrY === 1) && (yInt === (this.yDim - 1))) {
                 offset = -1;
             } else {
-                offset = this.orientation.convertIndexToOffset(xInt, yInt + ctrY, zInt);
+                offset = this.orientation.convertIndexToOffset2(xInt, yInt + ctrY, zInt);
             }
 
             if (offset !== -1) {
@@ -160,7 +160,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc,
                 if (zInt === (this.zDim - 1)) {
                     tempVal2 = 0;
                 } else {
-                    offset = this.orientation.convertIndexToOffset(xInt, yInt + ctrY, zInt + 1);
+                    offset = this.orientation.convertIndexToOffset2(xInt, yInt + ctrY, zInt + 1);
                     tempVal2 = (((this.getVoxelAtOffset(offset, timepoint)) * this.dataScaleSlope) + this.dataScaleIntercept) * fracZ;
                 }
 
@@ -172,43 +172,43 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc,
 
         value = (this.interpSecondPass[0] * (1 - fracY)) + (this.interpSecondPass[1] * fracY);
     } else if (!interpolateX && !interpolateY && interpolateZ) {
-        offset = this.orientation.convertIndexToOffset(xInt, yInt, zInt);
+        offset = this.orientation.convertIndexToOffset2(xInt, yInt, zInt);
         tempVal1 = (((this.getVoxelAtOffset(offset, timepoint)) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracZ);
 
         if (zInt === (this.zDim - 1)) {
             tempVal2 = 0;
         } else {
-            offset = this.orientation.convertIndexToOffset(xInt, yInt, zInt + 1);
+            offset = this.orientation.convertIndexToOffset2(xInt, yInt, zInt + 1);
             tempVal2 = (((this.getVoxelAtOffset(offset, timepoint)) * this.dataScaleSlope) + this.dataScaleIntercept) * fracZ;
         }
 
         value = tempVal1 + tempVal2;
     } else if (!interpolateX && interpolateY && !interpolateZ) {
-        offset = this.orientation.convertIndexToOffset(xInt, yInt, zInt);
+        offset = this.orientation.convertIndexToOffset2(xInt, yInt, zInt);
         tempVal1 = (((this.getVoxelAtOffset(offset, timepoint)) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracY);
 
         if (yInt === (this.yDim - 1)) {
             tempVal2 = 0;
         } else {
-            offset = this.orientation.convertIndexToOffset(xInt, yInt + 1, zInt);
+            offset = this.orientation.convertIndexToOffset2(xInt, yInt + 1, zInt);
             tempVal2 = (((this.getVoxelAtOffset(offset, timepoint)) * this.dataScaleSlope) + this.dataScaleIntercept) * fracY;
         }
 
         value = tempVal1 + tempVal2;
     } else if (interpolateX && !interpolateY && !interpolateZ) {
-        offset = this.orientation.convertIndexToOffset(xInt, yInt, zInt);
+        offset = this.orientation.convertIndexToOffset2(xInt, yInt, zInt);
         tempVal1 = (((this.getVoxelAtOffset(offset, timepoint)) * this.dataScaleSlope) + this.dataScaleIntercept) * (1 - fracX);
 
         if (xInt === (this.xDim - 1)) {
             tempVal2 = 0;
         } else {
-            offset = this.orientation.convertIndexToOffset(xInt + 1, yInt, zInt);
+            offset = this.orientation.convertIndexToOffset2(xInt + 1, yInt, zInt);
             tempVal2 = (((this.getVoxelAtOffset(offset, timepoint)) * this.dataScaleSlope) + this.dataScaleIntercept) * fracX;
         }
 
         value = tempVal1 + tempVal2;
     } else { // if(!interpolateX && !interpolateY && !interpolateZ)
-        value = (this.getVoxelAtOffset(this.orientation.convertIndexToOffset(xLoc, yLoc, zLoc), timepoint) * this.dataScaleSlope) + this.dataScaleIntercept;
+        value = (this.getVoxelAtOffset(this.orientation.convertIndexToOffset2(xLoc, yLoc, zLoc), timepoint) * this.dataScaleSlope) + this.dataScaleIntercept;
     }
 
     return value;

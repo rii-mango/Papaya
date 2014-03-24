@@ -72,7 +72,7 @@ papaya.volume.Header.prototype.readData = function (headerType, data, compressed
         }
         this.orientation.createInfo(this.imageDimensions, this.voxelDimensions);
 
-        this.origin = this.orientation.convertCoordinate(this.fileFormat.getOrigin(), new papaya.core.Coordinate(0, 0, 0));
+        this.origin = this.fileFormat.getOrigin();
 
         this.imageRange = this.fileFormat.getImageRange();
         if (!this.imageRange.isValid()) {
@@ -82,7 +82,6 @@ papaya.volume.Header.prototype.readData = function (headerType, data, compressed
         this.imageDescription = this.fileFormat.getImageDescription();
     }
 };
-
 
 
 papaya.volume.Header.prototype.hasError = function () {

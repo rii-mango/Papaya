@@ -1,7 +1,7 @@
 
 /*jslint browser: true, node: true */
 /*global makeSlice, Base64Binary, FileReader, bind, Gunzip, isPlatformLittleEndian, deref, DataView,
-GUNZIP_MAGIC_COOKIE1, GUNZIP_MAGIC_COOKIE2 */
+GUNZIP_MAGIC_COOKIE1, GUNZIP_MAGIC_COOKIE2, numeric */
 
 "use strict";
 
@@ -20,6 +20,8 @@ papaya.volume.Volume = papaya.volume.Volume || function (progressMeter) {
     this.headerType = papaya.volume.Volume.TYPE_UNKNOWN;
     this.header = new papaya.volume.Header();
     this.imageData = new papaya.volume.ImageData();
+    this.transform = null;
+    this.numTimepoints = 0;
     this.rawData = null;
     this.onFinishedRead = null;
     this.errorMessage = null;
@@ -320,6 +322,10 @@ papaya.volume.Volume.prototype.finishedLoad = function () {
             if (!this.hasError()) {
                 this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
                 this.numTimepoints = this.header.imageDimensions.timepoints || 1;
+
+                this.transform.worldMatNifti = numeric.inv(this.header.fileFormat.getSformMatCopy());
+                this.setOrigin(this.header.fileFormat.getOriginSform());
+                this.transform.updateWorldMat();
             }
 
             this.isLoaded = true;
@@ -327,4 +333,17 @@ papaya.volume.Volume.prototype.finishedLoad = function () {
             this.onFinishedRead(this);
         }
     }
+};
+
+
+
+papaya.volume.Volume.prototype.setOrigin = function (coord) {
+    var coordNew = this.header.orientation.convertCoordinate(coord, new papaya.core.Coordinate(0, 0, 0));
+    this.header.origin.setCoordinate(coordNew.x, coordNew.y, coordNew.z);
+};
+
+
+
+papaya.volume.Volume.prototype.getOrigin = function () {
+    return this.header.orientation.convertCoordinate(this.header.origin, new papaya.core.Coordinate(0, 0, 0));
 };
