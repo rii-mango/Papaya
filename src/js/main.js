@@ -69,32 +69,20 @@ papaya.Container.prototype.getViewerDimensions = function () {
         parentWidth = window.innerWidth;
     }
 
-    if (parentHeight < PAPAYA_MINIMUM_SIZE) {
-        parentHeight = PAPAYA_MINIMUM_SIZE;
-
-        if (this.kioskMode) {
-            this.containerHtml.parent().height(PAPAYA_MINIMUM_SIZE * 0.8);
-        } else {
-            this.containerHtml.parent().height(PAPAYA_MINIMUM_SIZE * 0.9);
-        }
-    } else if (!this.nestedViewer) {
+    if (!this.nestedViewer) {
         this.containerHtml.parent().height("100%");
     }
 
-    if (parentWidth < PAPAYA_MINIMUM_SIZE) {
-        parentWidth = PAPAYA_MINIMUM_SIZE;
-        this.containerHtml.parent().width(PAPAYA_MINIMUM_SIZE);
-    } else if (!this.nestedViewer) {
+    if (!this.nestedViewer) {
         this.containerHtml.parent().width("100%");
     }
 
     ratio = (this.orthogonal ? 1.5 : 1);
-    height = parentHeight - PAPAYA_SECTION_HEIGHT * numAdditionalSections;
-    width = height * ratio;
-
-    if (width > parentWidth) {
-        width = parentWidth - PAPAYA_SPACING * 2;
-        height = Math.ceil(width / ratio);
+    width = parentWidth;
+    height = width / ratio;
+    if (height > window.innerHeight) {
+        height = window.innerHeight;
+        width = height * ratio;
     }
 
     widthPadding = (parentWidth - width) / 2;
