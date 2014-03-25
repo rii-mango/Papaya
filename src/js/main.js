@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, PAPAYA_MINIMUM_SIZE, PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP,
+/*global $, PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP, roundFast, PAPAYA_PADDING,
  PAPAYA_CONTAINER_CLASS_NAME, PAPAYA_UTILS_CHECKFORJS_CSS, PAPAYA_VIEWER_CSS, PAPAYA_DISPLAY_CSS,
  PAPAYA_TOOLBAR_CSS, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_VIEWER_ID, PAPAYA_DEFAULT_DISPLAY_ID,
  PAPAYA_DEFAULT_CONTAINER_ID, checkForBrowserCompatibility, getQueryParams, bind, PAPAYA_UTILS_UNSUPPORTED_CSS,
@@ -32,6 +32,8 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.nestedViewer = false;
     this.collapsable = false;
     this.orthogonal = true;
+    this.kioskMode = false;
+    this.fullscreenPadding = true;
 
     this.resetComponents();
 };
@@ -48,80 +50,67 @@ papaya.Container.prototype.resetComponents = function () {
 
 
 papaya.Container.prototype.getViewerDimensions = function () {
-    var numAdditionalSections = 2,
-        parentHeight = PAPAYA_MINIMUM_SIZE,
-        parentWidth = PAPAYA_MINIMUM_SIZE,
-        height,
-        width,
-        widthPadding,
-        dims,
-        ratio;
+    var parentWidth, height, width, ratio;
 
-    if (!this.kioskMode) {
-        numAdditionalSections += 1;
-    }
-
-    if (this.nestedViewer) {
-        parentHeight = this.containerHtml.parent().height();
-        parentWidth = this.containerHtml.parent().width();
-    } else {
-        parentHeight = window.innerHeight;
-        parentWidth = window.innerWidth;
-    }
-
-    if (!this.nestedViewer) {
-        this.containerHtml.parent().height("100%");
-    }
-
-    if (!this.nestedViewer) {
-        this.containerHtml.parent().width("100%");
-    }
-
+    parentWidth = this.containerHtml.parent().width() - (this.fullscreenPadding ? (2 * PAPAYA_PADDING) : 0);
     ratio = (this.orthogonal ? 1.5 : 1);
     width = parentWidth;
-    height = width / ratio;
-    if (height > window.innerHeight) {
-        height = window.innerHeight;
-        width = height * ratio;
-    }
+    height = roundFast(width / ratio);
 
-    widthPadding = (parentWidth - width) / 2;
-    dims = new papaya.core.Dimensions(width, height);
-    dims.widthPadding = widthPadding;
-    dims.heightPadding = PAPAYA_CONTAINER_PADDING_TOP;
+    return [width, height];
+};
 
-    return dims;
+
+papaya.Container.prototype.getViewerPadding = function () {
+    var parentWidth, viewerDims, paddingX;
+
+    parentWidth = this.containerHtml.parent().width() - (this.fullscreenPadding ? (2 * PAPAYA_PADDING) : 0);
+    viewerDims = this.getViewerDimensions();
+    paddingX = ((parentWidth - viewerDims[0]) / 2);
+
+    return paddingX;
 };
 
 
 
 papaya.Container.prototype.resizeViewerComponents = function (resize) {
+    var dims, padding;
+
     this.toolbar.closeAllMenus();
 
-    var dims = this.getViewerDimensions();
+    dims = this.getViewerDimensions();
+    padding = this.getViewerPadding();
 
-    this.toolbarHtml.css({paddingLeft: dims.widthPadding + "px"});
-    this.toolbarHtml.css({paddingBottom: PAPAYA_SPACING + "px"});
-    this.toolbarHtml.css({width: dims.width + "px"});
+    this.toolbarHtml.css({width: dims[0] + "px"});
     this.toolbarHtml.css({height: papaya.ui.Toolbar.SIZE + "px"});
+    this.toolbarHtml.css({paddingLeft: padding + "px"});
+    this.toolbarHtml.css({paddingBottom: PAPAYA_SPACING + "px"});
 
-    this.viewerHtml.css({height: "100%"});
-    this.viewerHtml.css({width: dims.width + "px"});
-    this.viewerHtml.css({paddingLeft: dims.widthPadding + "px"});
+    this.viewerHtml.css({width: dims[0] + "px"});
+    this.viewerHtml.css({height: dims[1] + "px"});
+    this.viewerHtml.css({paddingLeft: padding + "px"});
 
     if (resize) {
         this.viewer.resizeViewer(dims);
     }
 
     this.displayHtml.css({height: PAPAYA_SECTION_HEIGHT + "px"});
-    this.displayHtml.css({paddingLeft: dims.widthPadding + "px"});
-    this.display.canvas.width = dims.width;
+    this.displayHtml.css({paddingLeft: padding + "px"});
+    this.displayHtml.css({paddingTop: PAPAYA_SPACING + "px"});
+    this.display.canvas.width = dims[0];
 
     if (this.sliderControlHtml) {
-        this.sliderControlHtml.css({width: dims.width + "px"});
+        this.sliderControlHtml.css({width: dims[0] + "px"});
     }
 
-    this.containerHtml.css({paddingTop: dims.heightPadding + "px"});
+    if (!this.isNestedViewer()) {
+        this.containerHtml.css({paddingTop: PAPAYA_CONTAINER_PADDING_TOP + "px"});
+    }
+
+    if (this.fullscreenPadding) {
+        this.containerHtml.css({paddingLeft: 8 + "px"});
+        this.containerHtml.css({paddingRight: 8 + "px"});
+    }
 
     if (this.viewer.initialized) {
         this.viewer.drawViewer(false, true);
@@ -130,9 +119,8 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
         this.display.drawEmptyDisplay();
     }
 
-    this.titlebarHtml.css({width: dims.width + "px", top: (this.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE)});
+    this.titlebarHtml.css({width: dims[0] + "px", top: (this.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE)});
 };
-
 
 
 
@@ -164,7 +152,7 @@ papaya.Container.prototype.buildViewer = function (params) {
     removeCheckForJSClasses(this.containerHtml, this.viewerHtml);
     this.viewerHtml.html("");  // remove noscript message
     dims = this.getViewerDimensions();
-    this.viewer = new papaya.viewer.Viewer(this, dims.width, dims.height, params);
+    this.viewer = new papaya.viewer.Viewer(this, dims[0], dims[1], params);
     this.viewerHtml.append($(this.viewer.canvas));
     this.preferences.viewer = this.viewer;
 };
@@ -176,7 +164,7 @@ papaya.Container.prototype.buildDisplay = function () {
 
     this.displayHtml = this.containerHtml.find("." + PAPAYA_DISPLAY_CSS);
     dims = this.getViewerDimensions();
-    this.display = new papaya.viewer.Display(this, dims.width);
+    this.display = new papaya.viewer.Display(this, dims[0]);
     this.displayHtml.append($(this.display.canvas));
 };
 
@@ -498,6 +486,10 @@ function buildContainer(containerHTML, params) {
         container.nestedViewer = (containerHTML.parent()[0].tagName.toUpperCase() !== 'BODY');
         container.kioskMode = (container.params.kioskMode === true);
 
+        if (container.params.fullscreenPadding !== undefined) {  // default is true
+            container.fullscreenPadding = container.params.fullscreenPadding;
+        }
+
         if (container.params.orthogonal !== undefined) {  // default is true
             container.orthogonal = container.params.orthogonal;
         }
@@ -523,6 +515,11 @@ function buildContainer(containerHTML, params) {
         }
 
         container.resizeViewerComponents(false);
+
+        if (!container.nestedViewer) {
+            containerHTML.parent().height("100%");
+            containerHTML.parent().width("100%");
+        }
 
         papayaContainers.push(container);
     }
@@ -552,9 +549,7 @@ function buildAllContainers() {
         $("body").addClass(PAPAYA_CONTAINER_FULLSCREEN);
         setToFullPage();
 
-        if (papayaContainers.length > 0) {
-            papayaContainers[0].resizeViewerComponents(false);
-        }
+        papayaContainers[0].resizeViewerComponents(true);
     }
 }
 
@@ -603,11 +598,7 @@ function resizePapaya() {
             // iOS image menu triggers keyboard since it contains textfields.  The on-screen keyboard triggers a resize
             // event. Because of this, we only resize on events when menus are not visible.
             if (!papayaContainers[ctr].toolbar.isShowingMenus()) {
-                if (papayaContainers[ctr].collapsable) {
-                    papayaContainers[ctr].resizeViewerComponents(true);
-                } else {
-                    papayaContainers[ctr].updateViewerSize();
-                }
+                papayaContainers[ctr].resizeViewerComponents(true);
             }
         }
     }

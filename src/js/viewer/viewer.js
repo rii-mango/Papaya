@@ -966,7 +966,7 @@ papaya.viewer.Viewer.prototype.resetUpdateTimer = function (me) {
         this.updateTimerEvent = me;
         this.updateTimer = window.setTimeout(bind(viewer,
             function () {
-                this.updatePosition(this, getMousePositionX(viewer.updateTimerEvent),
+                viewer.updatePosition(this, getMousePositionX(viewer.updateTimerEvent),
                     getMousePositionY(viewer.updateTimerEvent));
             }),
             papaya.viewer.Viewer.UPDATE_TIMER_INTERVAL);
@@ -1168,8 +1168,8 @@ papaya.viewer.Viewer.prototype.gotoCoordinate = function (coor) {
 
 
 papaya.viewer.Viewer.prototype.resizeViewer = function (dims) {
-    this.canvas.width = dims.width;
-    this.canvas.height = dims.height;
+    this.canvas.width = dims[0];
+    this.canvas.height = dims[1];
 
     if (this.initialized) {
         this.calculateScreenSliceTransforms();
