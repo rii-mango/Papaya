@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, isStringBlank, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE */
+/*global $, isStringBlank, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE, PAPAYA_MENU_SLIDER */
 
 "use strict";
 
@@ -33,7 +33,7 @@ papaya.ui.MenuItemSlider.prototype.buildHTML = function (parentId) {
 
     sliderId = this.id + "Slider";
 
-    html = "<li id='" + this.id + "'><span style='padding-right:5px;' class='" + PAPAYA_MENU_UNSELECTABLE + "'>" + this.label + ":</span><input min='0' max='100' value='" + parseInt((1.0 - this.screenVol.alpha) * 100, 10) + "' id='" + sliderId + "' style='vertical-align:middle;text-align:center;width:125px;padding:0;margin:0;' type='range' /></li>";
+    html = "<li id='" + this.id + "'><span style='padding-right:5px;' class='" + PAPAYA_MENU_UNSELECTABLE + "'>" + this.label + ":</span><input min='0' max='100' value='" + parseInt((1.0 - this.screenVol.alpha) * 100, 10) + "' id='" + sliderId + "' class='" + PAPAYA_MENU_SLIDER + "' type='range' /></li>";
     $("#" + parentId).append(html);
 
     thisHtml = $("#" + this.id);

@@ -43,7 +43,8 @@ var PAPAYA_MENU_CSS = "papaya-menu",
     PAPAYA_MENU_BUTTON_CSS = "papaya-menu-button",
     PAPAYA_MENU_BUTTON_HOVERING_CSS = "papaya-menu-button-hovering",
     PAPAYA_MENU_COLORTABLE_CSS = "papaya-menu-colortable",
-    PAPAYA_MENU_INPUT_FIELD = "papaya-menu-input";
+    PAPAYA_MENU_INPUT_FIELD = "papaya-menu-input",
+    PAPAYA_MENU_SLIDER = "papaya-menu-slider";
 
 
 // Utils CSS classes

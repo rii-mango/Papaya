@@ -10,6 +10,8 @@
     font-size: 14px;
     font-family: sans-serif;
     color: #B5CBD3;
+    box-sizing: content-box;
+    line-height: 1.25;
 }
 
 
@@ -48,6 +50,15 @@
 
 .papaya-dialog-button {
     text-align: right;
+    box-sizing: content-box;
+    height: 22px;
+}
+
+
+.papaya-dialog-button button {
+    box-sizing: content-box;
+    color: black;
+    font-size: 11px;
 }
 
 
@@ -60,6 +71,7 @@
     height: 100%;
     opacity: 0.5;
 }
+
 
 .papaya-dialog-stopscroll {
     height: 100%;

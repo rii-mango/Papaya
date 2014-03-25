@@ -9,7 +9,7 @@
 }
 
 
-.papaya-menu  li {
+.papaya-menu li {
     font-size: 12px;
     font-family: sans-serif;
     padding: 4px 2px;
@@ -43,6 +43,11 @@
 }
 
 
+.papaya-menu-icon img {
+    box-sizing: content-box;
+}
+
+
 .papaya-menu-hovering {
     background-color: #444;
 }
@@ -73,12 +78,24 @@
     cursor: pointer;
     width: 200px;
     display: inline-block;
+    font-weight: normal;
 }
 
 
 .papaya-menu-input {
-    width:40px;
-    margin-right:5px;
+    width: 40px;
+    margin-right: 5px;
+    color: black;
+}
+
+
+li .papaya-menu-slider {
+    vertical-align: middle;
+    text-align: center;
+    display: inline;
+    width: 120px;
+    padding: 0;
+    margin: 0;
 }
 
 

@@ -1,4 +1,10 @@
 
+.papaya-toolbar {
+    text-align: left;
+    box-sizing: content-box;
+}
+
+
 .papaya-toolbar ul {
     margin: 0;
     list-style: none;
@@ -10,10 +16,12 @@
     display:none;
 }
 
+
 .papaya-slider-slice {
     margin: 2px auto;
     padding: 0 5px;
 }
+
 
 .papaya-slider-slice input[type=range] {
     width: 100%;
