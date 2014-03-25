@@ -69,6 +69,7 @@ papaya.Container.prototype.getViewerDimensions = function () {
 };
 
 
+
 papaya.Container.prototype.getViewerPadding = function () {
     var parentWidth, viewerDims, padding;
 
