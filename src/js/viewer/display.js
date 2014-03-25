@@ -329,10 +329,10 @@ papaya.viewer.Display.prototype.drawProgress = function (progress) {
             this.progressTimeout = window.setTimeout(bind(display, function () {display.drawingProgress = false; }), 3000);
 
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.context.fillStyle = "#000000";
+            this.context.fillStyle = "#fff";
             this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-            rgbVal = Math.round(255 * progress);
+            rgbVal = 0;
             this.context.fillStyle = "rgb(" + rgbVal + ", " + rgbVal + ", " + rgbVal + ")";
             this.context.fillRect(0, 0, this.canvas.width * progress, this.canvas.height);
         }
