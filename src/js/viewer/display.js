@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global PAPAYA_SECTION_HEIGHT, bind */
+/*global bind */
 
 "use strict";
 
@@ -14,7 +14,7 @@ papaya.viewer.Display = papaya.viewer.Display || function (container, width) {
     this.viewer = container.viewer;
     this.canvas = document.createElement("canvas");
     this.canvas.width = width;
-    this.canvas.height = PAPAYA_SECTION_HEIGHT;
+    this.canvas.height = papaya.viewer.Display.SIZE;
     this.context = this.canvas.getContext("2d");
     this.canvas.style.padding = 0;
     this.canvas.style.margin = 0;
@@ -31,6 +31,7 @@ papaya.viewer.Display = papaya.viewer.Display || function (container, width) {
 };
 
 
+papaya.viewer.Display.SIZE = 50;
 
 papaya.viewer.Display.MINI_LABELS_THRESH = 700;
 

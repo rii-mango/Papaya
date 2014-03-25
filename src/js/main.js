@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, PAPAYA_SECTION_HEIGHT, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP, roundFast, PAPAYA_PADDING,
+/*global $, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP, roundFast, PAPAYA_PADDING,
  PAPAYA_CONTAINER_CLASS_NAME, PAPAYA_UTILS_CHECKFORJS_CSS, PAPAYA_VIEWER_CSS, PAPAYA_DISPLAY_CSS,
  PAPAYA_TOOLBAR_CSS, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_VIEWER_ID, PAPAYA_DEFAULT_DISPLAY_ID,
  PAPAYA_DEFAULT_CONTAINER_ID, checkForBrowserCompatibility, getQueryParams, bind, PAPAYA_UTILS_UNSUPPORTED_CSS,
@@ -50,25 +50,33 @@ papaya.Container.prototype.resetComponents = function () {
 
 
 papaya.Container.prototype.getViewerDimensions = function () {
-    var parentWidth, height, width, ratio;
+    var parentWidth, height, width, ratio, maxHeight;
 
     parentWidth = this.containerHtml.parent().width() - (this.fullscreenPadding ? (2 * PAPAYA_PADDING) : 0);
     ratio = (this.orthogonal ? 1.5 : 1);
     width = parentWidth;
     height = roundFast(width / ratio);
 
+    if (!this.nestedViewer || this.collapsable) {
+        maxHeight = window.innerHeight - (papaya.viewer.Display.SIZE + papaya.ui.Toolbar.SIZE + (2 * PAPAYA_CONTAINER_PADDING_TOP));
+        if (height > maxHeight) {
+            height = maxHeight;
+            width = roundFast(height * ratio);
+        }
+    }
+
     return [width, height];
 };
 
 
 papaya.Container.prototype.getViewerPadding = function () {
-    var parentWidth, viewerDims, paddingX;
+    var parentWidth, viewerDims, padding;
 
     parentWidth = this.containerHtml.parent().width() - (this.fullscreenPadding ? (2 * PAPAYA_PADDING) : 0);
     viewerDims = this.getViewerDimensions();
-    paddingX = ((parentWidth - viewerDims[0]) / 2);
+    padding = ((parentWidth - viewerDims[0]) / 2);
 
-    return paddingX;
+    return padding;
 };
 
 
@@ -94,7 +102,7 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
         this.viewer.resizeViewer(dims);
     }
 
-    this.displayHtml.css({height: PAPAYA_SECTION_HEIGHT + "px"});
+    this.displayHtml.css({height: papaya.viewer.Display.SIZE + "px"});
     this.displayHtml.css({paddingLeft: padding + "px"});
     this.displayHtml.css({paddingTop: PAPAYA_SPACING + "px"});
     this.display.canvas.width = dims[0];
@@ -103,8 +111,10 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
         this.sliderControlHtml.css({width: dims[0] + "px"});
     }
 
-    if (!this.isNestedViewer()) {
+    if (!this.nestedViewer || this.collapsable) {
         this.containerHtml.css({paddingTop: PAPAYA_CONTAINER_PADDING_TOP + "px"});
+    } else {
+        this.containerHtml.css({paddingTop: "0"});
     }
 
     if (this.fullscreenPadding) {
