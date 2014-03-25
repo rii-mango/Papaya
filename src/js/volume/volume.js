@@ -147,7 +147,6 @@ papaya.volume.Volume.prototype.readURL = function (url, callback) {
 
             xhr.onprogress = function (evt) {
                 vol.progressMeter.drawProgress(evt.loaded / evt.total);
-                console.log(evt.loaded / evt.total);
             };
 
             xhr.send(null);
