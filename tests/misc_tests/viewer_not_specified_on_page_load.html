@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<!-- Test: No viewer specified in HTML.  Viewers only loaded dynamically. -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- CSS debug start -->
+    <link rel="stylesheet" type="text/css" href="../../src/css/base.css" />
+    <link rel="stylesheet" type="text/css" href="../../src/css/ui/toolbar.css" />
+    <link rel="stylesheet" type="text/css" href="../../src/css/ui/menu.css" />
+    <link rel="stylesheet" type="text/css" href="../../src/css/ui/dialog.css" />
+    <link rel="stylesheet" type="text/css" href="../../src/css/utilities/nojs.css" />
+    <link rel="stylesheet" type="text/css" href="../../src/css/utilities/unsupported.css" />
+    <link rel="stylesheet" type="text/css" href="../../src/css/viewer/viewer.css" />
+    <!-- CSS debug end -->
+
+    <style>
+        body {
+            width:1000px;
+            margin:0 auto;
+            background:white;
+        }
+
+        .loremipsum {
+            font-size:14pt;
+            margin:20px;
+        }
+
+        .smallViewer {
+            margin:20px;width:500px;height:400px;
+        }
+
+        .left {
+            float: left;
+        }
+
+        .right {
+            float: right;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+
+    <!-- JS debug start -->
+    <script type="text/javascript" src="../../lib/jquery.js"></script>
+    <script type="text/javascript" src="../../src/js/constants.js"></script>
+    <script type="text/javascript" src="../../src/js/data/sample-image.js"></script>
+    <script type="text/javascript" src="../../src/js/data/talairach-atlas.js"></script>
+    <script type="text/javascript" src="../../src/js/data/talairach-atlas-image.js"></script>
+    <script type="text/javascript" src="../../src/js/core/coordinate.js"></script>
+    <script type="text/javascript" src="../../src/js/core/point.js"></script>
+    <script type="text/javascript" src="../../src/js/volume/header.js"></script>
+    <script type="text/javascript" src="../../src/js/volume/imagedata.js"></script>
+    <script type="text/javascript" src="../../src/js/volume/imagedescription.js"></script>
+    <script type="text/javascript" src="../../src/js/volume/imagedimensions.js"></script>
+    <script type="text/javascript" src="../../src/js/volume/imagerange.js"></script>
+    <script type="text/javascript" src="../../src/js/volume/imagetype.js"></script>
+    <script type="text/javascript" src="../../src/js/volume/orientation.js"></script>
+    <script type="text/javascript" src="../../src/js/volume/transform.js"></script>
+    <script type="text/javascript" src="../../src/js/volume/volume.js"></script>
+    <script type="text/javascript" src="../../src/js/volume/voxeldimensions.js"></script>
+    <script type="text/javascript" src="../../src/js/volume/voxelvalue.js"></script>
+    <script type="text/javascript" src="../../src/js/volume/nifti/header-nifti.js"></script>
+    <script type="text/javascript" src="../../src/js/volume/nifti/nifti.js"></script>
+    <script type="text/javascript" src="../../src/js/viewer/atlas.js"></script>
+    <script type="text/javascript" src="../../src/js/viewer/colortable.js"></script>
+    <script type="text/javascript" src="../../src/js/viewer/display.js"></script>
+    <script type="text/javascript" src="../../src/js/viewer/preferences.js"></script>
+    <script type="text/javascript" src="../../src/js/viewer/screenslice.js"></script>
+    <script type="text/javascript" src="../../src/js/viewer/screenvol.js"></script>
+    <script type="text/javascript" src="../../src/js/viewer/viewer.js"></script>
+    <script type="text/javascript" src="../../src/js/ui/dialog.js"></script>
+    <script type="text/javascript" src="../../src/js/ui/menu.js"></script>
+    <script type="text/javascript" src="../../src/js/ui/menuitem.js"></script>
+    <script type="text/javascript" src="../../src/js/ui/menuitemcheckbox.js"></script>
+    <script type="text/javascript" src="../../src/js/ui/menuitemfilechooser.js"></script>
+    <script type="text/javascript" src="../../src/js/ui/menuitemrange.js"></script>
+    <script type="text/javascript" src="../../src/js/ui/menuitemslider.js"></script>
+    <script type="text/javascript" src="../../src/js/ui/menuitemspacer.js"></script>
+    <script type="text/javascript" src="../../src/js/ui/toolbar.js"></script>
+    <script type="text/javascript" src="../../src/js/main.js"></script>
+    <script type="text/javascript" src="../../src/js/utilities/base64-binary.js"></script>
+    <script type="text/javascript" src="../../src/js/utilities/browser.js"></script>
+    <script type="text/javascript" src="../../src/js/utilities/gunzip.js"></script>
+    <script type="text/javascript" src="../../src/js/utilities/numerics.js"></script>
+    <script type="text/javascript" src="../../src/js/utilities/platform.js"></script>
+    <script type="text/javascript" src="../../src/js/utilities/utilities.js"></script>
+    <!-- JS debug end -->
+
+    <script type="text/javascript">
+        /* DO NOT EDIT (start) -- papayaLoadableImages is generated by papaya-builder and is here for debugging purposes only */
+        var papayaLoadableImages = [
+            {"nicename": "Atlas", "name": "Talairach_labels_1mm", "encode": "Talairach_labels_1mm", "hide": true}
+        ];
+        /* DO NOT EDIT (end) */
+
+        var params2 = [];
+        params2["worldSpace"] = true;
+        params2["images"] = ["../resources/data/sample_image.nii.gz"];
+        params2["kioskMode"] = true;
+
+        function secondViewerLoaded() {
+            $("#secondViewer").show();
+        }
+    </script>
+
+    <title>No Viewers</title>
+</head>
+
+<body>
+
+
+<div style="clear:both"></div>
+
+
+<h2>Example: A static image is replaced by a viewer when clicked</h2>
+
+<div id="secondViewer" class="smallViewer right" onclick='addViewer("secondViewer", params2, secondViewerLoaded)'><img src="../resources/img/lorem.png" /></div>
+
+<p class="loremipsum">
+    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore
+    magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis
+    nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse
+    molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui
+    blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta
+    nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent
+    claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores
+    legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium
+    lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas
+    humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant
+    sollemnes in futurum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod
+    tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation
+    ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit
+    in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et
+    iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam
+    liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim
+    assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes
+    demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur
+    mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram,
+    anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc
+    nobis videntur parum clari, fiant sollemnes in futurum.
+</p>
+
+</body>
+</html>
