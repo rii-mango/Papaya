@@ -43,7 +43,6 @@ See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for
 ####Basic usage (loads a blank viewer)
 ```html
 <!DOCTYPE html>
-
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
     <head>
         <link rel="stylesheet" type="text/css" href="papaya.css" />
