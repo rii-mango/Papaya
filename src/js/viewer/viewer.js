@@ -478,14 +478,12 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
     fontSize = 18;
     this.context.font = fontSize + "px Arial";
     locY = this.canvas.height - 22;
-    if (this.container.kioskMode) {
-        text = "Loading data...";
-    } else {
+    if (!this.container.kioskMode) {
         text = "Drop here or click the File menu";
+        metrics = this.context.measureText(text);
+        textWidth = metrics.width;
+        this.context.fillText(text, (this.canvas.width / 2) - (textWidth / 2), locY);
     }
-    metrics = this.context.measureText(text);
-    textWidth = metrics.width;
-    this.context.fillText(text, (this.canvas.width / 2) - (textWidth / 2), locY);
 
     if (this.canvas.width > 900) {
         // draw supported formats
