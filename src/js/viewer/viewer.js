@@ -1211,14 +1211,10 @@ papaya.viewer.Viewer.prototype.getNextColorTable = function () {
 
 
 papaya.viewer.Viewer.prototype.getCurrentValueAt = function (ctrX, ctrY, ctrZ) {
-    //if (this.currentScreenVolume.isOverlay()) {
-        return this.currentScreenVolume.volume.getVoxelAtCoordinate((ctrX - this.volume.header.origin.x)
-            * this.volume.header.voxelDimensions.xSize,
-                (this.volume.header.origin.y - ctrY) * this.volume.header.voxelDimensions.ySize,
-            (this.volume.header.origin.z - ctrZ) * this.volume.header.voxelDimensions.zSize, this.currentScreenVolume.currentTimepoint, false);
-    //}
-
-    //return this.currentScreenVolume.volume.getVoxelAtIndex(ctrX, ctrY, ctrZ, this.currentScreenVolume.currentTimepoint, true);
+    return this.currentScreenVolume.volume.getVoxelAtCoordinate((ctrX - this.volume.header.origin.x)
+        * this.volume.header.voxelDimensions.xSize,
+        (this.volume.header.origin.y - ctrY) * this.volume.header.voxelDimensions.ySize,
+        (this.volume.header.origin.z - ctrZ) * this.volume.header.voxelDimensions.zSize, this.currentScreenVolume.currentTimepoint, false);
 };
 
 
