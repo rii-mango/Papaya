@@ -325,6 +325,7 @@ papaya.volume.Transform.prototype.updateWorldMat = function () {
 };
 
 
+
 papaya.volume.Transform.prototype.updateTransforms = function (mat) {
     this.mat = mat;
 
@@ -337,9 +338,11 @@ papaya.volume.Transform.prototype.updateTransforms = function (mat) {
 };
 
 
+
 papaya.volume.Transform.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
     return this.voxelValue.getVoxelAtIndex(ctrX, ctrY, ctrZ, timepoint, useNN);
 };
+
 
 
 papaya.volume.Transform.prototype.getVoxelAtCoordinate = function (xLoc, yLoc, zLoc, timepoint, useNN) {
@@ -354,6 +357,7 @@ papaya.volume.Transform.prototype.getVoxelAtCoordinate = function (xLoc, yLoc, z
 
     return this.voxelValue.getVoxelAtIndex(xTrans, yTrans, zTrans, timepoint, useNN);
 };
+
 
 
 papaya.volume.Transform.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, timepoint, useNN) {

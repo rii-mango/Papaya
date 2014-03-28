@@ -36,7 +36,7 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ,
         ctrY = roundFast(ctrY);
         ctrZ = roundFast(ctrZ);
 
-        return (this.getVoxelAtOffset(this.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ), timepoint) * this.dataScaleSlope) + this.dataScaleIntercept;
+        return (this.getVoxelAtOffset(this.orientation.convertIndexToOffset2(ctrX, ctrY, ctrZ), timepoint) * this.dataScaleSlope) + this.dataScaleIntercept;
     }
 
     return this.getVoxelAtIndexLinear(ctrX, ctrY, ctrZ, timepoint);

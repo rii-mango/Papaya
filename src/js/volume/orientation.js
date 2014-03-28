@@ -22,14 +22,14 @@ papaya.volume.Orientation.DEFAULT = "XYZ+--";
 
 
 
-papaya.volume.Orientation.prototype.convertIndexToOffset = function (xLoc, yLoc, zLoc) {
-    var locX, locY, locZ;
-    locX = roundFast((xLoc * this.orientMat[0][0]) + (yLoc * this.orientMat[0][1]) + (zLoc * this.orientMat[0][2]) + (this.orientMat[0][3]));
-    locY = roundFast((xLoc * this.orientMat[1][0]) + (yLoc * this.orientMat[1][1]) + (zLoc * this.orientMat[1][2]) + (this.orientMat[1][3]));
-    locZ = roundFast((xLoc * this.orientMat[2][0]) + (yLoc * this.orientMat[2][1]) + (zLoc * this.orientMat[2][2]) + (this.orientMat[2][3]));
-
-    return (locX * this.xIncrement) + (locY * this.yIncrement) + (locZ * this.zIncrement);
-};
+//papaya.volume.Orientation.prototype.convertIndexToOffset = function (xLoc, yLoc, zLoc) {
+//    var locX, locY, locZ;
+//    locX = roundFast((xLoc * this.orientMat[0][0]) + (yLoc * this.orientMat[0][1]) + (zLoc * this.orientMat[0][2]) + (this.orientMat[0][3]));
+//    locY = roundFast((xLoc * this.orientMat[1][0]) + (yLoc * this.orientMat[1][1]) + (zLoc * this.orientMat[1][2]) + (this.orientMat[1][3]));
+//    locZ = roundFast((xLoc * this.orientMat[2][0]) + (yLoc * this.orientMat[2][1]) + (zLoc * this.orientMat[2][2]) + (this.orientMat[2][3]));
+//
+//    return (locX * this.xIncrement) + (locY * this.yIncrement) + (locZ * this.zIncrement);
+//};
 
 
 
