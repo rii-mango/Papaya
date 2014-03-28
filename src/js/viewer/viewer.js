@@ -1436,6 +1436,8 @@ papaya.viewer.Viewer.prototype.goToInitialCoordinate = function () {
         } else {
             coord.setCoordinate(this.initialCoordinate[0], this.initialCoordinate[1], this.initialCoordinate[2], true);
         }
+
+        this.initialCoordinate = null;
     }
 
     this.gotoCoordinate(coord);
