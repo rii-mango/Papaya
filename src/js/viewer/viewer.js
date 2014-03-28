@@ -475,10 +475,11 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
 
     // draw drop text
     this.context.fillStyle = "#AAAAAA";
-    fontSize = 18;
-    this.context.font = fontSize + "px Arial";
-    locY = this.canvas.height - 22;
-    if (!this.container.kioskMode) {
+
+    if (this.container.readyForDnD()) {
+        fontSize = 18;
+        this.context.font = fontSize + "px Arial";
+        locY = this.canvas.height - 22;
         text = "Drop here or click the File menu";
         metrics = this.context.measureText(text);
         textWidth = metrics.width;
@@ -1429,23 +1430,23 @@ papaya.viewer.Viewer.prototype.processParams = function (params) {
 
 
 papaya.viewer.Viewer.prototype.goToInitialCoordinate = function () {
-    var coord;
+    var coord = new papaya.core.Coordinate();
 
-    if (this.initialCoordinate) {
-        coord = new papaya.core.Coordinate();
-
+    if (this.initialCoordinate === null) {
+        coord.setCoordinate(this.volume.header.imageDimensions.xDim / 2, this.volume.header.imageDimensions.yDim / 2, this.volume.header.imageDimensions.zDim / 2, true);
+    } else {
         if (this.worldSpace) {
             this.getIndexCoordinateAtWorld(this.initialCoordinate[0], this.initialCoordinate[1], this.initialCoordinate[2], coord);
         } else {
             coord.setCoordinate(this.initialCoordinate[0], this.initialCoordinate[1], this.initialCoordinate[2], true);
         }
+    }
 
-        this.gotoCoordinate(coord);
+    this.gotoCoordinate(coord);
 
-        if (this.container.display) {
-            this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z,
-                this.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z));
-        }
+    if (this.container.display) {
+        this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z,
+            this.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z));
     }
 };
 

@@ -61,8 +61,9 @@ papaya.viewer.Display.FONT_TYPE_ATLAS = "Arial";
 
 papaya.viewer.Display.FONT_SIZE_MESSAGE_VALUE = 20;
 papaya.viewer.Display.FONT_TYPE_MESSAGE_VALUE = "Arial";
+papaya.viewer.Display.FONT_COLOR_MESSAGE = "rgb(200, 75, 25)";
 
-papaya.viewer.Display.PROGRESS_LABEL_SUFFIX = ["", ".", "..", "..."];
+papaya.viewer.Display.PROGRESS_LABEL_SUFFIX = ["...", "", ".", ".."];
 papaya.viewer.Display.PROGRESS_LABEL_DEFAULT = "Loading";
 
 
@@ -316,7 +317,7 @@ papaya.viewer.Display.prototype.drawError = function (message) {
 
 
 papaya.viewer.Display.prototype.drawProgress = function (progress, label) {
-    var prog, display, now, progressIndex, metrics, yLoc, progressLabel;
+    var prog, display, now, progressIndex, yLoc, progressLabel;
 
     prog = Math.round(progress * 1000);
 
@@ -339,6 +340,11 @@ papaya.viewer.Display.prototype.drawProgress = function (progress, label) {
         progressIndex = parseInt((now - this.progressStartTime) / 500, 10) % 4;
 
         if (this.progress >= 990) {
+            if (this.progressTimeout) {
+                window.clearTimeout(this.progressTimeout);
+                this.progressTimeout = null;
+            }
+
             this.drawingProgress = false;
             this.progress = 0;
             this.progressStartTime = 0;
@@ -362,10 +368,9 @@ papaya.viewer.Display.prototype.drawProgress = function (progress, label) {
 
             // draw progress label
             this.context.font = papaya.viewer.Display.FONT_SIZE_MESSAGE_VALUE + "px " + papaya.viewer.Display.FONT_TYPE_MESSAGE_VALUE;
-            this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_ORANGE;
-            metrics = this.context.measureText(progressLabel);
+            this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_MESSAGE;
             yLoc = papaya.viewer.Display.FONT_SIZE_COORDINATE_LABEL + papaya.viewer.Display.PADDING + 1.5 * papaya.viewer.Display.PADDING;
-            this.context.fillText(progressLabel + papaya.viewer.Display.PROGRESS_LABEL_SUFFIX[progressIndex], (this.canvas.width / 2) - (metrics.width / 2), yLoc);
+            this.context.fillText(progressLabel + papaya.viewer.Display.PROGRESS_LABEL_SUFFIX[progressIndex], papaya.viewer.Display.PADDING * 2, yLoc);
         }
     }
 };

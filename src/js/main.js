@@ -267,6 +267,13 @@ papaya.Container.prototype.loadNext = function () {
 
 
 
+papaya.Container.prototype.readyForDnD = function () {
+    return !this.kioskMode && ((this.params.images === undefined) || (this.params.images.length === this.loadingImageIndex)) &&
+        ((this.params.encodedImages === undefined) || (this.params.encodedImages.length === this.loadingImageIndex));
+};
+
+
+
 papaya.Container.prototype.findLoadableImage = function (name) {
     var ctr;
 
