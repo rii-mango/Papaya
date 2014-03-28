@@ -346,13 +346,15 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
 papaya.viewer.Viewer.prototype.loadAtlas = function () {
     var papayaDataType, papayaDataTalairachAtlasType;
 
-    papayaDataType = (typeof papaya.data);
+    if (this.atlas === null) {
+        papayaDataType = (typeof papaya.data);
 
-    if (papayaDataType !== "undefined") {
-        papayaDataTalairachAtlasType = (typeof papaya.data.Atlas);
+        if (papayaDataType !== "undefined") {
+            papayaDataTalairachAtlasType = (typeof papaya.data.Atlas);
 
-        if (papayaDataTalairachAtlasType !== "undefined") {
-            this.atlas = new papaya.viewer.Atlas(papaya.data.Atlas, this.container, bind(this, papaya.viewer.Viewer.prototype.atlasLoaded));
+            if (papayaDataTalairachAtlasType !== "undefined") {
+                this.atlas = new papaya.viewer.Atlas(papaya.data.Atlas, this.container, bind(this, papaya.viewer.Viewer.prototype.atlasLoaded));
+            }
         }
     }
 };
