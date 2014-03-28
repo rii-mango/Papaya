@@ -334,7 +334,7 @@ papaya.viewer.Display.prototype.drawProgress = function (progress, label) {
 
         if (this.progressStartTime === 0) {
             this.progressStartTime = new Date().getTime();
-            now = 0;
+            now = this.progressStartTime;
         } else {
             now = new Date().getTime();
         }
