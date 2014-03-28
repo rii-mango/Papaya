@@ -608,16 +608,10 @@ function resizePapaya() {
     var ctr;
 
     if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
-        if (!papayaContainers[0].toolbar.isShowingMenus()) {
-            papayaContainers[0].resizeViewerComponents(true);
-        }
+        papayaContainers[0].resizeViewerComponents(true);
     } else {
         for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
-            // iOS image menu triggers keyboard since it contains textfields.  The on-screen keyboard triggers a resize
-            // event. Because of this, we only resize on events when menus are not visible.
-            if (!papayaContainers[ctr].toolbar.isShowingMenus()) {
-                papayaContainers[ctr].resizeViewerComponents(true);
-            }
+            papayaContainers[ctr].resizeViewerComponents(true);
         }
     }
 
