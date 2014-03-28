@@ -36,6 +36,8 @@ papaya.volume.Volume = papaya.volume.Volume || function (progressMeter) {
 papaya.volume.Volume.TYPE_UNKNOWN = 0;
 papaya.volume.Volume.TYPE_NIFTI = 1;
 
+papaya.volume.Volume.PROGRESS_LABEL_LOADING = "Loading";
+
 
 
 papaya.volume.Volume.prototype.findFileType = function (filename) {
@@ -146,7 +148,7 @@ papaya.volume.Volume.prototype.readURL = function (url, callback) {
             };
 
             xhr.onprogress = function (evt) {
-                vol.progressMeter.drawProgress(evt.loaded / evt.total);
+                vol.progressMeter.drawProgress(evt.loaded / evt.total, papaya.volume.Volume.PROGRESS_LABEL_LOADING);
             };
 
             xhr.send(null);

@@ -12,6 +12,8 @@ var GUNZIP_MAGIC_COOKIE2 = 139;
 
 
 var Gunzip = function (progressMeter) {
+    var PROGRESS_LABEL = "Unpacking";
+
     var GUNZIP_FLAG_NOT_SUPPORTED = "GZIP flag not supported!";
     var GUNZIP_INCORRECT_MAGIC_COOKIE = "Not a GZIP file!";
     var START_OFFSET_DEFAULT = 10;
@@ -766,7 +768,7 @@ var Gunzip = function (progressMeter) {
             timeoutCtr += i;
 
             if (progressMeter) {
-                progressMeter.drawProgress(index / inflatedSize);
+                progressMeter.drawProgress(index / inflatedSize, PROGRESS_LABEL);
             }
 
             if (timeoutCtr > PROCESS_TIMEOUT_BYTES) {

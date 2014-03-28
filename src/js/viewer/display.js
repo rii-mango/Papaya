@@ -23,6 +23,7 @@ papaya.viewer.Display = papaya.viewer.Display || function (container, width) {
     this.tempCoord = new papaya.core.Coordinate(0, 0, 0);
     this.drawingError = false;
     this.progress = 0;
+    this.progressStartTime = 0;
     this.progressTimeout = null;
     this.drawingProgress = false;
     this.errorMessage = "";
@@ -57,6 +58,12 @@ papaya.viewer.Display.PRECIOSN_IMAGE_VALUE = 9;
 papaya.viewer.Display.FONT_SIZE_ATLAS_MINI = 14;
 papaya.viewer.Display.FONT_SIZE_ATLAS = 20;
 papaya.viewer.Display.FONT_TYPE_ATLAS = "Arial";
+
+papaya.viewer.Display.FONT_SIZE_MESSAGE_VALUE = 20;
+papaya.viewer.Display.FONT_TYPE_MESSAGE_VALUE = "Arial";
+
+papaya.viewer.Display.PROGRESS_LABEL_SUFFIX = ["", ".", "..", "..."];
+papaya.viewer.Display.PROGRESS_LABEL_DEFAULT = "Loading";
 
 
 
@@ -299,7 +306,7 @@ papaya.viewer.Display.prototype.drawError = function (message) {
     this.context.fillStyle = "#000000";
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.fillStyle = "red";
-    this.context.font = papaya.viewer.Display.TEXT_CORRD_VALUE_SIZE + "px Arial";
+    this.context.font = papaya.viewer.Display.FONT_SIZE_MESSAGE_VALUE + "px " + papaya.viewer.Display.FONT_TYPE_MESSAGE_VALUE;
 
     valueLoc = papaya.viewer.Display.FONT_SIZE_COORDINATE_LABEL + papaya.viewer.Display.PADDING + 1.5 * papaya.viewer.Display.PADDING;
 
@@ -308,17 +315,33 @@ papaya.viewer.Display.prototype.drawError = function (message) {
 
 
 
-papaya.viewer.Display.prototype.drawProgress = function (progress) {
-    var prog, rgbVal, display;
+papaya.viewer.Display.prototype.drawProgress = function (progress, label) {
+    var prog, display, now, progressIndex, metrics, yLoc, progressLabel;
 
     prog = Math.round(progress * 1000);
 
     if (prog > this.progress) {
         this.progress = prog;
 
+        if (label !== undefined) {
+            progressLabel = label;
+        } else {
+            progressLabel = papaya.viewer.Display.PROGRESS_LABEL_DEFAULT;
+        }
+
+        if (this.progressStartTime === 0) {
+            this.progressStartTime = new Date().getTime();
+            now = 0;
+        } else {
+            now = new Date().getTime();
+        }
+
+        progressIndex = parseInt((now - this.progressStartTime) / 500, 10) % 4;
+
         if (this.progress >= 990) {
             this.drawingProgress = false;
             this.progress = 0;
+            this.progressStartTime = 0;
             this.drawEmptyDisplay();
         } else {
             if (this.progressTimeout) {
@@ -328,13 +351,21 @@ papaya.viewer.Display.prototype.drawProgress = function (progress) {
             display = this;
             this.progressTimeout = window.setTimeout(bind(display, function () {display.drawingProgress = false; }), 3000);
 
+            // clear background
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.context.fillStyle = "#fff";
             this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-            rgbVal = 0;
-            this.context.fillStyle = "rgb(" + rgbVal + ", " + rgbVal + ", " + rgbVal + ")";
+            // draw progress block
+            this.context.fillStyle = "#000";
             this.context.fillRect(0, 0, this.canvas.width * progress, this.canvas.height);
+
+            // draw progress label
+            this.context.font = papaya.viewer.Display.FONT_SIZE_MESSAGE_VALUE + "px " + papaya.viewer.Display.FONT_TYPE_MESSAGE_VALUE;
+            this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_ORANGE;
+            metrics = this.context.measureText(progressLabel);
+            yLoc = papaya.viewer.Display.FONT_SIZE_COORDINATE_LABEL + papaya.viewer.Display.PADDING + 1.5 * papaya.viewer.Display.PADDING;
+            this.context.fillText(progressLabel + papaya.viewer.Display.PROGRESS_LABEL_SUFFIX[progressIndex], (this.canvas.width / 2) - (metrics.width / 2), yLoc);
         }
     }
 };
