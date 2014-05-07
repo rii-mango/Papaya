@@ -557,9 +557,15 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
     // intialize screen slices
     this.context.fillStyle = papaya.viewer.Viewer.BACKGROUND_COLOR;
 
-    //this.context.imageSmoothingEnabled = true;
-    //this.context.webkitImageSmoothingEnabled = true;
-    //this.context.mozImageSmoothingEnabled = true;
+    if (this.container.preferences.smoothDisplay === "No") {
+        this.context.imageSmoothingEnabled = false;
+        this.context.webkitImageSmoothingEnabled = false;
+        this.context.mozImageSmoothingEnabled = false;
+    } else {
+        this.context.imageSmoothingEnabled = true;
+        this.context.webkitImageSmoothingEnabled = true;
+        this.context.mozImageSmoothingEnabled = true;
+    }
 
     // draw screen slices
     this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -1436,6 +1442,10 @@ papaya.viewer.Viewer.prototype.processParams = function (params) {
 
     if (params.coordinate) {
         this.initialCoordinate = params.coordinate;
+    }
+
+    if (params.smoothDisplay !== undefined) {
+        this.container.preferences.smoothDisplay = (params.smoothDisplay ? "Yes" : "No");
     }
 };
 
