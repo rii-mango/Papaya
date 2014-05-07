@@ -900,11 +900,9 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
             this.drawViewer(true);
         }
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_SERIES_FORWARD) {
-        this.currentScreenVolume.incrementTimepoint();
-        this.timepointChanged();
+        this.incrementSeriesPoint();
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_SERIES_BACK) {
-        this.currentScreenVolume.decrementTimepoint();
-        this.timepointChanged();
+        this.decrementSeriesPoint();
     } else {
         this.keyPressIgnored = true;
     }
@@ -1275,7 +1273,8 @@ papaya.viewer.Viewer.prototype.getImageDimensionsDescription = function (index) 
     orientationStr = this.screenVolumes[index].volume.header.orientation.orientation;
     imageDims = this.screenVolumes[index].volume.header.imageDimensions;
 
-    return ("(" + orientationStr.charAt(0) + ", " + orientationStr.charAt(1) + ", " + orientationStr.charAt(2) + ") " + imageDims.cols + " x " + imageDims.rows + " x " + imageDims.slices);
+    return ("(" + orientationStr.charAt(0) + ", " + orientationStr.charAt(1) + ", " + orientationStr.charAt(2) + ") "
+        + imageDims.cols + " x " + imageDims.rows + " x " + imageDims.slices);
 };
 
 
@@ -1286,9 +1285,25 @@ papaya.viewer.Viewer.prototype.getVoxelDimensionsDescription = function (index) 
     orientationStr = this.screenVolumes[index].volume.header.orientation.orientation;
     voxelDims = this.screenVolumes[index].volume.header.voxelDimensions;
 
-    return ("(" + orientationStr.charAt(0) + ", " + orientationStr.charAt(1) + ", " + orientationStr.charAt(2) + ") " + formatNumber(voxelDims.colSize, true) + " x " + formatNumber(voxelDims.rowSize, true) + " x " + formatNumber(voxelDims.sliceSize, true));
+    return ("(" + orientationStr.charAt(0) + ", " + orientationStr.charAt(1) + ", " + orientationStr.charAt(2) + ") "
+        + formatNumber(voxelDims.colSize, true) + " x " + formatNumber(voxelDims.rowSize, true) + " x "
+        + formatNumber(voxelDims.sliceSize, true) + " " + voxelDims.getSpatialUnitString());
 };
 
+
+papaya.viewer.Viewer.prototype.getSeriesDimensionsDescription = function (index) {
+    var imageDims = this.screenVolumes[index].volume.header.imageDimensions;
+
+    return (imageDims.timepoints.toString());
+};
+
+
+
+papaya.viewer.Viewer.prototype.getSeriesSizeDescription = function (index) {
+    var voxelDims = this.screenVolumes[index].volume.header.voxelDimensions;
+
+    return (voxelDims.timeSize.toString() + " " + voxelDims.getTemporalUnitString());
+};
 
 
 papaya.viewer.Viewer.prototype.getFilename = function (index) {
@@ -1393,6 +1408,7 @@ papaya.viewer.Viewer.prototype.getCurrentScreenVolIndex = function () {
 
 papaya.viewer.Viewer.prototype.toggleWorldSpace = function () {
     this.worldSpace = !this.worldSpace;
+    this.reconcileOverlaySeriesPoint(this.currentScreenVolume);
 };
 
 
@@ -1743,6 +1759,54 @@ papaya.viewer.Viewer.prototype.updateSliceSliderControl = function () {
             this.sliceSliderControl.prop("step", "1");
             this.sliceSliderControl.prop("max", "1");
             this.sliceSliderControl.val(0);
+        }
+    }
+};
+
+
+
+papaya.viewer.Viewer.prototype.incrementSeriesPoint = function () {
+    this.currentScreenVolume.incrementTimepoint();
+
+    if (this.currentScreenVolume.isOverlay()) {
+        this.reconcileOverlaySeriesPoint(this.currentScreenVolume);
+    }
+
+    this.timepointChanged();
+};
+
+
+
+papaya.viewer.Viewer.prototype.decrementSeriesPoint = function () {
+    this.currentScreenVolume.decrementTimepoint();
+
+    if (this.currentScreenVolume.isOverlay()) {
+        this.reconcileOverlaySeriesPoint(this.currentScreenVolume);
+    }
+
+    this.timepointChanged();
+};
+
+
+
+papaya.viewer.Viewer.prototype.reconcileOverlaySeriesPoint = function (screenVolume) {
+    var ctr, seriesPoint, seriesPointSeconds;
+
+    if (this.worldSpace) {
+        seriesPointSeconds = screenVolume.getCurrentTime();
+
+        for (ctr = 1; ctr < this.screenVolumes.length; ctr += 1) {
+            if (this.screenVolumes[ctr] !== screenVolume) {
+                this.screenVolumes[ctr].setCurrentTime(seriesPointSeconds);
+            }
+        }
+    } else {
+        seriesPoint = screenVolume.currentTimepoint;
+
+        for (ctr = 1; ctr < this.screenVolumes.length; ctr += 1) {
+            if (this.screenVolumes[ctr] !== screenVolume) {
+                this.screenVolumes[ctr].setTimepoint(seriesPoint);
+            }
         }
     }
 };

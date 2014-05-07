@@ -99,6 +99,26 @@ papaya.ui.Toolbar.IMAGE_INFO_DATA = {
 
 
 
+papaya.ui.Toolbar.SERIES_INFO_DATA = {
+    "items": [
+        {"label": "Filename:", "field": "getFilename", "readonly": "true"},
+        {"label": "File Length:", "field": "getFileLength", "readonly": "true"},
+        {"spacer": "true"},
+        {"label": "Image Dims:", "field": "getImageDimensionsDescription", "readonly": "true"},
+        {"label": "Voxel Dims:", "field": "getVoxelDimensionsDescription", "readonly": "true"},
+        {"label": "Series Points:", "field": "getSeriesDimensionsDescription", "readonly": "true"},
+        {"label": "Series Point Size:", "field": "getSeriesSizeDescription", "readonly": "true"},
+        {"spacer": "true"},
+        {"label": "Byte Type:", "field": "getByteTypeDescription", "readonly": "true"},
+        {"label": "Byte Order:", "field": "getByteOrderDescription", "readonly": "true"},
+        {"label": "Compressed:", "field": "getCompressedDescription", "readonly": "true"},
+        {"spacer": "true"},
+        {"label": "Orientation:", "field": "getOrientationDescription", "readonly": "true"},
+        {"label": "Notes:", "field": "getImageDescription", "readonly": "true"}
+    ]
+};
+
+
 papaya.ui.Toolbar.prototype.buildToolbar = function () {
     var ctr;
 
@@ -358,7 +378,13 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             dialog.showDialog();
         } else if (action.startsWith("ImageInfo")) {
             imageIndex = action.substring(action.lastIndexOf("-") + 1);
-            dialog = new papaya.ui.Dialog(this.container, "Image Info", papaya.ui.Toolbar.IMAGE_INFO_DATA, this.viewer, null, imageIndex.toString());
+
+            if (this.viewer.screenVolumes[imageIndex].volume.numTimepoints > 1) {
+                dialog = new papaya.ui.Dialog(this.container, "Image Info", papaya.ui.Toolbar.SERIES_INFO_DATA, this.viewer, null, imageIndex.toString());
+            } else {
+                dialog = new papaya.ui.Dialog(this.container, "Image Info", papaya.ui.Toolbar.IMAGE_INFO_DATA, this.viewer, null, imageIndex.toString());
+            }
+
             dialog.showDialog();
         } else if (action.startsWith("SPACE")) {
             this.viewer.toggleWorldSpace();

@@ -48,19 +48,19 @@ papaya.volume.Header.prototype.readData = function (headerType, data, compressed
     }
 
     if (!this.hasError()) {
+        this.imageType = this.fileFormat.getImageType();
+        if (!this.imageType.isValid()) {
+            this.errorMessage = papaya.volume.Header.INVALID_DATATYPE;
+        }
+
         this.imageDimensions = this.fileFormat.getImageDimensions();
         if (!this.imageDimensions.isValid()) {
             this.errorMessage = papaya.volume.Header.INVALID_IMAGE_DIMENSIONS;
         }
 
-        this.voxelDimensions = this.fileFormat.getVoxelDimensions();
+        this.voxelDimensions = this.fileFormat.getVoxelDimensions(this.imageType.littleEndian);
         if (!this.voxelDimensions.isValid()) {
             this.errorMessage = papaya.volume.Header.INVALID_VOXEL_DIMENSIONS;
-        }
-
-        this.imageType = this.fileFormat.getImageType();
-        if (!this.imageType.isValid()) {
-            this.errorMessage = papaya.volume.Header.INVALID_DATATYPE;
         }
 
         this.orientation = this.fileFormat.getOrientation();

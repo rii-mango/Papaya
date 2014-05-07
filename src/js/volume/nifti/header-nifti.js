@@ -18,7 +18,8 @@ papaya.volume.nifti.HeaderNIFTI = papaya.volume.nifti.HeaderNIFTI || function ()
 
 
 papaya.volume.nifti.HeaderNIFTI.ORIENTATION_DEFAULT = "XYZ-++";
-
+papaya.volume.nifti.HeaderNIFTI.SPATIAL_UNITS_MASK = 0x07;
+papaya.volume.nifti.HeaderNIFTI.TEMPORAL_UNITS_MASK = 0x38;
 
 
 papaya.volume.nifti.HeaderNIFTI.prototype.readData = function (data, compressed) {
@@ -37,8 +38,22 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getImageDimensions = function () {
 
 
 
-papaya.volume.nifti.HeaderNIFTI.prototype.getVoxelDimensions = function () {
-    return new papaya.volume.VoxelDimensions(this.nifti.pixDims[1], this.nifti.pixDims[2], this.nifti.pixDims[3], this.nifti.pixDims[4]);
+papaya.volume.nifti.HeaderNIFTI.prototype.getVoxelDimensions = function (littleEndian) {
+    /*jslint bitwise: true */
+    var datatypeCode, vd;
+
+    vd = new papaya.volume.VoxelDimensions(this.nifti.pixDims[1], this.nifti.pixDims[2], this.nifti.pixDims[3], this.nifti.pixDims[4]);
+
+    datatypeCode = this.nifti.datatypeCode;
+
+    if (!littleEndian) {
+        datatypeCode = ((((datatypeCode & 0xFF) << 8) | ((datatypeCode >> 8) & 0xFF)) << 16) >> 16;
+    }
+
+    vd.spatialUnit = (datatypeCode & papaya.volume.nifti.HeaderNIFTI.SPATIAL_UNITS_MASK);
+    vd.temporalUnit = (datatypeCode & papaya.volume.nifti.HeaderNIFTI.TEMPORAL_UNITS_MASK);
+
+    return vd;
 };
 
 

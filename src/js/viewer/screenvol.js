@@ -233,6 +233,17 @@ papaya.viewer.ScreenVolume.prototype.decrementTimepoint = function () {
 };
 
 
+papaya.viewer.ScreenVolume.prototype.setTimepoint = function (timepoint) {
+    if (timepoint < 0) {
+        this.currentTimepoint = 0;
+    } else if (timepoint >= this.volume.numTimepoints) {
+        this.currentTimepoint = (this.volume.numTimepoints - 1);
+    } else {
+        this.currentTimepoint = timepoint;
+    }
+};
+
+
 
 papaya.viewer.ScreenVolume.prototype.updateMinLUT = function (minLUTnew) {
     this.colorTable.updateMinLUT(minLUTnew);
@@ -251,9 +262,23 @@ papaya.viewer.ScreenVolume.prototype.updateLUT = function (minLUTnew, maxLUTnew)
 };
 
 
+
 papaya.viewer.ScreenVolume.prototype.resetDynamicRange = function () {
     this.colorTable.minLUT = 0;
     this.colorTable.maxLUT = papaya.viewer.ColorTable.LUT_MAX;
     this.updateLUT(this.colorTable.minLUT, this.colorTable.maxLUT);
     this.colorTable.updateColorBar();
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.getCurrentTime = function () {
+    return (this.currentTimepoint * (this.volume.header.voxelDimensions.timeSize * this.volume.header.voxelDimensions.getTemporalUnitMultiplier()));
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.setCurrentTime = function (seconds) {
+    var secondsPerSeriesPoint = (this.volume.header.voxelDimensions.timeSize * this.volume.header.voxelDimensions.getTemporalUnitMultiplier());
+    this.setTimepoint(parseInt(Math.round(seconds / secondsPerSeriesPoint), 10));
 };
