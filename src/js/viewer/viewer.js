@@ -24,6 +24,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.canvas.style.border = "none";
     this.atlas = null;
     this.initialized = false;
+    this.pageLoaded = false;
     this.loadingVolume = null;
     this.volume = new papaya.volume.Volume(this.container.display);
     this.screenVolumes = [];
@@ -179,7 +180,7 @@ papaya.viewer.Viewer.prototype.loadOverlay = function (name, forceUrl, forceEnco
 
 
 papaya.viewer.Viewer.prototype.atlasLoaded = function () {
-    this.goToInitialCoordinate();
+    this.finishedLoading();
 };
 
 
@@ -268,15 +269,27 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.container.toolbar.buildToolbar();
         this.container.toolbar.updateImageButtons();
         this.updateWindowTitle();
-        this.goToInitialCoordinate();
 
         if (!this.container.loadNext()) {
-            this.loadAtlas();
+            if (this.hasDefinedAtlas()) {
+                this.loadAtlas();
+            } else {
+                this.finishedLoading();
+            }
         }
-
-        this.updateSliceSliderControl();
     }
 };
+
+
+
+papaya.viewer.Viewer.prototype.finishedLoading = function () {
+    if (!this.pageLoaded) {
+        this.goToInitialCoordinate();
+        this.updateSliceSliderControl();
+        this.pageLoaded = true;
+    }
+};
+
 
 
 papaya.viewer.Viewer.prototype.addScroll = function () {
@@ -332,30 +345,42 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
         }
 
         this.updateWindowTitle();
-        this.goToInitialCoordinate();
 
         this.loadingVolume = null;
 
         if (!this.container.loadNext()) {
-            this.loadAtlas();
+            if (this.hasDefinedAtlas()) {
+                this.loadAtlas();
+            } else {
+                this.finishedLoading();
+            }
         }
     }
 };
 
 
-papaya.viewer.Viewer.prototype.loadAtlas = function () {
+
+papaya.viewer.Viewer.prototype.hasDefinedAtlas = function () {
     var papayaDataType, papayaDataTalairachAtlasType;
 
-    if (this.atlas === null) {
-        papayaDataType = (typeof papaya.data);
+    papayaDataType = (typeof papaya.data);
 
-        if (papayaDataType !== "undefined") {
-            papayaDataTalairachAtlasType = (typeof papaya.data.Atlas);
+    if (papayaDataType !== "undefined") {
+        papayaDataTalairachAtlasType = (typeof papaya.data.Atlas);
 
-            if (papayaDataTalairachAtlasType !== "undefined") {
-                this.atlas = new papaya.viewer.Atlas(papaya.data.Atlas, this.container, bind(this, papaya.viewer.Viewer.prototype.atlasLoaded));
-            }
+        if (papayaDataTalairachAtlasType !== "undefined") {
+            return true;
         }
+    }
+
+    return false;
+};
+
+
+
+papaya.viewer.Viewer.prototype.loadAtlas = function () {
+    if (this.atlas === null) {
+        this.atlas = new papaya.viewer.Atlas(papaya.data.Atlas, this.container, bind(this, papaya.viewer.Viewer.prototype.atlasLoaded));
     }
 };
 
@@ -417,6 +442,7 @@ papaya.viewer.Viewer.prototype.convertScreenToImageCoordinateX = function (xLoc,
 papaya.viewer.Viewer.prototype.convertScreenToImageCoordinateY = function (yLoc, screenSlice) {
     return validDimBounds(floorFast((yLoc - screenSlice.finalTransform[1][2]) / screenSlice.finalTransform[1][1]), screenSlice.yDim);
 };
+
 
 
 papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yLoc) {
