@@ -21,7 +21,7 @@ Quickstart Guide
 ------
 
 ###Development
-Load `tests/minimal.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
+Load `tests/debug.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
 
 
 ###Building
@@ -38,7 +38,7 @@ usage: papaya-builder [options]
 ```
 
 ###Usage
-See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for a full list of configurable parameters.  See the [`tests`](https://github.com/rii-mango/Papaya/tree/master/tests) directory for several example use cases.
+See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for a full list of configurable parameters.  
 
 ####Basic usage (loads a blank viewer)
 ```html
