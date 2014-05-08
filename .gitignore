@@ -1,7 +1,7 @@
 .idea/
 .project
 .DS_Store
-papaya.js
 build.xml
 release.xml
-build/
+/build/
+/tests/build/**/

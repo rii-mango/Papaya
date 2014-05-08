@@ -36,3 +36,9 @@ papaya.volume.ImageDimensions.prototype.getNumVoxelsSlice = function () {
 papaya.volume.ImageDimensions.prototype.isValid = function () {
     return ((this.cols > 0) && (this.rows > 0) && (this.slices > 0) && (this.timepoints > 0) && (this.offset >= 0));
 };
+
+
+var moduleType = typeof module;
+if ((moduleType !== 'undefined') && module.exports) {
+    module.exports.ImageDimensions = papaya.volume.ImageDimensions;
+}
