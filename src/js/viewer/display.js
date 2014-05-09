@@ -153,6 +153,7 @@ papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
 
         // image value
         val = this.viewer.getCurrentValueAt(xLoc, yLoc, zLoc);
+        this.canvas.currentval = val.toString();  // for unit testing
 
         locY = (height / 2.0) + (papaya.viewer.Display.FONT_SIZE_IMAGE_VALUE / 2.0) - (papaya.viewer.Display.PADDING / 2.0);
         this.context.fillStyle = papaya.viewer.Display.FONT_COLOR_IMAGE_VALUE;

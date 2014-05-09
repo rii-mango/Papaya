@@ -1,16 +1,19 @@
 #!/bin/bash
 
-echo "Testing args: (none)"
-../../papaya-builder.sh
-mv ../../build minimal
-echo
+STATUS=0
 
-echo "Testing args:" "$(< default.txt)"
-../../papaya-builder.sh "$(< default.txt)"
-mv ../../build default
-echo
+for file in *-test.txt
+do
+    echo "Testing args:" "$(< $file)"
+    ../../papaya-builder.sh "$(< $file)"
+    java -jar ../../lib/papaya-tester.jar -build
+    STATUS=$(($? + $STATUS))
+    echo
+done
 
-echo "Testing args:" "$(< defaultlocal.txt)"
-../../papaya-builder.sh "$(< defaultlocal.txt)"
-mv ../../build defaultlocal
-echo
+if [ "$STATUS" -gt 0 ]
+then
+    echo -e "\033[0;91m" $STATUS " tests failed.\033[0m"
+else
+    echo -e "\033[0;92mAll tests passed!\033[0m"
+fi
