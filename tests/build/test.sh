@@ -6,7 +6,7 @@ for file in *-test.txt
 do
     echo "Testing args:" "$(< $file)"
     ../../papaya-builder.sh "$(< $file)"
-    java -jar ../../lib/papaya-tester.jar -build
+    java -jar ../../lib/papaya-tester.jar -build $*
     STATUS=$(($? + $STATUS))
     echo
 done
