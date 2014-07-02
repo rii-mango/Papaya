@@ -75,5 +75,12 @@ See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for
 
 ```
 
+Acknowledgments
+-----
+Papaya makes use of the following third-party libraries:
+- [bowser](https://github.com/ded/bowser) &mdash; for browser detection
+- [jquery](http://jquery.com/) &mdash; DOM manipulation
+- [numerics](http://numericjs.com/) &mdash; for matrix math
+- [pako](https://github.com/nodeca/pako) &mdash; for GZIP inflating
 
 
