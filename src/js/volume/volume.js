@@ -1,7 +1,7 @@
 
 /*jslint browser: true, node: true */
 /*global makeSlice, Base64Binary, FileReader, bind, Gunzip, isPlatformLittleEndian, deref, DataView,
-GUNZIP_MAGIC_COOKIE1, GUNZIP_MAGIC_COOKIE2, numeric */
+GUNZIP_MAGIC_COOKIE1, GUNZIP_MAGIC_COOKIE2, numeric, Uint8Array, pako */
 
 "use strict";
 
@@ -280,12 +280,10 @@ papaya.volume.Volume.prototype.readData = function (vol, blob) {
 
 papaya.volume.Volume.prototype.decompress = function (vol) {
     if (vol.compressed) {
-        var gunzip = new Gunzip(this.progressMeter);
-        gunzip.gunzip(vol.rawData, function (data) {vol.finishedDecompress(vol, data); });
-
-        if (gunzip.hasError()) {
-            vol.errorMessage = gunzip.getError();
-            vol.finishedLoad();
+        try {
+            vol.finishedDecompress(vol, pako.ungzip(new Uint8Array(vol.rawData)).buffer);
+        } catch (err) {
+            console.log(err);
         }
     } else {
         setTimeout(function () {vol.finishedReadData(vol); }, 0);
