@@ -281,7 +281,7 @@ papaya.volume.Volume.prototype.readData = function (vol, blob) {
 papaya.volume.Volume.prototype.decompress = function (vol) {
     if (vol.compressed) {
         try {
-            vol.finishedDecompress(vol, pako.ungzip(new Uint8Array(vol.rawData)).buffer);
+            pako.inflate(new Uint8Array(vol.rawData), null, this.progressMeter, function (data) {vol.finishedDecompress(vol, data.buffer); });
         } catch (err) {
             console.log(err);
         }

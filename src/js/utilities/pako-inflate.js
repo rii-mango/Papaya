@@ -1,3 +1,5 @@
+// M. Martinez 07-02-2014 -- minor changes to support measuring progress [see pushProcess()]
+
 /* pako 0.2.3 nodeca/pako */!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.pako=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
     'use strict';
 
@@ -10,6 +12,7 @@
     var zstream = _dereq_('./zlib/zstream');
     var gzheader = _dereq_('./zlib/gzheader');
 
+    var PROGRESS_LABEL = "Unpacking";
 
     /**
      * class Inflate
@@ -169,11 +172,10 @@
      * push(chunk, true);  // push last chunk
      * ```
      **/
-    Inflate.prototype.push = function(data, mode) {
+    Inflate.prototype.push = function(data, mode, progressMeter) {
         var strm = this.strm;
         var chunkSize = this.options.chunkSize;
         var status, _mode;
-        var next_out_utf8, tail, utf8str;
 
         if (this.ended) { return false; }
         _mode = (mode === ~~mode) ? mode : ((mode === true) ? c.Z_FINISH : c.Z_NO_FLUSH);
@@ -189,6 +191,27 @@
         strm.next_in = 0;
         strm.avail_in = strm.input.length;
 
+        var deflatedBuffer = new DataView(data.buffer);
+        var inflatedSize = deflatedBuffer.getUint32(data.byteLength - 4, true);
+        this.progressMeter = progressMeter;
+        this.progressIterations = (inflatedSize / chunkSize);
+        this.progressIndex = 0;
+        this.progressNextGoal = 0.25;
+
+        if (this.progressMeter) {
+            this.progressMeter.drawProgress(0.1, PROGRESS_LABEL);
+        }
+
+        setTimeout(bind(this, this.pushProcess), 0);
+    };
+
+
+
+    Inflate.prototype.pushProcess = function() {
+        var strm = this.strm;
+        var chunkSize = this.options.chunkSize;
+        var status, _mode, progress;
+
         do {
             if (strm.avail_out === 0) {
                 strm.output = new utils.Buf8(chunkSize);
@@ -196,7 +219,8 @@
                 strm.avail_out = chunkSize;
             }
 
-            status = zlib_inflate.inflate(strm, c.Z_NO_FLUSH);    /* no bad return value */
+            var status = zlib_inflate.inflate(strm, c.Z_NO_FLUSH);
+            /* no bad return value */
 
             if (status !== c.Z_STREAM_END && status !== c.Z_OK) {
                 this.onEnd(status);
@@ -206,41 +230,38 @@
 
             if (strm.next_out) {
                 if (strm.avail_out === 0 || status === c.Z_STREAM_END || (strm.avail_in === 0 && _mode === c.Z_FINISH)) {
-
-                    if (this.options.to === 'string') {
-
-                        next_out_utf8 = strings.utf8border(strm.output, strm.next_out);
-
-                        tail = strm.next_out - next_out_utf8;
-                        utf8str = strings.buf2string(strm.output, next_out_utf8);
-
-                        // move tail
-                        strm.next_out = tail;
-                        strm.avail_out = chunkSize - tail;
-                        if (tail) { utils.arraySet(strm.output, strm.output, next_out_utf8, tail, 0); }
-
-                        this.onData(utf8str);
-
-                    } else {
-                        this.onData(utils.shrinkBuf(strm.output, strm.next_out));
-                    }
+                    this.onData(utils.shrinkBuf(strm.output, strm.next_out));
                 }
             }
-        } while ((strm.avail_in > 0 || strm.avail_out === 0) && status !== c.Z_STREAM_END);
 
-        if (status === c.Z_STREAM_END) {
-            _mode = c.Z_FINISH;
-        }
-        // Finalize on the last chunk.
-        if (_mode === c.Z_FINISH) {
-            status = zlib_inflate.inflateEnd(this.strm);
-            this.onEnd(status);
-            this.ended = true;
-            return status === c.Z_OK;
-        }
+            this.progressIndex += 1;
+            progress = this.progressIndex / this.progressIterations;
 
-        return true;
+            if (this.progressMeter) {
+                this.progressMeter.drawProgress(progress, PROGRESS_LABEL);
+            }
+        } while ((progress < this.progressNextGoal) && (((strm.avail_in > 0 || strm.avail_out === 0) && status !== c.Z_STREAM_END)));
+
+        if ((strm.avail_in > 0 || strm.avail_out === 0) && status !== c.Z_STREAM_END) {
+            this.progressNextGoal += 0.1;
+            setTimeout(bind(this, this.pushProcess), 0);
+        } else {
+            if (status === c.Z_STREAM_END) {
+                _mode = c.Z_FINISH;
+            }
+
+            // Finalize on the last chunk.
+            if (_mode === c.Z_FINISH) {
+                status = zlib_inflate.inflateEnd(this.strm);
+                this.onEnd(status);
+                this.ended = true;
+//                return status === c.Z_OK;
+            }
+
+            this.onFinish(this.result);
+        }
     };
+
 
 
     /**
@@ -322,15 +343,17 @@
      * }
      * ```
      **/
-    function inflate(input, options) {
+    function inflate(input, options, progressMeter, onFinish) {
         var inflator = new Inflate(options);
 
-        inflator.push(input, true);
+        inflator.onFinish = onFinish;
+
+        inflator.push(input, true, progressMeter);
 
         // That will never happens, if you don't cheat with options :)
-        if (inflator.err) { throw inflator.msg; }
+        //if (inflator.err) { throw inflator.msg; }
 
-        return inflator.result;
+        //return inflator.result;
     }
 
 
