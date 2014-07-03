@@ -9,13 +9,11 @@ the [user guide](http://ric.uthscsa.edu/mango/papaya_userguide.html) for a full 
 
 **Last Release:** http://ric.uthscsa.edu/mango/papaya/
 
-**Current Beta:** http://ric.uthscsa.edu/mango/papayabeta/
-
-**Requirements:** Firefox (7), Chrome (7), Safari (6), MobileSafari (iOS 6), IE (10)
-
 **User Guide:** http://ric.uthscsa.edu/mango/papaya_userguide.html
 
 **Developer Guide:** http://ric.uthscsa.edu/mango/papaya_devguide.html
+
+**Requirements:** Firefox (7), Chrome (7), Safari (6), MobileSafari (iOS 6), IE (10)
 
 Quickstart Guide
 ------
