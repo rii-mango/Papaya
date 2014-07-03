@@ -23,7 +23,7 @@ Load `tests/debug.html` in your [favorite](http://www.jetbrains.com/webstorm/) J
 
 
 ###Building
-Run `papaya-builder.sh` to create the build files.  A typical usage might be `papaya-builder.sh -sample -atlas`
+Use the lastest build in the [release folder](https://github.com/rii-mango/Papaya/tree/master/release) or run `papaya-builder.sh` to create the build files.  A typical usage might be `papaya-builder.sh -sample -atlas`
 
 ```shell
 usage: papaya-builder [options]
