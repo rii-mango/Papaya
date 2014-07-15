@@ -517,7 +517,7 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
         fontSize = 14;
         this.context.font = fontSize + "px Arial";
         locY = this.canvas.height - 20;
-        text = "Supported formats: NIFTI (.nii, .nii.gz)";
+        text = "Supported formats: NIFTI (.nii, .nii.gz), JSON";
         this.context.fillText(text, 20, locY);
 
         // draw Papaya version info

@@ -35,6 +35,7 @@ papaya.volume.Volume = papaya.volume.Volume || function (progressMeter) {
 
 papaya.volume.Volume.TYPE_UNKNOWN = 0;
 papaya.volume.Volume.TYPE_NIFTI = 1;
+papaya.volume.Volume.TYPE_JSON = 2; // json added
 
 papaya.volume.Volume.PROGRESS_LABEL_LOADING = "Loading";
 
@@ -43,6 +44,9 @@ papaya.volume.Volume.PROGRESS_LABEL_LOADING = "Loading";
 papaya.volume.Volume.prototype.findFileType = function (filename) {
     if (filename.indexOf(".nii") !== -1) {
         return papaya.volume.Volume.TYPE_NIFTI;
+    }
+    else if (filename.indexOf(".json") !== -1) { // adds json filetype to list of recognized files
+        return papaya.volume.Volume.TYPE_JSON;
     }
 
     return papaya.volume.Volume.TYPE_UNKNOWN;
