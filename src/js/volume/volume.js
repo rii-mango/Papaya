@@ -110,6 +110,11 @@ papaya.volume.Volume.prototype.readFile = function (file, callback) {
         this.errorMessage = "File type is not recognized!";
         this.finishedLoad();
     } else {
+        if (this.headerType === papaya.volume.Volume.TYPE_JSON) {
+            // get dowload url from JSON (base_image) possibly implement node
+            var json_url = jQuery.parseJSON("base_image");
+
+        }
         this.compressed = this.fileIsCompressed(this.fileName);
         this.fileLength = this.file.size;
         var blob = makeSlice(this.file, 0, this.file.size);
