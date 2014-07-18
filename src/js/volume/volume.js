@@ -111,8 +111,17 @@ papaya.volume.Volume.prototype.readFile = function (file, callback) {
         this.finishedLoad();
     } else {
         if (this.headerType === papaya.volume.Volume.TYPE_JSON) {
-            // get dowload url from JSON (base_image) possibly implement node
-            var json_url = jQuery.parseJSON("base_image");
+            // get download url and download file (???)
+            var json_input = this.file;
+            for (var key in json_input) {
+                if (json_input.hasOwnProperty(key)) {
+                    if ("object" === typeof(json_input(key))) {
+                        getNames(json_input[key], "base_image")
+                    }
+                }
+            }
+            var http_request = new XMLHttpRequest(json_input);
+            this.file = http_request;
 
         }
         this.compressed = this.fileIsCompressed(this.fileName);
