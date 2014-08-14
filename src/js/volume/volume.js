@@ -12,6 +12,7 @@ papaya.volume = papaya.volume || {};
 
 papaya.volume.Volume = papaya.volume.Volume || function (progressMeter) {
     this.progressMeter = progressMeter;
+    this.fileState = null;
     this.file = null;
     this.fileLength = 0;
     this.url = null;
@@ -103,6 +104,7 @@ papaya.volume.Volume.prototype.readFile = function (file, callback) {
     this.file = file;
     this.fileName = file.name;
     this.onFinishedRead = callback;
+    this.fileState = 1
 
     this.headerType = this.findFileType(this.fileName);
 
@@ -110,25 +112,47 @@ papaya.volume.Volume.prototype.readFile = function (file, callback) {
         this.errorMessage = "File type is not recognized!";
         this.finishedLoad();
     } else {
+        console.log("before type check");
         if (this.headerType === papaya.volume.Volume.TYPE_JSON) {
-            // get download url and download file (???)
-            var json_input = this.file;
-            for (var key in json_input) {
-                if (json_input.hasOwnProperty(key)) {
-                    if ("object" === typeof(json_input(key))) {
-                        getNames(json_input[key], "base_image")
-                    }
-                }
-            }
-            var http_request = new XMLHttpRequest(json_input);
-            this.file = http_request;
+            var JsonObj = null;
 
-        }
+            var json_reader = new FileReader();
+
+            // load json and find value of base_image
+            json_reader.onload = (function (file) {
+                console.log("inside onload function");
+                /* readURL seems to be running here
+                
+                after everything finishes running,
+                window.image is set to the correct URL but it is too late
+                since readURL already ran. */
+
+
+                // test below to see if setting window before return function loads the image, and it does
+                // window.image = "https://dl.dropbox.com/s/a4hn2k20pqewdir/T1_001_brain.nii.gz"
+                return function (e) { 
+                    console.log("inside reader return function");
+                    JsonObj = e.target.result;
+                    console.log(JsonObj);
+                    var parsedJSON = JSON.parse(JsonObj);
+                    var image_url = parsedJSON['base_image'];
+                    window.image = image_url;
+                    console.log(window.image); 
+                };
+            })(this.file);
+
+            json_reader.readAsText(this.file);
+            console.log(window.image);
+
+            // return window.image;
+
+        } else {
         this.compressed = this.fileIsCompressed(this.fileName);
         this.fileLength = this.file.size;
         var blob = makeSlice(this.file, 0, this.file.size);
         this.readData(this, blob);
     }
+}
 };
 
 
@@ -138,6 +162,8 @@ papaya.volume.Volume.prototype.readURL = function (url, callback) {
 
     try {
         this.url = url;
+        console.log(this.url);
+        console.log(window.image);
         this.fileName = url.substr(url.lastIndexOf("/") + 1, url.length);
         this.onFinishedRead = callback;
 

@@ -14,6 +14,7 @@ var PAPAYA_BUILD_NUM = PAPAYA_BUILD_NUM || "0";
 
 
 papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, height, params) {
+    this.fileState = null;
     this.container = container;
     this.canvas = document.createElement("canvas");
     this.canvas.width = width;
@@ -150,6 +151,8 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEn
     } else {
         this.volume.readFile(name, bind(this, this.initializeViewer));
     }
+    console.log(window.image);
+    this.volume.readURL(window.image, bind(this, this.initializeViewer));
 };
 
 
