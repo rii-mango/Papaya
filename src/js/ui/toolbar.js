@@ -36,6 +36,7 @@ papaya.ui.Toolbar.MENU_DATA = {
             "items": [
                 {"label": "Add Image...", "action": "OpenImage", "type": "button"},
                 {"type": "spacer"},
+                {"label": "Load JSON...", "action": "OpenJSON", "type": "button"},
                 {"type": "spacer"},
                 {"label": "Close All", "action": "CloseAllImages"}
             ]
@@ -367,6 +368,9 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.viewer.loadImage(imageName);
         } else if (action === "OpenImage") {
             this.viewer.loadImage(file);
+        } else if (action === "OpenJSON") {
+            console.log('openjson called');
+            this.viewer.loadJSON(file);
         } else if (action.startsWith("ColorTable")) {
             colorTableName = action.substring(action.indexOf("-") + 1, action.lastIndexOf("-"));
             imageIndex = action.substring(action.lastIndexOf("-") + 1);

@@ -112,71 +112,11 @@ papaya.volume.Volume.prototype.readFile = function (file, callback) {
         this.errorMessage = "File type is not recognized!";
         this.finishedLoad();
     } else {
-        console.log("before type check");
-        if (this.headerType === papaya.volume.Volume.TYPE_JSON) {
-            // var JsonObj = null;
-
-            var json_reader = new FileReader();
-            console.log(json_reader);
-
-            // load json and find value of base_image
-            /*
-            json_reader.onload = (function (file) {
-                console.log("inside onload function");
-                // readURL seems to be running here
-                
-                //after everything finishes running,
-                //window.image is set to the correct URL but it is too late
-                //since readURL already ran.
-
-
-                // test below to see if setting window before return function loads the image, and it does
-                // window.image = "https://dl.dropbox.com/s/a4hn2k20pqewdir/T1_001_brain.nii.gz"
-                return function (e) { 
-                    console.log("inside reader return function");
-                    JsonObj = e.target.result;
-                    console.log(JsonObj);
-                    var parsedJSON = JSON.parse(JsonObj);
-                    var image_url = parsedJSON['base_image'];
-                    window.image = image_url;
-                    console.log(window.image); 
-                };
-            })(this.file);
-            */
-            var JsonObj = this.file;
-
-            json_reader.onload = function (file) {
-                var JsonObj = json_reader.result;
-                console.log(JsonObj);
-                var parsedJSON = JSON.parse(JsonObj);
-                var image_url = parsedJSON['base_image'];
-                window.image = image_url;
-                console.log(window.image);
-                // this.readURL(window.image, callback);
-            };
-
-            console.log("starting json read");
-            json_reader.readAsText(this.file);
-            console.log("ending json read");
-            // console.log(json_reader);
-            // var parsedJSON = JSON.parse(json_reader);
-            // var image_url = parsedJSON['base_image'];
-            // window.image = image_url;
-            
-            console.log(window.image);
-            console.log("starting read url");
-            this.readURL(window.image, callback);
-            console.log("ended read url");
-
-            // return window.image;
-
-        } else {
         this.compressed = this.fileIsCompressed(this.fileName);
         this.fileLength = this.file.size;
         var blob = makeSlice(this.file, 0, this.file.size);
         this.readData(this, blob);
     }
-}
 };
 
 
