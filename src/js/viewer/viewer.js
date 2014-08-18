@@ -150,9 +150,12 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEn
         this.volume.readURL(loadableImage.url, bind(this, this.initializeViewer));
     } else {
         this.volume.readFile(name, bind(this, this.initializeViewer));
+        //if (window.image !== undefined) {
+        //    console.log(window.image);
+        //    this.volume.readURL(window.image, bind(this, this.initializeViewer));
+        //}
     }
-    console.log(window.image);
-    this.volume.readURL(window.image, bind(this, this.initializeViewer));
+    
 };
 
 

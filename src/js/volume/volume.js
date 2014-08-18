@@ -114,18 +114,20 @@ papaya.volume.Volume.prototype.readFile = function (file, callback) {
     } else {
         console.log("before type check");
         if (this.headerType === papaya.volume.Volume.TYPE_JSON) {
-            var JsonObj = null;
+            // var JsonObj = null;
 
             var json_reader = new FileReader();
+            console.log(json_reader);
 
             // load json and find value of base_image
+            /*
             json_reader.onload = (function (file) {
                 console.log("inside onload function");
-                /* readURL seems to be running here
+                // readURL seems to be running here
                 
-                after everything finishes running,
-                window.image is set to the correct URL but it is too late
-                since readURL already ran. */
+                //after everything finishes running,
+                //window.image is set to the correct URL but it is too late
+                //since readURL already ran.
 
 
                 // test below to see if setting window before return function loads the image, and it does
@@ -140,9 +142,31 @@ papaya.volume.Volume.prototype.readFile = function (file, callback) {
                     console.log(window.image); 
                 };
             })(this.file);
+            */
+            var JsonObj = this.file;
 
+            json_reader.onload = function (file) {
+                var JsonObj = json_reader.result;
+                console.log(JsonObj);
+                var parsedJSON = JSON.parse(JsonObj);
+                var image_url = parsedJSON['base_image'];
+                window.image = image_url;
+                console.log(window.image);
+                // this.readURL(window.image, callback);
+            };
+
+            console.log("starting json read");
             json_reader.readAsText(this.file);
+            console.log("ending json read");
+            // console.log(json_reader);
+            // var parsedJSON = JSON.parse(json_reader);
+            // var image_url = parsedJSON['base_image'];
+            // window.image = image_url;
+            
             console.log(window.image);
+            console.log("starting read url");
+            this.readURL(window.image, callback);
+            console.log("ended read url");
 
             // return window.image;
 
@@ -159,7 +183,7 @@ papaya.volume.Volume.prototype.readFile = function (file, callback) {
 
 papaya.volume.Volume.prototype.readURL = function (url, callback) {
     var vol = null, supported, xhr;
-
+    console.log("inside read url");
     try {
         this.url = url;
         console.log(this.url);
@@ -175,6 +199,7 @@ papaya.volume.Volume.prototype.readURL = function (url, callback) {
         supported = typeof new XMLHttpRequest().responseType === 'string';
         if (supported) {
             xhr = new XMLHttpRequest();
+            console.log("sending http request");
             xhr.open('GET', url, true);
             xhr.responseType = 'arraybuffer';
 
