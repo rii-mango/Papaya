@@ -152,7 +152,7 @@ papaya.volume.Volume.prototype.readFile = function (file, callback) {
                 var image_url = parsedJSON['base_image'];
                 window.image = image_url;
                 console.log(window.image);
-                // this.readURL(window.image, callback);
+                papaya.volume.Volume.prototype.readURL(window.image, callback);
             };
 
             console.log("starting json read");
@@ -165,7 +165,7 @@ papaya.volume.Volume.prototype.readFile = function (file, callback) {
             
             console.log(window.image);
             console.log("starting read url");
-            this.readURL(window.image, callback);
+            //this.readURL(window.image, callback);
             console.log("ended read url");
 
             // return window.image;
