@@ -14,6 +14,7 @@ var PAPAYA_BUILD_NUM = PAPAYA_BUILD_NUM || "0";
 
 
 papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, height, params) {
+    this.fileState = null;
     this.container = container;
     this.canvas = document.createElement("canvas");
     this.canvas.width = width;
@@ -133,6 +134,43 @@ papaya.viewer.Viewer.prototype.loadImage = function (name, forceUrl, forceEncode
     }
 };
 
+papaya.viewer.Viewer.prototype.loadJSON = function (name, forceUrl, forceEncode) {
+    this.json = null;
+    try {
+        var reader = new FileReader();
+
+        reader.onloadend = bind(this, function (evt) {
+            if (evt.target.readyState === FileReader.DONE) {
+                this.json = JSON.parse(evt.target.result);
+                this.resetViewer();
+                this.container.clearParams();
+                this.container.params.images = []
+                this.container.loadingImageIndex = -1
+                for (var i = 0; i < this.json['overlays'].length; i++) {
+                    this.container.params.images[this.container.params.images.length] = this.json['overlays'][i]['location'];
+                }
+                if (this.screenVolumes.length === 0) {
+                    this.loadBaseImage(this.json['base_image'], true, false);
+                } else {
+                    this.loadOverlay(this.json['base_image'], true, false);
+                }
+            }
+        });
+
+        reader.onerror = bind(this, function (evt) {
+            this.errorMessage = "There was a problem reading that file:\n\n" + evt.getMessage();
+            this.resetViewer();
+            this.container.clearParams();
+        });
+
+        reader.readAsText(name);
+    } catch (err) {
+        this.errorMessage = "There was a problem reading that file:\n\n" + err.message;
+        this.resetViewer();
+        this.container.clearParams();
+    }
+};
+
 
 
 papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEncode) {
@@ -150,6 +188,7 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEn
     } else {
         this.volume.readFile(name, bind(this, this.initializeViewer));
     }
+    
 };
 
 
@@ -517,7 +556,7 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
         fontSize = 14;
         this.context.font = fontSize + "px Arial";
         locY = this.canvas.height - 20;
-        text = "Supported formats: NIFTI (.nii, .nii.gz)";
+        text = "Supported formats: NIFTI (.nii, .nii.gz), JSON";
         this.context.fillText(text, 20, locY);
 
         // draw Papaya version info
