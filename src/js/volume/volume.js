@@ -112,6 +112,7 @@ papaya.volume.Volume.prototype.readFile = function (file, callback) {
         this.errorMessage = "File type is not recognized!";
         this.finishedLoad();
     } else {
+<<<<<<< HEAD
         console.log("before type check");
         if (this.headerType === papaya.volume.Volume.TYPE_JSON) {
             // var JsonObj = null;
@@ -171,12 +172,13 @@ papaya.volume.Volume.prototype.readFile = function (file, callback) {
             // return window.image;
 
         } else {
+=======
+>>>>>>> 58721185d46a83c388d9611d86368c93326c5261
         this.compressed = this.fileIsCompressed(this.fileName);
         this.fileLength = this.file.size;
         var blob = makeSlice(this.file, 0, this.file.size);
         this.readData(this, blob);
     }
-}
 };
 
 

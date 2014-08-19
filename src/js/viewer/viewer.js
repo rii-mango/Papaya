@@ -134,6 +134,43 @@ papaya.viewer.Viewer.prototype.loadImage = function (name, forceUrl, forceEncode
     }
 };
 
+papaya.viewer.Viewer.prototype.loadJSON = function (name, forceUrl, forceEncode) {
+    this.json = null;
+    try {
+        var reader = new FileReader();
+
+        reader.onloadend = bind(this, function (evt) {
+            if (evt.target.readyState === FileReader.DONE) {
+                this.json = JSON.parse(evt.target.result);
+                this.resetViewer();
+                this.container.clearParams();
+                this.container.params.images = []
+                this.container.loadingImageIndex = -1
+                for (var i = 0; i < this.json['overlays'].length; i++) {
+                    this.container.params.images[this.container.params.images.length] = this.json['overlays'][i]['location'];
+                }
+                if (this.screenVolumes.length === 0) {
+                    this.loadBaseImage(this.json['base_image'], true, false);
+                } else {
+                    this.loadOverlay(this.json['base_image'], true, false);
+                }
+            }
+        });
+
+        reader.onerror = bind(this, function (evt) {
+            this.errorMessage = "There was a problem reading that file:\n\n" + evt.getMessage();
+            this.resetViewer();
+            this.container.clearParams();
+        });
+
+        reader.readAsText(name);
+    } catch (err) {
+        this.errorMessage = "There was a problem reading that file:\n\n" + err.message;
+        this.resetViewer();
+        this.container.clearParams();
+    }
+};
+
 
 
 papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEncode) {
@@ -150,10 +187,6 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEn
         this.volume.readURL(loadableImage.url, bind(this, this.initializeViewer));
     } else {
         this.volume.readFile(name, bind(this, this.initializeViewer));
-        //if (window.image !== undefined) {
-        //    console.log(window.image);
-        //    this.volume.readURL(window.image, bind(this, this.initializeViewer));
-        //}
     }
     
 };
