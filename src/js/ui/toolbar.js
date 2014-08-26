@@ -43,7 +43,8 @@ papaya.ui.Toolbar.MENU_DATA = {
             },
         {"label": "Options", "icons": null,
             "items": [
-                {"label": "Preferences", "action": "Preferences"}
+                {"label": "Preferences", "action": "Preferences"},
+                {"label": "Load Color Preferences", "action": "ColorPreferences"}
             ]
             },
         {"label": "", "icons": null, "titleBar": "true" },
@@ -373,7 +374,9 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.viewer.loadJSON(file);
         } else if (action.startsWith("ColorTable")) {
             colorTableName = action.substring(action.indexOf("-") + 1, action.lastIndexOf("-"));
+            console.log(colorTableName);
             imageIndex = action.substring(action.lastIndexOf("-") + 1);
+            console.log(imageIndex);
             this.viewer.screenVolumes[imageIndex].changeColorTable(this.viewer, colorTableName);
             this.updateImageButtons();
         } else if (action.startsWith("CloseAllImages")) {
@@ -392,6 +395,12 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             }
 
             dialog.showDialog();
+        } else if (action === "ColorPreferences") {
+            // var i, j;
+            console.log(this.viewer.COLOR_TABLE.length);
+            for (var i = 0; i < this.viewer.COLOR_TABLE.length; i += 1) {
+                    this.viewer.screenVolumes[i + 1].changeColorTable(this.viewer, this.viewer.COLOR_TABLE[i]);
+            }
         } else if (action.startsWith("SPACE")) {
             this.viewer.toggleWorldSpace();
             this.viewer.drawViewer(true);

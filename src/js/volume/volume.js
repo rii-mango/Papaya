@@ -37,17 +37,22 @@ papaya.volume.Volume = papaya.volume.Volume || function (progressMeter) {
 papaya.volume.Volume.TYPE_UNKNOWN = 0;
 papaya.volume.Volume.TYPE_NIFTI = 1;
 papaya.volume.Volume.TYPE_JSON = 2; // json added
+papaya.volume.Volume.TYPE_DIRECTORY = 3; // for DnD folder with JSON
 
 papaya.volume.Volume.PROGRESS_LABEL_LOADING = "Loading";
 
 
 
 papaya.volume.Volume.prototype.findFileType = function (filename) {
+    console.log(filename);
     if (filename.indexOf(".nii") !== -1) {
         return papaya.volume.Volume.TYPE_NIFTI;
     }
     else if (filename.indexOf(".json") !== -1) { // adds json filetype to list of recognized files
         return papaya.volume.Volume.TYPE_JSON;
+    }
+    else if (filename.indexOf(" ") !== -1) {
+        return papaya.volume.Volume.TYPE_DIRECTORY;
     }
 
     return papaya.volume.Volume.TYPE_UNKNOWN;
@@ -102,6 +107,7 @@ papaya.volume.Volume.prototype.fileIsCompressed = function (filename, data) {
 
 papaya.volume.Volume.prototype.readFile = function (file, callback) {
     this.file = file;
+    console.log(this.file);
     this.fileName = file.name;
     this.onFinishedRead = callback;
     this.fileState = 1

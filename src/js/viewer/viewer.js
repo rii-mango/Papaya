@@ -23,6 +23,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.canvas.style.padding = 0;
     this.canvas.style.margin = 0;
     this.canvas.style.border = "none";
+    this.COLOR_TABLE = [];
     this.atlas = null;
     this.initialized = false;
     this.pageLoaded = false;
@@ -148,6 +149,8 @@ papaya.viewer.Viewer.prototype.loadJSON = function (name, forceUrl, forceEncode)
                 this.container.loadingImageIndex = -1
                 for (var i = 0; i < this.json['overlays'].length; i++) {
                     this.container.params.images[this.container.params.images.length] = this.json['overlays'][i]['location'];
+                    this.COLOR_TABLE[i] = this.json['overlays'][i]['colormap'];
+                    console.log(this.COLOR_TABLE[i]);
                 }
                 if (this.screenVolumes.length === 0) {
                     this.loadBaseImage(this.json['base_image'], true, false);
@@ -164,6 +167,7 @@ papaya.viewer.Viewer.prototype.loadJSON = function (name, forceUrl, forceEncode)
         });
 
         reader.readAsText(name);
+
     } catch (err) {
         this.errorMessage = "There was a problem reading that file:\n\n" + err.message;
         this.resetViewer();
@@ -176,6 +180,8 @@ papaya.viewer.Viewer.prototype.loadJSON = function (name, forceUrl, forceEncode)
 papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEncode) {
     var loadableImage = this.container.findLoadableImage(name, forceUrl, forceEncode);
     this.volume = new papaya.volume.Volume(this.container.display);
+
+    console.log();
 
     if (forceEncode) {
         this.volume.readEncodedData(name, bind(this, this.initializeViewer));
@@ -365,6 +371,7 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
         screenParams = this.container.params[this.loadingVolume.fileName];
         parametric = (screenParams && screenParams.parametric);
 
+        console.log(this.screenVolumes);
         this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, this.container.params, (parametric ? papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[0].name : this.getNextColorTable()), false);
         this.setCurrentScreenVol(this.screenVolumes.length - 1);
         this.drawViewer(true);
@@ -374,6 +381,7 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
         //even if "parametric" is set to true we should not add another screenVolume if the value range does not cross zero
         if (parametric) {
             this.screenVolumes[this.screenVolumes.length - 1].findImageRange();
+            console.log(this.screenVolumes);
             if (this.screenVolumes[this.screenVolumes.length - 1].volume.header.imageRange.imageMin < 0) {
                 this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume, this.container.params, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
                 this.setCurrentScreenVol(this.screenVolumes.length - 1);
@@ -384,6 +392,11 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
         }
 
         this.updateWindowTitle();
+
+        /* if (this.COLOR_TABLE !== null) {
+            console.log("inside change color table");
+            this.screenVolumes[1].changeColorTable(this.viewer, this.COLOR_TABLE);
+        } */
 
         this.loadingVolume = null;
 
@@ -396,7 +409,6 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
         }
     }
 };
-
 
 
 papaya.viewer.Viewer.prototype.hasDefinedAtlas = function () {
