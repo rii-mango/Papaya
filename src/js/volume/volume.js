@@ -44,7 +44,6 @@ papaya.volume.Volume.PROGRESS_LABEL_LOADING = "Loading";
 
 
 papaya.volume.Volume.prototype.findFileType = function (filename) {
-    console.log(filename);
     if (filename.indexOf(".nii") !== -1) {
         return papaya.volume.Volume.TYPE_NIFTI;
     }

@@ -36,14 +36,17 @@ papaya.ui.Toolbar.MENU_DATA = {
             "items": [
                 {"label": "Add Image...", "action": "OpenImage", "type": "button"},
                 {"type": "spacer"},
-                {"label": "Load JSON...", "action": "OpenJSON", "type": "button"},
-                {"type": "spacer"},
                 {"label": "Close All", "action": "CloseAllImages"}
             ]
             },
         {"label": "Options", "icons": null,
             "items": [
-                {"label": "Preferences", "action": "Preferences"},
+                {"label": "Preferences", "action": "Preferences"}
+            ]
+            },
+        {"label": "JSON", "icons": null,
+            "items": [
+                {"label": "Load JSON...", "action": "OpenJSON", "type": "button"},
                 {"label": "Load Color Preferences", "action": "ColorPreferences"}
             ]
             },
@@ -358,6 +361,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
     if (!keepopen) {
         this.closeAllMenus();
     }
+    console.log(action);
 
     if (action) {
         if (action.startsWith("ImageButton")) {
@@ -366,6 +370,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.updateImageButtons();
         } else if (action.startsWith("Open-")) {
             imageName = action.substring(action.indexOf("-") + 1);
+            console.log(imageName);
             this.viewer.loadImage(imageName);
         } else if (action === "OpenImage") {
             this.viewer.loadImage(file);

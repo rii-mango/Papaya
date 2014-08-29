@@ -226,9 +226,12 @@ papaya.Container.prototype.setUpDnD = function () {
 
     this.containerHtml[0].ondrop = function (e) {
         e.preventDefault();
+        var filetype = e.dataTransfer.files[0].name.split('.').pop();
 
         if (e.dataTransfer.files.length > 1) {
             container.display.drawError("Please drop one file at a time.");
+        } else if (filetype === "json") {
+            container.viewer.loadJSON(e.dataTransfer.files[0]);
         } else {
             container.viewer.loadImage(e.dataTransfer.files[0]);
         }
