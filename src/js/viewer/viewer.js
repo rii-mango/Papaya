@@ -1464,8 +1464,8 @@ papaya.viewer.Viewer.prototype.processParams = function (params) {
         this.worldSpace = true;
     }
 
-    if (params.showOrientation) {
-        this.container.preferences.showOrientation = "Yes";
+    if (params.showOrientation !== undefined) {
+        this.container.preferences.showOrientation = (params.showOrientation ? "Yes" : "No");
     }
 
     if (params.coordinate) {
