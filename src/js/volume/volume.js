@@ -12,6 +12,7 @@ papaya.volume = papaya.volume || {};
 
 papaya.volume.Volume = papaya.volume.Volume || function (progressMeter) {
     this.progressMeter = progressMeter;
+    this.fileState = null;
     this.file = null;
     this.fileLength = 0;
     this.url = null;
@@ -35,6 +36,8 @@ papaya.volume.Volume = papaya.volume.Volume || function (progressMeter) {
 
 papaya.volume.Volume.TYPE_UNKNOWN = 0;
 papaya.volume.Volume.TYPE_NIFTI = 1;
+papaya.volume.Volume.TYPE_JSON = 2; // json added
+papaya.volume.Volume.TYPE_DIRECTORY = 3; // for DnD folder with JSON
 
 papaya.volume.Volume.PROGRESS_LABEL_LOADING = "Loading";
 
@@ -43,6 +46,12 @@ papaya.volume.Volume.PROGRESS_LABEL_LOADING = "Loading";
 papaya.volume.Volume.prototype.findFileType = function (filename) {
     if (filename.indexOf(".nii") !== -1) {
         return papaya.volume.Volume.TYPE_NIFTI;
+    }
+    else if (filename.indexOf(".json") !== -1) { // adds json filetype to list of recognized files
+        return papaya.volume.Volume.TYPE_JSON;
+    }
+    else if (filename.indexOf(" ") !== -1) {
+        return papaya.volume.Volume.TYPE_DIRECTORY;
     }
 
     return papaya.volume.Volume.TYPE_UNKNOWN;
@@ -97,8 +106,10 @@ papaya.volume.Volume.prototype.fileIsCompressed = function (filename, data) {
 
 papaya.volume.Volume.prototype.readFile = function (file, callback) {
     this.file = file;
+    console.log(this.file);
     this.fileName = file.name;
     this.onFinishedRead = callback;
+    this.fileState = 1
 
     this.headerType = this.findFileType(this.fileName);
 
@@ -106,6 +117,7 @@ papaya.volume.Volume.prototype.readFile = function (file, callback) {
         this.errorMessage = "File type is not recognized!";
         this.finishedLoad();
     } else {
+
         this.compressed = this.fileIsCompressed(this.fileName);
         this.fileLength = this.file.size;
         var blob = makeSlice(this.file, 0, this.file.size);
@@ -117,9 +129,11 @@ papaya.volume.Volume.prototype.readFile = function (file, callback) {
 
 papaya.volume.Volume.prototype.readURL = function (url, callback) {
     var vol = null, supported, xhr;
-
+    console.log("inside read url");
     try {
         this.url = url;
+        console.log(this.url);
+        console.log(window.image);
         this.fileName = url.substr(url.lastIndexOf("/") + 1, url.length);
         this.onFinishedRead = callback;
 
@@ -131,6 +145,7 @@ papaya.volume.Volume.prototype.readURL = function (url, callback) {
         supported = typeof new XMLHttpRequest().responseType === 'string';
         if (supported) {
             xhr = new XMLHttpRequest();
+            console.log("sending http request");
             xhr.open('GET', url, true);
             xhr.responseType = 'arraybuffer';
 

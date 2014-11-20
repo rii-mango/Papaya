@@ -36,13 +36,18 @@ papaya.ui.Toolbar.MENU_DATA = {
             "items": [
                 {"label": "Add Image...", "action": "OpenImage", "type": "button"},
                 {"type": "spacer"},
-                {"type": "spacer"},
                 {"label": "Close All", "action": "CloseAllImages"}
             ]
             },
         {"label": "Options", "icons": null,
             "items": [
                 {"label": "Preferences", "action": "Preferences"}
+            ]
+            },
+        {"label": "JSON", "icons": null,
+            "items": [
+                {"label": "Load JSON...", "action": "OpenJSON", "type": "button"},
+                {"label": "Load Color Preferences", "action": "ColorPreferences"}
             ]
             },
         {"label": "", "icons": null, "titleBar": "true" },
@@ -356,6 +361,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
     if (!keepopen) {
         this.closeAllMenus();
     }
+    console.log(action);
 
     if (action) {
         if (action.startsWith("ImageButton")) {
@@ -364,12 +370,18 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.updateImageButtons();
         } else if (action.startsWith("Open-")) {
             imageName = action.substring(action.indexOf("-") + 1);
+            console.log(imageName);
             this.viewer.loadImage(imageName);
         } else if (action === "OpenImage") {
             this.viewer.loadImage(file);
+        } else if (action === "OpenJSON") {
+            console.log('openjson called');
+            this.viewer.loadJSON(file);
         } else if (action.startsWith("ColorTable")) {
             colorTableName = action.substring(action.indexOf("-") + 1, action.lastIndexOf("-"));
+            console.log(colorTableName);
             imageIndex = action.substring(action.lastIndexOf("-") + 1);
+            console.log(imageIndex);
             this.viewer.screenVolumes[imageIndex].changeColorTable(this.viewer, colorTableName);
             this.updateImageButtons();
         } else if (action.startsWith("CloseAllImages")) {
@@ -388,6 +400,12 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             }
 
             dialog.showDialog();
+        } else if (action === "ColorPreferences") {
+            // var i, j;
+            console.log(this.viewer.COLOR_TABLE.length);
+            for (var i = 0; i < this.viewer.COLOR_TABLE.length; i += 1) {
+                    this.viewer.screenVolumes[i + 1].changeColorTable(this.viewer, this.viewer.COLOR_TABLE[i]);
+            }
         } else if (action.startsWith("SPACE")) {
             this.viewer.toggleWorldSpace();
             this.viewer.drawViewer(true);

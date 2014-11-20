@@ -1,0 +1,14 @@
+{
+	"base_image": "https://dl.dropbox.com/s/zxy7o6ygh93jpcy/MNI152_T1_1mm.nii.gz",
+	"overlays": [
+	{
+		"name": "contrast1",
+		"location": "https://dl.dropbox.com/s/vcu8ee6l22i4gv9/task002_zstat01.nii.gz",
+		"colormap": "Hot-and-Cold"
+	},
+	{
+		"name": "contrast2",
+		"location": "https://dl.dropbox.com/s/me7k1vi27xg1kmd/task002_zstat04.nii.gz",
+		"colormap": "Blue-to-Green"
+		}]
+}
