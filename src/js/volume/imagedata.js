@@ -1,7 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global Int8Array, Uint8Array, Int16Array, Uint16Array, Int32Array, Uint32Array, DataView, Float32Array,
-concatArrayBuffers */
+/*global */
 
 "use strict";
 

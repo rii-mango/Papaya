@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, isStringBlank, bind, PAPAYA_MENU_SPACER_CSS, PAPAYA_MENU_UNSELECTABLE */
+/*global $, PAPAYA_MENU_UNSELECTABLE, PAPAYA_MENU_SPACER_CSS */
 
 "use strict";
 

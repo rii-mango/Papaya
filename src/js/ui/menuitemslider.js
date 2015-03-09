@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, isStringBlank, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE, PAPAYA_MENU_SLIDER */
+/*global $, PAPAYA_MENU_UNSELECTABLE, PAPAYA_MENU_SLIDER, PAPAYA_MENU_HOVERING_CSS */
 
 "use strict";
 
@@ -17,7 +17,7 @@ papaya.ui.MenuItemSlider = papaya.ui.MenuItemSlider || function (viewer, label, 
 
     this.index = modifier;
     this.modifier = "";
-    if (!isStringBlank(modifier)) {
+    if (!papaya.utilities.StringUtils.isStringBlank(modifier)) {
         this.modifier = "-" + modifier;
     }
 

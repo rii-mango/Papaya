@@ -1,8 +1,7 @@
 
 /*jslint browser: true, node: true */
-/*global $, isStringBlank, derefIn, bind, PAPAYA_DEFAULT_CONTAINER_ID, showModalDialog, PAPAYA_DIALOG_CSS,
-  PAPAYA_DIALOG_CONTENT_CSS, PAPAYA_DIALOG_CONTENT_LABEL_CSS, PAPAYA_DIALOG_CONTENT_CONTROL_CSS, truncateMiddleString,
-  PAPAYA_DIALOG_TITLE_CSS, PAPAYA_DIALOG_BUTTON_CSS, PAPAYA_DIALOG_BACKGROUND, PAPAYA_DIALOG_STOPSCROLL */
+/*global $, PAPAYA_DIALOG_CSS, PAPAYA_DIALOG_CONTENT_CSS, PAPAYA_DIALOG_CONTENT_LABEL_CSS, PAPAYA_DIALOG_BACKGROUND,
+ PAPAYA_DIALOG_CONTENT_CONTROL_CSS, PAPAYA_DIALOG_TITLE_CSS, PAPAYA_DIALOG_STOPSCROLL, PAPAYA_DIALOG_BUTTON_CSS */
 
 "use strict";
 
@@ -17,7 +16,7 @@ papaya.ui.Dialog = papaya.ui.Dialog || function (container, title, content, data
     this.viewer = container.viewer;
     this.title = title;
     this.modifier = "";
-    if (!isStringBlank(modifier)) {
+    if (!papaya.utilities.StringUtils.isStringBlank(modifier)) {
         this.modifier = modifier;
     }
     this.id = this.title.replace(/ /g, "_");
@@ -25,6 +24,34 @@ papaya.ui.Dialog = papaya.ui.Dialog || function (container, title, content, data
     this.dataSource = dataSource;
     this.callback = callback;
     this.callbackOk = callbackOk;
+};
+
+
+/*** Static Methods ***/
+
+papaya.ui.Dialog.showModalDialog = function (viewer, dialog) {
+    var viewerWidth, viewerHeight, dialogWidth, dialogHeight, left, top;
+
+    var docElem = document.documentElement;
+    var scrollTop = window.pageYOffset || docElem.scrollTop;
+
+    viewerWidth = $(window).outerWidth();
+    viewerHeight = $(window).outerHeight();
+
+    dialogWidth = $(dialog).outerWidth();
+    dialogHeight = $(dialog).outerHeight();
+
+    left = (viewerWidth / 2) - (dialogWidth / 2) + "px";
+    top = scrollTop + (viewerHeight / 2) - (dialogHeight / 2) + "px";
+
+    $(dialog).css({
+        position: 'absolute',
+        zIndex: 100,
+        left: left,
+        top: top
+    });
+
+    $(dialog).hide().fadeIn(200);
 };
 
 
@@ -54,8 +81,8 @@ papaya.ui.Dialog.prototype.showDialog = function () {
                     "</td><td class='" + PAPAYA_DIALOG_CONTENT_CONTROL_CSS + "' id='" + this.content.items[ctr].field +
                     "'></td></tr>";
             } else {
-                if (this.content.items[ctr].disabled && (bind(this.container,
-                        derefIn(this, this.content.items[ctr].disabled)))() === true) {
+                if (this.content.items[ctr].disabled && (papaya.utilities.ObjectUtils.bind(this.container,
+                        papaya.utilities.ObjectUtils.dereferenceIn(this, this.content.items[ctr].disabled)))() === true) {
                     disabled = "disabled='disabled'";
                 } else {
                     disabled = "";
@@ -66,7 +93,7 @@ papaya.ui.Dialog.prototype.showDialog = function () {
                     " id='" + this.content.items[ctr].field + "'>";
                 for (ctrOpt = 0; ctrOpt < this.content.items[ctr].options.length; ctrOpt += 1) {
                     html += "<option value='" + this.content.items[ctr].options[ctrOpt] + "'>" +
-                        truncateMiddleString(this.content.items[ctr].options[ctrOpt].toString(), 40) + "</option>";
+                        papaya.utilities.StringUtils.truncateMiddleString(this.content.items[ctr].options[ctrOpt].toString(), 40) + "</option>";
                 }
 
                 html += "</select></td></tr>";
@@ -93,14 +120,14 @@ papaya.ui.Dialog.prototype.showDialog = function () {
         } else if (!this.content.items[ctr].spacer) {
             itemsHtml = $("#" + this.content.items[ctr].field);
             itemsHtml.val(this.dataSource[this.content.items[ctr].field]);
-            itemsHtml.change(bind(this, this.doAction, [this.content.items[ctr].field]));
+            itemsHtml.change(papaya.utilities.ObjectUtils.bind(this, this.doAction, [this.content.items[ctr].field]));
         }
     }
 
-    $("#" + this.id + "-Ok").click(bind(this, this.doOk));
+    $("#" + this.id + "-Ok").click(papaya.utilities.ObjectUtils.bind(this, this.doOk));
 
     thisHtml = $(thisHtmlId);
-    showModalDialog(this.viewer, thisHtml[0]);
+    papaya.ui.Dialog.showModalDialog(this.viewer, thisHtml[0]);
     bodyHtml.addClass(PAPAYA_DIALOG_STOPSCROLL);
 };
 

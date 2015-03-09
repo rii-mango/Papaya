@@ -1,8 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, PAPAYA_TITLEBAR_CSS, derefIn, PAPAYA_DIALOG_CSS, PAPAYA_MENU_ICON_CSS, PAPAYA_MENU_LABEL_CSS,
- PAPAYA_MENU_BUTTON_CSS, PAPAYA_MENU_CSS, PAPAYA_DIALOG_BACKGROUND, PAPAYA_MENU_TITLEBAR_CSS, isInputRangeSupported,
- launchCustomProtocol, PAPAYA_BROWSER, alert, confirm, getAbsoluteUrl, PAPAYA_CUSTOM_PROTOCOL */
+/*global $, PAPAYA_MENU_ICON_CSS, PAPAYA_MENU_LABEL_CSS, PAPAYA_TITLEBAR_CSS, PAPAYA_MENU_BUTTON_CSS, PAPAYA_MENU_CSS, */
 
 "use strict";
 
@@ -91,7 +89,7 @@ papaya.ui.Toolbar.MENU_DATA = {
             "items": [
                 {"label": "Add Image...", "action": "OpenImage", "type": "file"},
                 {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
-                    "hide": (PAPAYA_BROWSER.name !== "Chrome")},
+                    "hide": (papaya.utilities.PlatformUtils.browser !== "Chrome")},
                 {"type": "spacer"},
                 {"type": "spacer"},
                 {"label": "Close All", "action": "CloseAllImages"}
@@ -291,8 +289,8 @@ papaya.ui.Toolbar.prototype.menuContains = function (menuItems, name) {
 papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, dataSource, modifier) {
     var menu = null, items;
 
-    if (!menuData.required || ((bind(this.container, derefIn(this.container, menuData.required)))() === true)) {
-        menu = new papaya.ui.Menu(this.viewer, menuData, bind(this, this.doAction), this.viewer, modifier);
+    if (!menuData.required || ((papaya.utilities.ObjectUtils.bind(this.container, papaya.utilities.ObjectUtils.dereferenceIn(this.container, menuData.required)))() === true)) {
+        menu = new papaya.ui.Menu(this.viewer, menuData, papaya.utilities.ObjectUtils.bind(this, this.doAction), this.viewer, modifier);
 
         if (menuData.label === "SPACE") {
             this.spaceMenu = menuData;
@@ -323,33 +321,33 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
     }
 
     for (ctrItems = 0; ctrItems < itemData.length; ctrItems += 1) {
-        if (!itemData[ctrItems].required || ((bind(this.container, derefIn(this.container,
+        if (!itemData[ctrItems].required || ((papaya.utilities.ObjectUtils.bind(this.container, papaya.utilities.ObjectUtils.dereferenceIn(this.container,
                 itemData[ctrItems].required)))() === true)) {
             if (itemData[ctrItems].type === "spacer") {
                 item = new papaya.ui.MenuItemSpacer();
             } else if (itemData[ctrItems].type === "checkbox") {
                 item = new papaya.ui.MenuItemCheckBox(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action,
-                    bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+                    papaya.utilities.ObjectUtils.bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
             } else if (itemData[ctrItems].type === "file") {
                 item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label,
-                    itemData[ctrItems].action, bind(this, this.doAction), false);
+                    itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), false);
             }  else if (itemData[ctrItems].type === "folder") {
                 if (!itemData[ctrItems].hide) {
                     item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label,
-                        itemData[ctrItems].action, bind(this, this.doAction), true);
+                        itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), true);
                 }
             } else if (itemData[ctrItems].type === "displayrange") {
                 item = new papaya.ui.MenuItemRange(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action,
-                    bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+                    papaya.utilities.ObjectUtils.bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
             } else if (itemData[ctrItems].type === "range") {
-                if (isInputRangeSupported()) {
+                if (papaya.utilities.PlatformUtils.isInputRangeSupported()) {
                     item = new papaya.ui.MenuItemSlider(this.viewer, itemData[ctrItems].label,
-                        itemData[ctrItems].action, bind(this, this.doAction), dataSource,
+                        itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), dataSource,
                         itemData[ctrItems].method, modifier);
                 }
             } else {
                 item = new papaya.ui.MenuItem(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action,
-                    bind(this, this.doAction), modifier);
+                    papaya.utilities.ObjectUtils.bind(this, this.doAction), modifier);
             }
         } else {
             item = null;
@@ -360,7 +358,7 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
 
             if (itemData[ctrItems].items) {
                 menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier);
-                item.callback = bind(menu2, menu2.showMenu);
+                item.callback = papaya.utilities.ObjectUtils.bind(menu2, menu2.showMenu);
             }
         }
     }
@@ -457,7 +455,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.updateImageButtons();
         } else if (action === "Preferences") {
             dialog = new papaya.ui.Dialog(this.container, "Preferences", papaya.ui.Toolbar.PREFERENCES_DATA,
-                this.container.preferences, bind(this.container.preferences,
+                this.container.preferences, papaya.utilities.ObjectUtils.bind(this.container.preferences,
                     this.container.preferences.updatePreference));
             dialog.showDialog();
         } else if (action.startsWith("ImageInfo")) {
@@ -490,12 +488,12 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
 
             if (imageIndex === 0) {
                 if (this.container.viewer.volume.url) {
-                    launchCustomProtocol(this.container, getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL,
+                    papaya.utilities.PlatformUtils.launchCustomProtocol(this.container, papaya.utilities.UrlUtils.getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL,
                         this.container.viewer.volume.url), this.customProtocolResult);
                 }
             } else {
                 if (this.container.viewer.screenVolumes[imageIndex].volume.url) {
-                    launchCustomProtocol(this.container, getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL,
+                    papaya.utilities.PlatformUtils.launchCustomProtocol(this.container, papaya.utilities.UrlUtils.getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL,
                         this.container.viewer.screenVolumes[imageIndex].volume.url) + "?" +
                     encodeURIComponent("baseimage=" + this.container.viewer.volume.fileName + "&params=o"),
                         this.customProtocolResult);
@@ -512,10 +510,10 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
 
 papaya.ui.Toolbar.prototype.customProtocolResult = function (success) {
     if (success === false) { // initiated by a setTimeout, so popup blocker will interfere with window.open
-        if ((PAPAYA_BROWSER.name === "Chrome") || (PAPAYA_BROWSER.name === "Internet Explorer")) {
+        if ((papaya.utilities.PlatformUtils.browser === "Chrome") || (papaya.utilities.PlatformUtils.browser === "Internet Explorer")) {
             alert("Mango does not appear to be installed.  You can download Mango at:\n\nhttp://ric.uthscsa.edu/mango");
         } else {
-            if (PAPAYA_BROWSER.ios) {
+            if (papaya.utilities.PlatformUtils.ios) {
                 if (confirm("iMango does not appear to be installed.  Would you like to download it now?")) {
                     window.open("http://itunes.apple.com/us/app/imango/id423626092");
                 }

@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global isStringBlank */
+/*global */
 
 "use strict";
 
@@ -13,7 +13,7 @@ papaya.volume = papaya.volume || {};
 papaya.volume.ImageDescription = papaya.volume.ImageDescription || function (notes) {
     this.notes = "(none)";
 
-    if (!isStringBlank(notes)) {
+    if (!papaya.utilities.StringUtils.isStringBlank(notes)) {
         this.notes = notes;
     }
 };

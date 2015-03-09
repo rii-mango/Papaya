@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, isStringBlank, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE */
+/*global $, PAPAYA_MENU_UNSELECTABLE, PAPAYA_MENU_HOVERING_CSS */
 
 "use strict";
 
@@ -15,7 +15,7 @@ papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, call
     this.label = label;
 
     this.modifier = "";
-    if (!isStringBlank(modifier)) {
+    if (!papaya.utilities.StringUtils.isStringBlank(modifier)) {
         this.modifier = "-" + modifier;
     }
 
@@ -34,7 +34,7 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
     $("#" + parentId).append(html);
 
     thisHtml = $("#" + this.id);
-    thisHtml.click(bind(this,
+    thisHtml.click(papaya.utilities.ObjectUtils.bind(this,
         function () {
             this.doAction();
         }));

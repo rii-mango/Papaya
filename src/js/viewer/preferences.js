@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global createCookie, readCookie */
+/*global */
 
 "use strict";
 
@@ -39,7 +39,7 @@ papaya.viewer.Preferences.prototype.updatePreference = function (field, value) {
     this[field] = value;
     this.viewer.drawViewer(true);
 
-    createCookie(papaya.viewer.Preferences.COOKIE_PREFIX + field, value, papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS);
+    papaya.utilities.UrlUtils.createCookie(papaya.viewer.Preferences.COOKIE_PREFIX + field, value, papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS);
 };
 
 
@@ -48,7 +48,7 @@ papaya.viewer.Preferences.prototype.readPreferences = function () {
     var ctr, value;
 
     for (ctr = 0; ctr < papaya.ui.Toolbar.PREFERENCES_DATA.items.length; ctr += 1) {
-        value = readCookie(papaya.viewer.Preferences.COOKIE_PREFIX +
+        value = papaya.utilities.UrlUtils.readCookie(papaya.viewer.Preferences.COOKIE_PREFIX +
             papaya.ui.Toolbar.PREFERENCES_DATA.items[ctr].field);
 
         if (value) {

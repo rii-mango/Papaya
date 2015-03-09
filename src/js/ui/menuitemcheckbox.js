@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE, PAPAYA_MENU_COLORTABLE_CSS */
+/*global $, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_COLORTABLE_CSS, PAPAYA_MENU_UNSELECTABLE */
 
 "use strict";
 
@@ -52,7 +52,7 @@ papaya.ui.MenuItemCheckBox.prototype.buildHTML = function (parentId) {
         PAPAYA_MENU_UNSELECTABLE + "'>&nbsp;" + this.label + "</span></li>";
     $("#" + parentId).append(html);
     thisHtml = $("#" + this.id);
-    thisHtml.click(bind(this, this.doAction));
+    thisHtml.click(papaya.utilities.ObjectUtils.bind(this, this.doAction));
     thisHtml.hover(function () { $(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
 };
 

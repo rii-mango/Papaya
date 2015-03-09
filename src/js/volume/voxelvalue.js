@@ -1,5 +1,6 @@
+
 /*jslint browser: true, node: true */
-/*global roundFast */
+/*global papayaRoundFast */
 
 "use strict";
 
@@ -38,9 +39,9 @@ papaya.volume.VoxelValue = papaya.volume.VoxelValue || function (imageData, imag
 
 papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
     if (useNN) {
-        ctrX = roundFast(ctrX);
-        ctrY = roundFast(ctrY);
-        ctrZ = roundFast(ctrZ);
+        ctrX = papayaRoundFast(ctrX);
+        ctrY = papayaRoundFast(ctrY);
+        ctrZ = papayaRoundFast(ctrZ);
 
         return this.getVoxelAtOffset(this.orientation.convertIndexToOffset2(ctrX, ctrY, ctrZ), timepoint);
     }

@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global bind */
+/*global */
 
 "use strict";
 
@@ -358,7 +358,7 @@ papaya.viewer.Display.prototype.drawError = function (message) {
     this.errorMessage = message;
     this.drawingError = true;
     display = this;
-    window.setTimeout(bind(display, function () {display.drawingError = false; }), 3000);
+    window.setTimeout(papaya.utilities.ObjectUtils.bind(display, function () {display.drawingError = false; }), 3000);
 
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.fillStyle = "#000000";
@@ -413,7 +413,7 @@ papaya.viewer.Display.prototype.drawProgress = function (progress, label) {
             }
 
             display = this;
-            this.progressTimeout = window.setTimeout(bind(display, function () {display.drawingProgress = false; }),
+            this.progressTimeout = window.setTimeout(papaya.utilities.ObjectUtils.bind(display, function () {display.drawingProgress = false; }),
                 3000);
 
             // clear background

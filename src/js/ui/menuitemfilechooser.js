@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE, PAPAYA_MENU_FILECHOOSER */
+/*global $, PAPAYA_MENU_FILECHOOSER, PAPAYA_MENU_UNSELECTABLE, PAPAYA_MENU_HOVERING_CSS */
 
 "use strict";
 
@@ -41,7 +41,7 @@ papaya.ui.MenuItemFileChooser.prototype.buildHTML = function (parentId) {
 
     $("#" + parentId).append(html);
 
-    $("#" + this.fileChooserId)[0].onchange = bind(filechooser, function () {
+    $("#" + this.fileChooserId)[0].onchange = papaya.utilities.ObjectUtils.bind(filechooser, function () {
         filechooser.callback(filechooser.action, document.getElementById(filechooser.fileChooserId).files);
     });
 

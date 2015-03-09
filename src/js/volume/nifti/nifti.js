@@ -1,15 +1,16 @@
 
 /*jslint browser: true, node: true */
-/*global DataView */
+/*global */
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 papaya.volume.nifti = papaya.volume.nifti || {};
 
 
-
+/*** Constructor ***/
 papaya.volume.nifti.NIFTI = papaya.volume.nifti.NIFTI || function () {
     this.error = null;
     this.littleEndian = false;
@@ -49,7 +50,7 @@ papaya.volume.nifti.NIFTI = papaya.volume.nifti.NIFTI || function () {
 };
 
 
-
+/*** Static Pseudo-constants ***/
 papaya.volume.nifti.MAGIC_COOKIE = 348;
 papaya.volume.nifti.NII_HDR_SIZE = 352;
 papaya.volume.nifti.DT_NONE                    = 0;
@@ -74,6 +75,7 @@ papaya.volume.nifti.MAGIC_NUMBER_LOCATION   = 344;
 papaya.volume.nifti.MAGIC_NUMBER            = [110, 43, 49];  // n+1
 
 
+/*** Prototype Methods ***/
 
 papaya.volume.nifti.NIFTI.prototype.readFileData = function (data) {
     var rawData = new DataView(data),
@@ -357,7 +359,7 @@ papaya.volume.nifti.NIFTI.prototype.convertNiftiSFormToNEMA = function (R) {
 
     for (i = 1; i <= 3; i += 1) {     /* i = column number to use for row #1 */
         for (j = 1; j <= 3; j += 1) {    /* j = column number to use for row #2 */
-            if (!(i === j)) {
+            if (i !== j) {
                 for (k = 1; k <= 3; k += 1) {  /* k = column number to use for row #3 */
                     if (!(i === k || j === k)) {
                         P[0][0] = P[0][1] = P[0][2] = P[1][0] = P[1][1] = P[1][2] = P[2][0] = P[2][1] = P[2][2] = 0.0;
@@ -368,7 +370,7 @@ papaya.volume.nifti.NIFTI.prototype.convertNiftiSFormToNEMA = function (R) {
                                     P[1][j - 1] = q;
                                     P[2][k - 1] = r;
                                     detP = this.nifti_mat33_determ(P);           /* sign of permutation */
-                                    if (!(detP * detQ <= 0.0)) {
+                                    if ((detP * detQ) > 0.0) {
                                         M = this.nifti_mat33_mul(P, Q);
 
                                         /* angle of M rotation = 2.0*acos(0.5*sqrt(1.0+trace(M)))       */

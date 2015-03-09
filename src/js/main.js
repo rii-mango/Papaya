@@ -1,21 +1,25 @@
 
 /*jslint browser: true, node: true */
-/*global $, PAPAYA_SPACING, PAPAYA_CONTAINER_PADDING_TOP, roundFast, PAPAYA_PADDING,
- PAPAYA_CONTAINER_CLASS_NAME, PAPAYA_UTILS_CHECKFORJS_CSS, PAPAYA_VIEWER_CSS, PAPAYA_DISPLAY_CSS,
- PAPAYA_TOOLBAR_CSS, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_VIEWER_ID, PAPAYA_DEFAULT_DISPLAY_ID,
- PAPAYA_DEFAULT_CONTAINER_ID, checkForBrowserCompatibility, getQueryParams, bind, PAPAYA_UTILS_UNSUPPORTED_CSS,
- PAPAYA_UTILS_UNSUPPORTED_MESSAGE_CSS, PAPAYA_CONTAINER_COLLAPSABLE, PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT,
- PAPAYA_CONTAINER_FULLSCREEN, PAPAYA_SLIDER_CSS, PAPAYA_DEFAULT_SLIDER_ID, isInputRangeSupported, PAPAYA_BROWSER */
+/*global $, PAPAYA_VIEWER_CSS, PAPAYA_DEFAULT_TOOLBAR_ID, PAPAYA_DEFAULT_VIEWER_ID, PAPAYA_DEFAULT_DISPLAY_ID,
+ PAPAYA_TOOLBAR_CSS, PAPAYA_DISPLAY_CSS, PAPAYA_DEFAULT_SLIDER_ID, PAPAYA_DEFAULT_CONTAINER_ID, PAPAYA_SLIDER_CSS,
+ PAPAYA_UTILS_UNSUPPORTED_CSS, PAPAYA_UTILS_UNSUPPORTED_MESSAGE_CSS, PAPAYA_CONTAINER_CLASS_NAME,
+ PAPAYA_CONTAINER_FULLSCREEN, PAPAYA_CONTAINER_CLASS_NAME, PAPAYA_UTILS_CHECKFORJS_CSS, PAPAYA_SPACING,
+ papayaRoundFast, PAPAYA_PADDING, PAPAYA_CONTAINER_PADDING_TOP, PAPAYA_CONTAINER_COLLAPSABLE_EXEMPT,
+ PAPAYA_CONTAINER_COLLAPSABLE, PAPAYA_MANGO_INSTALLED */
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
+
+
+/*** Global Fields ***/
 var papayaContainers = [];
 var papayaLoadableImages = papayaLoadableImages || [];
-var papayaLastHoveredViewer = null;
 var papayaDroppedFiles = [];
 
 
+/*** Constructor ***/
 papaya.Container = papaya.Container || function (containerHtml) {
     this.containerHtml = containerHtml;
     this.containerIndex = null;
@@ -40,6 +44,279 @@ papaya.Container = papaya.Container || function (containerHtml) {
 };
 
 
+/*** Static Fields ***/
+papaya.Container.papayaLastHoveredViewer = null;
+
+
+/*** Static Methods ***/
+
+papaya.Container.findParameters = function (containerHTML) {
+    var viewerHTML, paramsName, loadedParams = null;
+
+    paramsName = containerHTML.data("params");
+
+    if (!paramsName) {
+        viewerHTML = containerHTML.find("." + PAPAYA_VIEWER_CSS);
+
+        if (viewerHTML) {
+            paramsName = viewerHTML.data("params");
+        }
+    }
+
+    if (paramsName) {
+        loadedParams = window[paramsName];
+    }
+
+    papaya.utilities.UrlUtils.getQueryParams(loadedParams);
+
+    return loadedParams;
+};
+
+
+
+papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params) {
+    var toolbarHTML, viewerHTML, displayHTML;
+
+    if (isDefault) {
+        toolbarHTML = containerHTML.find("#" + PAPAYA_DEFAULT_TOOLBAR_ID);
+        viewerHTML = containerHTML.find("#" + PAPAYA_DEFAULT_VIEWER_ID);
+        displayHTML = containerHTML.find("#" + PAPAYA_DEFAULT_DISPLAY_ID);
+
+        if (toolbarHTML) {
+            toolbarHTML.addClass(PAPAYA_TOOLBAR_CSS);
+        } else {
+            containerHTML.prepend("<div class='" + PAPAYA_TOOLBAR_CSS + "' id='" +
+            PAPAYA_DEFAULT_TOOLBAR_ID + "'></div>");
+        }
+
+        if (viewerHTML) {
+            viewerHTML.addClass(PAPAYA_VIEWER_CSS);
+        } else {
+            $("<div class='" + PAPAYA_VIEWER_CSS + "' id='" +
+            PAPAYA_DEFAULT_VIEWER_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_TOOLBAR_ID));
+        }
+
+        if (displayHTML) {
+            displayHTML.addClass(PAPAYA_DISPLAY_CSS);
+        } else {
+            $("<div class='" + PAPAYA_DISPLAY_CSS + "' id='" +
+            PAPAYA_DEFAULT_DISPLAY_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_VIEWER_ID));
+        }
+
+        console.log("This method of adding a Papaya container is deprecated.  " +
+        "Try simply <div class='papaya' data-params='params'></div> instead...");
+    } else {
+        containerHTML.attr("id", PAPAYA_DEFAULT_CONTAINER_ID + papayaContainers.length);
+
+        if (!params || (params.kioskMode === undefined) || !params.kioskMode) {
+            containerHTML.append("<div id='" + (PAPAYA_DEFAULT_TOOLBAR_ID + papayaContainers.length) +
+            "' class='" + PAPAYA_TOOLBAR_CSS + "'></div>");
+        }
+
+        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_VIEWER_ID + papayaContainers.length) +
+        "' class='" + PAPAYA_VIEWER_CSS + "'></div>");
+        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_DISPLAY_ID + papayaContainers.length) +
+        "' class='" + PAPAYA_DISPLAY_CSS + "'></div>");
+
+        if (params && (params.orthogonal !== undefined) && !params.orthogonal) {
+            if (papaya.utilities.PlatformUtils.isInputRangeSupported()) {
+                containerHTML.append("<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) +
+                "' class='" + PAPAYA_SLIDER_CSS + "'><input type='range' /></div>");
+            }
+        }
+    }
+
+    return viewerHTML;
+};
+
+
+
+papaya.Container.buildContainer = function (containerHTML, params) {
+    var container, message, viewerHtml, loadUrl, imageRefs = null;
+
+    message = papaya.utilities.PlatformUtils.checkForBrowserCompatibility();
+    viewerHtml = containerHTML.find("." + PAPAYA_VIEWER_CSS);
+
+    if (message !== null) {
+        papaya.Container.removeCheckForJSClasses(containerHTML, viewerHtml);
+        containerHTML.addClass(PAPAYA_UTILS_UNSUPPORTED_CSS);
+        viewerHtml.addClass(PAPAYA_UTILS_UNSUPPORTED_MESSAGE_CSS);
+        viewerHtml.html(message);
+    } else {
+        container = new papaya.Container(containerHTML);
+        container.containerIndex = papayaContainers.length;
+        container.preferences = new papaya.viewer.Preferences();
+        papaya.Container.removeCheckForJSClasses(containerHTML, viewerHtml);
+
+        if (params) {
+            container.params = $.extend(container.params, params);
+        }
+
+        container.nestedViewer = (containerHTML.parent()[0].tagName.toUpperCase() !== 'BODY');
+        container.kioskMode = (container.params.kioskMode === true);
+
+        if (container.params.fullScreenPadding !== undefined) {  // default is true
+            container.fullScreenPadding = container.params.fullScreenPadding;
+        }
+
+        if (container.params.orthogonal !== undefined) {  // default is true
+            container.orthogonal = container.params.orthogonal;
+        }
+
+        container.buildViewer(container.params);
+        container.buildDisplay();
+        container.buildToolbar();
+
+        if (!container.orthogonal) {
+            container.buildSliderControl();
+        }
+
+        container.setUpDnD();
+
+        loadUrl = viewerHtml.data("load-url");
+
+        if (loadUrl) {
+            imageRefs = loadUrl;
+            if (!(imageRefs instanceof Array)) {
+                imageRefs = [];
+                imageRefs[0] = loadUrl;
+            }
+
+            container.viewer.loadImage(imageRefs, true, false);
+        } else if (container.params.images) {
+            imageRefs = container.params.images[0];
+            if (!(imageRefs instanceof Array)) {
+                imageRefs = [];
+                imageRefs[0] = container.params.images[0];
+            }
+
+            container.viewer.loadImage(imageRefs, true, false);
+        } else if (container.params.encodedImages) {
+            imageRefs = container.params.encodedImages[0];
+            if (!(imageRefs instanceof Array)) {
+                imageRefs = [];
+                imageRefs[0] = container.params.encodedImages[0];
+            }
+
+            container.viewer.loadImage(container.params.encodedImages[0], false, true);
+        }
+
+        container.resizeViewerComponents(false);
+
+        if (!container.nestedViewer) {
+            containerHTML.parent().height("100%");
+            containerHTML.parent().width("100%");
+        }
+
+        papayaContainers.push(container);
+    }
+};
+
+
+
+papaya.Container.buildAllContainers = function () {
+    var defaultContainer, params;
+
+    defaultContainer = $("#" + PAPAYA_DEFAULT_CONTAINER_ID);
+
+    if (defaultContainer.length > 0) {
+        papaya.Container.fillContainerHTML(defaultContainer, true);
+        params = papaya.Container.findParameters(defaultContainer);
+        papaya.Container.buildContainer(defaultContainer, params);
+    } else {
+        $("." + PAPAYA_CONTAINER_CLASS_NAME).each(function () {
+            params = papaya.Container.findParameters($(this));
+            papaya.Container.fillContainerHTML($(this), false, params);
+            papaya.Container.buildContainer($(this), params);
+        });
+    }
+
+    if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
+        $("html").addClass(PAPAYA_CONTAINER_FULLSCREEN);
+        $("body").addClass(PAPAYA_CONTAINER_FULLSCREEN);
+        papaya.Container.setToFullPage();
+
+        papayaContainers[0].resizeViewerComponents(true);
+    }
+};
+
+
+
+papaya.Container.startPapaya = function () {
+    setTimeout(function () {  // setTimeout necessary in Chrome
+        window.scrollTo(0, 0);
+    }, 0);
+
+    papaya.Container.buildAllContainers();
+};
+
+
+
+papaya.Container.resizePapaya = function () {
+    var ctr;
+
+    if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
+        papayaContainers[0].resizeViewerComponents(true);
+    } else {
+        for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
+            papayaContainers[ctr].resizeViewerComponents(true);
+        }
+    }
+
+    setTimeout(function () {  // setTimeout necessary in Chrome
+        window.scrollTo(0, 0);
+    }, 0);
+};
+
+
+
+papaya.Container.addViewer = function (parentName, params, callback) {
+    var container, parent;
+
+    parent = $("#" + parentName);
+    container = $('<div class="papaya"></div>');
+
+    parent.html(container);
+
+    // remove parent click handler
+    parent[0].onclick = '';
+    parent.off("click");
+
+    papaya.Container.fillContainerHTML(container, false, params);
+    papaya.Container.buildContainer(container, params);
+
+    if (callback) {
+        callback();
+    }
+};
+
+
+
+papaya.Container.removeCheckForJSClasses = function (containerHtml, viewerHtml) {
+    // old way, here for backwards compatibility
+    viewerHtml.removeClass(PAPAYA_CONTAINER_CLASS_NAME);
+    viewerHtml.removeClass(PAPAYA_UTILS_CHECKFORJS_CSS);
+
+    // new way
+    containerHtml.removeClass(PAPAYA_CONTAINER_CLASS_NAME);
+    containerHtml.removeClass(PAPAYA_UTILS_CHECKFORJS_CSS);
+};
+
+
+
+papaya.Container.setToFullPage = function () {
+    document.body.style.marginTop = 0;
+    document.body.style.marginBottom = 0;
+    document.body.style.marginLeft = 'auto';
+    document.body.style.marginRight = 'auto';
+    document.body.style.padding = 0;
+    document.body.style.overflow = 'hidden';
+    document.body.style.width = "100%";
+    document.body.style.height = "100%";
+};
+
+
+/*** Prototype Methods ***/
 
 papaya.Container.prototype.resetComponents = function () {
     this.containerHtml.css({height: "auto"});
@@ -56,13 +333,14 @@ papaya.Container.prototype.getViewerDimensions = function () {
     parentWidth = this.containerHtml.parent().width() - (this.fullScreenPadding ? (2 * PAPAYA_PADDING) : 0);
     ratio = (this.orthogonal ? 1.5 : 1);
     width = parentWidth;
-    height = roundFast(width / ratio);
+    height = papayaRoundFast(width / ratio);
 
     if (!this.nestedViewer || this.collapsable) {
-        maxHeight = window.innerHeight - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE + PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0));
+        maxHeight = window.innerHeight - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
+            PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0));
         if (height > maxHeight) {
             height = maxHeight;
-            width = roundFast(height * ratio);
+            width = papayaRoundFast(height * ratio);
         }
     }
 
@@ -131,7 +409,8 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
         this.display.drawEmptyDisplay();
     }
 
-    this.titlebarHtml.css({width: dims[0] + "px", top: (this.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE)});
+    this.titlebarHtml.css({width: dims[0] + "px", top: (this.viewerHtml.position().top - 1.25 *
+        papaya.ui.Toolbar.SIZE)});
 };
 
 
@@ -144,24 +423,11 @@ papaya.Container.prototype.updateViewerSize = function () {
 
 
 
-
-function removeCheckForJSClasses(containerHtml, viewerHtml) {
-    // old way, here for backwards compatibility
-    viewerHtml.removeClass(PAPAYA_CONTAINER_CLASS_NAME);
-    viewerHtml.removeClass(PAPAYA_UTILS_CHECKFORJS_CSS);
-
-    // new way
-    containerHtml.removeClass(PAPAYA_CONTAINER_CLASS_NAME);
-    containerHtml.removeClass(PAPAYA_UTILS_CHECKFORJS_CSS);
-}
-
-
-
 papaya.Container.prototype.buildViewer = function (params) {
     var dims;
 
     this.viewerHtml = this.containerHtml.find("." + PAPAYA_VIEWER_CSS);
-    removeCheckForJSClasses(this.containerHtml, this.viewerHtml);
+    papaya.Container.removeCheckForJSClasses(this.containerHtml, this.viewerHtml);
     this.viewerHtml.html("");  // remove noscript message
     dims = this.getViewerDimensions();
     this.viewer = new papaya.viewer.Viewer(this, dims[0], dims[1], params);
@@ -196,6 +462,7 @@ papaya.Container.prototype.buildToolbar = function () {
 };
 
 
+
 papaya.Container.prototype.readFile = function(fileEntry, callback) {
     fileEntry.file(function(callback, file){
         if (callback) {
@@ -225,7 +492,7 @@ papaya.Container.prototype.readDirNextEntries = function(dirReader) {
             for (ctr = 0; ctr < len; ctr += 1) {
                 entry = entries[ctr];
                 if (entry.isFile) {
-                    container.readFile(entry, bind(container, container.addDroppedFile));
+                    container.readFile(entry, papaya.utilities.ObjectUtils.bind(container, container.addDroppedFile));
                 }
             }
 
@@ -287,7 +554,8 @@ papaya.Container.prototype.setUpDnD = function () {
                     }
 
                     if (entry.isFile) {
-                        container.readFile(entry, bind(container, container.addDroppedFile));
+                        container.readFile(entry, papaya.utilities.ObjectUtils.bind(container,
+                            container.addDroppedFile));
                     } else if (entry.isDirectory) {
                         container.readDir(entry);
                     }
@@ -312,7 +580,7 @@ papaya.Container.prototype.setUpDnD = function () {
 papaya.Container.prototype.addDroppedFile = function (file) {
     clearTimeout(this.dropTimeout);
     papayaDroppedFiles.push(file);
-    this.dropTimeout = setTimeout(bind(this, this.droppedFilesFinishedLoading), 100);
+    this.dropTimeout = setTimeout(papaya.utilities.ObjectUtils.bind(this, this.droppedFilesFinishedLoading), 100);
 };
 
 
@@ -321,6 +589,7 @@ papaya.Container.prototype.droppedFilesFinishedLoading = function () {
     this.viewer.loadImage(papayaDroppedFiles);
     papayaDroppedFiles = null;
 };
+
 
 
 papaya.Container.prototype.clearParams = function () {
@@ -366,8 +635,10 @@ papaya.Container.prototype.loadNext = function () {
 
 
 papaya.Container.prototype.readyForDnD = function () {
-    return !this.kioskMode && ((this.params.images === undefined) || (this.params.images.length === this.loadingImageIndex)) &&
-        ((this.params.encodedImages === undefined) || (this.params.encodedImages.length === this.loadingImageIndex));
+    return !this.kioskMode && ((this.params.images === undefined) ||
+        (this.params.images.length === this.loadingImageIndex)) &&
+        ((this.params.encodedImages === undefined) ||
+        (this.params.encodedImages.length === this.loadingImageIndex));
 };
 
 
@@ -383,19 +654,6 @@ papaya.Container.prototype.findLoadableImage = function (name) {
 
     return null;
 };
-
-
-
-function setToFullPage() {
-    document.body.style.marginTop = 0;
-    document.body.style.marginBottom = 0;
-    document.body.style.marginLeft = 'auto';
-    document.body.style.marginRight = 'auto';
-    document.body.style.padding = 0;
-    document.body.style.overflow = 'hidden';
-    document.body.style.width = "100%";
-    document.body.style.height = "100%";
-}
 
 
 
@@ -424,7 +682,7 @@ papaya.Container.prototype.expandViewer = function () {
         this.originalStyle.paddingLeft = document.body.style.paddingLeft;
         this.originalStyle.overflow = document.body.style.overflow;
 
-        setToFullPage();
+        papaya.Container.setToFullPage();
 
         this.containerHtml.after('<div style="display:none" class="' + PAPAYA_CONTAINER_COLLAPSABLE + '"></div>');
         $(document.body).prepend(this.containerHtml);
@@ -488,7 +746,7 @@ papaya.Container.prototype.isNestedViewer = function () {
 
 
 papaya.Container.prototype.disableScrollWheel = function () {
-    return (this.isNestedViewer() || PAPAYA_BROWSER.ios);
+    return (this.isNestedViewer() || papaya.utilities.PlatformUtils.ios);
 };
 
 
@@ -504,243 +762,14 @@ papaya.Container.prototype.isExpandable = function () {
 };
 
 
+/*** Window Events ***/
 
-function findParameters(containerHTML) {
-    var viewerHTML, paramsName, loadedParams = null;
+window.onload = papaya.Container.startPapaya;
 
-    paramsName = containerHTML.data("params");
 
-    if (!paramsName) {
-        viewerHTML = containerHTML.find("." + PAPAYA_VIEWER_CSS);
 
-        if (viewerHTML) {
-            paramsName = viewerHTML.data("params");
-        }
-    }
+window.onresize = papaya.Container.resizePapaya;
 
-    if (paramsName) {
-        loadedParams = window[paramsName];
-    }
-
-    getQueryParams(loadedParams);
-
-    return loadedParams;
-}
-
-
-
-function fillContainerHTML(containerHTML, isDefault, params) {
-    var toolbarHTML, viewerHTML, displayHTML;
-
-    if (isDefault) {
-        toolbarHTML = containerHTML.find("#" + PAPAYA_DEFAULT_TOOLBAR_ID);
-        viewerHTML = containerHTML.find("#" + PAPAYA_DEFAULT_VIEWER_ID);
-        displayHTML = containerHTML.find("#" + PAPAYA_DEFAULT_DISPLAY_ID);
-
-        if (toolbarHTML) {
-            toolbarHTML.addClass(PAPAYA_TOOLBAR_CSS);
-        } else {
-            containerHTML.prepend("<div class='" + PAPAYA_TOOLBAR_CSS + "' id='" + PAPAYA_DEFAULT_TOOLBAR_ID + "'></div>");
-        }
-
-        if (viewerHTML) {
-            viewerHTML.addClass(PAPAYA_VIEWER_CSS);
-        } else {
-            $("<div class='" + PAPAYA_VIEWER_CSS + "' id='" + PAPAYA_DEFAULT_VIEWER_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_TOOLBAR_ID));
-        }
-
-        if (displayHTML) {
-            displayHTML.addClass(PAPAYA_DISPLAY_CSS);
-        } else {
-            $("<div class='" + PAPAYA_DISPLAY_CSS + "' id='" + PAPAYA_DEFAULT_DISPLAY_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_VIEWER_ID));
-        }
-
-        console.log("This method of adding a Papaya container is deprecated.  Try simply <div class='papaya' data-params='params'></div> instead...");
-    } else {
-        containerHTML.attr("id", PAPAYA_DEFAULT_CONTAINER_ID + papayaContainers.length);
-
-        if (!params || (params.kioskMode === undefined) || !params.kioskMode) {
-            containerHTML.append("<div id='" + (PAPAYA_DEFAULT_TOOLBAR_ID + papayaContainers.length) + "' class='" + PAPAYA_TOOLBAR_CSS + "'></div>");
-        }
-
-        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_VIEWER_ID + papayaContainers.length) + "' class='" + PAPAYA_VIEWER_CSS + "'></div>");
-        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_DISPLAY_ID + papayaContainers.length) + "' class='" + PAPAYA_DISPLAY_CSS + "'></div>");
-
-        if (params && (params.orthogonal !== undefined) && !params.orthogonal) {
-            if (isInputRangeSupported()) {
-                containerHTML.append("<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "' class='" + PAPAYA_SLIDER_CSS + "'><input type='range' /></div>");
-            }
-        }
-    }
-
-    return viewerHTML;
-}
-
-
-
-function buildContainer(containerHTML, params) {
-    var container, message, viewerHtml, loadUrl, imageRefs = null;
-
-    message = checkForBrowserCompatibility();
-    viewerHtml = containerHTML.find("." + PAPAYA_VIEWER_CSS);
-
-    if (message !== null) {
-        removeCheckForJSClasses(containerHTML, viewerHtml);
-        containerHTML.addClass(PAPAYA_UTILS_UNSUPPORTED_CSS);
-        viewerHtml.addClass(PAPAYA_UTILS_UNSUPPORTED_MESSAGE_CSS);
-        viewerHtml.html(message);
-    } else {
-        container = new papaya.Container(containerHTML);
-        container.containerIndex = papayaContainers.length;
-        container.preferences = new papaya.viewer.Preferences();
-        removeCheckForJSClasses(containerHTML, viewerHtml);
-
-        if (params) {
-            container.params = $.extend(container.params, params);
-        }
-
-        container.nestedViewer = (containerHTML.parent()[0].tagName.toUpperCase() !== 'BODY');
-        container.kioskMode = (container.params.kioskMode === true);
-
-        if (container.params.fullScreenPadding !== undefined) {  // default is true
-            container.fullScreenPadding = container.params.fullScreenPadding;
-        }
-
-        if (container.params.orthogonal !== undefined) {  // default is true
-            container.orthogonal = container.params.orthogonal;
-        }
-
-        container.buildViewer(container.params);
-        container.buildDisplay();
-        container.buildToolbar();
-
-        if (!container.orthogonal) {
-            container.buildSliderControl();
-        }
-
-        container.setUpDnD();
-
-        loadUrl = viewerHtml.data("load-url");
-
-        if (loadUrl) {
-            imageRefs = loadUrl;
-            if (!(imageRefs instanceof Array)) {
-                imageRefs = [];
-                imageRefs[0] = loadUrl;
-            }
-
-            container.viewer.loadImage(imageRefs, true, false);
-        } else if (container.params.images) {
-            imageRefs = container.params.images[0];
-            if (!(imageRefs instanceof Array)) {
-                imageRefs = [];
-                imageRefs[0] = container.params.images[0];
-            }
-
-            container.viewer.loadImage(imageRefs, true, false);
-        } else if (container.params.encodedImages) {
-            imageRefs = container.params.encodedImages[0];
-            if (!(imageRefs instanceof Array)) {
-                imageRefs = [];
-                imageRefs[0] = container.params.encodedImages[0];
-            }
-
-            container.viewer.loadImage(container.params.encodedImages[0], false, true);
-        }
-
-        container.resizeViewerComponents(false);
-
-        if (!container.nestedViewer) {
-            containerHTML.parent().height("100%");
-            containerHTML.parent().width("100%");
-        }
-
-        papayaContainers.push(container);
-    }
-}
-
-
-
-function buildAllContainers() {
-    var defaultContainer, params;
-
-    defaultContainer = $("#" + PAPAYA_DEFAULT_CONTAINER_ID);
-
-    if (defaultContainer.length > 0) {
-        fillContainerHTML(defaultContainer, true);
-        params = findParameters(defaultContainer);
-        buildContainer(defaultContainer, params);
-    } else {
-        $("." + PAPAYA_CONTAINER_CLASS_NAME).each(function () {
-            params = findParameters($(this));
-            fillContainerHTML($(this), false, params);
-            buildContainer($(this), params);
-        });
-    }
-
-    if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
-        $("html").addClass(PAPAYA_CONTAINER_FULLSCREEN);
-        $("body").addClass(PAPAYA_CONTAINER_FULLSCREEN);
-        setToFullPage();
-
-        papayaContainers[0].resizeViewerComponents(true);
-    }
-}
-
-
-
-function addViewer(parentName, params, callback) {
-    var container, parent;
-
-    parent = $("#" + parentName);
-    container = $('<div class="papaya"></div>');
-
-    parent.html(container);
-
-    // remove parent click handler
-    parent[0].onclick = '';
-    parent.off("click");
-
-    fillContainerHTML(container, false, params);
-    buildContainer(container, params);
-
-    if (callback) {
-        callback();
-    }
-}
-
-
-
-function startPapaya() {
-    setTimeout(function () {  // setTimeout necessary in Chrome
-        window.scrollTo(0, 0);
-    }, 0);
-
-    buildAllContainers();
-}
-
-
-function resizePapaya() {
-    var ctr;
-
-    if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
-        papayaContainers[0].resizeViewerComponents(true);
-    } else {
-        for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
-            papayaContainers[ctr].resizeViewerComponents(true);
-        }
-    }
-
-    setTimeout(function () {  // setTimeout necessary in Chrome
-        window.scrollTo(0, 0);
-    }, 0);
-}
-
-
-window.onload = startPapaya;
-
-
-window.onresize = resizePapaya;
 
 
 window.onorientationchange = function () {
@@ -750,5 +779,13 @@ window.onorientationchange = function () {
         papayaContainers[ctr].toolbar.closeAllMenus();
     }
 
-    resizePapaya();
+    papaya.Container.resizePapaya();
 };
+
+
+
+window.addEventListener('message', function (msg) {
+    if (msg.data === PAPAYA_MANGO_INSTALLED) {
+        papaya.mangoinstalled = true;
+    }
+}, false);

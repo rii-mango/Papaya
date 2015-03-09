@@ -1,22 +1,15 @@
 
 /*jslint browser: true, node: true */
-/*global $, BrowserDetect, File, ArrayBuffer, DataView, Int16Array, bowser, detectOs, papaya, confirm, alert,
- createCookie, readCookie, PAPAYA_MANGO_INSTALLED */
+/*global $, PAPAYA_BROWSER_MIN_FIREFOX, PAPAYA_BROWSER_MIN_CHROME, PAPAYA_BROWSER_MIN_IE, PAPAYA_BROWSER_MIN_SAFARI,
+PAPAYA_BROWSER_MIN_OPERA, bowser, File, PAPAYA_MANGO_INSTALLED, confirm */
 
 "use strict";
 
-var BROWSER_MIN_FIREFOX = 7,  // slider controls only >=23
-    BROWSER_MIN_CHROME = 7,
-    BROWSER_MIN_SAFARI = 6,
-    BROWSER_MIN_IE = 10,
-    BROWSER_MIN_OPERA = 12;
+/*** Imports ***/
+var papaya = papaya || {};
+papaya.utilities = papaya.utilities || {};
+papaya.utilities.PlatformUtils = papaya.utilities.PlatformUtils || {};
 
-var LAST_SCROLL_EVENT_TIMESTAMP = 0;
-
-var PAPAYA_BROWSER = bowser;
-detectOs();
-
-// make sure console is present
 var console = console || {};
 console.log = console.log || function () {};
 console.warn = console.warn || function () {};
@@ -24,56 +17,61 @@ console.error = console.error || function () {};
 console.info = console.info || function () {};
 
 
-function detectOs() {
+/*** Static Fields ***/
+
+papaya.utilities.PlatformUtils.os = null;
+papaya.utilities.PlatformUtils.browser = bowser.name;
+papaya.utilities.PlatformUtils.browserVersion = bowser.version;
+papaya.utilities.PlatformUtils.ios = bowser.ios;
+papaya.utilities.PlatformUtils.lastScrollEventTimestamp = 0;
+
+
+/*** Static Methods ***/
+
+papaya.utilities.PlatformUtils.detectOs = function () {
     if (navigator.appVersion.indexOf("Win") !== -1) {
-        PAPAYA_BROWSER.os = "Windows";
+        return "Windows";
     } else if (navigator.appVersion.indexOf("Mac") !== -1) {
-        PAPAYA_BROWSER.os = "MacOS";
+        return "MacOS";
     } else if ((navigator.appVersion.indexOf("X11") !== -1) || (navigator.appVersion.indexOf("Linux") !== -1)) {
-        PAPAYA_BROWSER.os = "Linux";
+        return "Linux";
     } else {
-        PAPAYA_BROWSER.os = "Unknown";
+        return "Unknown";
     }
-}
+};
+papaya.utilities.PlatformUtils.os = papaya.utilities.PlatformUtils.detectOs();
 
 
 
-
-function checkForBrowserCompatibility() {
-    if (PAPAYA_BROWSER.name === "Firefox") {
-        if (PAPAYA_BROWSER.version < BROWSER_MIN_FIREFOX) {
-            return ("Papaya requires Firefox version " + BROWSER_MIN_FIREFOX + " or higher.");
+papaya.utilities.PlatformUtils.checkForBrowserCompatibility = function () {
+    if (papaya.utilities.PlatformUtils.browser === "Firefox") {
+        if (papaya.utilities.PlatformUtils.browserVersion < PAPAYA_BROWSER_MIN_FIREFOX) {
+            return ("Papaya requires Firefox version " + PAPAYA_BROWSER_MIN_FIREFOX + " or higher.");
         }
-    } else if (PAPAYA_BROWSER.name === "Chrome") {
-        if (PAPAYA_BROWSER.version < BROWSER_MIN_CHROME) {
-            return ("Papaya requires Chrome version " + BROWSER_MIN_CHROME + " or higher.");
+    } else if (papaya.utilities.PlatformUtils.browser === "Chrome") {
+        if (papaya.utilities.PlatformUtils.browserVersion < PAPAYA_BROWSER_MIN_CHROME) {
+            return ("Papaya requires Chrome version " + PAPAYA_BROWSER_MIN_CHROME + " or higher.");
         }
-    } else if (PAPAYA_BROWSER.name === "Internet Explorer") {
-        if (PAPAYA_BROWSER.version < BROWSER_MIN_IE) {
-            return ("Papaya requires Internet Explorer version " + BROWSER_MIN_IE + " or higher.");
+    } else if (papaya.utilities.PlatformUtils.browser === "Internet Explorer") {
+        if (papaya.utilities.PlatformUtils.browserVersion < PAPAYA_BROWSER_MIN_IE) {
+            return ("Papaya requires Internet Explorer version " + PAPAYA_BROWSER_MIN_IE + " or higher.");
         }
-    } else if (PAPAYA_BROWSER.name === "Safari") {
-        if (PAPAYA_BROWSER.version < BROWSER_MIN_SAFARI) {
-            return ("Papaya requires Safari version " + BROWSER_MIN_SAFARI + " or higher.");
+    } else if (papaya.utilities.PlatformUtils.browser === "Safari") {
+        if (papaya.utilities.PlatformUtils.browserVersion < PAPAYA_BROWSER_MIN_SAFARI) {
+            return ("Papaya requires Safari version " + PAPAYA_BROWSER_MIN_SAFARI + " or higher.");
         }
-    } else if (PAPAYA_BROWSER.name === "Opera") {
-        if (PAPAYA_BROWSER.version < BROWSER_MIN_OPERA) {
-            return ("Papaya requires Opera version " + BROWSER_MIN_OPERA + " or higher.");
+    } else if (papaya.utilities.PlatformUtils.browser === "Opera") {
+        if (papaya.utilities.PlatformUtils.browserVersion < PAPAYA_BROWSER_MIN_OPERA) {
+            return ("Papaya requires Opera version " + PAPAYA_BROWSER_MIN_OPERA + " or higher.");
         }
     }
 
     return null;
-}
+};
 
 
 
-function getKeyCode(ev) {
-    return (ev.keyCode || ev.charCode);
-}
-
-
-
-function getMousePositionX(ev) {
+papaya.utilities.PlatformUtils.getMousePositionX = function (ev) {
     var touch;
 
     if (ev.originalEvent) {
@@ -97,11 +95,11 @@ function getMousePositionX(ev) {
     }
 
     return ev.pageX;
-}
+};
 
 
 
-function getMousePositionY(ev) {
+papaya.utilities.PlatformUtils.getMousePositionY = function (ev) {
     var touch;
 
     if (ev.targetTouches) {
@@ -121,15 +119,16 @@ function getMousePositionY(ev) {
     }
 
     return ev.pageY;
-}
+};
+
 
 
 // a somewhat more consistent scroll across platforms
-function getScrollSign(ev) {
+papaya.utilities.PlatformUtils.getScrollSign = function (ev) {
     var now = Date.now();
 
-    if ((now - LAST_SCROLL_EVENT_TIMESTAMP) > 50) {
-        LAST_SCROLL_EVENT_TIMESTAMP = now;
+    if ((now - papaya.utilities.PlatformUtils.lastScrollEventTimestamp) > 50) {
+        papaya.utilities.PlatformUtils.lastScrollEventTimestamp = now;
 
         if (ev.wheelDelta) {
             return ev.wheelDelta > 0 ? 1 : -1;
@@ -141,12 +140,12 @@ function getScrollSign(ev) {
     }
 
     return 0;
-}
+};
 
 
 
 // Cross-browser slice method.
-var makeSlice = function (file, start, length) {
+papaya.utilities.PlatformUtils.makeSlice = function (file, start, length) {
     var fileType = (typeof File);
 
     if (fileType === 'undefined') {
@@ -170,26 +169,27 @@ var makeSlice = function (file, start, length) {
 
 
 
-function isPlatformLittleEndian() {
+papaya.utilities.PlatformUtils.isPlatformLittleEndian = function () {
     var buffer = new ArrayBuffer(2);
     new DataView(buffer).setInt16(0, 256, true);
     return new Int16Array(buffer)[0] === 256;
-}
+};
 
 
 
-function isInputRangeSupported() {
+papaya.utilities.PlatformUtils.isInputRangeSupported = function () {
     var test = document.createElement("input");
     test.setAttribute("type", "range");
     return (test.type === "range");
-}
+};
+
 
 
 // adapted from: http://www.rajeshsegu.com/2012/09/browser-detect-custom-protocols/comment-page-1/
-function launchCustomProtocol(container, url, callback) {
+papaya.utilities.PlatformUtils.launchCustomProtocol = function (container, url, callback) {
     var iframe, myWindow, cookie, success = false;
 
-    if (PAPAYA_BROWSER.name === "Internet Explorer") {
+    if (papaya.utilities.PlatformUtils.browser === "Internet Explorer") {
         myWindow = window.open('', '', 'width=0,height=0');
         myWindow.document.write("<iframe src='" + url + "'></iframe>");
 
@@ -209,7 +209,7 @@ function launchCustomProtocol(container, url, callback) {
 
             callback(success);
         }, 100);
-    } else if (PAPAYA_BROWSER.name === "Firefox") {
+    } else if (papaya.utilities.PlatformUtils.browser === "Firefox") {
         try {
             iframe = $("<iframe />");
             iframe.css({"display": "none"});
@@ -224,7 +224,7 @@ function launchCustomProtocol(container, url, callback) {
         iframe.remove();
 
         callback(success);
-    } else if (PAPAYA_BROWSER.name === "Chrome") {
+    } else if (papaya.utilities.PlatformUtils.browser === "Chrome") {
         container.viewerHtml.css({"outline": 0});
         container.viewerHtml.attr("tabindex", "1");
         container.viewerHtml.focus();
@@ -245,13 +245,13 @@ function launchCustomProtocol(container, url, callback) {
             }
         }, 2000);
     } else {
-        cookie = readCookie(papaya.viewer.Preferences.COOKIE_PREFIX + PAPAYA_MANGO_INSTALLED);
+        cookie = papaya.utilities.UrlUtils.readCookie(papaya.viewer.Preferences.COOKIE_PREFIX + PAPAYA_MANGO_INSTALLED);
 
         if (cookie || papaya.mangoinstalled) {
             success = true;
         } else {
-            if (confirm("This feature requires that " + (PAPAYA_BROWSER.ios ? "iMango" : "Mango") + " is installed.  Continue?")) {
-                createCookie(papaya.viewer.Preferences.COOKIE_PREFIX + PAPAYA_MANGO_INSTALLED, true, papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS);
+            if (confirm("This feature requires that " + (papaya.utilities.PlatformUtils.ios ? "iMango" : "Mango") + " is installed.  Continue?")) {
+                papaya.utilities.UrlUtils.createCookie(papaya.viewer.Preferences.COOKIE_PREFIX + PAPAYA_MANGO_INSTALLED, true, papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS);
                 success = true;
             }
         }
@@ -262,11 +262,4 @@ function launchCustomProtocol(container, url, callback) {
 
         callback(success);
     }
-}
-
-
-window.addEventListener('message', function (msg) {
-    if (msg.data === PAPAYA_MANGO_INSTALLED) {
-        papaya.mangoinstalled = true;
-    }
-}, false);
+};

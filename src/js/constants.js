@@ -1,4 +1,11 @@
 
+// Minimum supported browsers
+var PAPAYA_BROWSER_MIN_FIREFOX = 7,  // slider controls only >=23
+    PAPAYA_BROWSER_MIN_CHROME = 7,
+    PAPAYA_BROWSER_MIN_SAFARI = 6,
+    PAPAYA_BROWSER_MIN_IE = 10,
+    PAPAYA_BROWSER_MIN_OPERA = 12;
+
 // Base CSS classes
 var PAPAYA_CONTAINER_CLASS_NAME = "papaya",
     PAPAYA_CONTAINER_COLLAPSABLE = "papaya-collapsable",

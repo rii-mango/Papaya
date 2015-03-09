@@ -1,7 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global makeSlice, Base64Binary, FileReader, bind, Gunzip, isPlatformLittleEndian, deref, DataView,
-GUNZIP_MAGIC_COOKIE1, GUNZIP_MAGIC_COOKIE2, numeric, Uint8Array, pako */
+/*global GUNZIP_MAGIC_COOKIE1, GUNZIP_MAGIC_COOKIE2, Base64Binary, pako, numeric */
 
 "use strict";
 
@@ -82,19 +81,19 @@ papaya.volume.Volume.prototype.readNextFile = function (vol, index) {
     var blob;
 
     if (index < this.files.length) {
-        blob = makeSlice(this.files[index], 0, this.files[index].size);
+        blob = papaya.utilities.PlatformUtils.makeSlice(this.files[index], 0, this.files[index].size);
 
         try {
             var reader = new FileReader();
 
-            reader.onloadend = bind(vol, function (evt) {
+            reader.onloadend = papaya.utilities.ObjectUtils.bind(vol, function (evt) {
                 if (evt.target.readyState === FileReader.DONE) {
                     vol.rawData[index] = evt.target.result;
                     setTimeout(function () {vol.readNextFile(vol, index + 1); }, 0);
                 }
             });
 
-            reader.onerror = bind(vol, function (evt) {
+            reader.onerror = papaya.utilities.ObjectUtils.bind(vol, function (evt) {
                 vol.error = new Error("There was a problem reading that file:\n\n" + evt.getMessage());
                 vol.finishedLoad();
             });
@@ -192,7 +191,7 @@ papaya.volume.Volume.prototype.readEncodedData = function (names, callback) {
 papaya.volume.Volume.prototype.readNextEncodedData = function (vol, index, names) {
     if (index < names.length) {
         try {
-            vol.rawData[index] = Base64Binary.decodeArrayBuffer(deref(names[index]));
+            vol.rawData[index] = Base64Binary.decodeArrayBuffer(papaya.utilities.ObjectUtils.dereference(names[index]));
             vol.compressed = this.fileIsCompressed(this.fileName, vol.rawData[index]);
             setTimeout(function () {vol.readNextEncodedData(vol, index + 1, names); }, 0);
         } catch (err) {
@@ -292,7 +291,7 @@ papaya.volume.Volume.prototype.finishedDecompress = function (vol, data) {
 
 papaya.volume.Volume.prototype.finishedReadData = function (vol) {
     vol.header.readHeaderData(vol.fileName, vol.rawData, this.progressMeter, this.dialogHandler,
-        bind(this, this.finishedReadHeaderData));
+        papaya.utilities.ObjectUtils.bind(this, this.finishedReadHeaderData));
 };
 
 
@@ -307,7 +306,7 @@ papaya.volume.Volume.prototype.finishedReadHeaderData = function () {
         return;
     }
 
-    this.header.imageType.swapped = (this.header.imageType.littleEndian !== isPlatformLittleEndian());
+    this.header.imageType.swapped = (this.header.imageType.littleEndian !== papaya.utilities.PlatformUtils.isPlatformLittleEndian());
 
     var name = this.header.getName();
 
@@ -315,13 +314,13 @@ papaya.volume.Volume.prototype.finishedReadHeaderData = function () {
         this.fileName = this.header.getName();
     }
 
-    this.header.readImageData(this.progressMeter, bind(this, this.finishedReadImageData));
+    this.header.readImageData(this.progressMeter, papaya.utilities.ObjectUtils.bind(this, this.finishedReadImageData));
 };
 
 
 
 papaya.volume.Volume.prototype.finishedReadImageData = function (imageData) {
-    this.imageData.readFileData(this.header, imageData, bind(this, this.finishedLoad));
+    this.imageData.readFileData(this.header, imageData, papaya.utilities.ObjectUtils.bind(this, this.finishedLoad));
 };
 
 

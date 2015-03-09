@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global bind */
+/*global */
 
 "use strict";
 
@@ -62,10 +62,10 @@ papaya.volume.Header.prototype.readHeaderData = function (filename, data, progre
 
     if (headerType === papaya.volume.Header.HEADER_TYPE_NIFTI) {
         this.fileFormat = new papaya.volume.nifti.HeaderNIFTI();
-        this.fileFormat.readHeaderData(data, progressMeter, dialogHandler, bind(this, this.onFinishedHeaderRead));
+        this.fileFormat.readHeaderData(data, progressMeter, dialogHandler, papaya.utilities.ObjectUtils.bind(this, this.onFinishedHeaderRead));
     } else if (headerType === papaya.volume.Header.HEADER_TYPE_DICOM) {
         this.fileFormat = new papaya.volume.dicom.HeaderDICOM();
-        this.fileFormat.readHeaderData(data, progressMeter, dialogHandler, bind(this, this.onFinishedHeaderRead));
+        this.fileFormat.readHeaderData(data, progressMeter, dialogHandler, papaya.utilities.ObjectUtils.bind(this, this.onFinishedHeaderRead));
     } else {
         this.error = new Error(papaya.volume.Header.ERROR_UNRECOGNIZED_FORMAT);
         this.onFinishedFileFormatRead();

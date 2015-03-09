@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global numeric, daikon, concatArrayBuffers, bind */
+/*global daikon */
 
 "use strict";
 
@@ -110,8 +110,8 @@ papaya.volume.dicom.HeaderDICOM.prototype.finishedHeaderRead = function () {
             ]
         };
 
-        this.dialogHandler.showDialog("Select DICOM Series", dialogData, this, bind(this, this.setSeries),
-            bind(this, this.finishedSeriesSelection));
+        this.dialogHandler.showDialog("Select DICOM Series", dialogData, this, papaya.utilities.ObjectUtils.bind(this, this.setSeries),
+            papaya.utilities.ObjectUtils.bind(this, this.finishedSeriesSelection));
     } else {
         this.series = this.seriesMap[Object.keys(this.seriesMap)[0]];
 
@@ -153,7 +153,7 @@ papaya.volume.dicom.HeaderDICOM.prototype.readHeaderData = function (data, progr
                                                                      onFinishedHeaderRead) {
     this.onFinishedHeaderRead = onFinishedHeaderRead;
     this.dialogHandler = dialogHandler;
-    this.readNextHeaderData(data, 0, progressMeter, bind(this, this.finishedHeaderRead));
+    this.readNextHeaderData(data, 0, progressMeter, papaya.utilities.ObjectUtils.bind(this, this.finishedHeaderRead));
 };
 
 

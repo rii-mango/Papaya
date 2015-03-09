@@ -1,7 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global $, bind, PAPAYA_MENU_HOVERING_CSS, PAPAYA_MENU_UNSELECTABLE, getRelativeMousePositionX,
-    getRelativeMousePositionFromParentX, PAPAYA_MENU_INPUT_FIELD, PAPAYA_BROWSER */
+/*global $, PAPAYA_MENU_UNSELECTABLE, PAPAYA_MENU_INPUT_FIELD, PAPAYA_MENU_HOVERING_CSS */
 
 "use strict";
 
@@ -32,6 +31,21 @@ papaya.ui.MenuItemRange = papaya.ui.MenuItemRange || function (viewer, label, ac
 
     this.grabOffset = 0;
     this.screenVol = this.viewer.screenVolumes[this.index];
+};
+
+
+/*** Static Methods ***/
+
+papaya.ui.MenuItemRange.getRelativeMousePositionFromParentX = function (elem, ev) {
+    var parentOffset = elem.parent().offset();
+    return papaya.utilities.PlatformUtils.getMousePositionX(ev) - parentOffset.left;
+};
+
+
+
+papaya.ui.MenuItemRange.getRelativeMousePositionX = function (elem, ev) {
+    var parentOffset = elem.offset();
+    return papaya.utilities.PlatformUtils.getMousePositionX(ev) - parentOffset.left;
 };
 
 
@@ -83,15 +97,15 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
     maxSliderHtml = $("#" + maxSliderId);
     sliderHtml = $("#" + sliderId);
 
-    minSliderHtml.bind(PAPAYA_BROWSER.ios ? 'touchstart' : 'mousedown', function (ev) {
-        menuItemRange.grabOffset = getRelativeMousePositionX(minSliderHtml, ev);
+    minSliderHtml.bind(papaya.utilities.PlatformUtils.ios ? 'touchstart' : 'mousedown', function (ev) {
+        menuItemRange.grabOffset = papaya.ui.MenuItemRange.getRelativeMousePositionX(minSliderHtml, ev);
 
-        $(window).bind(PAPAYA_BROWSER.ios ? 'touchmove' : 'mousemove', function (ev) {
+        $(window).bind(papaya.utilities.PlatformUtils.ios ? 'touchmove' : 'mousemove', function (ev) {
             var val, maxVal;
 
             maxVal = (menuItemRange.screenVol.colorTable.maxLUT / papaya.viewer.ColorTable.LUT_MAX) *
                 (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1);
-            val = (getRelativeMousePositionFromParentX(minSliderHtml, ev) - menuItemRange.grabOffset);
+            val = (papaya.ui.MenuItemRange.getRelativeMousePositionFromParentX(minSliderHtml, ev) - menuItemRange.grabOffset);
 
             if (val < 0) {
                 val = 0;
@@ -113,14 +127,14 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
         return false;  // disable img drag
     });
 
-    maxSliderHtml.bind(PAPAYA_BROWSER.ios ? 'touchstart' : 'mousedown', function (ev) {
-        menuItemRange.grabOffset = getRelativeMousePositionX(maxSliderHtml, ev);
-        $(window).bind(PAPAYA_BROWSER.ios ? 'touchmove' : 'mousemove', function (ev) {
+    maxSliderHtml.bind(papaya.utilities.PlatformUtils.ios ? 'touchstart' : 'mousedown', function (ev) {
+        menuItemRange.grabOffset = papaya.ui.MenuItemRange.getRelativeMousePositionX(maxSliderHtml, ev);
+        $(window).bind(papaya.utilities.PlatformUtils.ios ? 'touchmove' : 'mousemove', function (ev) {
             var val, minVal;
 
             minVal = (menuItemRange.screenVol.colorTable.minLUT / papaya.viewer.ColorTable.LUT_MAX) *
                 (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1);
-            val = (getRelativeMousePositionFromParentX(maxSliderHtml, ev) - menuItemRange.grabOffset);
+            val = (papaya.ui.MenuItemRange.getRelativeMousePositionFromParentX(maxSliderHtml, ev) - menuItemRange.grabOffset);
 
             if (val < 0) {
                 val = 0;
@@ -142,35 +156,35 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
         return false;  // disable img drag
     });
 
-    $(window).bind(PAPAYA_BROWSER.ios ? 'touchend' : 'mouseup', function () {
-        $(window).unbind(PAPAYA_BROWSER.ios ? 'touchmove' : 'mousemove');
+    $(window).bind(papaya.utilities.PlatformUtils.ios ? 'touchend' : 'mouseup', function () {
+        $(window).unbind(papaya.utilities.PlatformUtils.ios ? 'touchmove' : 'mousemove');
     });
 
     $("#" + this.id).hover(function () {$(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
 
-    minHtml.change(bind(this, function () {
+    minHtml.change(papaya.utilities.ObjectUtils.bind(this, function () {
         menuItemRange.rangeChanged(true);
     }));
 
-    maxHtml.change(bind(this, function () {
+    maxHtml.change(papaya.utilities.ObjectUtils.bind(this, function () {
         menuItemRange.rangeChanged(false);
     }));
 
-    minHtml.keyup(bind(this, function (e) {
+    minHtml.keyup(papaya.utilities.ObjectUtils.bind(this, function (e) {
         if (e.keyCode === 13) {
             menuItemRange.rangeChanged(false);
             menuItemRange.viewer.container.toolbar.closeAllMenus();
         }
     }));
 
-    maxHtml.keyup(bind(this, function (e) {
+    maxHtml.keyup(papaya.utilities.ObjectUtils.bind(this, function (e) {
         if (e.keyCode === 13) {
             menuItemRange.rangeChanged(false);
             menuItemRange.viewer.container.toolbar.closeAllMenus();
         }
     }));
 
-    if (!PAPAYA_BROWSER.ios) {
+    if (!papaya.utilities.PlatformUtils.ios) {
         setTimeout(function () {  // IE wasn't picking up on the focus
             minHtml.focus();
             minHtml.select();

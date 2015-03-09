@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global bind, isString, deref */
+/*global */
 
 "use strict";
 
@@ -28,9 +28,9 @@ papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas, container, callbac
     var loadableImage = container.findLoadableImage(atlas.labels.atlas.header.images.summaryimagefile);
 
     if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
-        this.volume.readEncodedData([loadableImage.encode], bind(this, this.readFinished));
+        this.volume.readEncodedData([loadableImage.encode], papaya.utilities.ObjectUtils.bind(this, this.readFinished));
     } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
-        this.volume.readURLs([loadableImage.url], bind(this, this.readFinished));
+        this.volume.readURLs([loadableImage.url], papaya.utilities.ObjectUtils.bind(this, this.readFinished));
     }
 };
 
