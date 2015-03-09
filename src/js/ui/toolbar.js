@@ -58,6 +58,7 @@ papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
         {"label": "Transparency", "action": "ChangeAlpha", "type": "range", "method": "getAlpha"},
         {"label": "Color Table...", "action": "ColorTable", "items": [] },
+        {"label": "Close Overlay", "action": "CloseOverlay" },
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango" }
     ]
 };
@@ -421,6 +422,9 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
                     launchCustomProtocol(this.container, getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL, this.container.viewer.screenVolumes[imageIndex].volume.url) + "?" + encodeURIComponent("baseimage=" + this.container.viewer.volume.fileName + "&params=o"), this.customProtocolResult);
                 }
             }
+        } else if (action.startsWith("CloseOverlay")) {
+            imageIndex = parseInt(action.substring(action.lastIndexOf("-") + 1), 10);
+            this.viewer.closeOverlay(imageIndex);
         }
     }
 };

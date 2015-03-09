@@ -399,6 +399,17 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
 
 
 
+papaya.viewer.Viewer.prototype.closeOverlay = function (index) {
+    this.screenVolumes.splice(index, 1);
+    this.setCurrentScreenVol(this.screenVolumes.length - 1);
+    this.drawViewer(true);
+    this.container.toolbar.buildToolbar();
+    this.container.toolbar.updateImageButtons();
+    this.updateWindowTitle();
+};
+
+
+
 papaya.viewer.Viewer.prototype.hasDefinedAtlas = function () {
     var papayaDataType, papayaDataTalairachAtlasType;
 
