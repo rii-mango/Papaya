@@ -280,5 +280,10 @@ papaya.viewer.ScreenVolume.prototype.getCurrentTime = function () {
 
 papaya.viewer.ScreenVolume.prototype.setCurrentTime = function (seconds) {
     var secondsPerSeriesPoint = (this.volume.header.voxelDimensions.timeSize * this.volume.header.voxelDimensions.getTemporalUnitMultiplier());
-    this.setTimepoint(parseInt(Math.round(seconds / secondsPerSeriesPoint), 10));
+
+    if (secondsPerSeriesPoint === 0) {
+        this.setTimepoint(0);
+    } else {
+        this.setTimepoint(parseInt(Math.round(seconds / secondsPerSeriesPoint), 10));
+    }
 };
