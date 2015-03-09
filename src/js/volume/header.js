@@ -4,11 +4,12 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
 
-
+/*** Constructor ***/
 papaya.volume.Header = papaya.volume.Header || function () {
     this.fileFormat = null;
     this.imageDimensions = null;
@@ -24,6 +25,8 @@ papaya.volume.Header = papaya.volume.Header || function () {
 };
 
 
+/*** Static Pseudo-constants ***/
+
 papaya.volume.Header.HEADER_TYPE_UNKNOWN = 0;
 papaya.volume.Header.HEADER_TYPE_NIFTI = 1;
 papaya.volume.Header.HEADER_TYPE_DICOM = 2;
@@ -37,6 +40,7 @@ papaya.volume.Header.ORIENTATION_CERTAINTY_LOW = 1;
 papaya.volume.Header.ORIENTATION_CERTAINTY_HIGH = 2;
 
 
+/*** Prototype Methods ***/
 
 papaya.volume.Header.prototype.findHeaderType = function (filename, data) {
     if (papaya.volume.nifti.HeaderNIFTI.isThisFormat(filename, data)) {
@@ -50,7 +54,8 @@ papaya.volume.Header.prototype.findHeaderType = function (filename, data) {
 
 
 
-papaya.volume.Header.prototype.readHeaderData = function (filename, data, progressMeter, dialogHandler, onFinishedFileFormatRead) {
+papaya.volume.Header.prototype.readHeaderData = function (filename, data, progressMeter, dialogHandler,
+                                                          onFinishedFileFormatRead) {
     var headerType = this.findHeaderType(filename, data);
 
     this.onFinishedFileFormatRead = onFinishedFileFormatRead;
@@ -98,7 +103,8 @@ papaya.volume.Header.prototype.onFinishedHeaderRead = function () {
 
         this.orientation.createInfo(this.imageDimensions, this.voxelDimensions);
 
-        this.origin = this.orientation.convertCoordinate(this.fileFormat.getOrigin(), new papaya.core.Coordinate(0, 0, 0));
+        this.origin = this.orientation.convertCoordinate(this.fileFormat.getOrigin(),
+            new papaya.core.Coordinate(0, 0, 0));
 
         this.imageRange = this.fileFormat.getImageRange();
         if (!this.imageRange.isValid()) {

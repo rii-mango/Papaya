@@ -4,11 +4,12 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.ui = papaya.ui || {};
 
 
-
+/*** Constructor ***/
 papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, callback, modifier) {
     this.viewer = viewer;
     this.label = label;
@@ -24,6 +25,7 @@ papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, call
 };
 
 
+/*** Prototype Methods ***/
 
 papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
     var html, thisHtml;

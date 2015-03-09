@@ -4,11 +4,12 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.core = papaya.core || {};
 
 
-
+/*** Constructor ***/
 papaya.core.Coordinate = papaya.core.Coordinate || function (xLoc, yLoc, zLoc) {
     this.x = xLoc;
     this.y = yLoc;
@@ -16,6 +17,7 @@ papaya.core.Coordinate = papaya.core.Coordinate || function (xLoc, yLoc, zLoc) {
 };
 
 
+/*** Prototype Methods ***/
 
 papaya.core.Coordinate.prototype.setCoordinate = function (xLoc, yLoc, zLoc, round) {
     if (round) {

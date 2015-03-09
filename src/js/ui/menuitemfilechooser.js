@@ -4,11 +4,12 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.ui = papaya.ui || {};
 
 
-
+/*** Constructor ***/
 papaya.ui.MenuItemFileChooser = papaya.ui.MenuItemFileChooser || function (viewer, label, action, callback, folder) {
     this.viewer = viewer;
     this.label = label;
@@ -20,6 +21,7 @@ papaya.ui.MenuItemFileChooser = papaya.ui.MenuItemFileChooser || function (viewe
 };
 
 
+/*** Prototype Methods ***/
 
 papaya.ui.MenuItemFileChooser.prototype.buildHTML = function (parentId) {
     var filechooser, html;
@@ -30,9 +32,11 @@ papaya.ui.MenuItemFileChooser.prototype.buildHTML = function (parentId) {
         PAPAYA_MENU_FILECHOOSER + "' for='" + this.fileChooserId + "'>" + this.label;
 
     if (this.folder) {
-        html += "</label><input type='file' id='" + this.fileChooserId + "' multiple='multiple' webkitdirectory directory name='files' /></span></li>";
+        html += "</label><input type='file' id='" + this.fileChooserId +
+            "' multiple='multiple' webkitdirectory directory name='files' /></span></li>";
     } else {
-        html += "</label><input type='file' id='" + this.fileChooserId + "' multiple='multiple' name='files' /></span></li>";
+        html += "</label><input type='file' id='" + this.fileChooserId +
+            "' multiple='multiple' name='files' /></span></li>";
     }
 
     $("#" + parentId).append(html);

@@ -4,11 +4,12 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.viewer = papaya.viewer || {};
 
 
-
+/*** Constructor ***/
 papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params, lutName, baseImage, parametric) {
     /*jslint sub: true */
     this.volume = vol;
@@ -60,6 +61,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
 };
 
 
+/*** Prototype Methods ***/
 
 papaya.viewer.ScreenVolume.prototype.setScreenRange = function (min, max) {
     this.screenMin = min;
@@ -135,7 +137,8 @@ papaya.viewer.ScreenVolume.prototype.findDisplayRange = function (parametric, sy
     }
 
     if (this.isOverlay()) {
-        if ((min === max) || ((min < 0) && (max > 0)) || ((min > 0) && (max < 0)) || (parametric && ((min > 0) || (max > 0))) || symmetric) {  // if not set or crosses zero
+        if ((min === max) || ((min < 0) && (max > 0)) || ((min > 0) && (max < 0)) || (parametric && ((min > 0) ||
+            (max > 0))) || symmetric) {  // if not set or crosses zero
             this.findImageRange();
 
             if (parametric) {
@@ -168,7 +171,7 @@ papaya.viewer.ScreenVolume.prototype.findDisplayRange = function (parametric, sy
             max = this.imageMax;
         }
 
-        if (!(max > min)) { // sanity check
+        if (max <= min) { // sanity check
             this.findImageRange();
             min = this.imageMin;
             max = this.imageMax;
@@ -273,13 +276,15 @@ papaya.viewer.ScreenVolume.prototype.resetDynamicRange = function () {
 
 
 papaya.viewer.ScreenVolume.prototype.getCurrentTime = function () {
-    return (this.currentTimepoint * (this.volume.header.voxelDimensions.timeSize * this.volume.header.voxelDimensions.getTemporalUnitMultiplier()));
+    return (this.currentTimepoint * (this.volume.header.voxelDimensions.timeSize *
+        this.volume.header.voxelDimensions.getTemporalUnitMultiplier()));
 };
 
 
 
 papaya.viewer.ScreenVolume.prototype.setCurrentTime = function (seconds) {
-    var secondsPerSeriesPoint = (this.volume.header.voxelDimensions.timeSize * this.volume.header.voxelDimensions.getTemporalUnitMultiplier());
+    var secondsPerSeriesPoint = (this.volume.header.voxelDimensions.timeSize *
+        this.volume.header.voxelDimensions.getTemporalUnitMultiplier());
 
     if (secondsPerSeriesPoint === 0) {
         this.setTimepoint(0);

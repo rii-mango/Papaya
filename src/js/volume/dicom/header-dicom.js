@@ -4,11 +4,13 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 papaya.volume.dicom = papaya.volume.dicom || {};
 
 
+/*** Constructor ***/
 papaya.volume.dicom.HeaderDICOM = papaya.volume.dicom.HeaderDICOM || function () {
     this.series = null;
     this.seriesMap = [];
@@ -18,8 +20,12 @@ papaya.volume.dicom.HeaderDICOM = papaya.volume.dicom.HeaderDICOM || function ()
 };
 
 
+/*** Static Pseudo-constants ***/
+
 papaya.volume.dicom.HeaderDICOM.ORIENTATION_DEFAULT = "XYZ+--";
 
+
+/*** Static Methods ***/
 
 papaya.volume.dicom.HeaderDICOM.isThisFormat = function (filename, data) {
     var buf, offset, magicCookieLength, ctr, cookieCtr = 0, parser, tag;
@@ -52,6 +58,7 @@ papaya.volume.dicom.HeaderDICOM.isThisFormat = function (filename, data) {
 };
 
 
+/*** Prototype Methods ***/
 
 papaya.volume.dicom.HeaderDICOM.prototype.setSeries = function (name, value) {
     var ctr;
@@ -103,7 +110,8 @@ papaya.volume.dicom.HeaderDICOM.prototype.finishedHeaderRead = function () {
             ]
         };
 
-        this.dialogHandler.showDialog("Select DICOM Series", dialogData, this, bind(this, this.setSeries), bind(this, this.finishedSeriesSelection));
+        this.dialogHandler.showDialog("Select DICOM Series", dialogData, this, bind(this, this.setSeries),
+            bind(this, this.finishedSeriesSelection));
     } else {
         this.series = this.seriesMap[Object.keys(this.seriesMap)[0]];
 
@@ -141,7 +149,8 @@ papaya.volume.dicom.HeaderDICOM.prototype.finishedSeriesSelection = function () 
 
 
 
-papaya.volume.dicom.HeaderDICOM.prototype.readHeaderData = function (data, progressMeter, dialogHandler, onFinishedHeaderRead) {
+papaya.volume.dicom.HeaderDICOM.prototype.readHeaderData = function (data, progressMeter, dialogHandler,
+                                                                     onFinishedHeaderRead) {
     this.onFinishedHeaderRead = onFinishedHeaderRead;
     this.dialogHandler = dialogHandler;
     this.readNextHeaderData(data, 0, progressMeter, bind(this, this.finishedHeaderRead));
@@ -149,7 +158,8 @@ papaya.volume.dicom.HeaderDICOM.prototype.readHeaderData = function (data, progr
 
 
 
-papaya.volume.dicom.HeaderDICOM.prototype.readNextHeaderData = function (data, index, progressMeter, onFinishedHeaderRead) {
+papaya.volume.dicom.HeaderDICOM.prototype.readNextHeaderData = function (data, index, progressMeter,
+                                                                         onFinishedHeaderRead) {
     var image, series;
 
     if (index >= data.length) {
@@ -175,7 +185,8 @@ papaya.volume.dicom.HeaderDICOM.prototype.readNextHeaderData = function (data, i
             onFinishedHeaderRead();
         } else {
             progressMeter.drawProgress(index / data.length, "Reading DICOM Headers");
-            setTimeout(bind(this, function() {this.readNextHeaderData(data, index + 1, progressMeter, onFinishedHeaderRead);}), 0);
+            setTimeout(function() {this.readNextHeaderData(data, index + 1, progressMeter,
+                onFinishedHeaderRead);}.bind(this), 0);
         }
     }
 };
@@ -215,7 +226,8 @@ papaya.volume.dicom.HeaderDICOM.prototype.getImageDimensions = function () {
 
     if (this.series.isMosaic) {
         numberOfSlices = this.series.images[0].getMosaicCols() * this.series.images[0].getMosaicRows();
-        imageDimensions = new papaya.volume.ImageDimensions(parseInt(this.series.images[0].getCols() / this.series.images[0].getMosaicCols()),
+        imageDimensions = new papaya.volume.ImageDimensions(parseInt(this.series.images[0].getCols() /
+            this.series.images[0].getMosaicCols()),
             parseInt(this.series.images[0].getRows() / this.series.images[0].getMosaicRows()), numberOfSlices,
             this.series.images.length);
     } else if (this.series.isMultiFrameVolume) {
@@ -226,13 +238,15 @@ papaya.volume.dicom.HeaderDICOM.prototype.getImageDimensions = function () {
             this.series.images[0].getRows(), this.series.numberOfFramesInFile, this.series.numberOfFrames);
     } else if (this.series.isImplicitTimeseries) {
         imageDimensions = new papaya.volume.ImageDimensions(this.series.images[0].getCols(),
-            this.series.images[0].getRows(), parseInt(this.series.images.length / this.series.numberOfFrames), this.series.numberOfFrames);
+            this.series.images[0].getRows(), parseInt(this.series.images.length / this.series.numberOfFrames),
+            this.series.numberOfFrames);
     } else {
         imageDimensions = new papaya.volume.ImageDimensions(this.series.images[0].getCols(),
             this.series.images[0].getRows(), this.series.images.length, 1);
     }
 
-    size = parseInt((imageDimensions.getNumVoxelsSeries() * parseInt(this.series.images[0].getBitsAllocated() / 8)) / this.series.images.length);
+    size = parseInt((imageDimensions.getNumVoxelsSeries() * parseInt(this.series.images[0].getBitsAllocated() / 8)) /
+        this.series.images.length);
 
     for (ctr = 0; ctr < this.series.images.length; ctr += 1) {
         imageDimensions.dataOffsets[ctr] = this.series.images[ctr].getPixelData().offsetValue;
@@ -252,10 +266,12 @@ papaya.volume.dicom.HeaderDICOM.prototype.getVoxelDimensions = function () {
     sliceSpacing = Math.max(this.series.images[0].getSliceGap(), this.series.images[0].getSliceThickness());
 
     if (this.series.isMosaic || this.series.isMultiFrame) {
-        voxelDimensions = new papaya.volume.VoxelDimensions(pixelSpacing[1], pixelSpacing[0], sliceSpacing, this.series.images[0].getTR() / 1000.0);
+        voxelDimensions = new papaya.volume.VoxelDimensions(pixelSpacing[1], pixelSpacing[0], sliceSpacing,
+            this.series.images[0].getTR() / 1000.0);
     } else {
         if (this.series.images.length === 1) {
-            voxelDimensions = new papaya.volume.VoxelDimensions(pixelSpacing[1], pixelSpacing[0], sliceSpacing, this.series.images[0].getTR() / 1000.0);
+            voxelDimensions = new papaya.volume.VoxelDimensions(pixelSpacing[1], pixelSpacing[0], sliceSpacing,
+                this.series.images[0].getTR() / 1000.0);
         } else {
             sliceDis = Math.abs(this.series.images[0].getSliceLocation() - this.series.images[1].getSliceLocation());
 
@@ -263,7 +279,8 @@ papaya.volume.dicom.HeaderDICOM.prototype.getVoxelDimensions = function () {
                 sliceDis = this.series.images[0].getSliceThickness();
             }
 
-            voxelDimensions = new papaya.volume.VoxelDimensions(pixelSpacing[1], pixelSpacing[0], sliceDis, this.series.images[0].getTR() / 1000.0);
+            voxelDimensions = new papaya.volume.VoxelDimensions(pixelSpacing[1], pixelSpacing[0], sliceDis,
+                this.series.images[0].getTR() / 1000.0);
         }
     }
 
@@ -303,7 +320,8 @@ papaya.volume.dicom.HeaderDICOM.prototype.getImageType = function () {
         dataTypeCode = papaya.volume.ImageType.DATATYPE_UNKNOWN;
     }
 
-    return new papaya.volume.ImageType(dataTypeCode, parseInt(this.series.images[0].getBitsAllocated() / 8), this.series.images[0].littleEndian, false);
+    return new papaya.volume.ImageType(dataTypeCode, parseInt(this.series.images[0].getBitsAllocated() / 8),
+        this.series.images[0].littleEndian, false);
 };
 
 
@@ -318,8 +336,10 @@ papaya.volume.dicom.HeaderDICOM.prototype.getImageRange = function () {
 
     for (ctr = 0; ctr < this.series.images.length; ctr += 1) {
         image = this.series.images[ctr];
-        max = (image.getImageMax() * this.getDataScaleSlope(this.series.isElscint, image)) + (image.getDataScaleIntercept() || 0);
-        min = (image.getImageMin() * this.getDataScaleSlope(this.series.isElscint, image)) + (image.getDataScaleIntercept() || 0);
+        max = (image.getImageMax() * this.getDataScaleSlope(this.series.isElscint, image)) +
+            (image.getDataScaleIntercept() || 0);
+        min = (image.getImageMin() * this.getDataScaleSlope(this.series.isElscint, image)) +
+            (image.getDataScaleIntercept() || 0);
 
         if (ctr === 0) {
             gMax = max;
@@ -445,7 +465,8 @@ papaya.volume.dicom.HeaderDICOM.prototype.getOrientation = function () {
         orientation = papaya.volume.dicom.HeaderDICOM.ORIENTATION_DEFAULT;
     }
 
-    orientation = orientation.substring(0, 5) + (this.series.sliceSense ? '+' : '-'); // this fixes the cross-slice orientation sense (usually)
+    // this fixes the cross-slice orientation sense (usually)
+    orientation = orientation.substring(0, 5) + (this.series.sliceSense ? '+' : '-');
 
     return new papaya.volume.Orientation(orientation);
 };

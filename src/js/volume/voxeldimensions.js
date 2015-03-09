@@ -4,10 +4,12 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
 
+/*** Constructor ***/
 papaya.volume.VoxelDimensions = papaya.volume.VoxelDimensions || function (colSize, rowSize, sliceSize, timeSize) {
     this.colSize = Math.abs(colSize);
     this.rowSize = Math.abs(rowSize);
@@ -19,6 +21,8 @@ papaya.volume.VoxelDimensions = papaya.volume.VoxelDimensions || function (colSi
     this.spatialUnit = papaya.volume.VoxelDimensions.UNITS_UNKNOWN;
     this.temporalUnit = papaya.volume.VoxelDimensions.UNITS_UNKNOWN;
 };
+
+/*** Static Pseudo-constants ***/
 
 papaya.volume.VoxelDimensions.UNITS_UNKNOWN = 0;
 papaya.volume.VoxelDimensions.UNITS_METER = 1;
@@ -43,6 +47,8 @@ papaya.volume.VoxelDimensions.UNIT_STRINGS[papaya.volume.VoxelDimensions.UNITS_H
 papaya.volume.VoxelDimensions.UNIT_STRINGS[papaya.volume.VoxelDimensions.UNITS_PPM] = "Parts-per-million";
 papaya.volume.VoxelDimensions.UNIT_STRINGS[papaya.volume.VoxelDimensions.UNITS_RADS] = "Radians-per-second";
 
+
+/*** Prototype Methods ***/
 
 papaya.volume.VoxelDimensions.prototype.isValid = function () {
     return ((this.colSize > 0) && (this.rowSize > 0) && (this.sliceSize > 0) && (this.timeSize >= 0));

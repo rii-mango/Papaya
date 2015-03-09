@@ -4,13 +4,15 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
 
-
+/*** Constructor ***/
 papaya.volume.Transform = papaya.volume.Transform || function (mat, volume) {
-    this.voxelValue = new papaya.volume.VoxelValue(volume.imageData, volume.header.imageType, volume.header.imageDimensions, volume.header.imageRange, volume.header.orientation);
+    this.voxelValue = new papaya.volume.VoxelValue(volume.imageData, volume.header.imageType,
+        volume.header.imageDimensions, volume.header.imageRange, volume.header.orientation);
     this.voxelDimensions = volume.header.voxelDimensions;
     this.imageDimensions = volume.header.imageDimensions;
     this.volume = volume;
@@ -30,14 +32,13 @@ papaya.volume.Transform = papaya.volume.Transform || function (mat, volume) {
 };
 
 
-/* Static pseudo-constants */
+/*** Static Pseudo-constants ***/
 
 papaya.volume.Transform.IDENTITY = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
 papaya.volume.Transform.EPSILON = 0.00001;
 
 
-
-/* Static class functions */
+/*** Static Methods ***/
 
 papaya.volume.Transform.printTransform = function (mat) {
     console.log(mat[0][0] + " " + mat[0][1] + " " + mat[0][2] + " " + mat[0][3]);
@@ -47,10 +48,11 @@ papaya.volume.Transform.printTransform = function (mat) {
 };
 
 
+
 papaya.volume.Transform.decompose = function (mat) {
-    var xTrans, yTrans, zTrans, xRot, yRot, zRot, xScale, yScale, zScale, tempK1, tempK2, tempK3, tempK4, tempK5, tempK6,
-        tempM1, tempM2, tempM3, tempM4, tempM5, tempM6, tempM7, tempM8, tempM9, tempN1, tempN2, tempN3, tempN4, tempN5,
-        tempN6, xSkew, ySkew, zSkew, decomposedParams;
+    var xTrans, yTrans, zTrans, xRot, yRot, zRot, xScale, yScale, zScale, tempK1, tempK2, tempK3, tempK4, tempK5,
+        tempK6, tempM1, tempM2, tempM3, tempM4, tempM5, tempM6, tempM7, tempM8, tempM9, tempN1, tempN2, tempN3, tempN4,
+        tempN5, tempN6, xSkew, ySkew, zSkew, decomposedParams;
 
     decomposedParams = [];
 
@@ -81,10 +83,13 @@ papaya.volume.Transform.decompose = function (mat) {
     tempK5 = (Math.cos(xRot) * Math.sin(yRot)) + (Math.cos(xRot) * (Math.cos(yRot) / Math.tan(yRot)));
     tempK6 = (mat[1][0] * (Math.cos(xRot) / Math.tan(yRot))) + mat[1][2];
 
-    zRot = papaya.volume.Transform.validateNum(Math.atan((((tempK1 * tempK6) - (tempK3 * tempK4)) / ((tempK3 * tempK5) - (tempK2 * tempK6))))); // zRot
+    zRot = papaya.volume.Transform.validateNum(Math.atan((((tempK1 * tempK6) - (tempK3 * tempK4)) / ((tempK3 * tempK5) -
+        (tempK2 * tempK6))))); // zRot
 
-    yScale = papaya.volume.Transform.validateScale((tempK3 / ((Math.cos(zRot) * tempK1) + (Math.sin(zRot) * tempK2)))); // yScale
-    xSkew = papaya.volume.Transform.validateNum((((yScale * Math.sin(zRot) * Math.cos(yRot)) - mat[1][0]) / (zScale * Math.sin(yRot)))); // xSkew
+    yScale = papaya.volume.Transform.validateScale((tempK3 / ((Math.cos(zRot) * tempK1) +
+        (Math.sin(zRot) * tempK2)))); // yScale
+    xSkew = papaya.volume.Transform.validateNum((((yScale * Math.sin(zRot) * Math.cos(yRot)) - mat[1][0]) /
+        (zScale * Math.sin(yRot)))); // xSkew
 
     tempM1 = Math.cos(yRot) * Math.cos(zRot);
     tempM2 = yScale * Math.cos(yRot) * Math.sin(zRot);
@@ -102,9 +107,12 @@ papaya.volume.Transform.decompose = function (mat) {
     tempN5 = (tempM3 * tempM7) - (tempM1 * tempM9);
     tempN6 = (tempM7 * mat[0][0]) - (tempM1 * mat[0][2]);
 
-    ySkew = papaya.volume.Transform.validateNum((((tempN4 * tempN3) - (tempN6 * tempN1)) / ((tempN2 * tempN4) - (tempN1 * tempN5)))); // ySkew
-    zSkew = papaya.volume.Transform.validateNum((((tempN3 * tempN5) - (tempN2 * tempN6)) / ((tempN1 * tempN5) - (tempN2 * tempN4)))); // zSkew
-    xScale = papaya.volume.Transform.validateScale(((mat[0][0] - (zSkew * tempM2) - (ySkew * tempM3)) / tempM1)); // xScale
+    ySkew = papaya.volume.Transform.validateNum((((tempN4 * tempN3) - (tempN6 * tempN1)) / ((tempN2 * tempN4) -
+        (tempN1 * tempN5)))); // ySkew
+    zSkew = papaya.volume.Transform.validateNum((((tempN3 * tempN5) - (tempN2 * tempN6)) / ((tempN1 * tempN5) -
+        (tempN2 * tempN4)))); // zSkew
+    xScale = papaya.volume.Transform.validateScale(((mat[0][0] - (zSkew * tempM2) - (ySkew * tempM3)) /
+        tempM1)); // xScale
 
     if (yRot === papaya.volume.Transform.EPSILON) {
         yRot = 0;
@@ -134,6 +142,7 @@ papaya.volume.Transform.decompose = function (mat) {
 };
 
 
+
 papaya.volume.Transform.hasRotations = function (mat) {
     var decomp, epsilon, rotX, rotY, rotZ;
 
@@ -150,6 +159,7 @@ papaya.volume.Transform.hasRotations = function (mat) {
 
     return false;
 };
+
 
 
 papaya.volume.Transform.validateNum = function (num) {
@@ -169,6 +179,7 @@ papaya.volume.Transform.validateNum = function (num) {
 };
 
 
+
 papaya.volume.Transform.validateScale = function (num) {
     if ((num === Number.POSITIVE_INFINITY) || (num === Number.NEGATIVE_INFINITY)) {
         return 1;
@@ -182,6 +193,7 @@ papaya.volume.Transform.validateScale = function (num) {
 };
 
 
+
 papaya.volume.Transform.validateZero = function (num) {
     if (Math.abs(num) < papaya.volume.Transform.EPSILON) {
         return 0;
@@ -191,8 +203,7 @@ papaya.volume.Transform.validateZero = function (num) {
 };
 
 
-
-/* Class functions */
+/*** Prototype Methods ***/
 
 papaya.volume.Transform.prototype.updateSizeMat = function () {
     this.sizeMat[0][0] = this.voxelDimensions.xSize;
@@ -207,30 +218,39 @@ papaya.volume.Transform.prototype.updateSizeMat = function () {
 };
 
 
+
 papaya.volume.Transform.prototype.updateOrientMat = function () {
     this.orientMat = this.volume.header.orientation.orientMat;
 };
+
 
 
 papaya.volume.Transform.prototype.updateIndexTransform = function () {
     var ctrOut, ctrIn;
     for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
         for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
-            this.indexMat[ctrOut][ctrIn] = (this.orientMat[ctrOut][0] * this.mat[0][ctrIn]) + (this.orientMat[ctrOut][1] * this.mat[1][ctrIn]) + (this.orientMat[ctrOut][2] * this.mat[2][ctrIn]) + (this.orientMat[ctrOut][3] * this.mat[3][ctrIn]);
+            this.indexMat[ctrOut][ctrIn] = (this.orientMat[ctrOut][0] * this.mat[0][ctrIn]) +
+            (this.orientMat[ctrOut][1] * this.mat[1][ctrIn]) +
+            (this.orientMat[ctrOut][2] * this.mat[2][ctrIn]) +
+            (this.orientMat[ctrOut][3] * this.mat[3][ctrIn]);
         }
     }
 };
+
 
 
 papaya.volume.Transform.prototype.updateMmTransform = function () {
     var ctrOut, ctrIn;
     for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
         for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
-            this.mmMat[ctrOut][ctrIn] = (this.indexMat[ctrOut][0] * this.sizeMatInverse[0][ctrIn]) + (this.indexMat[ctrOut][1] * this.sizeMatInverse[1][ctrIn])
-                + (this.indexMat[ctrOut][2] * this.sizeMatInverse[2][ctrIn]) + (this.indexMat[ctrOut][3] * this.sizeMatInverse[3][ctrIn]);
+            this.mmMat[ctrOut][ctrIn] = (this.indexMat[ctrOut][0] * this.sizeMatInverse[0][ctrIn]) +
+            (this.indexMat[ctrOut][1] * this.sizeMatInverse[1][ctrIn]) +
+            (this.indexMat[ctrOut][2] * this.sizeMatInverse[2][ctrIn]) +
+            (this.indexMat[ctrOut][3] * this.sizeMatInverse[3][ctrIn]);
         }
     }
 };
+
 
 
 papaya.volume.Transform.prototype.updateOriginMat = function () {
@@ -242,6 +262,7 @@ papaya.volume.Transform.prototype.updateOriginMat = function () {
     this.originMat[1][3] = this.volume.header.origin.y;
     this.originMat[2][3] = this.volume.header.origin.z;
 };
+
 
 
 papaya.volume.Transform.prototype.updateWorldMat = function () {
@@ -261,64 +282,82 @@ papaya.volume.Transform.prototype.updateWorldMat = function () {
 
         for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
             for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
-                this.tempMat[ctrOut][ctrIn] = (this.sizeMat[ctrOut][0] * originNiftiMat[0][ctrIn]) + (this.sizeMat[ctrOut][1] * originNiftiMat[1][ctrIn])
-                    + (this.sizeMat[ctrOut][2] * originNiftiMat[2][ctrIn]) + (this.sizeMat[ctrOut][3] * originNiftiMat[3][ctrIn]);
+                this.tempMat[ctrOut][ctrIn] = (this.sizeMat[ctrOut][0] * originNiftiMat[0][ctrIn]) +
+                (this.sizeMat[ctrOut][1] * originNiftiMat[1][ctrIn]) +
+                (this.sizeMat[ctrOut][2] * originNiftiMat[2][ctrIn]) +
+                (this.sizeMat[ctrOut][3] * originNiftiMat[3][ctrIn]);
             }
         }
 
         for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
             for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
-                this.tempMat2[ctrOut][ctrIn] = (this.tempMat[ctrOut][0] * flipMat[0][ctrIn]) + (this.tempMat[ctrOut][1] * flipMat[1][ctrIn])
-                    + (this.tempMat[ctrOut][2] * flipMat[2][ctrIn]) + (this.tempMat[ctrOut][3] * flipMat[3][ctrIn]);
+                this.tempMat2[ctrOut][ctrIn] = (this.tempMat[ctrOut][0] * flipMat[0][ctrIn]) +
+                (this.tempMat[ctrOut][1] * flipMat[1][ctrIn]) +
+                (this.tempMat[ctrOut][2] * flipMat[2][ctrIn]) +
+                (this.tempMat[ctrOut][3] * flipMat[3][ctrIn]);
             }
         }
 
         for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
             for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
-                this.tempMat[ctrOut][ctrIn] = (this.tempMat2[ctrOut][0] * this.mat[0][ctrIn]) + (this.tempMat2[ctrOut][1] * this.mat[1][ctrIn])
-                    + (this.tempMat2[ctrOut][2] * this.mat[2][ctrIn]) + (this.tempMat2[ctrOut][3] * this.mat[3][ctrIn]);
+                this.tempMat[ctrOut][ctrIn] = (this.tempMat2[ctrOut][0] * this.mat[0][ctrIn]) +
+                (this.tempMat2[ctrOut][1] * this.mat[1][ctrIn]) +
+                (this.tempMat2[ctrOut][2] * this.mat[2][ctrIn]) +
+                (this.tempMat2[ctrOut][3] * this.mat[3][ctrIn]);
             }
         }
 
         for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
             for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
-                this.tempMat2[ctrOut][ctrIn] = (this.tempMat[ctrOut][0] * flipMat[0][ctrIn]) + (this.tempMat[ctrOut][1] * flipMat[1][ctrIn])
-                    + (this.tempMat[ctrOut][2] * flipMat[2][ctrIn]) + (this.tempMat[ctrOut][3] * flipMat[3][ctrIn]);
+                this.tempMat2[ctrOut][ctrIn] = (this.tempMat[ctrOut][0] * flipMat[0][ctrIn]) +
+                (this.tempMat[ctrOut][1] * flipMat[1][ctrIn]) +
+                (this.tempMat[ctrOut][2] * flipMat[2][ctrIn]) +
+                (this.tempMat[ctrOut][3] * flipMat[3][ctrIn]);
             }
         }
 
         for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
             for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
-                this.tempMat[ctrOut][ctrIn] = (this.tempMat2[ctrOut][0] * originNiftiMat[0][ctrIn]) + (this.tempMat2[ctrOut][1] * originNiftiMat[1][ctrIn])
-                    + (this.tempMat2[ctrOut][2] * originNiftiMat[2][ctrIn]) + (this.tempMat2[ctrOut][3] * originNiftiMat[3][ctrIn]);
+                this.tempMat[ctrOut][ctrIn] = (this.tempMat2[ctrOut][0] * originNiftiMat[0][ctrIn]) +
+                (this.tempMat2[ctrOut][1] * originNiftiMat[1][ctrIn]) +
+                (this.tempMat2[ctrOut][2] * originNiftiMat[2][ctrIn]) +
+                (this.tempMat2[ctrOut][3] * originNiftiMat[3][ctrIn]);
             }
         }
 
         for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
             for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
-                this.tempMat2[ctrOut][ctrIn] = (this.tempMat[ctrOut][0] * this.sizeMatInverse[0][ctrIn]) + (this.tempMat[ctrOut][1] * this.sizeMatInverse[1][ctrIn])
-                    + (this.tempMat[ctrOut][2] * this.sizeMatInverse[2][ctrIn]) + (this.tempMat[ctrOut][3] * this.sizeMatInverse[3][ctrIn]);
+                this.tempMat2[ctrOut][ctrIn] = (this.tempMat[ctrOut][0] * this.sizeMatInverse[0][ctrIn]) +
+                (this.tempMat[ctrOut][1] * this.sizeMatInverse[1][ctrIn]) +
+                (this.tempMat[ctrOut][2] * this.sizeMatInverse[2][ctrIn]) +
+                (this.tempMat[ctrOut][3] * this.sizeMatInverse[3][ctrIn]);
             }
         }
 
         for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
             for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
-                this.worldMat[ctrOut][ctrIn] = (this.worldMatNifti[ctrOut][0] * this.tempMat2[0][ctrIn]) + (this.worldMatNifti[ctrOut][1] * this.tempMat2[1][ctrIn])
-                    + (this.worldMatNifti[ctrOut][2] * this.tempMat2[2][ctrIn]) + (this.worldMatNifti[ctrOut][3] * this.tempMat2[3][ctrIn]);
+                this.worldMat[ctrOut][ctrIn] = (this.worldMatNifti[ctrOut][0] * this.tempMat2[0][ctrIn]) +
+                (this.worldMatNifti[ctrOut][1] * this.tempMat2[1][ctrIn]) +
+                (this.worldMatNifti[ctrOut][2] * this.tempMat2[2][ctrIn]) +
+                (this.worldMatNifti[ctrOut][3] * this.tempMat2[3][ctrIn]);
             }
         }
     } else {
         for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
             for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
-                this.tempMat[ctrOut][ctrIn] = (this.indexMat[ctrOut][0] * this.originMat[0][ctrIn]) + (this.indexMat[ctrOut][1] * this.originMat[1][ctrIn])
-                    + (this.indexMat[ctrOut][2] * this.originMat[2][ctrIn]) + (this.indexMat[ctrOut][3] * this.originMat[3][ctrIn]);
+                this.tempMat[ctrOut][ctrIn] = (this.indexMat[ctrOut][0] * this.originMat[0][ctrIn]) +
+                (this.indexMat[ctrOut][1] * this.originMat[1][ctrIn]) +
+                (this.indexMat[ctrOut][2] * this.originMat[2][ctrIn]) +
+                (this.indexMat[ctrOut][3] * this.originMat[3][ctrIn]);
             }
         }
 
         for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
             for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
-                this.worldMat[ctrOut][ctrIn] = (this.tempMat[ctrOut][0] * this.sizeMatInverse[0][ctrIn]) + (this.tempMat[ctrOut][1] * this.sizeMatInverse[1][ctrIn])
-                    + (this.tempMat[ctrOut][2] * this.sizeMatInverse[2][ctrIn]) + (this.tempMat[ctrOut][3] * this.sizeMatInverse[3][ctrIn]);
+                this.worldMat[ctrOut][ctrIn] = (this.tempMat[ctrOut][0] * this.sizeMatInverse[0][ctrIn]) +
+                (this.tempMat[ctrOut][1] * this.sizeMatInverse[1][ctrIn]) +
+                (this.tempMat[ctrOut][2] * this.sizeMatInverse[2][ctrIn]) +
+                (this.tempMat[ctrOut][3] * this.sizeMatInverse[3][ctrIn]);
             }
         }
     }
@@ -347,11 +386,15 @@ papaya.volume.Transform.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, 
 
 papaya.volume.Transform.prototype.getVoxelAtCoordinate = function (xLoc, yLoc, zLoc, timepoint, useNN) {
     var xTrans, yTrans, zTrans;
-    xTrans = ((xLoc * this.worldMat[0][0]) + (yLoc * this.worldMat[0][1]) + (zLoc * this.worldMat[0][2]) + (this.worldMat[0][3]));
-    yTrans = ((xLoc * this.worldMat[1][0]) + (yLoc * this.worldMat[1][1]) + (zLoc * this.worldMat[1][2]) + (this.worldMat[1][3]));
-    zTrans = ((xLoc * this.worldMat[2][0]) + (yLoc * this.worldMat[2][1]) + (zLoc * this.worldMat[2][2]) + (this.worldMat[2][3]));
+    xTrans = ((xLoc * this.worldMat[0][0]) + (yLoc * this.worldMat[0][1]) + (zLoc * this.worldMat[0][2]) +
+        (this.worldMat[0][3]));
+    yTrans = ((xLoc * this.worldMat[1][0]) + (yLoc * this.worldMat[1][1]) + (zLoc * this.worldMat[1][2]) +
+        (this.worldMat[1][3]));
+    zTrans = ((xLoc * this.worldMat[2][0]) + (yLoc * this.worldMat[2][1]) + (zLoc * this.worldMat[2][2]) +
+        (this.worldMat[2][3]));
 
-    if ((xTrans < 0) || (xTrans >= this.imageDimensions.xDim) || (yTrans < 0) ||  (yTrans >= this.imageDimensions.yDim) || (zTrans < 0) || (zTrans >= this.imageDimensions.zDim)) {
+    if ((xTrans < 0) || (xTrans >= this.imageDimensions.xDim) || (yTrans < 0) ||
+        (yTrans >= this.imageDimensions.yDim) || (zTrans < 0) || (zTrans >= this.imageDimensions.zDim)) {
         return 0;
     }
 
@@ -366,7 +409,8 @@ papaya.volume.Transform.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, tim
     yTrans = ((xLoc * this.mmMat[1][0]) + (yLoc * this.mmMat[1][1]) + (zLoc * this.mmMat[1][2]) + (this.mmMat[1][3]));
     zTrans = ((xLoc * this.mmMat[2][0]) + (yLoc * this.mmMat[2][1]) + (zLoc * this.mmMat[2][2]) + (this.mmMat[2][3]));
 
-    if ((xTrans < 0) || (xTrans >= this.imageDimensions.xDim) || (yTrans < 0) ||  (yTrans >= this.imageDimensions.yDim) || (zTrans < 0) || (zTrans >= this.imageDimensions.zDim)) {
+    if ((xTrans < 0) || (xTrans >= this.imageDimensions.xDim) || (yTrans < 0) ||
+        (yTrans >= this.imageDimensions.yDim) || (zTrans < 0) || (zTrans >= this.imageDimensions.zDim)) {
         return 0;
     }
 

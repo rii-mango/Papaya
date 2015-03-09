@@ -6,11 +6,12 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.ui = papaya.ui || {};
 
 
-
+/*** Constructor ***/
 papaya.ui.Dialog = papaya.ui.Dialog || function (container, title, content, dataSource, callback, callbackOk, modifier) {
     this.container = container;
     this.viewer = container.viewer;
@@ -27,6 +28,7 @@ papaya.ui.Dialog = papaya.ui.Dialog || function (container, title, content, data
 };
 
 
+/*** Prototype Methods ***/
 
 papaya.ui.Dialog.prototype.showDialog = function () {
     var ctr, ctrOpt, html, val, itemsHtml, thisHtml, thisHtmlId, disabled, bodyHtml;
@@ -37,27 +39,34 @@ papaya.ui.Dialog.prototype.showDialog = function () {
 
     bodyHtml = $("body");
 
-    html = "<div id='" + this.id + "' class='" + PAPAYA_DIALOG_CSS + "'><span class='" + PAPAYA_DIALOG_TITLE_CSS + "'>" + this.title + "</span>";
+    html = "<div id='" + this.id + "' class='" + PAPAYA_DIALOG_CSS + "'><span class='" +
+        PAPAYA_DIALOG_TITLE_CSS + "'>" + this.title + "</span>";
 
     if (this.content) {
         html += "<div class='" + PAPAYA_DIALOG_CONTENT_CSS + "'><table>";
 
         for (ctr = 0; ctr < this.content.items.length; ctr += 1) {
             if (this.content.items[ctr].spacer) {
-                html += "<tr><td class='" + PAPAYA_DIALOG_CONTENT_LABEL_CSS + "'>&nbsp;</td><td class='" + PAPAYA_DIALOG_CONTENT_CONTROL_CSS + "'>&nbsp;</td></tr>";
+                html += "<tr><td class='" + PAPAYA_DIALOG_CONTENT_LABEL_CSS + "'>&nbsp;</td><td class='" +
+                    PAPAYA_DIALOG_CONTENT_CONTROL_CSS + "'>&nbsp;</td></tr>";
             } else if (this.content.items[ctr].readonly) {
-                html += "<tr><td class='" + PAPAYA_DIALOG_CONTENT_LABEL_CSS + "'>" + this.content.items[ctr].label + "</td><td class='" + PAPAYA_DIALOG_CONTENT_CONTROL_CSS + "' id='" + this.content.items[ctr].field + "'></td></tr>";
+                html += "<tr><td class='" + PAPAYA_DIALOG_CONTENT_LABEL_CSS + "'>" + this.content.items[ctr].label +
+                    "</td><td class='" + PAPAYA_DIALOG_CONTENT_CONTROL_CSS + "' id='" + this.content.items[ctr].field +
+                    "'></td></tr>";
             } else {
-                if (this.content.items[ctr].disabled && (bind(this.container, derefIn(this, this.content.items[ctr].disabled)))() === true) {
+                if (this.content.items[ctr].disabled && (bind(this.container,
+                        derefIn(this, this.content.items[ctr].disabled)))() === true) {
                     disabled = "disabled='disabled'";
                 } else {
                     disabled = "";
                 }
 
-                html += "<tr><td class='" + PAPAYA_DIALOG_CONTENT_LABEL_CSS + "'>" + this.content.items[ctr].label + "</td><td class='" + PAPAYA_DIALOG_CONTENT_CONTROL_CSS + "'><select " + disabled
-                    + " id='" + this.content.items[ctr].field + "'>";
+                html += "<tr><td class='" + PAPAYA_DIALOG_CONTENT_LABEL_CSS + "'>" + this.content.items[ctr].label +
+                    "</td><td class='" + PAPAYA_DIALOG_CONTENT_CONTROL_CSS + "'><select " + disabled +
+                    " id='" + this.content.items[ctr].field + "'>";
                 for (ctrOpt = 0; ctrOpt < this.content.items[ctr].options.length; ctrOpt += 1) {
-                    html += "<option value='" + this.content.items[ctr].options[ctrOpt] + "'>" + truncateMiddleString(this.content.items[ctr].options[ctrOpt].toString(), 40) + "</option>";
+                    html += "<option value='" + this.content.items[ctr].options[ctrOpt] + "'>" +
+                        truncateMiddleString(this.content.items[ctr].options[ctrOpt].toString(), 40) + "</option>";
                 }
 
                 html += "</select></td></tr>";
@@ -67,7 +76,8 @@ papaya.ui.Dialog.prototype.showDialog = function () {
         html += "</table></div>";
     }
 
-    html += "<div class='" + PAPAYA_DIALOG_BUTTON_CSS + "'><button type='button' id='" + this.id + "-Ok" + "'>Ok</button></div></div>";
+    html += "<div class='" + PAPAYA_DIALOG_BUTTON_CSS + "'><button type='button' id='" + this.id + "-Ok" +
+        "'>Ok</button></div></div>";
 
     bodyHtml.append('<div class="' + PAPAYA_DIALOG_BACKGROUND + '"></div>');
     bodyHtml.append(html);

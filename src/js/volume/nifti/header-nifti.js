@@ -4,12 +4,13 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 papaya.volume.nifti = papaya.volume.nifti || {};
 
 
-
+/*** Constructor ***/
 papaya.volume.nifti.HeaderNIFTI = papaya.volume.nifti.HeaderNIFTI || function () {
     this.nifti = null;
     this.compressed = false;
@@ -17,12 +18,14 @@ papaya.volume.nifti.HeaderNIFTI = papaya.volume.nifti.HeaderNIFTI || function ()
 };
 
 
+/*** Static Pseudo-constants ***/
 
 papaya.volume.nifti.HeaderNIFTI.ORIENTATION_DEFAULT = "XYZ-++";
 papaya.volume.nifti.HeaderNIFTI.SPATIAL_UNITS_MASK = 0x07;
 papaya.volume.nifti.HeaderNIFTI.TEMPORAL_UNITS_MASK = 0x38;
 
 
+/*** Static Methods ***/
 
 papaya.volume.nifti.HeaderNIFTI.isThisFormat = function (filename, data) {
     var buf, mag1, mag2, mag3;
@@ -36,23 +39,22 @@ papaya.volume.nifti.HeaderNIFTI.isThisFormat = function (filename, data) {
     mag2 = buf.getUint8(papaya.volume.nifti.MAGIC_NUMBER_LOCATION + 1);
     mag3 = buf.getUint8(papaya.volume.nifti.MAGIC_NUMBER_LOCATION + 2);
 
-    if ((mag1 === papaya.volume.nifti.MAGIC_NUMBER[0]) &&
-        (mag2 === papaya.volume.nifti.MAGIC_NUMBER[1]) &&
-        (mag3 === papaya.volume.nifti.MAGIC_NUMBER[2])) {
-        return true;
-    }
-
-    return false;
+    return !!((mag1 === papaya.volume.nifti.MAGIC_NUMBER[0]) && (mag2 === papaya.volume.nifti.MAGIC_NUMBER[1]) &&
+    (mag3 === papaya.volume.nifti.MAGIC_NUMBER[2]));
 };
 
 
-papaya.volume.nifti.HeaderNIFTI.prototype.readHeaderData = function (data, progressMeter, dialogHandler, onFinishedHeaderRead) {
+/*** Prototype Methods ***/
+
+papaya.volume.nifti.HeaderNIFTI.prototype.readHeaderData = function (data, progressMeter, dialogHandler,
+                                                                     onFinishedHeaderRead) {
     var imageDimensions;
     this.nifti = new papaya.volume.nifti.NIFTI();
     this.nifti.readFileData(data[0]);
 
     imageDimensions = this.getImageDimensions();
-    this.imageData = data[0].slice(imageDimensions.dataOffsets[0], imageDimensions.dataOffsets[0] + imageDimensions.dataLengths[0]);
+    this.imageData = data[0].slice(imageDimensions.dataOffsets[0], imageDimensions.dataOffsets[0] +
+    imageDimensions.dataLengths[0]);
     onFinishedHeaderRead();
 };
 
@@ -66,7 +68,8 @@ papaya.volume.nifti.HeaderNIFTI.prototype.readImageData = function (progressMete
 
 
 papaya.volume.nifti.HeaderNIFTI.prototype.getImageDimensions = function () {
-    var id = new papaya.volume.ImageDimensions(this.nifti.dims[1], this.nifti.dims[2], this.nifti.dims[3], this.nifti.dims[4]);
+    var id = new papaya.volume.ImageDimensions(this.nifti.dims[1], this.nifti.dims[2], this.nifti.dims[3],
+        this.nifti.dims[4]);
     id.dataOffsets[0] = this.nifti.vox_offset;
     id.dataLengths[0] = (id.getNumVoxelsSeries() * (this.nifti.numBitsPerVoxel / 8));
 
@@ -80,11 +83,13 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getName = function () {
 };
 
 
+
 papaya.volume.nifti.HeaderNIFTI.prototype.getVoxelDimensions = function (littleEndian) {
     /*jslint bitwise: true */
     var datatypeCode, vd;
 
-    vd = new papaya.volume.VoxelDimensions(this.nifti.pixDims[1], this.nifti.pixDims[2], this.nifti.pixDims[3], this.nifti.pixDims[4]);
+    vd = new papaya.volume.VoxelDimensions(this.nifti.pixDims[1], this.nifti.pixDims[2], this.nifti.pixDims[3],
+        this.nifti.pixDims[4]);
 
     datatypeCode = this.nifti.datatypeCode;
 
@@ -103,17 +108,23 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getVoxelDimensions = function (littleE
 papaya.volume.nifti.HeaderNIFTI.prototype.getImageType = function () {
     var datatype = papaya.volume.ImageType.DATATYPE_UNKNOWN;
 
-    if ((this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_UINT8) || (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_UINT16)
-            || (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_UINT32) || (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_UINT64)) {
+    if ((this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_UINT8) ||
+        (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_UINT16) ||
+        (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_UINT32) ||
+        (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_UINT64)) {
         datatype = papaya.volume.ImageType.DATATYPE_INTEGER_UNSIGNED;
-    } else if ((this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_INT8) || (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_INT16)
-            || (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_INT32) || (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_INT64)) {
+    } else if ((this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_INT8) ||
+        (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_INT16) ||
+        (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_INT32) ||
+        (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_INT64)) {
         datatype = papaya.volume.ImageType.DATATYPE_INTEGER_SIGNED;
-    } else if ((this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_FLOAT32) || (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_FLOAT64)) {
+    } else if ((this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_FLOAT32) ||
+        (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_FLOAT64)) {
         datatype = papaya.volume.ImageType.DATATYPE_FLOAT;
     }
 
-    return new papaya.volume.ImageType(datatype, this.nifti.numBitsPerVoxel / 8, this.nifti.littleEndian, this.compressed);
+    return new papaya.volume.ImageType(datatype, this.nifti.numBitsPerVoxel / 8, this.nifti.littleEndian,
+        this.compressed);
 };
 
 
@@ -148,7 +159,7 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrientationQform = function () {
     if (this.nifti.qform_code > 0) {
         orientation = this.nifti.convertNiftiSFormToNEMA(qFormMatParams);
 
-        if (!papaya.volume.Orientation.prototype.isValidOrientationString(orientation)) {
+        if (!papaya.volume.Orientation.isValidOrientationString(orientation)) {
             orientation = papaya.volume.nifti.HeaderNIFTI.ORIENTATION_DEFAULT;
         }
     } else {
@@ -171,19 +182,11 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrientationSform = function () {
 };
 
 
-//papaya.volume.nifti.HeaderNIFTI.prototype.getOriginQform = function () {
-//    return this.getOrigin(true, false);
-//};
-
-
-//papaya.volume.nifti.HeaderNIFTI.prototype.getOriginSform = function () {
-//    return this.getOrigin(false, true);
-//};
-
 
 papaya.volume.nifti.HeaderNIFTI.prototype.getQformMatCopy = function () {
     return this.nifti.getQformMat().clone();
 };
+
 
 
 papaya.volume.nifti.HeaderNIFTI.prototype.getSformMatCopy = function () {
@@ -210,13 +213,13 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrigin = function (forceQ, forceS) 
             affineQformInverse = numeric.inv(affineQform);
             origin.setCoordinate(affineQformInverse[0][3], affineQformInverse[1][3], affineQformInverse[2][3]);
         } else {
-            qFormMatParams = this.nifti.convertNiftiQFormToNiftiSForm(this.nifti.quatern_b, this.nifti.quatern_c, this.nifti.quatern_d,
-                this.nifti.qoffset_x, this.nifti.qoffset_y, this.nifti.qoffset_z, this.nifti.pixDims[1], this.nifti.pixDims[2], this.nifti.pixDims[3],
-                this.nifti.pixDims[0]);
+            qFormMatParams = this.nifti.convertNiftiQFormToNiftiSForm(this.nifti.quatern_b, this.nifti.quatern_c,
+                this.nifti.quatern_d, this.nifti.qoffset_x, this.nifti.qoffset_y, this.nifti.qoffset_z,
+                this.nifti.pixDims[1], this.nifti.pixDims[2], this.nifti.pixDims[3], this.nifti.pixDims[0]);
 
             orientation = this.nifti.convertNiftiSFormToNEMA(qFormMatParams);
 
-            if (!papaya.volume.Orientation.prototype.isValidOrientationString(orientation)) {
+            if (!papaya.volume.Orientation.isValidOrientationString(orientation)) {
                 orientation = papaya.volume.nifti.HeaderNIFTI.ORIENTATION_DEFAULT;
             }
 
@@ -225,9 +228,12 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrigin = function (forceQ, forceS) 
             zOffset = this.nifti.qoffset_z * ((orientation.charAt(orientation.indexOf("Z") + 3) === '+') ? 1 : -1);
 
             someOffsets = new Array(3);
-            someOffsets[0] = xOffset < 0 ? (this.nifti.dims[1] + (xOffset / this.nifti.pixDims[1])) : (xOffset / Math.abs(this.nifti.pixDims[1]));
-            someOffsets[1] = yOffset > 0 ? (this.nifti.dims[2] - (yOffset / this.nifti.pixDims[2])) : (yOffset / Math.abs(this.nifti.pixDims[2])) * -1;
-            someOffsets[2] = zOffset > 0 ? (this.nifti.dims[3] - (zOffset / this.nifti.pixDims[3])) : (zOffset / Math.abs(this.nifti.pixDims[3])) * -1;
+            someOffsets[0] = xOffset < 0 ? (this.nifti.dims[1] + (xOffset / this.nifti.pixDims[1])) :
+                (xOffset / Math.abs(this.nifti.pixDims[1]));
+            someOffsets[1] = yOffset > 0 ? (this.nifti.dims[2] - (yOffset / this.nifti.pixDims[2])) :
+            (yOffset / Math.abs(this.nifti.pixDims[2])) * -1;
+            someOffsets[2] = zOffset > 0 ? (this.nifti.dims[3] - (zOffset / this.nifti.pixDims[3])) :
+            (zOffset / Math.abs(this.nifti.pixDims[3])) * -1;
 
             origin.setCoordinate(someOffsets[0], someOffsets[1], someOffsets[2], true);
         }
@@ -238,7 +244,7 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrigin = function (forceQ, forceS) 
         } else {
             orientation = this.nifti.convertNiftiSFormToNEMA(this.nifti.affine);
 
-            if (!papaya.volume.Orientation.prototype.isValidOrientationString(orientation)) {
+            if (!papaya.volume.Orientation.isValidOrientationString(orientation)) {
                 orientation = papaya.volume.nifti.HeaderNIFTI.ORIENTATION_DEFAULT;
             }
 
@@ -247,9 +253,12 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrigin = function (forceQ, forceS) 
             zOffset = this.nifti.affine[2][3] * ((orientation.charAt(orientation.indexOf("Z") + 3) === '+') ? 1 : -1);
 
             someOffsets = new Array(3);
-            someOffsets[0] = xOffset < 0 ? (this.nifti.dims[1] + (xOffset / this.nifti.pixDims[1])) : (xOffset / Math.abs(this.nifti.pixDims[1]));
-            someOffsets[1] = yOffset > 0 ? (this.nifti.dims[2] - (yOffset / this.nifti.pixDims[2])) : (yOffset / Math.abs(this.nifti.pixDims[2])) * -1;
-            someOffsets[2] = zOffset > 0 ? (this.nifti.dims[3] - (zOffset / this.nifti.pixDims[3])) : (zOffset / Math.abs(this.nifti.pixDims[3])) * -1;
+            someOffsets[0] = xOffset < 0 ? (this.nifti.dims[1] + (xOffset / this.nifti.pixDims[1])) :
+                (xOffset / Math.abs(this.nifti.pixDims[1]));
+            someOffsets[1] = yOffset > 0 ? (this.nifti.dims[2] - (yOffset / this.nifti.pixDims[2])) :
+            (yOffset / Math.abs(this.nifti.pixDims[2])) * -1;
+            someOffsets[2] = zOffset > 0 ? (this.nifti.dims[3] - (zOffset / this.nifti.pixDims[3])) :
+            (zOffset / Math.abs(this.nifti.pixDims[3])) * -1;
 
             origin.setCoordinate(someOffsets[0], someOffsets[1], someOffsets[2], true);
         }
@@ -263,14 +272,17 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrigin = function (forceQ, forceS) 
 };
 
 
+
 papaya.volume.nifti.HeaderNIFTI.prototype.qFormHasRotations = function () {
     return papaya.volume.Transform.hasRotations(this.getQformMatCopy());
 };
 
 
+
 papaya.volume.nifti.HeaderNIFTI.prototype.sFormHasRotations = function () {
     return papaya.volume.Transform.hasRotations(this.getSformMatCopy());
 };
+
 
 
 papaya.volume.nifti.HeaderNIFTI.prototype.getImageRange = function () {

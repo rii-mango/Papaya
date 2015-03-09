@@ -5,12 +5,14 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.ui = papaya.ui || {};
 
 
-
-papaya.ui.MenuItemRange = papaya.ui.MenuItemRange || function (viewer, label, action, callback, dataSource, method, modifier) {
+/*** Constructor ***/
+papaya.ui.MenuItemRange = papaya.ui.MenuItemRange || function (viewer, label, action, callback, dataSource, method,
+                                                               modifier) {
     this.viewer = viewer;
     this.label = label;
 
@@ -33,9 +35,11 @@ papaya.ui.MenuItemRange = papaya.ui.MenuItemRange || function (viewer, label, ac
 };
 
 
+/*** Prototype Methods ***/
 
 papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
-    var range, html, menuItemRange, minHtml, maxHtml, minSliderId, minSliderHtml, maxSliderId, maxSliderHtml, sliderId, sliderHtml;
+    var range, html, menuItemRange, minHtml, maxHtml, minSliderId, minSliderHtml, maxSliderId, maxSliderHtml, sliderId,
+        sliderHtml;
 
     minSliderId = this.id + "SliderMin";
     maxSliderId = this.id + "SliderMax";
@@ -46,13 +50,28 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
 
     html = "<li id='" + this.id + "'>" +
                 "<span class='" + PAPAYA_MENU_UNSELECTABLE + "' style=''>" +
-                    "<input class='" + PAPAYA_MENU_INPUT_FIELD + "' type='text' size='4' id='" + this.minId + "' value='" + range[0] + "' />" +
-                    "<div style='display:inline-block;position:relative;width:" + (papaya.viewer.ColorTable.COLOR_BAR_WIDTH + papaya.viewer.ColorTable.ARROW_ICON_WIDTH) + "px;top:-12px;'>" +
-                        "<img id='" + minSliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE + "' style='position:absolute;top:5px;left:" + (menuItemRange.screenVol.colorTable.minLUT / papaya.viewer.ColorTable.LUT_MAX) * (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1) + "px;z-index:99' src='" + papaya.viewer.ColorTable.ARROW_ICON + "' />" +
-                        "<img id='" + maxSliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE + "' style='position:absolute;top:5px;left:" + (menuItemRange.screenVol.colorTable.maxLUT / papaya.viewer.ColorTable.LUT_MAX) * (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1) + "px;z-index:99' src='" + papaya.viewer.ColorTable.ARROW_ICON + "' />" +
-                        "<img id='" + sliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE + "' style='position:absolute;top:0;left:" + (parseInt(papaya.viewer.ColorTable.ARROW_ICON_WIDTH / 2, 10)) + "px;' src='" + this.viewer.screenVolumes[parseInt(this.index, 10)].colorTable.colorBar + "' />" +
+                    "<input class='" + PAPAYA_MENU_INPUT_FIELD + "' type='text' size='4' id='" + this.minId +
+                        "' value='" + range[0] + "' />" +
+                    "<div style='display:inline-block;position:relative;width:" +
+                            (papaya.viewer.ColorTable.COLOR_BAR_WIDTH + papaya.viewer.ColorTable.ARROW_ICON_WIDTH) +
+                            "px;top:-12px;'>" +
+                        "<img id='" + minSliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE +
+                            "' style='position:absolute;top:5px;left:" +
+                            (menuItemRange.screenVol.colorTable.minLUT / papaya.viewer.ColorTable.LUT_MAX) *
+                            (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1) + "px;z-index:99' src='" +
+                            papaya.viewer.ColorTable.ARROW_ICON + "' />" +
+                        "<img id='" + maxSliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE +
+                            "' style='position:absolute;top:5px;left:" +
+                            (menuItemRange.screenVol.colorTable.maxLUT / papaya.viewer.ColorTable.LUT_MAX) *
+                            (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1) + "px;z-index:99' src='" +
+                            papaya.viewer.ColorTable.ARROW_ICON + "' />" +
+                        "<img id='" + sliderId + "' class='" + PAPAYA_MENU_UNSELECTABLE +
+                            "' style='position:absolute;top:0;left:" +
+                            (parseInt(papaya.viewer.ColorTable.ARROW_ICON_WIDTH / 2, 10)) + "px;' src='" +
+                            this.viewer.screenVolumes[parseInt(this.index, 10)].colorTable.colorBar + "' />" +
                     "</div>" +
-                    "<input class='" + PAPAYA_MENU_INPUT_FIELD + "' type='text' size='4' id='" + this.maxId + "' value='" + range[1] + "' />" +
+                    "<input class='" + PAPAYA_MENU_INPUT_FIELD + "' type='text' size='4' id='" + this.maxId +
+                        "' value='" + range[1] + "' />" +
                 "</span>" +
            "</li>";
 
@@ -70,7 +89,8 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
         $(window).bind(PAPAYA_BROWSER.ios ? 'touchmove' : 'mousemove', function (ev) {
             var val, maxVal;
 
-            maxVal = (menuItemRange.screenVol.colorTable.maxLUT / papaya.viewer.ColorTable.LUT_MAX) * (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1);
+            maxVal = (menuItemRange.screenVol.colorTable.maxLUT / papaya.viewer.ColorTable.LUT_MAX) *
+                (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1);
             val = (getRelativeMousePositionFromParentX(minSliderHtml, ev) - menuItemRange.grabOffset);
 
             if (val < 0) {
@@ -81,7 +101,8 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
                 val = maxVal;
             }
 
-            menuItemRange.screenVol.updateMinLUT(Math.round((val / (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1)) * papaya.viewer.ColorTable.LUT_MAX));
+            menuItemRange.screenVol.updateMinLUT(Math.round((val / (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1)) *
+                papaya.viewer.ColorTable.LUT_MAX));
             minSliderHtml.css({"left": val + "px"});
             menuItemRange.viewer.drawViewer(false, true);
             minHtml.val(menuItemRange.dataSource[menuItemRange.method]()[0]);
@@ -97,7 +118,8 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
         $(window).bind(PAPAYA_BROWSER.ios ? 'touchmove' : 'mousemove', function (ev) {
             var val, minVal;
 
-            minVal = (menuItemRange.screenVol.colorTable.minLUT / papaya.viewer.ColorTable.LUT_MAX) * (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1);
+            minVal = (menuItemRange.screenVol.colorTable.minLUT / papaya.viewer.ColorTable.LUT_MAX) *
+                (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1);
             val = (getRelativeMousePositionFromParentX(maxSliderHtml, ev) - menuItemRange.grabOffset);
 
             if (val < 0) {
@@ -108,7 +130,8 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
                 val = minVal;
             }
 
-            menuItemRange.screenVol.updateMaxLUT(Math.round((val / (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1)) * papaya.viewer.ColorTable.LUT_MAX));
+            menuItemRange.screenVol.updateMaxLUT(Math.round((val / (papaya.viewer.ColorTable.COLOR_BAR_WIDTH - 1)) *
+                papaya.viewer.ColorTable.LUT_MAX));
             maxSliderHtml.css({"left": val + "px"});
             menuItemRange.viewer.drawViewer(false, true);
             maxHtml.val(menuItemRange.dataSource[menuItemRange.method]()[1]);

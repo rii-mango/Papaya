@@ -6,11 +6,12 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.ui = papaya.ui || {};
 
 
-
+/*** Constructor ***/
 papaya.ui.Menu = papaya.ui.Menu || function (viewer, menuData, callback, dataSource, modifier) {
     this.viewer = viewer;
     this.method = menuData.method;
@@ -38,6 +39,7 @@ papaya.ui.Menu = papaya.ui.Menu || function (viewer, menuData, callback, dataSou
 };
 
 
+/*** Prototype Methods ***/
 
 papaya.ui.Menu.prototype.buildMenuButton = function () {
     var html, menu, buttonHtml, buttonHtmlId, buttonImgHtml, buttonImgHtmlId, toolbarHtml;
@@ -51,8 +53,11 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
     html = null;
 
     if (this.icons) {
-        html = "<span id='" + this.buttonId + "' class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_ICON_CSS + " " + (this.isImageButton ? PAPAYA_MENU_BUTTON_CSS : "") + "'" + (this.isRight ? " style='float:right'" : "") + ">" +
-                "<img class='" + PAPAYA_MENU_UNSELECTABLE + "' style='width:" + papaya.viewer.ColorTable.ICON_SIZE + "px; height:" + papaya.viewer.ColorTable.ICON_SIZE + "px; vertical-align:bottom; ";
+        html = "<span id='" + this.buttonId + "' class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_ICON_CSS +
+            " " + (this.isImageButton ? PAPAYA_MENU_BUTTON_CSS : "") + "'" +
+            (this.isRight ? " style='float:right'" : "") + ">" + "<img class='" + PAPAYA_MENU_UNSELECTABLE +
+            "' style='width:" + papaya.viewer.ColorTable.ICON_SIZE + "px; height:" +
+            papaya.viewer.ColorTable.ICON_SIZE + "px; vertical-align:bottom; ";
 
         if (this.dataSource.isSelected(parseInt(this.imageIndex, 10))) {
             html += "border:2px solid #FF5A3D;background-color:#eeeeee;padding:1px;";
@@ -61,15 +66,20 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
         }
 
         if (this.method) {
-            html += ("' src='" + this.icons[bind(this.viewer, derefIn(this.viewer, this.method))() ? 1 : 0] + "' /></span>");
+            html += ("' src='" + this.icons[bind(this.viewer, derefIn(this.viewer, this.method))() ? 1 : 0] +
+                "' /></span>");
         } else {
             html += ("' src='" + this.icons[0] + "' /></span>");
         }
     } else if (this.isTitleBar) {
-        html = "<div class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_TITLEBAR_CSS + " " + PAPAYA_TITLEBAR_CSS + "' style='z-index:-1;position:absolute;top:" + (this.viewer.container.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE)
-            + "px;width:" + toolbarHtml.width() + "px;text-align:center;color:" + getNiceForegroundColor(this.viewer.bgColor) + "'>" + this.label + "</div>";
+        html = "<div class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_TITLEBAR_CSS + " " + PAPAYA_TITLEBAR_CSS +
+            "' style='z-index:-1;position:absolute;top:" +
+            (this.viewer.container.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE) + "px;width:" +
+            toolbarHtml.width() + "px;text-align:center;color:" + getNiceForegroundColor(this.viewer.bgColor) + "'>" +
+            this.label + "</div>";
     } else {
-        html = "<span id='" + this.buttonId + "' class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_LABEL_CSS + "'>" + this.label + "</span>";
+        html = "<span id='" + this.buttonId + "' class='" + PAPAYA_MENU_UNSELECTABLE + " " +
+            PAPAYA_MENU_LABEL_CSS + "'>" + this.label + "</span>";
     }
 
     toolbarHtml.append(html);
@@ -82,8 +92,10 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
         menu = this;
 
         if (this.menuOnHover) {
-            buttonImgHtml.mouseenter(function () { menu.showHoverMenuTimeout = setTimeout(bind(menu, menu.showMenu), 500); });
-            buttonImgHtml.mouseleave(function () { clearTimeout(menu.showHoverMenuTimeout); menu.showHoverMenuTimeout = null; });
+            buttonImgHtml.mouseenter(function () { menu.showHoverMenuTimeout = setTimeout(bind(menu, menu.showMenu),
+                500); });
+            buttonImgHtml.mouseleave(function () { clearTimeout(menu.showHoverMenuTimeout);
+                menu.showHoverMenuTimeout = null; });
         }
 
         buttonHtml.click(bind(this, this.doClick));
@@ -185,7 +197,8 @@ papaya.ui.Menu.prototype.doClick = function () {
 
     if (this.icons) {
         if (this.method) {
-            $("#" + this.buttonId + " > img").attr("src", this.icons[bind(this.viewer, derefIn(this.viewer, this.method))() ? 1 : 0]);
+            $("#" + this.buttonId + " > img").attr("src", this.icons[bind(this.viewer,
+                derefIn(this.viewer, this.method))() ? 1 : 0]);
         } else {
             $("#" + this.buttonId + " > img").attr("src", this.icons[0]);
         }

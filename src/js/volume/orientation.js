@@ -4,10 +4,12 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
 
+/*** Constructor ***/
 papaya.volume.Orientation = papaya.volume.Orientation || function (str) {
     this.orientation = str;
     this.orientMat = null;
@@ -17,21 +19,52 @@ papaya.volume.Orientation = papaya.volume.Orientation || function (str) {
 };
 
 
+/*** Static Pseudo-constants ***/
 
 papaya.volume.Orientation.DEFAULT = "XYZ+--";
 
 
+/*** Static Methods ***/
 
-//papaya.volume.Orientation.prototype.convertIndexToOffset = function (xLoc, yLoc, zLoc) {
-//    var locX, locY, locZ;
-//    locX = roundFast((xLoc * this.orientMat[0][0]) + (yLoc * this.orientMat[0][1]) + (zLoc * this.orientMat[0][2]) + (this.orientMat[0][3]));
-//    locY = roundFast((xLoc * this.orientMat[1][0]) + (yLoc * this.orientMat[1][1]) + (zLoc * this.orientMat[1][2]) + (this.orientMat[1][3]));
-//    locZ = roundFast((xLoc * this.orientMat[2][0]) + (yLoc * this.orientMat[2][1]) + (zLoc * this.orientMat[2][2]) + (this.orientMat[2][3]));
-//
-//    return (locX * this.xIncrement) + (locY * this.yIncrement) + (locZ * this.zIncrement);
-//};
+papaya.volume.Orientation.isValidOrientationString = function (orientationStr) {
+    var temp, valid = true;
+
+    if (orientationStr === null || (orientationStr.length !== 6)) {
+        valid = false;
+    }
+
+    temp = orientationStr.toUpperCase().indexOf("X");
+    if (temp === -1 || temp > 2 || (orientationStr.toUpperCase().lastIndexOf("X") !== temp)) {
+        valid = false;
+    }
+
+    temp = orientationStr.toUpperCase().indexOf("Y");
+    if (temp === -1 || temp > 2 || (orientationStr.toUpperCase().lastIndexOf("Y") !== temp)) {
+        valid = false;
+    }
+
+    temp = orientationStr.toUpperCase().indexOf("Z");
+    if (temp === -1 || temp > 2 || (orientationStr.toUpperCase().lastIndexOf("Z") !== temp)) {
+        valid = false;
+    }
+
+    if ((orientationStr.charAt(3) !== '+') && (orientationStr.charAt(3) !== '-')) {
+        valid = false;
+    }
+
+    if ((orientationStr.charAt(4) !== '+') && (orientationStr.charAt(4) !== '-')) {
+        valid = false;
+    }
+
+    if ((orientationStr.charAt(5) !== '+') && (orientationStr.charAt(5) !== '-')) {
+        valid = false;
+    }
+
+    return valid;
+};
 
 
+/*** Prototype Methods ***/
 
 papaya.volume.Orientation.prototype.convertIndexToOffset2 = function (xLoc, yLoc, zLoc) {
     return (xLoc * this.xIncrement) + (yLoc * this.yIncrement) + (zLoc * this.zIncrement);
@@ -40,16 +73,20 @@ papaya.volume.Orientation.prototype.convertIndexToOffset2 = function (xLoc, yLoc
 
 
 papaya.volume.Orientation.prototype.convertCoordinate = function (coord, coordConverted) {
-    coordConverted.x = roundFast((coord.x * this.orientMat[0][0]) + (coord.y * this.orientMat[0][1]) + (coord.z * this.orientMat[0][2]) + (this.orientMat[0][3]));
-    coordConverted.y = roundFast((coord.x * this.orientMat[1][0]) + (coord.y * this.orientMat[1][1]) + (coord.z * this.orientMat[1][2]) + (this.orientMat[1][3]));
-    coordConverted.z = roundFast((coord.x * this.orientMat[2][0]) + (coord.y * this.orientMat[2][1]) + (coord.z * this.orientMat[2][2]) + (this.orientMat[2][3]));
+    coordConverted.x = roundFast((coord.x * this.orientMat[0][0]) + (coord.y * this.orientMat[0][1]) +
+        (coord.z * this.orientMat[0][2]) + (this.orientMat[0][3]));
+    coordConverted.y = roundFast((coord.x * this.orientMat[1][0]) + (coord.y * this.orientMat[1][1]) +
+        (coord.z * this.orientMat[1][2]) + (this.orientMat[1][3]));
+    coordConverted.z = roundFast((coord.x * this.orientMat[2][0]) + (coord.y * this.orientMat[2][1]) +
+        (coord.z * this.orientMat[2][2]) + (this.orientMat[2][3]));
     return coordConverted;
 };
 
 
 
 papaya.volume.Orientation.prototype.createInfo = function (imageDimensions, voxelDimensions) {
-    var xMultiply, yMultiply, zMultiply, xSubtract, ySubtract, zSubtract, colOrientation, rowOrientation, sliceOrientation, numCols, numRows, numSlices, numVoxelsInSlice, colSize, rowSize, sliceSize;
+    var xMultiply, yMultiply, zMultiply, xSubtract, ySubtract, zSubtract, colOrientation, rowOrientation,
+        sliceOrientation, numCols, numRows, numSlices, numVoxelsInSlice, colSize, rowSize, sliceSize;
 
     numCols = imageDimensions.cols;
     numRows = imageDimensions.rows;
@@ -304,51 +341,13 @@ papaya.volume.Orientation.prototype.createInfo = function (imageDimensions, voxe
 
 
 papaya.volume.Orientation.prototype.isValid = function () {
-    return papaya.volume.Orientation.prototype.isValidOrientationString(this.orientation);
-};
-
-
-
-papaya.volume.Orientation.prototype.isValidOrientationString = function (orientationStr) {
-    var temp, valid = true;
-
-    if (orientationStr === null || (orientationStr.length !== 6)) {
-        valid = false;
-    }
-
-    temp = orientationStr.toUpperCase().indexOf("X");
-    if (temp === -1 || temp > 2 || (orientationStr.toUpperCase().lastIndexOf("X") !== temp)) {
-        valid = false;
-    }
-
-    temp = orientationStr.toUpperCase().indexOf("Y");
-    if (temp === -1 || temp > 2 || (orientationStr.toUpperCase().lastIndexOf("Y") !== temp)) {
-        valid = false;
-    }
-
-    temp = orientationStr.toUpperCase().indexOf("Z");
-    if (temp === -1 || temp > 2 || (orientationStr.toUpperCase().lastIndexOf("Z") !== temp)) {
-        valid = false;
-    }
-
-    if ((orientationStr.charAt(3) !== '+') && (orientationStr.charAt(3) !== '-')) {
-        valid = false;
-    }
-
-    if ((orientationStr.charAt(4) !== '+') && (orientationStr.charAt(4) !== '-')) {
-        valid = false;
-    }
-
-    if ((orientationStr.charAt(5) !== '+') && (orientationStr.charAt(5) !== '-')) {
-        valid = false;
-    }
-
-    return valid;
+    return papaya.volume.Orientation.isValidOrientationString(this.orientation);
 };
 
 
 
 papaya.volume.Orientation.prototype.getOrientationDescription = function () {
     var ornt = this.orientation;
-    return ("Cols (" + ornt.charAt(0) + ornt.charAt(3) + "), Rows (" + ornt.charAt(1) + ornt.charAt(4) + "), Slices (" + ornt.charAt(2) + ornt.charAt(5) + ")");
+    return ("Cols (" + ornt.charAt(0) + ornt.charAt(3) + "), Rows (" + ornt.charAt(1) + ornt.charAt(4) + "), Slices (" +
+        ornt.charAt(2) + ornt.charAt(5) + ")");
 };

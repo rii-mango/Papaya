@@ -4,11 +4,14 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.ui = papaya.ui || {};
 
 
-papaya.ui.MenuItemSlider = papaya.ui.MenuItemSlider || function (viewer, label, action, callback, dataSource, method, modifier) {
+/*** Constructor ***/
+papaya.ui.MenuItemSlider = papaya.ui.MenuItemSlider || function (viewer, label, action, callback, dataSource, method,
+                                                                 modifier) {
     this.viewer = viewer;
     this.label = label;
 
@@ -27,13 +30,16 @@ papaya.ui.MenuItemSlider = papaya.ui.MenuItemSlider || function (viewer, label, 
 };
 
 
+/*** Prototype Methods ***/
 
 papaya.ui.MenuItemSlider.prototype.buildHTML = function (parentId) {
     var html, thisHtml, sliderId, sliderHtml, menuItem;
 
     sliderId = this.id + "Slider";
 
-    html = "<li id='" + this.id + "'><span style='padding-right:5px;' class='" + PAPAYA_MENU_UNSELECTABLE + "'>" + this.label + ":</span><input min='0' max='100' value='" + parseInt((1.0 - this.screenVol.alpha) * 100, 10) + "' id='" + sliderId + "' class='" + PAPAYA_MENU_SLIDER + "' type='range' /></li>";
+    html = "<li id='" + this.id + "'><span style='padding-right:5px;' class='" + PAPAYA_MENU_UNSELECTABLE + "'>" +
+        this.label + ":</span><input min='0' max='100' value='" + parseInt((1.0 - this.screenVol.alpha) * 100, 10) +
+        "' id='" + sliderId + "' class='" + PAPAYA_MENU_SLIDER + "' type='range' /></li>";
     $("#" + parentId).append(html);
 
     thisHtml = $("#" + this.id);

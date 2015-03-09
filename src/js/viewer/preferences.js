@@ -4,11 +4,12 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
 
-
+/*** Constructor ***/
 papaya.viewer.Preferences = papaya.viewer.Preferences || function () {
     this.viewer = null;
     this.showCrosshairs = papaya.viewer.Preferences.DEFAULT_SHOW_CROSSHAIRS;
@@ -21,6 +22,7 @@ papaya.viewer.Preferences = papaya.viewer.Preferences || function () {
 };
 
 
+/*** Static Pseudo-constants ***/
 
 papaya.viewer.Preferences.COOKIE_PREFIX = "papaya-";
 papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS = 365;
@@ -31,6 +33,7 @@ papaya.viewer.Preferences.DEFAULT_SCROLL = "Increment Slice";
 papaya.viewer.Preferences.DEFAULT_SMOOTH_DISPLAY = "Yes";
 
 
+/*** Prototype Methods ***/
 
 papaya.viewer.Preferences.prototype.updatePreference = function (field, value) {
     this[field] = value;
@@ -45,13 +48,11 @@ papaya.viewer.Preferences.prototype.readPreferences = function () {
     var ctr, value;
 
     for (ctr = 0; ctr < papaya.ui.Toolbar.PREFERENCES_DATA.items.length; ctr += 1) {
-        value = readCookie(papaya.viewer.Preferences.COOKIE_PREFIX + papaya.ui.Toolbar.PREFERENCES_DATA.items[ctr].field);
+        value = readCookie(papaya.viewer.Preferences.COOKIE_PREFIX +
+            papaya.ui.Toolbar.PREFERENCES_DATA.items[ctr].field);
 
         if (value) {
             this[papaya.ui.Toolbar.PREFERENCES_DATA.items[ctr].field] = value;
         }
     }
 };
-
-
-

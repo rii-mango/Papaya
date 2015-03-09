@@ -3,18 +3,22 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
 
-
-papaya.volume.VoxelValue = papaya.volume.VoxelValue || function (imageData, imageType, imageDimensions, imageRange, orientation) {
+/*** Constructor ***/
+papaya.volume.VoxelValue = papaya.volume.VoxelValue || function (imageData, imageType, imageDimensions, imageRange,
+                                                                 orientation) {
     this.imageData = imageData;
     this.imageType = imageType;
     this.imageRange = imageRange;
     this.orientation = orientation;
-    this.swap16 = ((this.imageType.numBytes === 2) && this.imageType.swapped) && (this.imageType.datatype !== papaya.volume.ImageType.DATATYPE_FLOAT);
-    this.swap32 = ((this.imageType.numBytes === 4) && this.imageType.swapped) && (this.imageType.datatype !== papaya.volume.ImageType.DATATYPE_FLOAT);
+    this.swap16 = ((this.imageType.numBytes === 2) && this.imageType.swapped) &&
+        (this.imageType.datatype !== papaya.volume.ImageType.DATATYPE_FLOAT);
+    this.swap32 = ((this.imageType.numBytes === 4) && this.imageType.swapped) &&
+        (this.imageType.datatype !== papaya.volume.ImageType.DATATYPE_FLOAT);
     this.xIncrement = orientation.xIncrement;
     this.yIncrement = orientation.yIncrement;
     this.zIncrement = orientation.zIncrement;
@@ -30,6 +34,7 @@ papaya.volume.VoxelValue = papaya.volume.VoxelValue || function (imageData, imag
 };
 
 
+/*** Prototype Methods ***/
 
 papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
     if (useNN) {
@@ -48,13 +53,15 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ,
 papaya.volume.VoxelValue.prototype.getVoxelAtOffset = function (volOffset, timepoint) {
     var offset = volOffset + (this.volSize * timepoint);
     var dataScaleIndex = parseInt(offset / this.sliceSize);
-    return (this.checkSwap(this.imageData.data[offset]) * this.dataScaleSlopes[dataScaleIndex]) + this.dataScaleIntercepts[dataScaleIndex];
+    return (this.checkSwap(this.imageData.data[offset]) * this.dataScaleSlopes[dataScaleIndex]) +
+        this.dataScaleIntercepts[dataScaleIndex];
 };
 
 
 
 papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc, zLoc, timepoint) {
-    var value, fracX, fracY, fracZ, tempVal1, tempVal2, offset, xInt, yInt, zInt, interpolateX, interpolateY, interpolateZ, ctrX, ctrY;
+    var value, fracX, fracY, fracZ, tempVal1, tempVal2, offset, xInt, yInt, zInt, interpolateX, interpolateY,
+        interpolateZ, ctrX, ctrY;
     value = tempVal1 = tempVal2 = 0;
 
     xInt = Math.floor(xLoc);
@@ -223,7 +230,7 @@ papaya.volume.VoxelValue.prototype.checkSwap = function (val) {
     /*jslint bitwise: true */
 
     if (this.swap16) {
-        return ((((val & 0xFF) << 8) | ((val >> 8) & 0xFF)) << 16) >> 16;  // since JavaScript uses 32-bit always when bit shifting
+        return ((((val & 0xFF) << 8) | ((val >> 8) & 0xFF)) << 16) >> 16;  // since JS uses 32-bit  when bit shifting
     }
 
     if (this.swap32) {

@@ -5,11 +5,12 @@ GUNZIP_MAGIC_COOKIE1, GUNZIP_MAGIC_COOKIE2, numeric, Uint8Array, pako */
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
 
-
+/*** Constructor ***/
 papaya.volume.Volume = papaya.volume.Volume || function (progressMeter, dialogHandler) {
     this.progressMeter = progressMeter;
     this.dialogHandler = dialogHandler;
@@ -32,9 +33,12 @@ papaya.volume.Volume = papaya.volume.Volume || function (progressMeter, dialogHa
 };
 
 
+/*** Static Pseudo-constants ***/
 
 papaya.volume.Volume.PROGRESS_LABEL_LOADING = "Loading";
 
+
+/*** Prototype Methods ***/
 
 papaya.volume.Volume.prototype.fileIsCompressed = function (filename, data) {
     var buf, magicCookie1, magicCookie2;
@@ -135,7 +139,8 @@ papaya.volume.Volume.prototype.readNextURL = function (vol, index) {
                             vol.fileLength = vol.rawData.byteLength;
                             vol.readNextURL(vol, index + 1);
                         } else {
-                            vol.error = new Error("There was a problem reading that file (" + vol.fileName + "):\n\nResponse status = " + xhr.status);
+                            vol.error = new Error("There was a problem reading that file (" +
+                                vol.fileName + "):\n\nResponse status = " + xhr.status);
                             vol.finishedLoad();
                         }
                     }
@@ -147,12 +152,14 @@ papaya.volume.Volume.prototype.readNextURL = function (vol, index) {
 
                 xhr.send(null);
             } else {
-                vol.error = new Error("There was a problem reading that file (" + vol.fileName + "):\n\nResponse type is not supported.");
+                vol.error = new Error("There was a problem reading that file (" + vol.fileName +
+                    "):\n\nResponse type is not supported.");
                 vol.finishedLoad();
             }
         } catch (err) {
             if (vol !== null) {
-                vol.error = new Error("There was a problem reading that file (" + vol.fileName + "):\n\n" + err.message);
+                vol.error = new Error("There was a problem reading that file (" +
+                    vol.fileName + "):\n\n" + err.message);
                 vol.finishedLoad();
             }
         }
@@ -160,6 +167,7 @@ papaya.volume.Volume.prototype.readNextURL = function (vol, index) {
         setTimeout(function () {vol.decompress(vol); }, 0);
     }
 };
+
 
 
 papaya.volume.Volume.prototype.readEncodedData = function (names, callback) {
@@ -197,7 +205,6 @@ papaya.volume.Volume.prototype.readNextEncodedData = function (vol, index, names
         vol.decompress(vol);
     }
 };
-
 
 
 
@@ -264,7 +271,8 @@ papaya.volume.Volume.prototype.getZSize = function () {
 papaya.volume.Volume.prototype.decompress = function (vol) {
     if (vol.compressed) {
         try {
-            pako.inflate(new Uint8Array(vol.rawData[0]), null, this.progressMeter, function (data) {vol.finishedDecompress(vol, data.buffer); });
+            pako.inflate(new Uint8Array(vol.rawData[0]), null, this.progressMeter,
+                function (data) {vol.finishedDecompress(vol, data.buffer); });
         } catch (err) {
             console.log(err);
         }
@@ -283,7 +291,8 @@ papaya.volume.Volume.prototype.finishedDecompress = function (vol, data) {
 
 
 papaya.volume.Volume.prototype.finishedReadData = function (vol) {
-    vol.header.readHeaderData(vol.fileName, vol.rawData, this.progressMeter, this.dialogHandler, bind(this, this.finishedReadHeaderData));
+    vol.header.readHeaderData(vol.fileName, vol.rawData, this.progressMeter, this.dialogHandler,
+        bind(this, this.finishedReadHeaderData));
 };
 
 

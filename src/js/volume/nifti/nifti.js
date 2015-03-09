@@ -161,7 +161,8 @@ papaya.volume.nifti.NIFTI.prototype.readFileData = function (data) {
 
 
 
-papaya.volume.nifti.NIFTI.prototype.convertNiftiQFormToNiftiSForm = function (qb, qc, qd, qx, qy, qz, dx, dy, dz, qfac) {
+papaya.volume.nifti.NIFTI.prototype.convertNiftiQFormToNiftiSForm = function (qb, qc, qd, qx, qy, qz, dx, dy, dz,
+                                                                              qfac) {
     var R = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
         a,
         b = qb,
@@ -219,7 +220,8 @@ papaya.volume.nifti.NIFTI.prototype.convertNiftiQFormToNiftiSForm = function (qb
 
 
 papaya.volume.nifti.NIFTI.prototype.convertNiftiSFormToNEMA = function (R) {
-    var xi, xj, xk, yi, yj, yk, zi, zj, zk, val, detQ, detP, i, j, k, p, q, r, ibest, jbest, kbest, pbest, qbest, rbest, M, vbest, Q, P, iChar, jChar, kChar, iSense, jSense, kSense;
+    var xi, xj, xk, yi, yj, yk, zi, zj, zk, val, detQ, detP, i, j, k, p, q, r, ibest, jbest, kbest, pbest, qbest, rbest,
+        M, vbest, Q, P, iChar, jChar, kChar, iSense, jSense, kSense;
     k = 0;
 
     Q = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
@@ -575,5 +577,6 @@ papaya.volume.nifti.NIFTI.prototype.hasError = function () {
 
 
 papaya.volume.nifti.NIFTI.prototype.getQformMat = function () {
-    return this.convertNiftiQFormToNiftiSForm(this.quatern_b, this.quatern_c, this.quatern_d, this.qoffset_x, this.qoffset_y, this.qoffset_z, this.pixDims[1], this.pixDims[2], this.pixDims[3], this.pixDims[0]);
+    return this.convertNiftiQFormToNiftiSForm(this.quatern_b, this.quatern_c, this.quatern_d, this.qoffset_x,
+        this.qoffset_y, this.qoffset_z, this.pixDims[1], this.pixDims[2], this.pixDims[3], this.pixDims[0]);
 };

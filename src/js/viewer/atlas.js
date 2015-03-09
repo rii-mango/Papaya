@@ -4,10 +4,12 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.viewer = papaya.viewer || {};
 
 
+/*** Constructor ***/
 papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas, container, callback) {
     this.container = container;
     this.callback = callback;
@@ -33,20 +35,25 @@ papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas, container, callbac
 };
 
 
+/*** Static Pseudo-constants ***/
 
 papaya.viewer.Atlas.MAX_LABELS = 4;
 papaya.viewer.Atlas.PROBABILISTIC = [ "probabalistic", "probabilistic", "statistic" ]; // typo is in FSL < 5.0.2
 papaya.viewer.Atlas.LABEL_SPLIT_REGEX = /\.|:|,|\//;  // possible delimiters
 
 
+/*** Prototype Methods ***/
 
 papaya.viewer.Atlas.prototype.getLabelAtCoordinate = function (xLoc, yLoc, zLoc) {
     var xTrans, yTrans, zTrans, val;
 
     if (this.transform && (this.currentAtlas === this.transformedname)) {
-        xTrans = ((xLoc * this.transform[0][0]) + (yLoc * this.transform[0][1]) + (zLoc * this.transform[0][2]) + (this.transform[0][3]));
-        yTrans = ((xLoc * this.transform[1][0]) + (yLoc * this.transform[1][1]) + (zLoc * this.transform[1][2]) + (this.transform[1][3]));
-        zTrans = ((xLoc * this.transform[2][0]) + (yLoc * this.transform[2][1]) + (zLoc * this.transform[2][2]) + (this.transform[2][3]));
+        xTrans = ((xLoc * this.transform[0][0]) + (yLoc * this.transform[0][1]) + (zLoc * this.transform[0][2]) +
+            (this.transform[0][3]));
+        yTrans = ((xLoc * this.transform[1][0]) + (yLoc * this.transform[1][1]) + (zLoc * this.transform[1][2]) +
+            (this.transform[1][3]));
+        zTrans = ((xLoc * this.transform[2][0]) + (yLoc * this.transform[2][1]) + (zLoc * this.transform[2][2]) +
+            (this.transform[2][3]));
     } else {
         xTrans = xLoc;
         yTrans = yLoc;
@@ -69,10 +76,10 @@ papaya.viewer.Atlas.prototype.readFinished = function () {
     this.parseLabels();
     this.parseDisplayColumns();
     this.maxLabels = this.findMaxLabelParts();
-    this.probabilistic = this.atlasLabelData.atlas.header.type
-        && ((this.atlasLabelData.atlas.header.type.toLowerCase() === papaya.viewer.Atlas.PROBABILISTIC[0])
-            || (this.atlasLabelData.atlas.header.type.toLowerCase() === papaya.viewer.Atlas.PROBABILISTIC[1])
-            || (this.atlasLabelData.atlas.header.type.toLowerCase() === papaya.viewer.Atlas.PROBABILISTIC[2]));
+    this.probabilistic = this.atlasLabelData.atlas.header.type &&
+    ((this.atlasLabelData.atlas.header.type.toLowerCase() === papaya.viewer.Atlas.PROBABILISTIC[0]) ||
+    (this.atlasLabelData.atlas.header.type.toLowerCase() === papaya.viewer.Atlas.PROBABILISTIC[1]) ||
+    (this.atlasLabelData.atlas.header.type.toLowerCase() === papaya.viewer.Atlas.PROBABILISTIC[2]));
 
     this.returnLabels = [];
     this.returnLabels.length = this.maxLabels;

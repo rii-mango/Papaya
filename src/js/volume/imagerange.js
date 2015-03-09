@@ -4,10 +4,12 @@
 
 "use strict";
 
+/*** Imports ***/
 var papaya = papaya || {};
 papaya.volume = papaya.volume || {};
 
 
+/*** Constructor ***/
 papaya.volume.ImageRange = papaya.volume.ImageRange || function (min, max) {
     this.displayMin = min;
     this.displayMax = max;
@@ -18,11 +20,13 @@ papaya.volume.ImageRange = papaya.volume.ImageRange || function (min, max) {
 };
 
 
+/*** Static Pseudo-constants ***/
 
 papaya.volume.ImageRange.DEFAULT_SCALE = 1.0;
 papaya.volume.ImageRange.DEFAULT_INTERCEPT = 0.0;
 
 
+/*** Prototype Methods ***/
 
 papaya.volume.ImageRange.prototype.isValid = function () {
     return true;
