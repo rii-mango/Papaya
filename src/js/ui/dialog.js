@@ -1,7 +1,7 @@
 
 /*jslint browser: true, node: true */
 /*global $, isStringBlank, derefIn, bind, PAPAYA_DEFAULT_CONTAINER_ID, showModalDialog, PAPAYA_DIALOG_CSS,
-  PAPAYA_DIALOG_CONTENT_CSS, PAPAYA_DIALOG_CONTENT_LABEL_CSS, PAPAYA_DIALOG_CONTENT_CONTROL_CSS,
+  PAPAYA_DIALOG_CONTENT_CSS, PAPAYA_DIALOG_CONTENT_LABEL_CSS, PAPAYA_DIALOG_CONTENT_CONTROL_CSS, truncateMiddleString,
   PAPAYA_DIALOG_TITLE_CSS, PAPAYA_DIALOG_BUTTON_CSS, PAPAYA_DIALOG_BACKGROUND, PAPAYA_DIALOG_STOPSCROLL */
 
 "use strict";
@@ -11,7 +11,7 @@ papaya.ui = papaya.ui || {};
 
 
 
-papaya.ui.Dialog = papaya.ui.Dialog || function (container, title, content, dataSource, callback, modifier) {
+papaya.ui.Dialog = papaya.ui.Dialog || function (container, title, content, dataSource, callback, callbackOk, modifier) {
     this.container = container;
     this.viewer = container.viewer;
     this.title = title;
@@ -23,6 +23,7 @@ papaya.ui.Dialog = papaya.ui.Dialog || function (container, title, content, data
     this.content = content;
     this.dataSource = dataSource;
     this.callback = callback;
+    this.callbackOk = callbackOk;
 };
 
 
@@ -56,7 +57,7 @@ papaya.ui.Dialog.prototype.showDialog = function () {
                 html += "<tr><td class='" + PAPAYA_DIALOG_CONTENT_LABEL_CSS + "'>" + this.content.items[ctr].label + "</td><td class='" + PAPAYA_DIALOG_CONTENT_CONTROL_CSS + "'><select " + disabled
                     + " id='" + this.content.items[ctr].field + "'>";
                 for (ctrOpt = 0; ctrOpt < this.content.items[ctr].options.length; ctrOpt += 1) {
-                    html += "<option value='" + this.content.items[ctr].options[ctrOpt] + "'>" + this.content.items[ctr].options[ctrOpt] + "</option>";
+                    html += "<option value='" + this.content.items[ctr].options[ctrOpt] + "'>" + truncateMiddleString(this.content.items[ctr].options[ctrOpt].toString(), 40) + "</option>";
                 }
 
                 html += "</select></td></tr>";
@@ -106,6 +107,10 @@ papaya.ui.Dialog.prototype.doOk = function () {
 
     modalDialogHtml.remove();
     modelDialogBackgroundHtml.remove();
+
+    if (this.callbackOk) {
+        this.callbackOk();
+    }
 
     $("body").removeClass(PAPAYA_DIALOG_STOPSCROLL);
 };

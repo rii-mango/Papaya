@@ -13,8 +13,8 @@ papaya.volume.ImageRange = papaya.volume.ImageRange || function (min, max) {
     this.displayMax = max;
     this.imageMin = 0;
     this.imageMax = 0;
-    this.globalScale = papaya.volume.ImageRange.DEFAULT_SCALE;
-    this.globalIntercept = papaya.volume.ImageRange.DEFAULT_INTERCEPT;
+    this.dataScaleSlopes = [];
+    this.dataScaleIntercepts = [];
 };
 
 
@@ -30,7 +30,11 @@ papaya.volume.ImageRange.prototype.isValid = function () {
 
 
 
-papaya.volume.ImageRange.prototype.setGlobalDataScale = function (scale, intercept) {
-    this.globalScale = scale;
-    this.globalIntercept = intercept;
+papaya.volume.ImageRange.prototype.setGlobalDataScale = function (scale, intercept, numSlices) {
+    var ctr;
+
+    for (ctr = 0; ctr < numSlices; ctr += 1) {
+        this.dataScaleSlopes[ctr] = scale;
+        this.dataScaleIntercepts[ctr] = intercept;
+    }
 };

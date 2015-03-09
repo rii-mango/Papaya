@@ -13,6 +13,7 @@ var papaya = papaya || {};
 var papayaContainers = [];
 var papayaLoadableImages = papayaLoadableImages || [];
 var papayaLastHoveredViewer = null;
+var papayaDroppedFiles = [];
 
 
 papaya.Container = papaya.Container || function (containerHtml) {
@@ -34,7 +35,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.orthogonal = true;
     this.kioskMode = false;
     this.fullScreenPadding = true;
-
+    this.dropTimeout = null;
     this.resetComponents();
 };
 
@@ -195,6 +196,45 @@ papaya.Container.prototype.buildToolbar = function () {
 };
 
 
+papaya.Container.prototype.readFile = function(fileEntry, callback) {
+    fileEntry.file(function(callback, file){
+        if (callback) {
+            if (file.name.charAt(0) !== '.') {
+                callback(file);
+            }
+        }
+    }.bind(this, callback));
+};
+
+
+
+papaya.Container.prototype.readDir = function(itemEntry) {
+    this.readDirNextEntries(itemEntry.createReader());
+};
+
+
+
+papaya.Container.prototype.readDirNextEntries = function(dirReader) {
+    var container = this;
+
+    dirReader.readEntries(function(entries) {
+        var len = entries.length,
+            ctr, entry;
+
+        if (len > 0) {
+            for (ctr = 0; ctr < len; ctr += 1) {
+                entry = entries[ctr];
+                if (entry.isFile) {
+                    container.readFile(entry, bind(container, container.addDroppedFile));
+                }
+            }
+
+            container.readDirNextEntries(dirReader);
+        }
+    });
+};
+
+
 
 papaya.Container.prototype.setUpDnD = function () {
     var container = this;
@@ -224,19 +264,63 @@ papaya.Container.prototype.setUpDnD = function () {
         return false;
     };
 
-    this.containerHtml[0].ondrop = function (e) {
-        e.preventDefault();
+    this.containerHtml[0].ondrop = function (evt) {
+        evt.preventDefault();
 
-        if (e.dataTransfer.files.length > 1) {
-            container.display.drawError("Please drop one file at a time.");
-        } else {
-            container.viewer.loadImage(e.dataTransfer.files[0]);
+        var dataTransfer = evt.dataTransfer;
+
+        container.display.drawProgress(0.1, "Loading");
+
+        if (dataTransfer) {
+            if (dataTransfer.items && (dataTransfer.items.length > 0)) {
+                var items = dataTransfer.items,
+                    len = items.length,
+                    ctr, entry;
+
+                for (ctr = 0; ctr<len; ctr += 1) {
+                    entry = items[ctr];
+
+                    if (entry.getAsEntry) {
+                        entry = entry.getAsEntry();
+                    } else if(entry.webkitGetAsEntry) {
+                        entry = entry.webkitGetAsEntry();
+                    }
+
+                    if (entry.isFile) {
+                        container.readFile(entry, bind(container, container.addDroppedFile));
+                    } else if (entry.isDirectory) {
+                        container.readDir(entry);
+                    }
+                }
+            }
+
+            //else if (dataTransfer.mozGetDataAt) {  // permission denied :-(
+            //    console.log(dataTransfer.mozGetDataAt('application/x-moz-file', 0));
+            //}
+
+            else if (dataTransfer.files && (dataTransfer.files.length > 0)) {
+                container.viewer.loadImage(evt.dataTransfer.files);
+            }
         }
 
         return false;
     };
 };
 
+
+
+papaya.Container.prototype.addDroppedFile = function (file) {
+    clearTimeout(this.dropTimeout);
+    papayaDroppedFiles.push(file);
+    this.dropTimeout = setTimeout(bind(this, this.droppedFilesFinishedLoading), 100);
+};
+
+
+
+papaya.Container.prototype.droppedFilesFinishedLoading = function () {
+    this.viewer.loadImage(papayaDroppedFiles);
+    papayaDroppedFiles = null;
+};
 
 
 papaya.Container.prototype.clearParams = function () {
@@ -246,18 +330,32 @@ papaya.Container.prototype.clearParams = function () {
 
 
 papaya.Container.prototype.loadNext = function () {
-    var loadingNext = false;
+    var loadingNext = false, imageRefs;
 
     this.loadingImageIndex += 1;
 
     if (this.params.images) {
         if (this.loadingImageIndex < this.params.images.length) {
             loadingNext = true;
-            this.viewer.loadImage(this.params.images[this.loadingImageIndex], true, false);
+            imageRefs = this.params.images[this.loadingImageIndex];
+
+            if (!(imageRefs instanceof Array)) {
+                imageRefs = [];
+                imageRefs[0] = this.params.images[this.loadingImageIndex];
+            }
+
+            this.viewer.loadImage(imageRefs, true, false);
         }
     } else if (this.params.encodedImages) {
         if (this.loadingImageIndex < this.params.encodedImages.length) {
             loadingNext = true;
+            imageRefs = this.params.encodedImages[this.loadingImageIndex];
+
+            if (!(imageRefs instanceof Array)) {
+                imageRefs = [];
+                imageRefs[0] = this.params.encodedImages[this.loadingImageIndex];
+            }
+
             this.viewer.loadImage(this.params.encodedImages[this.loadingImageIndex], false, true);
         }
     }
@@ -481,7 +579,7 @@ function fillContainerHTML(containerHTML, isDefault, params) {
 
 
 function buildContainer(containerHTML, params) {
-    var container, message, viewerHtml, loadUrl;
+    var container, message, viewerHtml, loadUrl, imageRefs = null;
 
     message = checkForBrowserCompatibility();
     viewerHtml = containerHTML.find("." + PAPAYA_VIEWER_CSS);
@@ -525,10 +623,28 @@ function buildContainer(containerHTML, params) {
         loadUrl = viewerHtml.data("load-url");
 
         if (loadUrl) {
-            container.viewer.loadImage(loadUrl, true, false);
+            imageRefs = loadUrl;
+            if (!(imageRefs instanceof Array)) {
+                imageRefs = [];
+                imageRefs[0] = loadUrl;
+            }
+
+            container.viewer.loadImage(imageRefs, true, false);
         } else if (container.params.images) {
-            container.viewer.loadImage(container.params.images[0], true, false);
+            imageRefs = container.params.images[0];
+            if (!(imageRefs instanceof Array)) {
+                imageRefs = [];
+                imageRefs[0] = container.params.images[0];
+            }
+
+            container.viewer.loadImage(imageRefs, true, false);
         } else if (container.params.encodedImages) {
+            imageRefs = container.params.encodedImages[0];
+            if (!(imageRefs instanceof Array)) {
+                imageRefs = [];
+                imageRefs[0] = container.params.encodedImages[0];
+            }
+
             container.viewer.loadImage(container.params.encodedImages[0], false, true);
         }
 

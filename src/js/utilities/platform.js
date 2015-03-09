@@ -24,7 +24,6 @@ console.error = console.error || function () {};
 console.info = console.info || function () {};
 
 
-
 function detectOs() {
     if (navigator.appVersion.indexOf("Win") !== -1) {
         PAPAYA_BROWSER.os = "Windows";

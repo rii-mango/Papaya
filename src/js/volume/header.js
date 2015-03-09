@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global */
+/*global bind */
 
 "use strict";
 
@@ -17,13 +17,16 @@ papaya.volume.Header = papaya.volume.Header || function () {
     this.imageType = null;
     this.orientation = null;
     this.imageRange = null;
-    this.errorMessage = null;
+    this.error = null;
     this.origin = null;
     this.orientationCertainty = papaya.volume.Header.ORIENTATION_CERTAINTY_UNKNOWN;
+    this.onFinishedFileFormatRead = null;
 };
 
 
-
+papaya.volume.Header.HEADER_TYPE_UNKNOWN = 0;
+papaya.volume.Header.HEADER_TYPE_NIFTI = 1;
+papaya.volume.Header.HEADER_TYPE_DICOM = 2;
 papaya.volume.Header.ERROR_UNRECOGNIZED_FORMAT = "This format is not recognized!";
 papaya.volume.Header.INVALID_IMAGE_DIMENSIONS = "Image dimensions are not valid!";
 papaya.volume.Header.INVALID_VOXEL_DIMENSIONS = "Voxel dimensions are not valid!";
@@ -35,32 +38,54 @@ papaya.volume.Header.ORIENTATION_CERTAINTY_HIGH = 2;
 
 
 
-papaya.volume.Header.prototype.readData = function (headerType, data, compressed) {
-    if (headerType === papaya.volume.Volume.TYPE_NIFTI) {
-        this.fileFormat = new papaya.volume.nifti.HeaderNIFTI();
-        this.fileFormat.readData(data, compressed);
-
-        if (this.fileFormat.hasError()) {
-            this.errorMessage = this.fileFormat.errorMessage;
-        }
-    } else {
-        this.errorMessage = papaya.volume.Header.ERROR_UNRECOGNIZED_FORMAT;
+papaya.volume.Header.prototype.findHeaderType = function (filename, data) {
+    if (papaya.volume.nifti.HeaderNIFTI.isThisFormat(filename, data)) {
+        return papaya.volume.Header.HEADER_TYPE_NIFTI;
+    } else if (papaya.volume.dicom.HeaderDICOM.isThisFormat(filename, data)) {
+        return papaya.volume.Header.HEADER_TYPE_DICOM;
     }
 
-    if (!this.hasError()) {
+    return papaya.volume.Header.HEADER_TYPE_UNKNOWN;
+};
+
+
+
+papaya.volume.Header.prototype.readHeaderData = function (filename, data, progressMeter, dialogHandler, onFinishedFileFormatRead) {
+    var headerType = this.findHeaderType(filename, data);
+
+    this.onFinishedFileFormatRead = onFinishedFileFormatRead;
+
+    if (headerType === papaya.volume.Header.HEADER_TYPE_NIFTI) {
+        this.fileFormat = new papaya.volume.nifti.HeaderNIFTI();
+        this.fileFormat.readHeaderData(data, progressMeter, dialogHandler, bind(this, this.onFinishedHeaderRead));
+    } else if (headerType === papaya.volume.Header.HEADER_TYPE_DICOM) {
+        this.fileFormat = new papaya.volume.dicom.HeaderDICOM();
+        this.fileFormat.readHeaderData(data, progressMeter, dialogHandler, bind(this, this.onFinishedHeaderRead));
+    } else {
+        this.error = new Error(papaya.volume.Header.ERROR_UNRECOGNIZED_FORMAT);
+        this.onFinishedFileFormatRead();
+    }
+};
+
+
+
+papaya.volume.Header.prototype.onFinishedHeaderRead = function () {
+    if (this.fileFormat.hasError()) {
+        this.error = this.fileFormat.error;
+    } else {
         this.imageType = this.fileFormat.getImageType();
         if (!this.imageType.isValid()) {
-            this.errorMessage = papaya.volume.Header.INVALID_DATATYPE;
+            this.error = new Error(papaya.volume.Header.INVALID_DATATYPE);
         }
 
         this.imageDimensions = this.fileFormat.getImageDimensions();
         if (!this.imageDimensions.isValid()) {
-            this.errorMessage = papaya.volume.Header.INVALID_IMAGE_DIMENSIONS;
+            this.error = new Error(papaya.volume.Header.INVALID_IMAGE_DIMENSIONS);
         }
 
         this.voxelDimensions = this.fileFormat.getVoxelDimensions(this.imageType.littleEndian);
         if (!this.voxelDimensions.isValid()) {
-            this.errorMessage = papaya.volume.Header.INVALID_VOXEL_DIMENSIONS;
+            this.error = new Error(papaya.volume.Header.INVALID_VOXEL_DIMENSIONS);
         }
 
         this.orientation = this.fileFormat.getOrientation();
@@ -77,16 +102,30 @@ papaya.volume.Header.prototype.readData = function (headerType, data, compressed
 
         this.imageRange = this.fileFormat.getImageRange();
         if (!this.imageRange.isValid()) {
-            this.errorMessage = papaya.volume.Header.INVALID_IMAGE_RANGE;
+            this.error = new Error(papaya.volume.Header.INVALID_IMAGE_RANGE);
         }
 
         this.imageDescription = this.fileFormat.getImageDescription();
     }
+
+    this.onFinishedFileFormatRead();
 };
 
 
+
+papaya.volume.Header.prototype.getName = function () {
+    return this.fileFormat.getName();
+};
+
+
+papaya.volume.Header.prototype.readImageData = function (progressMeter, onFinishedImageRead) {
+    this.fileFormat.readImageData(progressMeter, onFinishedImageRead);
+};
+
+
+
 papaya.volume.Header.prototype.hasError = function () {
-    return (this.errorMessage !== null);
+    return (this.error !== null);
 };
 
 

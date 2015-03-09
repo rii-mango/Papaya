@@ -433,3 +433,28 @@ function getAbsoluteUrl(protocol, relative) {
 
     return (protocol + "://" + host + path);
 }
+
+
+
+function concatArrayBuffers(buffer1, buffer2) {
+    var tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
+    tmp.set(new Uint8Array(buffer1), 0);
+    tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
+    return tmp.buffer;
+}
+
+
+
+function truncateMiddleString(fullStr, strLen) {
+    if (fullStr.length <= strLen) {
+        return fullStr;
+    }
+
+    var separator = '...',
+        sepLen = separator.length,
+        charsToShow = strLen - sepLen,
+        frontChars = Math.ceil(charsToShow/2),
+        backChars = Math.floor(charsToShow/2);
+
+    return fullStr.substr(0, frontChars) + separator + fullStr.substr(fullStr.length - backChars);
+}

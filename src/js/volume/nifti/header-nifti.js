@@ -13,6 +13,7 @@ papaya.volume.nifti = papaya.volume.nifti || {};
 papaya.volume.nifti.HeaderNIFTI = papaya.volume.nifti.HeaderNIFTI || function () {
     this.nifti = null;
     this.compressed = false;
+    this.imageData = null;
 };
 
 
@@ -22,20 +23,61 @@ papaya.volume.nifti.HeaderNIFTI.SPATIAL_UNITS_MASK = 0x07;
 papaya.volume.nifti.HeaderNIFTI.TEMPORAL_UNITS_MASK = 0x38;
 
 
-papaya.volume.nifti.HeaderNIFTI.prototype.readData = function (data, compressed) {
+
+papaya.volume.nifti.HeaderNIFTI.isThisFormat = function (filename, data) {
+    var buf, mag1, mag2, mag3;
+
+    if (filename.indexOf(".nii") !== -1) {
+        return true;
+    }
+
+    buf = new DataView(data[0]);
+    mag1 = buf.getUint8(papaya.volume.nifti.MAGIC_NUMBER_LOCATION);
+    mag2 = buf.getUint8(papaya.volume.nifti.MAGIC_NUMBER_LOCATION + 1);
+    mag3 = buf.getUint8(papaya.volume.nifti.MAGIC_NUMBER_LOCATION + 2);
+
+    if ((mag1 === papaya.volume.nifti.MAGIC_NUMBER[0]) &&
+        (mag2 === papaya.volume.nifti.MAGIC_NUMBER[1]) &&
+        (mag3 === papaya.volume.nifti.MAGIC_NUMBER[2])) {
+        return true;
+    }
+
+    return false;
+};
+
+
+papaya.volume.nifti.HeaderNIFTI.prototype.readHeaderData = function (data, progressMeter, dialogHandler, onFinishedHeaderRead) {
+    var imageDimensions;
     this.nifti = new papaya.volume.nifti.NIFTI();
-    this.compressed = compressed;
-    this.nifti.readData(data);
+    this.nifti.readFileData(data[0]);
+
+    imageDimensions = this.getImageDimensions();
+    this.imageData = data[0].slice(imageDimensions.dataOffsets[0], imageDimensions.dataOffsets[0] + imageDimensions.dataLengths[0]);
+    onFinishedHeaderRead();
+};
+
+
+
+papaya.volume.nifti.HeaderNIFTI.prototype.readImageData = function (progressMeter, onFinishedImageRead) {
+    onFinishedImageRead(this.imageData);
+    this.imageData = null;
 };
 
 
 
 papaya.volume.nifti.HeaderNIFTI.prototype.getImageDimensions = function () {
     var id = new papaya.volume.ImageDimensions(this.nifti.dims[1], this.nifti.dims[2], this.nifti.dims[3], this.nifti.dims[4]);
-    id.offset = this.nifti.vox_offset;
+    id.dataOffsets[0] = this.nifti.vox_offset;
+    id.dataLengths[0] = (id.getNumVoxelsSeries() * (this.nifti.numBitsPerVoxel / 8));
+
     return id;
 };
 
+
+
+papaya.volume.nifti.HeaderNIFTI.prototype.getName = function () {
+    return null;
+};
 
 
 papaya.volume.nifti.HeaderNIFTI.prototype.getVoxelDimensions = function (littleEndian) {
@@ -99,7 +141,9 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrientation = function () {
 
 papaya.volume.nifti.HeaderNIFTI.prototype.getOrientationQform = function () {
     var orientation = papaya.volume.nifti.HeaderNIFTI.ORIENTATION_DEFAULT,
-        qFormMatParams = this.nifti.convertNiftiQFormToNiftiSForm(this.nifti.quatern_b, this.nifti.quatern_c, this.nifti.quatern_d, this.nifti.qoffset_x, this.nifti.qoffset_y, this.nifti.qoffset_z, this.nifti.pixDims[1], this.nifti.pixDims[2], this.nifti.pixDims[3], this.nifti.pixDims[0]);
+        qFormMatParams = this.nifti.convertNiftiQFormToNiftiSForm(this.nifti.quatern_b, this.nifti.quatern_c,
+            this.nifti.quatern_d, this.nifti.qoffset_x, this.nifti.qoffset_y, this.nifti.qoffset_z,
+            this.nifti.pixDims[1], this.nifti.pixDims[2], this.nifti.pixDims[3], this.nifti.pixDims[0]);
 
     if (this.nifti.qform_code > 0) {
         orientation = this.nifti.convertNiftiSFormToNEMA(qFormMatParams);
@@ -231,13 +275,15 @@ papaya.volume.nifti.HeaderNIFTI.prototype.sFormHasRotations = function () {
 
 papaya.volume.nifti.HeaderNIFTI.prototype.getImageRange = function () {
     var ir = new papaya.volume.ImageRange(this.nifti.cal_min, this.nifti.cal_max),
-        slope = this.nifti.scl_slope;
+        slope = this.nifti.scl_slope,
+        imageDimensions = this.getImageDimensions();
 
     if (slope === 0) {
         slope = 1;
     }
 
-    ir.setGlobalDataScale(slope, this.nifti.scl_inter);
+    ir.setGlobalDataScale(slope, this.nifti.scl_inter, imageDimensions.slices * imageDimensions.timepoints);
+
     return ir;
 };
 

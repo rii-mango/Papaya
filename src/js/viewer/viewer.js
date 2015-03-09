@@ -26,7 +26,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.initialized = false;
     this.pageLoaded = false;
     this.loadingVolume = null;
-    this.volume = new papaya.volume.Volume(this.container.display);
+    this.volume = new papaya.volume.Volume(this.container.display, this);
     this.screenVolumes = [];
     this.currentScreenVolume = null;
     this.axialSlice = null;
@@ -135,47 +135,74 @@ papaya.viewer.Viewer.prototype.loadImage = function (name, forceUrl, forceEncode
 
 
 
+papaya.viewer.Viewer.prototype.showDialog = function (title, data, datasource, callback, callbackOk) {
+    var ctr, index = -1;
+
+    for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
+        if (papayaContainers[ctr] === this.container) {
+            index = ctr;
+            break;
+        }
+    }
+
+    var dialog = new papaya.ui.Dialog(this.container, title, data, datasource, callback, callbackOk, index);
+    dialog.showDialog();
+};
+
+
+
 papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEncode) {
-    var loadableImage = this.container.findLoadableImage(name, forceUrl, forceEncode);
-    this.volume = new papaya.volume.Volume(this.container.display);
+    var imageRefs, loadableImage = this.container.findLoadableImage(name, forceUrl, forceEncode);
+    this.volume = new papaya.volume.Volume(this.container.display, this);
 
     if (forceEncode) {
         this.volume.readEncodedData(name, bind(this, this.initializeViewer));
     } else if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
-        this.volume.readEncodedData(loadableImage.encode, bind(this, this.initializeViewer));
+        imageRefs = loadableImage.encode;
+        if (!(imageRefs instanceof Array)) {
+            imageRefs = [];
+            imageRefs[0] = loadableImage.encode;
+        }
+
+        this.volume.readEncodedData(imageRefs, bind(this, this.initializeViewer));
     } else if (forceUrl) {
-        this.volume.readURL(name, bind(this, this.initializeViewer));
+        this.volume.readURLs(name, bind(this, this.initializeViewer));
     } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
-        this.volume.readURL(loadableImage.url, bind(this, this.initializeViewer));
+        this.volume.readURLs(loadableImage.url, bind(this, this.initializeViewer));
     } else {
-        this.volume.readFile(name, bind(this, this.initializeViewer));
+        this.volume.readFiles(name, bind(this, this.initializeViewer));
     }
 };
 
 
 
 papaya.viewer.Viewer.prototype.loadOverlay = function (name, forceUrl, forceEncode) {
-    var loadableImage = this.container.findLoadableImage(name);
-    this.loadingVolume = new papaya.volume.Volume(this.container.display);
+    var imageRefs, loadableImage = this.container.findLoadableImage(name);
+    this.loadingVolume = new papaya.volume.Volume(this.container.display, this);
 
     if (this.screenVolumes.length > papaya.viewer.Viewer.MAX_OVERLAYS) {
-        this.loadingVolume.errorMessage = "Maximum number of overlays (" + papaya.viewer.Viewer.MAX_OVERLAYS + ") has been reached!";
+        this.loadingVolume.error = new Error("Maximum number of overlays (" + papaya.viewer.Viewer.MAX_OVERLAYS + ") has been reached!");
         this.initializeOverlay();
     } else {
         if (forceEncode) {
             this.loadingVolume.readEncodedData(name, bind(this, this.initializeOverlay));
         } else if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
+            imageRefs = loadableImage.encode;
+            if (!(imageRefs instanceof Array)) {
+                imageRefs = [];
+                imageRefs[0] = loadableImage.encode;
+            }
+
             this.loadingVolume.readEncodedData(loadableImage.encode, bind(this, this.initializeOverlay));
         } else if (forceUrl) {
-            this.loadingVolume.readURL(name, bind(this, this.initializeOverlay));
+            this.loadingVolume.readURLs(name, bind(this, this.initializeOverlay));
         } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
-            this.loadingVolume.readURL(loadableImage.url, bind(this, this.initializeOverlay));
+            this.loadingVolume.readURLs(loadableImage.url, bind(this, this.initializeOverlay));
         } else {
-            this.loadingVolume.readFile(name, bind(this, this.initializeOverlay));
+            this.loadingVolume.readFiles(name, bind(this, this.initializeOverlay));
         }
     }
 };
-
 
 
 
@@ -191,7 +218,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
     viewer = this;
 
     if (this.volume.hasError()) {
-        message = this.volume.errorMessage;
+        message = this.volume.error.message;
         this.resetViewer();
         this.container.clearParams();
         this.container.display.drawError(message);
@@ -319,7 +346,7 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
     var screenParams, parametric;
 
     if (this.loadingVolume.hasError()) {
-        this.container.display.drawError(this.loadingVolume.errorMessage);
+        this.container.display.drawError(this.loadingVolume.error.message);
         this.container.clearParams();
         this.loadingVolume = null;
     } else {
@@ -517,7 +544,7 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
         fontSize = 14;
         this.context.font = fontSize + "px Arial";
         locY = this.canvas.height - 20;
-        text = "Supported formats: NIFTI (.nii, .nii.gz)";
+        text = "Supported formats: NIFTI, DICOM";
         this.context.fillText(text, 20, locY);
 
         // draw Papaya version info
@@ -1255,7 +1282,7 @@ papaya.viewer.Viewer.prototype.getCurrentValueAt = function (ctrX, ctrY, ctrZ) {
 papaya.viewer.Viewer.prototype.resetViewer = function () {
     this.initialized = false;
     this.loadingVolume = null;
-    this.volume = new papaya.volume.Volume(this.container.display);
+    this.volume = new papaya.volume.Volume(this.container.display, this);
     this.screenVolumes = [];
     this.currentScreenVolume = null;
     this.axialSlice = null;
@@ -1483,7 +1510,9 @@ papaya.viewer.Viewer.prototype.goToInitialCoordinate = function () {
     var coord = new papaya.core.Coordinate();
 
     if (this.initialCoordinate === null) {
-        coord.setCoordinate(this.volume.header.imageDimensions.xDim / 2, this.volume.header.imageDimensions.yDim / 2, this.volume.header.imageDimensions.zDim / 2, true);
+        coord.setCoordinate(floorFast(this.volume.header.imageDimensions.xDim / 2),
+            floorFast(this.volume.header.imageDimensions.yDim / 2),
+            floorFast(this.volume.header.imageDimensions.zDim / 2), true);
     } else {
         if (this.worldSpace) {
             this.getIndexCoordinateAtWorld(this.initialCoordinate[0], this.initialCoordinate[1], this.initialCoordinate[2], coord);

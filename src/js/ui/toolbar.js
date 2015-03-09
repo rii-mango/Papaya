@@ -34,7 +34,8 @@ papaya.ui.Toolbar.MENU_DATA = {
     "menus": [
         {"label": "File", "icons": null,
             "items": [
-                {"label": "Add Image...", "action": "OpenImage", "type": "button"},
+                {"label": "Add Image...", "action": "OpenImage", "type": "file"},
+                {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder", "hide": (PAPAYA_BROWSER.name !== "Chrome")},
                 {"type": "spacer"},
                 {"type": "spacer"},
                 {"label": "Close All", "action": "CloseAllImages"}
@@ -77,7 +78,6 @@ papaya.ui.Toolbar.PREFERENCES_DATA = {
         {"label": "Show orientation:", "field": "showOrientation", "options": ["Yes", "No"]},
         {"label": "Scroll wheel behavior:", "field": "scrollBehavior", "options": ["Zoom", "Increment Slice"], "disabled": "container.disableScrollWheel"},
         {"label": "Smooth display:", "field": "smoothDisplay", "options": ["Yes", "No"]}
-
     ]
 };
 
@@ -266,8 +266,12 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
                 item = new papaya.ui.MenuItemSpacer();
             } else if (itemData[ctrItems].type === "checkbox") {
                 item = new papaya.ui.MenuItemCheckBox(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
-            } else if (itemData[ctrItems].type === "button") {
-                item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction));
+            } else if (itemData[ctrItems].type === "file") {
+                item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), false);
+            }  else if (itemData[ctrItems].type === "folder") {
+                if (!itemData[ctrItems].hide) {
+                    item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), true);
+                }
             } else if (itemData[ctrItems].type === "displayrange") {
                 item = new papaya.ui.MenuItemRange(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action, bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
             } else if (itemData[ctrItems].type === "range") {
@@ -366,6 +370,10 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             imageName = action.substring(action.indexOf("-") + 1);
             this.viewer.loadImage(imageName);
         } else if (action === "OpenImage") {
+            this.container.display.drawProgress(0.1, "Loading");
+            this.viewer.loadImage(file);
+        } else if (action === "OpenFolder") {
+            this.container.display.drawProgress(0.1, "Loading");
             this.viewer.loadImage(file);
         } else if (action.startsWith("ColorTable")) {
             colorTableName = action.substring(action.indexOf("-") + 1, action.lastIndexOf("-"));
@@ -382,9 +390,9 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             imageIndex = action.substring(action.lastIndexOf("-") + 1);
 
             if (this.viewer.screenVolumes[imageIndex].volume.numTimepoints > 1) {
-                dialog = new papaya.ui.Dialog(this.container, "Image Info", papaya.ui.Toolbar.SERIES_INFO_DATA, this.viewer, null, imageIndex.toString());
+                dialog = new papaya.ui.Dialog(this.container, "Image Info", papaya.ui.Toolbar.SERIES_INFO_DATA, this.viewer, null, null, imageIndex.toString());
             } else {
-                dialog = new papaya.ui.Dialog(this.container, "Image Info", papaya.ui.Toolbar.IMAGE_INFO_DATA, this.viewer, null, imageIndex.toString());
+                dialog = new papaya.ui.Dialog(this.container, "Image Info", papaya.ui.Toolbar.IMAGE_INFO_DATA, this.viewer, null, null, imageIndex.toString());
             }
 
             dialog.showDialog();

@@ -11,7 +11,7 @@ papaya.volume.nifti = papaya.volume.nifti || {};
 
 
 papaya.volume.nifti.NIFTI = papaya.volume.nifti.NIFTI || function () {
-    this.errorMessage = null;
+    this.error = null;
     this.littleEndian = false;
     this.dim_info = 0;
     this.dims = [];
@@ -75,7 +75,7 @@ papaya.volume.nifti.MAGIC_NUMBER            = [110, 43, 49];  // n+1
 
 
 
-papaya.volume.nifti.NIFTI.prototype.readData = function (data) {
+papaya.volume.nifti.NIFTI.prototype.readFileData = function (data) {
     var rawData = new DataView(data),
         magicCookieVal = this.getIntAt(rawData, 0, this.littleEndian),
         ctr,
@@ -89,7 +89,7 @@ papaya.volume.nifti.NIFTI.prototype.readData = function (data) {
     }
 
     if (magicCookieVal !== papaya.volume.nifti.MAGIC_COOKIE) {
-        this.errorMessage = "This does not appear to be a NIFTI file!";
+        this.error = new Error("This does not appear to be a NIFTI file!");
         return;
     }
 
@@ -569,7 +569,7 @@ papaya.volume.nifti.NIFTI.prototype.getFloatAt = function (data, start, littleEn
 
 
 papaya.volume.nifti.NIFTI.prototype.hasError = function () {
-    return (this.errorMessage !== null);
+    return (this.error !== null);
 };
 
 

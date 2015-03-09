@@ -17,7 +17,8 @@ papaya.volume.ImageDimensions = papaya.volume.ImageDimensions || function (cols,
     this.yDim = -1;
     this.zDim = -1;
     this.timepoints = timepoints || 1;
-    this.offset = 0;  // offset of image data from start of file
+    this.dataOffsets = [];  // offset of image data from start of file
+    this.dataLengths = [];  // length of image data
 };
 
 
@@ -27,14 +28,21 @@ papaya.volume.ImageDimensions.prototype.getNumVoxelsSeries = function () {
 };
 
 
+
 papaya.volume.ImageDimensions.prototype.getNumVoxelsSlice = function () {
     return this.rows * this.cols;
 };
 
 
 
+papaya.volume.ImageDimensions.prototype.getNumVoxelsVolume = function () {
+    return this.rows * this.cols * this.slices;
+};
+
+
+
 papaya.volume.ImageDimensions.prototype.isValid = function () {
-    return ((this.cols > 0) && (this.rows > 0) && (this.slices > 0) && (this.timepoints > 0) && (this.offset >= 0));
+    return ((this.cols > 0) && (this.rows > 0) && (this.slices > 0) && (this.timepoints > 0) && (this.dataOffsets[0] >= 0) && (this.dataLengths[0] >= 0));
 };
 
 

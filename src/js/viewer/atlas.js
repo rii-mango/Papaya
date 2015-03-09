@@ -15,7 +15,7 @@ papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas, container, callbac
     this.transformedname = null;
     this.labels = [];
     this.atlasLabelData = atlas.labels;
-    this.volume = new papaya.volume.Volume(container.display);
+    this.volume = new papaya.volume.Volume(container.display, container.viewer);
     this.displayColumns = null;
     this.returnLabels = null;
     this.transform = null;
@@ -26,9 +26,9 @@ papaya.viewer.Atlas = papaya.viewer.Atlas || function (atlas, container, callbac
     var loadableImage = container.findLoadableImage(atlas.labels.atlas.header.images.summaryimagefile);
 
     if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
-        this.volume.readEncodedData(loadableImage.encode, bind(this, this.readFinished));
+        this.volume.readEncodedData([loadableImage.encode], bind(this, this.readFinished));
     } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
-        this.volume.readURL(loadableImage.url, bind(this, this.readFinished));
+        this.volume.readURLs([loadableImage.url], bind(this, this.readFinished));
     }
 };
 
