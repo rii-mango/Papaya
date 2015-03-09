@@ -156,7 +156,13 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEn
     this.volume = new papaya.volume.Volume(this.container.display, this);
 
     if (forceEncode) {
-        this.volume.readEncodedData(name, bind(this, this.initializeViewer));
+        imageRefs = loadableImage.encode;
+        if (!(imageRefs instanceof Array)) {
+            imageRefs = [];
+            imageRefs[0] = loadableImage.encode;
+        }
+
+        this.volume.readEncodedData(imageRefs, bind(this, this.initializeViewer));
     } else if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
         imageRefs = loadableImage.encode;
         if (!(imageRefs instanceof Array)) {
@@ -168,7 +174,7 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEn
     } else if (forceUrl) {
         this.volume.readURLs(name, bind(this, this.initializeViewer));
     } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
-        this.volume.readURLs(loadableImage.url, bind(this, this.initializeViewer));
+        this.volume.readURLs([loadableImage.url], bind(this, this.initializeViewer));
     } else {
         this.volume.readFiles(name, bind(this, this.initializeViewer));
     }
@@ -185,7 +191,13 @@ papaya.viewer.Viewer.prototype.loadOverlay = function (name, forceUrl, forceEnco
         this.initializeOverlay();
     } else {
         if (forceEncode) {
-            this.loadingVolume.readEncodedData(name, bind(this, this.initializeOverlay));
+            imageRefs = loadableImage.encode;
+            if (!(imageRefs instanceof Array)) {
+                imageRefs = [];
+                imageRefs[0] = loadableImage.encode;
+            }
+
+            this.loadingVolume.readEncodedData(imageRefs, bind(this, this.initializeOverlay));
         } else if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
             imageRefs = loadableImage.encode;
             if (!(imageRefs instanceof Array)) {
@@ -193,11 +205,11 @@ papaya.viewer.Viewer.prototype.loadOverlay = function (name, forceUrl, forceEnco
                 imageRefs[0] = loadableImage.encode;
             }
 
-            this.loadingVolume.readEncodedData(loadableImage.encode, bind(this, this.initializeOverlay));
+            this.loadingVolume.readEncodedData(imageRefs, bind(this, this.initializeOverlay));
         } else if (forceUrl) {
             this.loadingVolume.readURLs(name, bind(this, this.initializeOverlay));
         } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
-            this.loadingVolume.readURLs(loadableImage.url, bind(this, this.initializeOverlay));
+            this.loadingVolume.readURLs([loadableImage.url], bind(this, this.initializeOverlay));
         } else {
             this.loadingVolume.readFiles(name, bind(this, this.initializeOverlay));
         }
