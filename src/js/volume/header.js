@@ -88,7 +88,7 @@ papaya.volume.Header.prototype.onFinishedHeaderRead = function () {
             this.error = new Error(papaya.volume.Header.INVALID_IMAGE_DIMENSIONS);
         }
 
-        this.voxelDimensions = this.fileFormat.getVoxelDimensions(this.imageType.littleEndian);
+        this.voxelDimensions = this.fileFormat.getVoxelDimensions();
         if (!this.voxelDimensions.isValid()) {
             this.error = new Error(papaya.volume.Header.INVALID_VOXEL_DIMENSIONS);
         }

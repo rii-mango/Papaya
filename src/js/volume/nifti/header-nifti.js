@@ -84,21 +84,15 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getName = function () {
 
 
 
-papaya.volume.nifti.HeaderNIFTI.prototype.getVoxelDimensions = function (littleEndian) {
+papaya.volume.nifti.HeaderNIFTI.prototype.getVoxelDimensions = function () {
     /*jslint bitwise: true */
-    var datatypeCode, vd;
+    var vd;
 
     vd = new papaya.volume.VoxelDimensions(this.nifti.pixDims[1], this.nifti.pixDims[2], this.nifti.pixDims[3],
         this.nifti.pixDims[4]);
 
-    datatypeCode = this.nifti.datatypeCode;
-
-    if (!littleEndian) {
-        datatypeCode = ((((datatypeCode & 0xFF) << 8) | ((datatypeCode >> 8) & 0xFF)) << 16) >> 16;
-    }
-
-    vd.spatialUnit = (datatypeCode & papaya.volume.nifti.HeaderNIFTI.SPATIAL_UNITS_MASK);
-    vd.temporalUnit = (datatypeCode & papaya.volume.nifti.HeaderNIFTI.TEMPORAL_UNITS_MASK);
+    vd.spatialUnit = (this.nifti.xyzt_units & papaya.volume.nifti.HeaderNIFTI.SPATIAL_UNITS_MASK);
+    vd.temporalUnit = (this.nifti.xyzt_units & papaya.volume.nifti.HeaderNIFTI.TEMPORAL_UNITS_MASK);
 
     return vd;
 };
