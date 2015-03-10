@@ -81,6 +81,7 @@ Acknowledgments
 -----
 Papaya makes use of the following third-party libraries:
 - [bowser](https://github.com/ded/bowser) &mdash; for browser detection
+- [Daikon](https://github.com/rii-mango/Daikon) &mdash; for DICOM support
 - [jquery](http://jquery.com/) &mdash; DOM manipulation
 - [numerics](http://numericjs.com/) &mdash; for matrix math
 - [pako](https://github.com/nodeca/pako) &mdash; for GZIP inflating
