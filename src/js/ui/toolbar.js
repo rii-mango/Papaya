@@ -142,14 +142,12 @@ papaya.ui.Toolbar.PREFERENCES_DATA = {
 papaya.ui.Toolbar.IMAGE_INFO_DATA = {
     "items": [
         {"label": "Filename:", "field": "getFilename", "readonly": "true"},
-        {"label": "File Length:", "field": "getFileLength", "readonly": "true"},
         {"spacer": "true"},
         {"label": "Image Dims:", "field": "getImageDimensionsDescription", "readonly": "true"},
         {"label": "Voxel Dims:", "field": "getVoxelDimensionsDescription", "readonly": "true"},
         {"spacer": "true"},
         {"label": "Byte Type:", "field": "getByteTypeDescription", "readonly": "true"},
         {"label": "Byte Order:", "field": "getByteOrderDescription", "readonly": "true"},
-        {"label": "Compressed:", "field": "getCompressedDescription", "readonly": "true"},
         {"spacer": "true"},
         {"label": "Orientation:", "field": "getOrientationDescription", "readonly": "true"},
         {"spacer": "true"},
