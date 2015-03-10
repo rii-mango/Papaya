@@ -289,6 +289,7 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getImageRange = function () {
     }
 
     ir.setGlobalDataScale(slope, this.nifti.scl_inter, imageDimensions.slices * imageDimensions.timepoints);
+    ir.validateDataScale();
 
     return ir;
 };

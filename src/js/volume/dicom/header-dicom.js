@@ -453,6 +453,8 @@ papaya.volume.dicom.HeaderDICOM.prototype.getImageRange = function () {
         imageRange.dataScaleIntercepts = intercepts;
     }
 
+    imageRange.validateDataScale();
+
     return imageRange;
 };
 

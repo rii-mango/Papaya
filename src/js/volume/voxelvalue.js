@@ -30,6 +30,9 @@ papaya.volume.VoxelValue = papaya.volume.VoxelValue || function (imageData, imag
     this.volSize = imageDimensions.getNumVoxelsVolume();
     this.dataScaleSlopes = imageRange.dataScaleSlopes;
     this.dataScaleIntercepts = imageRange.dataScaleIntercepts;
+    this.globalDataScaleSlope = imageRange.globalDataScaleSlope;
+    this.globalDataScaleIntercept = imageRange.globalDataScaleIntercept;
+    this.usesGlobalDataScale = imageRange.usesGlobalDataScale;
     this.interpFirstPass = [[0, 0], [0, 0]];
     this.interpSecondPass = [0, 0];
 };
@@ -52,10 +55,17 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ,
 
 
 papaya.volume.VoxelValue.prototype.getVoxelAtOffset = function (volOffset, timepoint) {
-    var offset = volOffset + (this.volSize * timepoint);
-    var dataScaleIndex = parseInt(offset / this.sliceSize);
-    return (this.checkSwap(this.imageData.data[offset]) * this.dataScaleSlopes[dataScaleIndex]) +
-        this.dataScaleIntercepts[dataScaleIndex];
+    var dataScaleIndex,
+        offset = volOffset + (this.volSize * timepoint);
+
+    if (this.usesGlobalDataScale) {
+        return (this.checkSwap(this.imageData.data[offset]) * this.globalDataScaleSlope) +
+            this.globalDataScaleIntercept;
+    } else {
+        dataScaleIndex = parseInt(offset / this.sliceSize);
+        return (this.checkSwap(this.imageData.data[offset]) * this.dataScaleSlopes[dataScaleIndex]) +
+            this.dataScaleIntercepts[dataScaleIndex];
+    }
 };
 
 
