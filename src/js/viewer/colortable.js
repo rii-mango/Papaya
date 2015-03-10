@@ -119,13 +119,13 @@ papaya.viewer.ColorTable.findLUT = function (name) {
         }
     }
 
-    return null;
+    return papaya.viewer.ColorTable.TABLE_GRAYSCALE.data;
 };
 
 
 
 papaya.viewer.ColorTable.addCustomLUT = function (lut) {
-    if (papaya.viewer.ColorTable.findLUT(lut.name) === null) {
+    if (papaya.viewer.ColorTable.findLUT(lut.name) === papaya.viewer.ColorTable.TABLE_GRAYSCALE.data) {
         papaya.viewer.ColorTable.TABLE_ALL.push(lut);
     }
 };

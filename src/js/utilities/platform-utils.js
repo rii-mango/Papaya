@@ -188,7 +188,7 @@ papaya.utilities.PlatformUtils.isInputRangeSupported = function () {
 // adapted from: http://www.rajeshsegu.com/2012/09/browser-detect-custom-protocols/comment-page-1/
 papaya.utilities.PlatformUtils.launchCustomProtocol = function (container, url, callback) {
     var iframe, myWindow, cookie, success = false;
-
+console.log(url);
     if (papaya.utilities.PlatformUtils.browser === "Internet Explorer") {
         myWindow = window.open('', '', 'width=0,height=0');
         myWindow.document.write("<iframe src='" + url + "'></iframe>");

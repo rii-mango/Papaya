@@ -1,6 +1,7 @@
 
 /*jslint browser: true, node: true */
-/*global $, PAPAYA_MENU_ICON_CSS, PAPAYA_MENU_LABEL_CSS, PAPAYA_TITLEBAR_CSS, PAPAYA_MENU_BUTTON_CSS, PAPAYA_MENU_CSS, */
+/*global $, PAPAYA_MENU_ICON_CSS, PAPAYA_MENU_LABEL_CSS, PAPAYA_TITLEBAR_CSS, PAPAYA_MENU_BUTTON_CSS, PAPAYA_MENU_CSS,
+ PAPAYA_CUSTOM_PROTOCOL, PAPAYA_DIALOG_CSS, PAPAYA_DIALOG_BACKGROUND, alert, confirm */
 
 "use strict";
 
@@ -485,14 +486,14 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             imageIndex = parseInt(action.substring(action.lastIndexOf("-") + 1), 10);
 
             if (imageIndex === 0) {
-                if (this.container.viewer.volume.url) {
+                if (this.container.viewer.volume.urls[0]) {
                     papaya.utilities.PlatformUtils.launchCustomProtocol(this.container, papaya.utilities.UrlUtils.getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL,
-                        this.container.viewer.volume.url), this.customProtocolResult);
+                        this.container.viewer.volume.urls[0]), this.customProtocolResult);
                 }
             } else {
-                if (this.container.viewer.screenVolumes[imageIndex].volume.url) {
+                if (this.container.viewer.screenVolumes[imageIndex].volume.urls[0]) {
                     papaya.utilities.PlatformUtils.launchCustomProtocol(this.container, papaya.utilities.UrlUtils.getAbsoluteUrl(PAPAYA_CUSTOM_PROTOCOL,
-                        this.container.viewer.screenVolumes[imageIndex].volume.url) + "?" +
+                        this.container.viewer.screenVolumes[imageIndex].volume.urls[0]) + "?" +
                     encodeURIComponent("baseimage=" + this.container.viewer.volume.fileName + "&params=o"),
                         this.customProtocolResult);
                 }
