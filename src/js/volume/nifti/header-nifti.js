@@ -168,7 +168,7 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrientationQform = function () {
 papaya.volume.nifti.HeaderNIFTI.prototype.getOrientationSform = function () {
     var orientation = this.nifti.convertNiftiSFormToNEMA(this.nifti.affine);
 
-    if (!papaya.volume.Orientation.prototype.isValidOrientationString(orientation)) {
+    if (!papaya.volume.Orientation.isValidOrientationString(orientation)) {
         orientation = papaya.volume.nifti.HeaderNIFTI.ORIENTATION_DEFAULT;
     }
 
