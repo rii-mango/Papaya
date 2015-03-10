@@ -86,25 +86,25 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params)
             toolbarHTML.addClass(PAPAYA_TOOLBAR_CSS);
         } else {
             containerHTML.prepend("<div class='" + PAPAYA_TOOLBAR_CSS + "' id='" +
-            PAPAYA_DEFAULT_TOOLBAR_ID + "'></div>");
+                PAPAYA_DEFAULT_TOOLBAR_ID + "'></div>");
         }
 
         if (viewerHTML) {
             viewerHTML.addClass(PAPAYA_VIEWER_CSS);
         } else {
             $("<div class='" + PAPAYA_VIEWER_CSS + "' id='" +
-            PAPAYA_DEFAULT_VIEWER_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_TOOLBAR_ID));
+                PAPAYA_DEFAULT_VIEWER_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_TOOLBAR_ID));
         }
 
         if (displayHTML) {
             displayHTML.addClass(PAPAYA_DISPLAY_CSS);
         } else {
             $("<div class='" + PAPAYA_DISPLAY_CSS + "' id='" +
-            PAPAYA_DEFAULT_DISPLAY_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_VIEWER_ID));
+                PAPAYA_DEFAULT_DISPLAY_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_VIEWER_ID));
         }
 
         console.log("This method of adding a Papaya container is deprecated.  " +
-        "Try simply <div class='papaya' data-params='params'></div> instead...");
+            "Try simply <div class='papaya' data-params='params'></div> instead...");
     } else {
         containerHTML.attr("id", PAPAYA_DEFAULT_CONTAINER_ID + papayaContainers.length);
 
@@ -114,14 +114,14 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params)
         }
 
         containerHTML.append("<div id='" + (PAPAYA_DEFAULT_VIEWER_ID + papayaContainers.length) +
-        "' class='" + PAPAYA_VIEWER_CSS + "'></div>");
+            "' class='" + PAPAYA_VIEWER_CSS + "'></div>");
         containerHTML.append("<div id='" + (PAPAYA_DEFAULT_DISPLAY_ID + papayaContainers.length) +
-        "' class='" + PAPAYA_DISPLAY_CSS + "'></div>");
+            "' class='" + PAPAYA_DISPLAY_CSS + "'></div>");
 
         if (params && (params.orthogonal !== undefined) && !params.orthogonal) {
             if (papaya.utilities.PlatformUtils.isInputRangeSupported()) {
                 containerHTML.append("<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) +
-                "' class='" + PAPAYA_SLIDER_CSS + "'><input type='range' /></div>");
+                    "' class='" + PAPAYA_SLIDER_CSS + "'><input type='range' /></div>");
             }
         }
     }
