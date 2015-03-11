@@ -1,2 +1,2 @@
 @ echo off
-java -jar lib\papaya-builder.jar %*
+java -Xmx512M -jar lib\papaya-builder.jar %*
