@@ -196,10 +196,10 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrigin = function (forceQ, forceS) 
         affineQformInverse,
         affineSformInverse,
         orientation,
-        xOffset,
-        yOffset,
-        zOffset,
-        someOffsets;
+        someOffsets,
+        xyz, sense,
+        xIndex, yIndex, zIndex,
+        xFlip, yFlip, zFlip;
 
     if ((this.nifti.qform_code > 0) && !forceS) {
         if (this.qFormHasRotations()) {
@@ -217,17 +217,19 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrigin = function (forceQ, forceS) 
                 orientation = papaya.volume.nifti.HeaderNIFTI.ORIENTATION_DEFAULT;
             }
 
-            xOffset = this.nifti.qoffset_x * ((orientation.charAt(orientation.indexOf("X") + 3) === '+') ? -1 : 1);
-            yOffset = this.nifti.qoffset_y * ((orientation.charAt(orientation.indexOf("Y") + 3) === '+') ? 1 : -1);
-            zOffset = this.nifti.qoffset_z * ((orientation.charAt(orientation.indexOf("Z") + 3) === '+') ? 1 : -1);
+            xyz = orientation.substring(0, 3).toUpperCase();
+            sense = orientation.substring(3);
+            xIndex = xyz.indexOf('X');
+            yIndex = xyz.indexOf('Y');
+            zIndex = xyz.indexOf('Z');
+            xFlip = (sense.charAt(xIndex) === '+');
+            yFlip = (sense.charAt(yIndex) === '+');
+            zFlip = (sense.charAt(zIndex) === '+');
 
             someOffsets = new Array(3);
-            someOffsets[0] = xOffset < 0 ? (this.nifti.dims[1] + (xOffset / this.nifti.pixDims[1])) :
-                (xOffset / Math.abs(this.nifti.pixDims[1]));
-            someOffsets[1] = yOffset > 0 ? (this.nifti.dims[2] - (yOffset / this.nifti.pixDims[2])) :
-            (yOffset / Math.abs(this.nifti.pixDims[2])) * -1;
-            someOffsets[2] = zOffset > 0 ? (this.nifti.dims[3] - (zOffset / this.nifti.pixDims[3])) :
-            (zOffset / Math.abs(this.nifti.pixDims[3])) * -1;
+            someOffsets[0] = ((this.nifti.qoffset_x / this.nifti.pixDims[xIndex + 1])) * (xFlip ? -1 : 1);
+            someOffsets[1] = ((this.nifti.qoffset_y / this.nifti.pixDims[yIndex + 1])) * (yFlip ? -1 : 1);
+            someOffsets[2] = ((this.nifti.qoffset_z / this.nifti.pixDims[zIndex + 1])) * (zFlip ? -1 : 1);
 
             origin.setCoordinate(someOffsets[0], someOffsets[1], someOffsets[2], true);
         }
@@ -242,17 +244,19 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrigin = function (forceQ, forceS) 
                 orientation = papaya.volume.nifti.HeaderNIFTI.ORIENTATION_DEFAULT;
             }
 
-            xOffset = this.nifti.affine[0][3] * ((orientation.charAt(orientation.indexOf("X") + 3) === '+') ? -1 : 1);
-            yOffset = this.nifti.affine[1][3] * ((orientation.charAt(orientation.indexOf("Y") + 3) === '+') ? 1 : -1);
-            zOffset = this.nifti.affine[2][3] * ((orientation.charAt(orientation.indexOf("Z") + 3) === '+') ? 1 : -1);
+            xyz = orientation.substring(0, 3).toUpperCase();
+            sense = orientation.substring(3);
+            xIndex = xyz.indexOf('X');
+            yIndex = xyz.indexOf('Y');
+            zIndex = xyz.indexOf('Z');
+            xFlip = (sense.charAt(xIndex) === '+');
+            yFlip = (sense.charAt(yIndex) === '+');
+            zFlip = (sense.charAt(zIndex) === '+');
 
             someOffsets = new Array(3);
-            someOffsets[0] = xOffset < 0 ? (this.nifti.dims[1] + (xOffset / this.nifti.pixDims[1])) :
-                (xOffset / Math.abs(this.nifti.pixDims[1]));
-            someOffsets[1] = yOffset > 0 ? (this.nifti.dims[2] - (yOffset / this.nifti.pixDims[2])) :
-            (yOffset / Math.abs(this.nifti.pixDims[2])) * -1;
-            someOffsets[2] = zOffset > 0 ? (this.nifti.dims[3] - (zOffset / this.nifti.pixDims[3])) :
-            (zOffset / Math.abs(this.nifti.pixDims[3])) * -1;
+            someOffsets[0] = ((this.nifti.affine[0][3] / this.nifti.pixDims[xIndex + 1])) * (xFlip ? -1 : 1);
+            someOffsets[1] = ((this.nifti.affine[1][3] / this.nifti.pixDims[yIndex + 1])) * (yFlip ? -1 : 1);
+            someOffsets[2] = ((this.nifti.affine[2][3] / this.nifti.pixDims[zIndex + 1])) * (zFlip ? -1 : 1);
 
             origin.setCoordinate(someOffsets[0], someOffsets[1], someOffsets[2], true);
         }
