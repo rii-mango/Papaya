@@ -523,6 +523,7 @@ papaya.viewer.Viewer.prototype.loadAtlas = function () {
 papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, crosshairsOnly) {
     var xImageLoc, yImageLoc, temp;
 
+    viewer.updateOffsetRect();
     xLoc = xLoc - this.canvasRect.left;
     yLoc = yLoc - this.canvasRect.top;
 
