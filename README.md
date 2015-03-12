@@ -6,7 +6,7 @@ the [user guide](http://ric.uthscsa.edu/mango/papaya_userguide.html) for a full 
 
 Supported Formats:
 - NIFTI (.nii and .nii.gz)
-- DICOM (big/little endian, implicit and explicit types)
+- DICOM (uncompressed, big/little endian, implicit and explicit types)
 
 [![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://ric.uthscsa.edu/mango/papaya/)
 
