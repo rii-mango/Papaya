@@ -334,6 +334,8 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
                 if (!itemData[ctrItems].hide) {
                     item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label,
                         itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), true);
+                } else {
+                    item = null;
                 }
             } else if (itemData[ctrItems].type === "displayrange") {
                 item = new papaya.ui.MenuItemRange(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action,
