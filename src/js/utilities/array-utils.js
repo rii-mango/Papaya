@@ -28,6 +28,17 @@ papaya.utilities.ArrayUtils.createArray = function (length) {
 };
 
 
+papaya.utilities.ArrayUtils.contains = function (a, obj) {
+    var i = a.length;
+    while (i--) {
+        if (a[i] === obj) {
+            return true;
+        }
+    }
+    return false;
+};
+
+
 /*** Array (Prototype Methods) ***/
 
 // http://stackoverflow.com/questions/2294703/multidimensional-array-cloning-using-javascript

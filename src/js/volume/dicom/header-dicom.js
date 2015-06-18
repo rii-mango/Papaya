@@ -23,6 +23,13 @@ papaya.volume.dicom.HeaderDICOM = papaya.volume.dicom.HeaderDICOM || function ()
 /*** Static Pseudo-constants ***/
 
 papaya.volume.dicom.HeaderDICOM.ORIENTATION_DEFAULT = "XYZ+--";
+papaya.volume.dicom.HeaderDICOM.SUPPORTED_TRANSFER_SYNTAXES = [
+    "1.2.840.10008.1.2",
+    "1.2.840.10008.1.2.1",
+    "1.2.840.10008.1.2.2",
+    "1.2.840.10008.1.2.4.57",
+    "1.2.840.10008.1.2.4.70"
+];
 
 
 /*** Static Methods ***/
@@ -118,8 +125,9 @@ papaya.volume.dicom.HeaderDICOM.prototype.finishedHeaderRead = function () {
         if (this.series.images.length > 0) {
             this.series.buildSeries();
 
-            if (this.series.isCompressed) {
-                this.error = new Error("Compressed data is not currently supported!");
+            if (!papaya.utilities.ArrayUtils.contains(papaya.volume.dicom.HeaderDICOM.SUPPORTED_TRANSFER_SYNTAXES,
+                    this.series.images[0].getTransferSyntax())) {
+                this.error = new Error("This transfer syntax is currently not supported!");
             }
         } else {
             this.error = new Error("No images found!");
@@ -135,8 +143,9 @@ papaya.volume.dicom.HeaderDICOM.prototype.finishedSeriesSelection = function () 
     if (this.series.images.length > 0) {
         this.series.buildSeries();
 
-        if (this.series.isCompressed) {
-            this.error = new Error("Compressed data is not currently supported!");
+        if (!papaya.utilities.ArrayUtils.contains(papaya.volume.dicom.HeaderDICOM.SUPPORTED_TRANSFER_SYNTAXES,
+                this.series.images[0].getTransferSyntax())) {
+            this.error = new Error("This transfer syntax is currently not supported!");
         }
     } else {
         this.error = new Error("No images found!");
