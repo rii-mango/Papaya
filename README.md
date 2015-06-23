@@ -16,7 +16,7 @@ the [user guide](http://ric.uthscsa.edu/mango/papaya_userguide.html) for a full 
 
 ###Supported Formats:
 - NIFTI (.nii and .nii.gz)
-- DICOM (compressed/uncompressed, big/little endian, implicit and explicit types)
+- DICOM (compressed/uncompressed, big/little endian, implicit/explicit types)
 
 ####Supported DICOM Transfer Syntax
 
