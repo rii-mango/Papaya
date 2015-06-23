@@ -6,7 +6,7 @@ the [user guide](http://ric.uthscsa.edu/mango/papaya_userguide.html) for a full 
 
 [![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://ric.uthscsa.edu/mango/papaya/)
 
-**Run the lastest release:** http://rii.uthscsa.edu/mango/papayabeta/
+**Run the lastest build:** http://rii.uthscsa.edu/mango/papayabeta/
 
 **User Guide:** http://rii.uthscsa.edu/mango/papaya_userguide.html
 
