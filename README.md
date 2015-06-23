@@ -6,7 +6,7 @@ the [user guide](http://ric.uthscsa.edu/mango/papaya_userguide.html) for a full 
 
 Supported Formats:
 - NIFTI (.nii and .nii.gz)
-- DICOM (uncompressed, big/little endian, implicit and explicit types)
+- DICOM (compressed/uncompressed, big/little endian, implicit and explicit types)
 
 [![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://ric.uthscsa.edu/mango/papaya/)
 
@@ -17,6 +17,21 @@ Supported Formats:
 **Developer Guide:** http://rii.uthscsa.edu/mango/papaya_devguide.html
 
 **Requirements:** Firefox (7), Chrome (7), Safari (6), MobileSafari (iOS 6), IE (10)
+
+###Supported DICOM Transfer Syntax
+
+Uncompressed:
+- 1.2.840.10008.1.2 (Implicit VR Little Endian)
+- 1.2.840.10008.1.2.1 (Explicit VR Little Endian)
+- 1.2.840.10008.1.2.2 (Explicit VR Big Endian)
+ 
+Compressed:
+- 1.2.840.10008.1.2.4.50 (JPEG Baseline (Process 1) Lossy JPEG 8-bit)
+- 1.2.840.10008.1.2.4.57 (JPEG Lossless, Nonhierarchical (Processes 14))
+- 1.2.840.10008.1.2.4.70 (JPEG Lossless, Nonhierarchical (Processes 14 [Selection 1]))
+- 1.2.840.10008.1.2.4.90 (JPEG 2000 Image Compression (Lossless Only))
+- 1.2.840.10008.1.2.4.91 (JPEG 2000 Image Compression)
+- 1.2.840.10008.1.2.5 (RLE Lossless)
 
 Quickstart Guide
 ------
