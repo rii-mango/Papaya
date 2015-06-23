@@ -24,11 +24,24 @@ papaya.volume.dicom.HeaderDICOM = papaya.volume.dicom.HeaderDICOM || function ()
 
 papaya.volume.dicom.HeaderDICOM.ORIENTATION_DEFAULT = "XYZ+--";
 papaya.volume.dicom.HeaderDICOM.SUPPORTED_TRANSFER_SYNTAXES = [
+    // uncompressed
     "1.2.840.10008.1.2",
     "1.2.840.10008.1.2.1",
     "1.2.840.10008.1.2.2",
+
+    // jpeg baseline compressed
+    "1.2.840.10008.1.2.4.50",  // 8-bit
+
+    // jpeg lossless compressed
     "1.2.840.10008.1.2.4.57",
-    "1.2.840.10008.1.2.4.70"
+    "1.2.840.10008.1.2.4.70",  // selection 1
+
+    // jpeg 2000 compressed
+    "1.2.840.10008.1.2.4.90",  // lossless
+    "1.2.840.10008.1.2.4.91",
+
+    // rle compressed
+    "1.2.840.10008.1.2.5"
 ];
 
 
@@ -125,8 +138,7 @@ papaya.volume.dicom.HeaderDICOM.prototype.finishedHeaderRead = function () {
         if (this.series.images.length > 0) {
             this.series.buildSeries();
 
-            if (!papaya.utilities.ArrayUtils.contains(papaya.volume.dicom.HeaderDICOM.SUPPORTED_TRANSFER_SYNTAXES,
-                    this.series.images[0].getTransferSyntax())) {
+            if (!this.isTransferSyntaxSupported()) {
                 this.error = new Error("This transfer syntax is currently not supported!");
             }
         } else {
@@ -139,12 +151,21 @@ papaya.volume.dicom.HeaderDICOM.prototype.finishedHeaderRead = function () {
 
 
 
+papaya.volume.dicom.HeaderDICOM.prototype.isTransferSyntaxSupported = function () {
+    var transferSyntax = this.series.images[0].getTransferSyntax();
+
+    return (papaya.utilities.StringUtils.isStringBlank(transferSyntax) ||
+        papaya.utilities.ArrayUtils.contains(papaya.volume.dicom.HeaderDICOM.SUPPORTED_TRANSFER_SYNTAXES,
+            transferSyntax));
+};
+
+
+
 papaya.volume.dicom.HeaderDICOM.prototype.finishedSeriesSelection = function () {
     if (this.series.images.length > 0) {
         this.series.buildSeries();
 
-        if (!papaya.utilities.ArrayUtils.contains(papaya.volume.dicom.HeaderDICOM.SUPPORTED_TRANSFER_SYNTAXES,
-                this.series.images[0].getTransferSyntax())) {
+        if (!this.isTransferSyntaxSupported()) {
             this.error = new Error("This transfer syntax is currently not supported!");
         }
     } else {
@@ -325,6 +346,8 @@ papaya.volume.dicom.HeaderDICOM.prototype.getImageType = function () {
         dataTypeCode = papaya.volume.ImageType.DATATYPE_INTEGER_UNSIGNED;
     } else if (dataTypeDICOM === daikon.Image.BYTE_TYPE_FLOAT) {
         dataTypeCode = papaya.volume.ImageType.DATATYPE_FLOAT;
+    } else if (dataTypeDICOM === daikon.Image.BYTE_TYPE_RGB) {
+        dataTypeCode = papaya.volume.ImageType.DATATYPE_RGB;
     } else {
         dataTypeCode = papaya.volume.ImageType.DATATYPE_UNKNOWN;
     }

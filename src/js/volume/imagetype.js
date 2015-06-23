@@ -25,13 +25,14 @@ papaya.volume.ImageType.DATATYPE_UNKNOWN = 0;
 papaya.volume.ImageType.DATATYPE_INTEGER_SIGNED = 1;
 papaya.volume.ImageType.DATATYPE_INTEGER_UNSIGNED = 2;
 papaya.volume.ImageType.DATATYPE_FLOAT = 3;
+papaya.volume.ImageType.DATATYPE_RGB = 4;
 papaya.volume.ImageType.MAX_NUM_BYTES_SUPPORTED = 4;
 
 
 /*** Prototype Methods ***/
 
 papaya.volume.ImageType.prototype.isValid = function () {
-    return ((this.datatype <= papaya.volume.ImageType.DATATYPE_FLOAT) &&
+    return ((this.datatype <= papaya.volume.ImageType.DATATYPE_RGB) &&
     (this.datatype > papaya.volume.ImageType.DATATYPE_UNKNOWN) && (this.numBytes > 0) &&
     (this.numBytes <= papaya.volume.ImageType.MAX_NUM_BYTES_SUPPORTED));
 };
@@ -49,6 +50,10 @@ papaya.volume.ImageType.prototype.getTypeDescription = function () {
 
     if (this.datatype === papaya.volume.ImageType.DATATYPE_FLOAT) {
         return "Float";
+    }
+
+    if (this.datatype === papaya.volume.ImageType.DATATYPE_RGB) {
+        return "RGB";
     }
 
     return "Unknown";

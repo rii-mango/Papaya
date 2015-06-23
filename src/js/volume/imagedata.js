@@ -24,8 +24,8 @@ papaya.volume.ImageData.prototype.readFileData = function (header, buffer, onRea
     if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_SIGNED) &&
         (header.imageType.numBytes === 1)) {
         this.data = new Int8Array(buffer, 0, buffer.byteLength);
-    } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_UNSIGNED) &&
-        (header.imageType.numBytes === 1)) {
+    } else if (((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_UNSIGNED) &&
+        (header.imageType.numBytes === 1)) || (header.imageType.datatype === papaya.volume.ImageType.DATATYPE_RGB)) {
         this.data = new Uint8Array(buffer, 0, buffer.byteLength);
     } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_SIGNED) &&
         (header.imageType.numBytes === 2)) {
