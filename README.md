@@ -12,7 +12,7 @@ the [user guide](http://ric.uthscsa.edu/mango/papaya_userguide.html) for a full 
 
 **Developer Guide:** http://rii.uthscsa.edu/mango/papaya_devguide.html
 
-**Requirements:** Firefox (7), Chrome (7), Safari (6), MobileSafari (iOS 6), IE (10)
+**Requirements:** Firefox (7+), Chrome (7+), Safari (6+), MobileSafari (iOS 6+), IE (10+)
 
 ###Supported Formats:
 - NIFTI (.nii and .nii.gz)
