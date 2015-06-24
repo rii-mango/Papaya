@@ -11,7 +11,7 @@ papaya.viewer = papaya.viewer || {};
 
 /*** Constructor ***/
 papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, width, height, widthSize, heightSize,
-                                                                   screenVols) {
+                                                                   screenVols, manager) {
     this.screenVolumes = screenVols;
     this.sliceDirection = dir;
     this.currentSlice = -1;
@@ -30,7 +30,11 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
     this.screenTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
     this.zoomTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
     this.finalTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+    this.radiologicalTransform = [[-1, 0, this.xDim], [0, 1, 0], [0, 0, 1]];
+    this.tempTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+    this.tempTransform2 = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
     this.imageData = [];
+    this.manager = manager;
 };
 
 
@@ -46,8 +50,9 @@ papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN = 0;
 
 /*** Prototype Methods ***/
 
-papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, worldSpace) {
-    var origin, voxelDims, ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha, timepoint;
+papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
+    var origin, voxelDims, ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha, timepoint,
+        worldSpace = this.manager.isWorldMode();
 
     slice = Math.round(slice);
 
@@ -287,13 +292,49 @@ papaya.viewer.ScreenSlice.prototype.updateZoomTransform = function (zoomFactor, 
 };
 
 
+
 papaya.viewer.ScreenSlice.prototype.updateFinalTransform = function () {
     var ctrOut, ctrIn;
-    for (ctrOut = 0; ctrOut < 3; ctrOut += 1) {
-        for (ctrIn = 0; ctrIn < 3; ctrIn += 1) {
-            this.finalTransform[ctrOut][ctrIn] = (this.screenTransform[ctrOut][0] * this.zoomTransform[0][ctrIn]) +
-            (this.screenTransform[ctrOut][1] * this.zoomTransform[1][ctrIn]) + (this.screenTransform[ctrOut][2] *
-            this.zoomTransform[2][ctrIn]);
+
+    if (this.manager.isRadiologicalMode() && this.isRadiologicalSensitive()) {
+        for (ctrOut = 0; ctrOut < 3; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 3; ctrIn += 1) {
+                this.tempTransform[ctrOut][ctrIn] = this.screenTransform[ctrOut][ctrIn];
+            }
+        }
+
+        for (ctrOut = 0; ctrOut < 3; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 3; ctrIn += 1) {
+                this.tempTransform2[ctrOut][ctrIn] =
+                    (this.tempTransform[ctrOut][0] * this.radiologicalTransform[0][ctrIn]) +
+                    (this.tempTransform[ctrOut][1] * this.radiologicalTransform[1][ctrIn]) +
+                    (this.tempTransform[ctrOut][2] * this.radiologicalTransform[2][ctrIn]);
+            }
+        }
+
+        for (ctrOut = 0; ctrOut < 3; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 3; ctrIn += 1) {
+                this.finalTransform[ctrOut][ctrIn] =
+                    (this.tempTransform2[ctrOut][0] * this.zoomTransform[0][ctrIn]) +
+                    (this.tempTransform2[ctrOut][1] * this.zoomTransform[1][ctrIn]) +
+                    (this.tempTransform2[ctrOut][2] * this.zoomTransform[2][ctrIn]);
+            }
+        }
+    } else {
+        for (ctrOut = 0; ctrOut < 3; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 3; ctrIn += 1) {
+                this.finalTransform[ctrOut][ctrIn] =
+                    (this.screenTransform[ctrOut][0] * this.zoomTransform[0][ctrIn]) +
+                    (this.screenTransform[ctrOut][1] * this.zoomTransform[1][ctrIn]) +
+                    (this.screenTransform[ctrOut][2] * this.zoomTransform[2][ctrIn]);
+            }
         }
     }
+};
+
+
+
+papaya.viewer.ScreenSlice.prototype.isRadiologicalSensitive = function () {
+    return ((this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) ||
+        (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL));
 };

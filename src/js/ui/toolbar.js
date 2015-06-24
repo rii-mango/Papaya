@@ -136,7 +136,8 @@ papaya.ui.Toolbar.PREFERENCES_DATA = {
         {"label": "Show orientation:", "field": "showOrientation", "options": ["Yes", "No"]},
         {"label": "Scroll wheel behavior:", "field": "scrollBehavior", "options": ["Zoom", "Increment Slice"],
             "disabled": "container.disableScrollWheel"},
-        {"label": "Smooth display:", "field": "smoothDisplay", "options": ["Yes", "No"]}
+        {"label": "Smooth display:", "field": "smoothDisplay", "options": ["Yes", "No"]},
+        {"label": "Radiological display:", "field": "radiological", "options": ["Yes", "No"]}
     ]
 };
 
@@ -457,7 +458,14 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
         } else if (action === "Preferences") {
             dialog = new papaya.ui.Dialog(this.container, "Preferences", papaya.ui.Toolbar.PREFERENCES_DATA,
                 this.container.preferences, papaya.utilities.ObjectUtils.bind(this.container.preferences,
-                    this.container.preferences.updatePreference));
+                    this.container.preferences.updatePreference),
+                    papaya.utilities.ObjectUtils.bind(this,
+                        function() {
+                            this.viewer.updateScreenSliceTransforms();
+                            this.viewer.drawViewer(false, true);
+                        }
+                    )
+            );
             dialog.showDialog();
         } else if (action.startsWith("ImageInfo")) {
             imageIndex = action.substring(action.lastIndexOf("-") + 1);

@@ -314,15 +314,15 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
 
         this.axialSlice = new papaya.viewer.ScreenSlice(this.volume, papaya.viewer.ScreenSlice.DIRECTION_AXIAL,
             this.volume.getXDim(), this.volume.getYDim(), this.volume.getXSize(), this.volume.getYSize(),
-            this.screenVolumes);
+            this.screenVolumes, this);
 
         this.coronalSlice = new papaya.viewer.ScreenSlice(this.volume, papaya.viewer.ScreenSlice.DIRECTION_CORONAL,
             this.volume.getXDim(), this.volume.getZDim(), this.volume.getXSize(), this.volume.getZSize(),
-            this.screenVolumes);
+            this.screenVolumes, this);
 
         this.sagittalSlice = new papaya.viewer.ScreenSlice(this.volume, papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL,
             this.volume.getYDim(), this.volume.getZDim(), this.volume.getYSize(), this.volume.getZSize(),
-            this.screenVolumes);
+            this.screenVolumes, this);
 
 
         if ((this.container.params.mainView === undefined) ||
@@ -678,7 +678,9 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
 
 papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
     var orientStartX, orientEndX, orientMidX, orientStartY, orientEndY, orientMidY, metrics, textWidth, top, bottom,
-        left, right;
+        left, right,
+        radiological = (this.container.preferences.radiological === "Yes"),
+        showOrientation = (this.container.preferences.showOrientation === "Yes");
 
     if (!this.initialized) {
         this.drawEmptyViewer();
@@ -764,23 +766,36 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
         this.context.restore();
     }
 
-    if (this.container.preferences.showOrientation === "Yes") {
+    if (showOrientation || radiological) {
         this.context.setTransform(1, 0, 0, 1, 0, 0);
         this.context.fillStyle = this.getOrientationCertaintyColor();
         this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px Arial";
         metrics = this.context.measureText("X");
         textWidth = metrics.width;
+        radiological = (this.container.preferences.radiological === "Yes");
 
         if (this.mainImage === this.axialSlice) {
             top = papaya.viewer.Viewer.ORIENTATION_MARKER_ANTERIOR;
             bottom = papaya.viewer.Viewer.ORIENTATION_MARKER_POSTERIOR;
-            left = papaya.viewer.Viewer.ORIENTATION_MARKER_LEFT;
-            right = papaya.viewer.Viewer.ORIENTATION_MARKER_RIGHT;
+
+            if (radiological) {
+                left = papaya.viewer.Viewer.ORIENTATION_MARKER_RIGHT;
+                right = papaya.viewer.Viewer.ORIENTATION_MARKER_LEFT;
+            } else {
+                left = papaya.viewer.Viewer.ORIENTATION_MARKER_LEFT;
+                right = papaya.viewer.Viewer.ORIENTATION_MARKER_RIGHT;
+            }
         } else if (this.mainImage === this.coronalSlice) {
             top = papaya.viewer.Viewer.ORIENTATION_MARKER_SUPERIOR;
             bottom = papaya.viewer.Viewer.ORIENTATION_MARKER_INFERIOR;
-            left = papaya.viewer.Viewer.ORIENTATION_MARKER_LEFT;
-            right = papaya.viewer.Viewer.ORIENTATION_MARKER_RIGHT;
+
+            if (radiological) {
+                left = papaya.viewer.Viewer.ORIENTATION_MARKER_RIGHT;
+                right = papaya.viewer.Viewer.ORIENTATION_MARKER_LEFT;
+            } else {
+                left = papaya.viewer.Viewer.ORIENTATION_MARKER_LEFT;
+                right = papaya.viewer.Viewer.ORIENTATION_MARKER_RIGHT;
+            }
         } else if (this.mainImage === this.sagittalSlice) {
             top = papaya.viewer.Viewer.ORIENTATION_MARKER_SUPERIOR;
             bottom = papaya.viewer.Viewer.ORIENTATION_MARKER_INFERIOR;
@@ -796,14 +811,19 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
         orientEndY = this.mainImage.screenOffsetY + this.mainImage.screenDim;
         orientMidY = Math.round(orientEndY / 2.0);
 
-        this.context.fillText(top, orientMidX - (textWidth / 2), orientStartY +
+        if (showOrientation || this.mainImage.isRadiologicalSensitive()) {
+            this.context.fillText(left, orientStartX + papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE, orientMidY +
+            (papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE * 0.5));
+            this.context.fillText(right, orientEndX - 1.5 * papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE, orientMidY +
+            (papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE * 0.5));
+        }
+
+        if (showOrientation) {
+            this.context.fillText(top, orientMidX - (textWidth / 2), orientStartY +
             papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE * 1.5);
-        this.context.fillText(bottom, orientMidX - (textWidth / 2), orientEndY -
+            this.context.fillText(bottom, orientMidX - (textWidth / 2), orientEndY -
             papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE);
-        this.context.fillText(left, orientStartX + papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE, orientMidY +
-            (papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE * 0.5));
-        this.context.fillText(right, orientEndX - 1.5 * papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE, orientMidY +
-            (papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE * 0.5));
+        }
     }
 
     if (this.container.preferences.showCrosshairs !== "None") {
@@ -948,6 +968,12 @@ papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function () {
         (this.viewerDim + (papaya.viewer.Viewer.GAP));
     this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY = 0;
 
+    this.updateScreenSliceTransforms();
+};
+
+
+
+papaya.viewer.Viewer.prototype.updateScreenSliceTransforms = function () {
     this.axialSlice.updateFinalTransform();
     this.coronalSlice.updateFinalTransform();
     this.sagittalSlice.updateFinalTransform();
@@ -1620,6 +1646,10 @@ papaya.viewer.Viewer.prototype.processParams = function (params) {
     if (params.smoothDisplay !== undefined) {
         this.container.preferences.smoothDisplay = (params.smoothDisplay ? "Yes" : "No");
     }
+
+    if (params.radiological !== undefined) {
+        this.container.preferences.radiological = (params.radiological ? "Yes" : "No");
+    }
 };
 
 
@@ -1904,6 +1934,12 @@ papaya.viewer.Viewer.prototype.setCurrentPanLocation = function (xLoc, yLoc, sli
 
 papaya.viewer.Viewer.prototype.isWorldMode = function () {
     return this.worldSpace;
+};
+
+
+
+papaya.viewer.Viewer.prototype.isRadiologicalMode = function () {
+    return (this.container.preferences.radiological === "Yes");
 };
 
 
