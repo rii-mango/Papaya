@@ -6,17 +6,18 @@ the [user guide](http://ric.uthscsa.edu/mango/papaya_userguide.html) for a full 
 
 [![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://ric.uthscsa.edu/mango/papaya/)
 
-**Run the lastest build:** http://rii.uthscsa.edu/mango/papayabeta/
+Requirements: Firefox (7+), Chrome (7+), Safari (6+), MobileSafari (iOS 6+), IE (10+)
 
-**User Guide:** http://rii.uthscsa.edu/mango/papaya_userguide.html
+###Demo
+Click [here](http://rii.uthscsa.edu/mango/papayabeta/) to try Papaya right now...
 
-**Developer Guide:** http://rii.uthscsa.edu/mango/papaya_devguide.html
+###Documentation
+- User Guide: http://rii.uthscsa.edu/mango/papaya_userguide.html
+- Developer Guide: http://rii.uthscsa.edu/mango/papaya_devguide.html
 
-**Requirements:** Firefox (7+), Chrome (7+), Safari (6+), MobileSafari (iOS 6+), IE (10+)
-
-###Supported Formats:
+###Supported Formats
 - NIFTI (.nii and .nii.gz)
-- DICOM (compressed/uncompressed, big/little endian, implicit and explicit types)
+- DICOM (compressed/uncompressed, big/little endian, implicit/explicit types)
 
 ####Supported DICOM Transfer Syntax
 
