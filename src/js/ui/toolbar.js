@@ -98,7 +98,8 @@ papaya.ui.Toolbar.MENU_DATA = {
             },
         {"label": "Options", "icons": null,
             "items": [
-                {"label": "Preferences", "action": "Preferences"}
+                {"label": "Preferences", "action": "Preferences"},
+                {"label": "Show License", "action": "License"}
             ]
             },
         {"label": "", "icons": null, "titleBar": "true" },
@@ -177,6 +178,14 @@ papaya.ui.Toolbar.SERIES_INFO_DATA = {
         {"label": "Notes:", "field": "getImageDescription", "readonly": "true"}
     ]
 };
+
+
+papaya.ui.Toolbar.LICENSE_DATA = {
+    "items": [
+        {"label": "", "field": "getLicense", "readonly": "true"}
+    ]
+};
+
 
 
 papaya.ui.Toolbar.prototype.buildToolbar = function () {
@@ -467,7 +476,11 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
                     )
             );
             dialog.showDialog();
-        } else if (action.startsWith("ImageInfo")) {
+        } else if (action === "License") {
+            dialog = new papaya.ui.Dialog(this.container, "License", papaya.ui.Toolbar.LICENSE_DATA,
+                papaya.Container, null, null);
+            dialog.showDialog();
+        }  else if (action.startsWith("ImageInfo")) {
             imageIndex = action.substring(action.lastIndexOf("-") + 1);
 
             if (this.viewer.screenVolumes[imageIndex].volume.numTimepoints > 1) {

@@ -46,6 +46,16 @@ papaya.Container = papaya.Container || function (containerHtml) {
 
 /*** Static Fields ***/
 papaya.Container.papayaLastHoveredViewer = null;
+papaya.Container.papayaLicenseText = "THIS PRODUCT IS NOT FOR CLINICAL USE.<br /><br />" +
+    "This software is available for use, as is, free of charge.  The software and data derived from this software " +
+    "may not be used for clinical purposes.<br /><br />" +
+    "The authors of this software make no representations or warranties about the suitability of the software, " +
+    "either express or implied, including but not limited to the implied warranties of merchantability, fitness for a " +
+    "particular purpose, non-infringement, or conformance to a specification or standard. The authors of this software " +
+    "shall not be liable for any damages suffered by licensee as a result of using or modifying this software or its " +
+    "derivatives.<br /><br />" +
+    "By using this software, you agree to be bounded by the terms of this license.  If you do not agree to the terms " +
+    "of this license, do not use this software.";
 
 
 /*** Static Methods ***/
@@ -238,6 +248,8 @@ papaya.Container.buildAllContainers = function () {
 
         papayaContainers[0].resizeViewerComponents(true);
     }
+
+    papaya.Container.showLicense(params);
 };
 
 
@@ -313,6 +325,37 @@ papaya.Container.setToFullPage = function () {
     document.body.style.overflow = 'hidden';
     document.body.style.width = "100%";
     document.body.style.height = "100%";
+};
+
+
+
+papaya.Container.getLicense = function () {
+    return papaya.Container.papayaLicenseText;
+};
+
+
+
+papaya.Container.setLicenseRead = function () {
+    papaya.utilities.UrlUtils.createCookie(papaya.viewer.Preferences.COOKIE_PREFIX + "eula", "Yes", papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS);
+};
+
+
+
+papaya.Container.isLicenseRead = function () {
+    var value = papaya.utilities.UrlUtils.readCookie(papaya.viewer.Preferences.COOKIE_PREFIX + "eula");
+    return (value && (value === 'Yes'));
+};
+
+
+
+papaya.Container.showLicense = function (params) {
+    var showEula = (params.showEULA !== undefined) && params.showEULA;
+
+    if (showEula && !papaya.Container.isLicenseRead()) {
+        var dialog = new papaya.ui.Dialog(this, "License", papaya.ui.Toolbar.LICENSE_DATA,
+            papaya.Container, null, papaya.Container.setLicenseRead);
+        dialog.showDialog();
+    }
 };
 
 
@@ -760,6 +803,7 @@ papaya.Container.prototype.canOpenInMango = function () {
 papaya.Container.prototype.isExpandable = function () {
     return this.params.expandable && this.isNestedViewer();
 };
+
 
 
 /*** Window Events ***/
