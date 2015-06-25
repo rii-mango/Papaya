@@ -101,7 +101,7 @@ Acknowledgments
 -----
 Papaya uses [Daikon](https://github.com/rii-mango/Daikon) for DICOM support, as well as the following third-party libraries:
 - [bowser](https://github.com/ded/bowser) &mdash; for browser detection
-- [Closure Compiler](https://developers.google.com/closure/compiler/) for JavaScript compression
+- [Closure Compiler](https://developers.google.com/closure/compiler/) &mdash; JavaScript compression
 - [jquery](http://jquery.com/) &mdash; DOM manipulation
 - [numerics](http://numericjs.com/) &mdash; for matrix math
 - [pako](https://github.com/nodeca/pako) &mdash; for GZIP inflating
