@@ -1,6 +1,12 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
+
+if [ -d build ]
+then
+    rm -r build
+fi
+
 java -Xmx512M -jar lib/papaya-builder.jar $*
 
 if [ -f build/papaya.js ]
@@ -11,4 +17,7 @@ then
     mv build/papaya-out.js build/papaya.js
 fi
 
-echo Done!  See build folder for output...
+if [ -d build ]
+then
+    echo Done!  See build folder for output...
+fi
