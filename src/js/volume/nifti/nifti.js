@@ -105,7 +105,7 @@ papaya.volume.nifti.NIFTI.prototype.readFileData = function (data) {
     this.intent_p1 = this.getFloatAt(rawData, 56, this.littleEndian);
     this.intent_p2 = this.getFloatAt(rawData, 60, this.littleEndian);
     this.intent_p3 = this.getFloatAt(rawData, 64, this.littleEndian);
-    this.intent_code = this.getFloatAt(rawData, 68, this.littleEndian);
+    this.intent_code = this.getShortAt(rawData, 68, this.littleEndian);
 
     this.datatypeCode = this.getShortAt(rawData, 70, this.littleEndian);
     this.numBitsPerVoxel = this.getShortAt(rawData, 72, this.littleEndian);
