@@ -34,7 +34,7 @@ Quickstart Guide
 ------
 
 ###Development
-Load `tests/debug.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
+Load `tests/debug_local.html` or `tests/debug_server.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
 
 
 ###Running
