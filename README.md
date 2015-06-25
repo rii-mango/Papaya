@@ -34,25 +34,16 @@ Quickstart Guide
 ------
 
 ###Development
-Load `tests/debug.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
-
-
-###Running
-See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the latest release or see below for how to build Papaya yourself.
+Load `tests/debug_local.html` or `tests/debug_server.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
 
 
 ###Building
-Run `papaya-builder.sh` to create the build files.  A typical usage might be `papaya-builder.sh -sample -atlas`
-
-```shell
-usage: papaya-builder [options]
- -atlas <file>     add atlas
- -help             print this message
- -images <files>   images to include
- -local            build for local usage
- -root <dir>       papaya project directory
- -sample           include sample image
-```
+See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the latest release or run `papaya-builder.sh` to create your own build.  See [Papaya-Builder](https://github.com/rii-mango/Papaya-Builder) for more information.  A few typical uses:
+- papaya-builder.sh (standard build)
+- papaya-builder.sh -atlas (includes atlas)
+- papaya-builder.sh -local (builds for local usage -- i.e., encodes image data)
+- papaya-builder.sh -nojquery -nodicom (smallest build)
+- papaya-builder.sh -singlefile (combines all JavaScript, CSS, and image data into single HTML file)
 
 ###Usage
 See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for a full list of configurable parameters.  
@@ -101,6 +92,7 @@ Acknowledgments
 -----
 Papaya uses [Daikon](https://github.com/rii-mango/Daikon) for DICOM support, as well as the following third-party libraries:
 - [bowser](https://github.com/ded/bowser) &mdash; for browser detection
+- [Closure Compiler](https://developers.google.com/closure/compiler/) &mdash; JavaScript compression
 - [jquery](http://jquery.com/) &mdash; DOM manipulation
 - [numerics](http://numericjs.com/) &mdash; for matrix math
 - [pako](https://github.com/nodeca/pako) &mdash; for GZIP inflating
