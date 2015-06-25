@@ -1707,52 +1707,54 @@ papaya.viewer.Viewer.prototype.isUsingAtlas = function (name) {
 papaya.viewer.Viewer.prototype.scrolled = function (e) {
     var scrollSign;
 
-    if (!this.nestedViewer && (papayaContainers.length === 1)) {
-        e = e || window.event;
-        if (e.preventDefault) {
-            e.preventDefault();
+    if (this.container.nestedViewer || ((papayaContainers.length > 1) && !this.container.collapsable)) {
+        return;
+    }
+
+    e = e || window.event;
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+
+    e.returnValue = false;
+
+    scrollSign = papaya.utilities.PlatformUtils.getScrollSign(e);
+
+    if (this.container.preferences.scrollBehavior === "Increment Slice") {
+        if (scrollSign < 0) {
+            if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                this.incrementAxial(false);
+            } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                this.incrementCoronal(false);
+            } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                this.incrementSagittal(false);
+            }
+
+            this.gotoCoordinate(this.currentCoord);
+        } else if (scrollSign > 0) {
+            if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                this.incrementAxial(true);
+            } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                this.incrementCoronal(true);
+            } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                this.incrementSagittal(true);
+            }
+
+            this.gotoCoordinate(this.currentCoord);
         }
-
-        e.returnValue = false;
-
-        scrollSign = papaya.utilities.PlatformUtils.getScrollSign(e);
-
-        if (this.container.preferences.scrollBehavior === "Increment Slice") {
-            if (scrollSign < 0) {
-                if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                    this.incrementAxial(false);
-                } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                    this.incrementCoronal(false);
-                } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-                    this.incrementSagittal(false);
-                }
-
-                this.gotoCoordinate(this.currentCoord);
-            } else if (scrollSign > 0) {
-                if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                    this.incrementAxial(true);
-                } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                    this.incrementCoronal(true);
-                } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-                    this.incrementSagittal(true);
-                }
-
-                this.gotoCoordinate(this.currentCoord);
+    } else {
+        if (scrollSign !== 0) {
+            this.isZoomMode = true;
+            if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                this.setZoomLocation(this.currentCoord.x, this.currentCoord.y, this.mainImage.sliceDirection);
+            } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                this.setZoomLocation(this.currentCoord.x, this.currentCoord.z, this.mainImage.sliceDirection);
+            } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                this.setZoomLocation(this.currentCoord.y, this.currentCoord.z, this.mainImage.sliceDirection);
             }
-        } else {
-            if (scrollSign !== 0) {
-                this.isZoomMode = true;
-                if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                    this.setZoomLocation(this.currentCoord.x, this.currentCoord.y, this.mainImage.sliceDirection);
-                } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                    this.setZoomLocation(this.currentCoord.x, this.currentCoord.z, this.mainImage.sliceDirection);
-                } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-                    this.setZoomLocation(this.currentCoord.y, this.currentCoord.z, this.mainImage.sliceDirection);
-                }
 
-                this.setZoomFactor(this.zoomFactorPrevious + (scrollSign * 0.1 * this.zoomFactorPrevious));
-                this.zoomFactorPrevious = this.zoomFactor;
-            }
+            this.setZoomFactor(this.zoomFactorPrevious + (scrollSign * 0.1 * this.zoomFactorPrevious));
+            this.zoomFactorPrevious = this.zoomFactor;
         }
     }
 };
