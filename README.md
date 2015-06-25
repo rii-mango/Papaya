@@ -37,12 +37,8 @@ Quickstart Guide
 Load `tests/debug_local.html` or `tests/debug_server.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
 
 
-###Running
-See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the latest release or see below for how to build Papaya yourself.
-
-
 ###Building
-Run `papaya-builder.sh` to create the build files.  See [Papaya-Builder](https://github.com/rii-mango/Papaya-Builder) for more information.  A few typical uses:
+See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the latest release or run `papaya-builder.sh` to create your own build.  See [Papaya-Builder](https://github.com/rii-mango/Papaya-Builder) for more information.  A few typical uses:
 - papaya-builder.sh (standard build)
 - papaya-builder.sh -atlas (includes atlas)
 - papaya-builder.sh -local (builds for local usage -- i.e., encodes image data)
