@@ -42,17 +42,12 @@ See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the late
 
 
 ###Building
-Run `papaya-builder.sh` to create the build files.  A typical usage might be `papaya-builder.sh -sample -atlas`
-
-```shell
-usage: papaya-builder [options]
- -atlas <file>     add atlas
- -help             print this message
- -images <files>   images to include
- -local            build for local usage
- -root <dir>       papaya project directory
- -sample           include sample image
-```
+Run `papaya-builder.sh` to create the build files.  See [Papaya-Builder](https://github.com/rii-mango/Papaya-Builder) for more information.  A few typical uses:
+- papaya-builder.sh (standard build)
+- papaya-builder.sh -atlas (includes atlas)
+- papaya-builder.sh -local (builds for local usage -- i.e., encodes image data)
+- papaya-builder.sh -nojquery -nodicom (smallest build)
+- papaya-builder.sh -singlefile (combines all JavaScript, CSS, and image data into single HTML file)
 
 ###Usage
 See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for a full list of configurable parameters.  
