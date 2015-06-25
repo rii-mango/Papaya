@@ -1,12 +1,13 @@
 Papaya 
 ======
 
-Papaya is a pure JavaScript medical research image viewer, supporting DICOM and NIFTI formats, compatible across a range of popular web browsers.  The orthogonal viewer supports overlays and atlas labels.  See 
-the [user guide](http://ric.uthscsa.edu/mango/papaya_userguide.html) for a full list of features or click [here](http://rii.uthscsa.edu/mango/papayabeta/) to run Papaya right now.
+Papaya is a pure JavaScript medical research image viewer, supporting DICOM and NIFTI formats, compatible across a range of popular web browsers.  The orthogonal viewer supports overlays and atlas labels. 
 
 [![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://rii.uthscsa.edu/mango/papayabeta/)
 
-Requirements: Firefox (7+), Chrome (7+), Safari (6+), MobileSafari (iOS 6+), IE (10+)
+Requirements: Firefox (7+), Chrome (7+), Safari (6+), MobileSafari (iOS 6+), IE (10+)<br />
+User Guide: http://ric.uthscsa.edu/mango/papaya_userguide.html<br />
+Developer Guide: http://rii.uthscsa.edu/mango/papaya_devguide.html
 
 ###Demo
 Click [here](http://rii.uthscsa.edu/mango/papayabeta/) to try Papaya right now...
@@ -39,11 +40,11 @@ Load `tests/debug_local.html` or `tests/debug_server.html` in your [favorite](ht
 
 ###Building
 See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the latest release or run `papaya-builder.sh` to create your own build.  See [Papaya-Builder](https://github.com/rii-mango/Papaya-Builder) for more information.  A few typical uses:
-- papaya-builder.sh (standard build)
+- papaya-builder.sh -nojquery -nodicom (smallest build, ~320Kb)
+- papaya-builder.sh (standard build, includes Jquery lib and DICOM support, ~678Kb) 
 - papaya-builder.sh -atlas (includes atlas)
-- papaya-builder.sh -local (builds for local usage -- i.e., encodes image data)
-- papaya-builder.sh -nojquery -nodicom (smallest build)
-- papaya-builder.sh -singlefile (combines all JavaScript, CSS, and image data into single HTML file)
+- papaya-builder.sh -atlas -local (builds for local usage -- i.e., encodes image data, ~1.1Mb)
+- papaya-builder.sh -singlefile (combine all JS, CSS, and image data into single HTML file)
 
 ###Usage
 See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for a full list of configurable parameters.  
@@ -82,11 +83,6 @@ See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for
 <div class="papaya" data-params="params"></div>
 
 ```
-
-###Documentation
-- User Guide: http://rii.uthscsa.edu/mango/papaya_userguide.html
-- Developer Guide: http://rii.uthscsa.edu/mango/papaya_devguide.html
-
 
 Acknowledgments
 -----
