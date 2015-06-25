@@ -1707,7 +1707,7 @@ papaya.viewer.Viewer.prototype.isUsingAtlas = function (name) {
 papaya.viewer.Viewer.prototype.scrolled = function (e) {
     var scrollSign;
 
-    if (!this.nestedViewer) {
+    if (!this.nestedViewer && (papayaContainers.length === 1)) {
         e = e || window.event;
         if (e.preventDefault) {
             e.preventDefault();
