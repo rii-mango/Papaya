@@ -56,7 +56,7 @@ papaya.Container.papayaLicenseText = "THIS PRODUCT IS NOT FOR CLINICAL USE.<br /
     "derivatives.<br /><br />" +
     "By using this software, you agree to be bounded by the terms of this license.  If you do not agree to the terms " +
     "of this license, do not use this software.";
-
+papaya.Container.DICOM_SUPPORT = true;
 
 /*** Static Methods ***/
 
@@ -258,6 +258,8 @@ papaya.Container.startPapaya = function () {
     setTimeout(function () {  // setTimeout necessary in Chrome
         window.scrollTo(0, 0);
     }, 0);
+
+    papaya.Container.DICOM_SUPPORT = (typeof(daikon) !== "undefined");
 
     papaya.Container.buildAllContainers();
 };

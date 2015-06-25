@@ -90,7 +90,7 @@ papaya.ui.Toolbar.MENU_DATA = {
             "items": [
                 {"label": "Add Image...", "action": "OpenImage", "type": "file"},
                 {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
-                    "hide": (papaya.utilities.PlatformUtils.browser !== "Chrome")},
+                    "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
                 {"type": "spacer"},
                 {"type": "spacer"},
                 {"label": "Close All", "action": "CloseAllImages"}

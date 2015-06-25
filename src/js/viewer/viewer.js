@@ -659,7 +659,7 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
         fontSize = 14;
         this.context.font = fontSize + "px Arial";
         locY = this.canvas.height - 20;
-        text = "Supported formats: NIFTI, DICOM";
+        text = "Supported formats: NIFTI" + (papaya.Container.DICOM_SUPPORT ? ", DICOM" : "");
         this.context.fillText(text, 20, locY);
 
         // draw Papaya version info

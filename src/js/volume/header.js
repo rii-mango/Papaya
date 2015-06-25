@@ -45,7 +45,7 @@ papaya.volume.Header.ORIENTATION_CERTAINTY_HIGH = 2;
 papaya.volume.Header.prototype.findHeaderType = function (filename, data) {
     if (papaya.volume.nifti.HeaderNIFTI.isThisFormat(filename, data)) {
         return papaya.volume.Header.HEADER_TYPE_NIFTI;
-    } else if (papaya.volume.dicom.HeaderDICOM.isThisFormat(filename, data)) {
+    } else if (papaya.Container.DICOM_SUPPORT && papaya.volume.dicom.HeaderDICOM.isThisFormat(filename, data)) {
         return papaya.volume.Header.HEADER_TYPE_DICOM;
     }
 
