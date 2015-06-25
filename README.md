@@ -84,11 +84,6 @@ See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for
 
 ```
 
-###Documentation
-- User Guide: http://rii.uthscsa.edu/mango/papaya_userguide.html
-- Developer Guide: http://rii.uthscsa.edu/mango/papaya_devguide.html
-
-
 Acknowledgments
 -----
 Papaya uses [Daikon](https://github.com/rii-mango/Daikon) for DICOM support, as well as the following third-party libraries:
