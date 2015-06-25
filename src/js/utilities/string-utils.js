@@ -26,7 +26,7 @@ papaya.utilities.StringUtils.formatNumber = function (num, shortFormat) {
     var val = 0;
 
     if (papaya.utilities.ObjectUtils.isString(num)) {
-        val = parseFloat(num);
+        val = Number(num);
     } else {
         val = num;
     }

@@ -420,6 +420,7 @@ papaya.viewer.Viewer.prototype.addScroll = function () {
 };
 
 
+
 papaya.viewer.Viewer.prototype.removeScroll = function () {
     window.removeEventListener('DOMMouseScroll', this.listenerScroll, false);
     window.onmousewheel = document.onmousewheel = null;
@@ -1468,6 +1469,12 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
 
 
 
+papaya.viewer.Viewer.prototype.getHeaderDescription = function (index) {
+    return this.screenVolumes[index].volume.header.toString();
+};
+
+
+
 papaya.viewer.Viewer.prototype.getImageDimensionsDescription = function (index) {
     var orientationStr, imageDims;
 
@@ -1566,7 +1573,7 @@ papaya.viewer.Viewer.prototype.getOrientationDescription = function (index) {
 
 
 papaya.viewer.Viewer.prototype.getImageDescription = function (index) {
-    return papaya.utilities.StringUtils.wordwrap(this.screenVolumes[index].volume.header.imageDescription.notes, 25, "<br />", true);
+    return papaya.utilities.StringUtils.wordwrap(this.screenVolumes[index].volume.header.imageDescription.notes, 35, "<br />", true);
 };
 
 

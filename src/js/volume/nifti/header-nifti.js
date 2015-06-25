@@ -356,3 +356,53 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getBestTransformOrigin = function () {
 
     return null;
 };
+
+
+
+papaya.volume.nifti.HeaderNIFTI.prototype.toString = function () {
+    var fmt = papaya.utilities.StringUtils.formatNumber,
+        string = "";
+
+    string += ("<span style='color:#B5CBD3'>Dim Info</span>" + "<span style='color:gray'> = </span>" + this.nifti.dim_info + "<br />");
+
+    string += ("<span style='color:#B5CBD3'>Image Dimensions</span>" + " (1-8): " + this.nifti.dims[0] + ", " + this.nifti.dims[1] + ", " +
+        this.nifti.dims[2] + ", " + this.nifti.dims[3] + ", " + this.nifti.dims[4] + ", " + this.nifti.dims[5] + ", " +
+        this.nifti.dims[6] + ", " + this.nifti.dims[7] + "<br />");
+    string += ("<span style='color:#B5CBD3'>Intent Parameters</span>" + " (1-3): " + this.nifti.intent_p1 + ", " + this.nifti.intent_p2 + ", " +
+        this.nifti.intent_p3) + "<br />";
+    string += ("<span style='color:#B5CBD3'>Intent Code</span>" + "<span style='color:gray'> = </span>" + this.nifti.intent_code + "<br />");
+    string += ("<span style='color:#B5CBD3'>Datatype</span>" + "<span style='color:gray'> = </span>" + this.nifti.datatypeCode + "<br />");
+    string += ("<span style='color:#B5CBD3'>Bits Per Voxel</span>" + "<span style='color:gray'> = </span>" + this.nifti.numBitsPerVoxel + "<br />");
+    string += ("<span style='color:#B5CBD3'>Slice Start</span>" + "<span style='color:gray'> = </span>" + this.nifti.slice_start + "<br />");
+    string += ("<span style='color:#B5CBD3'>Voxel Dimensions</span>" + " (1-8): " + fmt(this.nifti.pixDims[0]) + ", " + fmt(this.nifti.pixDims[1]) + ", " +
+        fmt(this.nifti.pixDims[2]) + ", " + fmt(this.nifti.pixDims[3]) + ", " + fmt(this.nifti.pixDims[4]) + ", " +
+        fmt(this.nifti.pixDims[5]) + ", " + fmt(this.nifti.pixDims[6]) + ", " + fmt(this.nifti.pixDims[7]) + "<br />");
+    string += ("<span style='color:#B5CBD3'>Image Offset</span>" + "<span style='color:gray'> = </span>" + this.nifti.vox_offset + "<br />");
+    string += ("<span style='color:#B5CBD3'>Data Scale</span>" + ":  <span style='color:#B5CBD3'>Slope</span> = " + this.nifti.scl_slope + "  <span style='color:#B5CBD3'>Intercept</span> = " + this.nifti.scl_inter+ "<br />");
+    string += ("<span style='color:#B5CBD3'>Slice End</span>" + "<span style='color:gray'> = </span>" + this.nifti.slice_end + "<br />");
+    string += ("<span style='color:#B5CBD3'>Slice Code</span>" + "<span style='color:gray'> = </span>" + this.nifti.slice_code + "<br />");
+    string += ("<span style='color:#B5CBD3'>Units Code</span>" + "<span style='color:gray'> = </span>" + this.nifti.xyzt_units + "<br />");
+    string += ("<span style='color:#B5CBD3'>Display Range</span>" + ":  <span style='color:#B5CBD3'>Max</span>" + "<span style='color:gray'> = </span>" + this.nifti.cal_max + "  <span style='color:#B5CBD3'>Min</span>" + "<span style='color:gray'> = </span>" + this.nifti.cal_min + "<br />");
+    string += ("<span style='color:#B5CBD3'>Slice Duration</span>" + "<span style='color:gray'> = </span>" + this.nifti.slice_duration + "<br />");
+    string += ("<span style='color:#B5CBD3'>Time Axis Shift</span>" + "<span style='color:gray'> = </span>" + this.nifti.toffset + "<br />");
+    string += ("<span style='color:#B5CBD3'>Description</span>" + ": \"" + this.nifti.description + "\"<br />");
+    string += ("<span style='color:#B5CBD3'>Auxiliary File</span>" + ": \"" + this.nifti.aux_file + "\"<br />");
+    string += ("<span style='color:#B5CBD3'>Q-Form Code</span>" + "<span style='color:gray'> = </span>" + this.nifti.qform_code + "<br />");
+    string += ("<span style='color:#B5CBD3'>S-Form Code</span>" + "<span style='color:gray'> = </span>" + this.nifti.sform_code + "<br />");
+    string += ("<span style='color:#B5CBD3'>Quaternion Parameters</span>" + ":  <span style='color:#B5CBD3'>b</span>" + "<span style='color:gray'> = </span>" + fmt(this.nifti.quatern_b) +
+    "  <span style='color:#B5CBD3'>c</span>" + "<span style='color:gray'> = </span>" +
+    fmt(this.nifti.quatern_c) +
+        "  <span style='color:#B5CBD3'>d</span>" + "<span style='color:gray'> = </span>" + fmt(this.nifti.quatern_d) + "<br />");
+    string += ("<span style='color:#B5CBD3'>Quaternion Offsets</span>" + ":  <span style='color:#B5CBD3'>x</span>" + "<span style='color:gray'> = </span>" + this.nifti.qoffset_x + "  <span style='color:#B5CBD3'>y</span>" + "<span style='color:gray'> = </span>" +
+    this.nifti.qoffset_y + "  <span style='color:#B5CBD3'>z</span>" + "<span style='color:gray'> = </span>" +
+        this.nifti.qoffset_z + "<br />");
+    string += ("<span style='color:#B5CBD3'>S-Form Parameters X</span>" + ": " + fmt(this.nifti.affine[0][0]) + ", " + fmt(this.nifti.affine[0][1]) + ", " +
+        fmt(this.nifti.affine[0][2]) + ", " + fmt(this.nifti.affine[0][3]) + "<br />");
+    string += ("<span style='color:#B5CBD3'>S-Form Parameters Y</span>" + ": " + fmt(this.nifti.affine[1][0]) + ", " + fmt(this.nifti.affine[1][1]) + ", " +
+        fmt(this.nifti.affine[1][2]) + ", " + fmt(this.nifti.affine[1][3]) + "<br />");
+    string += ("<span style='color:#B5CBD3'>S-Form Parameters Z</span>" + ": " + fmt(this.nifti.affine[2][0]) + ", " + fmt(this.nifti.affine[2][1]) + ", " +
+        fmt(this.nifti.affine[2][2]) + ", " + fmt(this.nifti.affine[2][3]) + "<br />");
+    string += ("<span style='color:#B5CBD3'>Intent Name</span>" + ": \"" + this.nifti.intent_name + "\"<br />");
+    
+    return string;
+};

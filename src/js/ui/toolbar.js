@@ -112,7 +112,8 @@ papaya.ui.Toolbar.MENU_DATA = {
 
 papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
     "items": [
-        {"label": "Image Info", "action": "ImageInfo"},
+        {"label": "Show Header", "action": "ShowHeader"},
+        {"label": "Show Image Info", "action": "ImageInfo"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
         {"label": "Transparency", "action": "ChangeAlpha", "type": "range", "method": "getAlpha"},
         {"label": "Color Table...", "action": "ColorTable", "items": [] },
@@ -123,9 +124,10 @@ papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
 
 papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA = {
     "items": [
-        {"label": "Image Info", "action": "ImageInfo"},
+        {"label": "Show Header", "action": "ShowHeader"},
+        {"label": "Show Image Info", "action": "ImageInfo"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
-        papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items[3],
+        papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items[4],
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango"  }
     ]
 };
@@ -158,8 +160,6 @@ papaya.ui.Toolbar.IMAGE_INFO_DATA = {
     ]
 };
 
-
-
 papaya.ui.Toolbar.SERIES_INFO_DATA = {
     "items": [
         {"label": "Filename:", "field": "getFilename", "readonly": "true"},
@@ -179,6 +179,11 @@ papaya.ui.Toolbar.SERIES_INFO_DATA = {
     ]
 };
 
+papaya.ui.Toolbar.HEADER_DATA = {
+    "items": [
+        {"label": "", "field": "getHeaderDescription", "readonly": "true"}
+    ]
+};
 
 papaya.ui.Toolbar.LICENSE_DATA = {
     "items": [
@@ -478,9 +483,9 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             dialog.showDialog();
         } else if (action === "License") {
             dialog = new papaya.ui.Dialog(this.container, "License", papaya.ui.Toolbar.LICENSE_DATA,
-                papaya.Container, null, null);
+                papaya.Container, null, null, null, true);
             dialog.showDialog();
-        }  else if (action.startsWith("ImageInfo")) {
+        } else if (action.startsWith("ImageInfo")) {
             imageIndex = action.substring(action.lastIndexOf("-") + 1);
 
             if (this.viewer.screenVolumes[imageIndex].volume.numTimepoints > 1) {
@@ -490,6 +495,13 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
                 dialog = new papaya.ui.Dialog(this.container, "Image Info", papaya.ui.Toolbar.IMAGE_INFO_DATA,
                     this.viewer, null, null, imageIndex.toString());
             }
+
+            dialog.showDialog();
+        } else if (action.startsWith("ShowHeader")) {
+            imageIndex = action.substring(action.lastIndexOf("-") + 1);
+
+            dialog = new papaya.ui.Dialog(this.container, "Header", papaya.ui.Toolbar.HEADER_DATA,
+                this.viewer, null, null, imageIndex.toString());
 
             dialog.showDialog();
         } else if (action.startsWith("SPACE")) {

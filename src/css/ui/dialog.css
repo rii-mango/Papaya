@@ -1,6 +1,7 @@
 
 .papaya-dialog {
-    width: 400px;
+    min-width: 400px;
+    max-width: 500px;
     height: 500px;
     background: #222;
     position: absolute;
@@ -11,15 +12,21 @@
     font-family: sans-serif;
     color: #B5CBD3;
     box-sizing: content-box;
-    line-height: 1.25;
+    line-height: 1.45;
 }
 
 
 .papaya-dialog-content {
     margin: 20px;
-    width: 360px;
-    height: 420px;
-    color: white;
+    height: 415px;
+    color: #dedede;
+    overflow: auto;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+
+.papaya-dialog-content-nowrap {
+    white-space: nowrap;
 }
 
 

@@ -124,6 +124,7 @@ papaya.volume.Header.prototype.getName = function () {
 };
 
 
+
 papaya.volume.Header.prototype.readImageData = function (progressMeter, onFinishedImageRead) {
     this.fileFormat.readImageData(progressMeter, onFinishedImageRead);
 };
@@ -141,6 +142,13 @@ papaya.volume.Header.prototype.getBestTransform = function () {
 };
 
 
+
 papaya.volume.Header.prototype.getBestTransformOrigin = function () {
     return this.fileFormat.getBestTransformOrigin();
 };
+
+
+
+papaya.volume.Header.prototype.toString = function () {
+    return this.fileFormat.toString();
+}

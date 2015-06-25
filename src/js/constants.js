@@ -30,6 +30,7 @@ var PAPAYA_DISPLAY_CSS = "papaya-display";
 // Dialog CSS classes
 var PAPAYA_DIALOG_CSS = "papaya-dialog",
     PAPAYA_DIALOG_CONTENT_CSS = "papaya-dialog-content",
+    PAPAYA_DIALOG_CONTENT_NOWRAP_CSS = "papaya-dialog-content-nowrap",
     PAPAYA_DIALOG_CONTENT_LABEL_CSS = "papaya-dialog-content-label",
     PAPAYA_DIALOG_CONTENT_CONTROL_CSS = "papaya-dialog-content-control",
     PAPAYA_DIALOG_TITLE_CSS = "papaya-dialog-title",

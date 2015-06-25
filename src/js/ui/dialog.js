@@ -1,7 +1,8 @@
 
 /*jslint browser: true, node: true */
 /*global $, PAPAYA_DIALOG_CSS, PAPAYA_DIALOG_CONTENT_CSS, PAPAYA_DIALOG_CONTENT_LABEL_CSS, PAPAYA_DIALOG_BACKGROUND,
- PAPAYA_DIALOG_CONTENT_CONTROL_CSS, PAPAYA_DIALOG_TITLE_CSS, PAPAYA_DIALOG_STOPSCROLL, PAPAYA_DIALOG_BUTTON_CSS */
+ PAPAYA_DIALOG_CONTENT_CONTROL_CSS, PAPAYA_DIALOG_TITLE_CSS, PAPAYA_DIALOG_STOPSCROLL, PAPAYA_DIALOG_BUTTON_CSS,
+ PAPAYA_DIALOG_CONTENT_NOWRAP_CSS */
 
 "use strict";
 
@@ -11,7 +12,8 @@ papaya.ui = papaya.ui || {};
 
 
 /*** Constructor ***/
-papaya.ui.Dialog = papaya.ui.Dialog || function (container, title, content, dataSource, callback, callbackOk, modifier) {
+papaya.ui.Dialog = papaya.ui.Dialog || function (container, title, content, dataSource, callback, callbackOk, modifier,
+                                                 wrap) {
     this.container = container;
     this.viewer = container.viewer;
     this.title = title;
@@ -24,12 +26,15 @@ papaya.ui.Dialog = papaya.ui.Dialog || function (container, title, content, data
     this.dataSource = dataSource;
     this.callback = callback;
     this.callbackOk = callbackOk;
+    this.doWrap = wrap;
+    this.scrollBehavior1 = null;
+    this.scrollBehavior2 = null;
 };
 
 
 /*** Static Methods ***/
 
-papaya.ui.Dialog.showModalDialog = function (viewer, dialog) {
+papaya.ui.Dialog.showModalDialog = function (dialog, viewer, dialogHtml) {
     var viewerWidth, viewerHeight, dialogWidth, dialogHeight, left, top;
 
     var docElem = document.documentElement;
@@ -38,20 +43,23 @@ papaya.ui.Dialog.showModalDialog = function (viewer, dialog) {
     viewerWidth = $(window).outerWidth();
     viewerHeight = $(window).outerHeight();
 
-    dialogWidth = $(dialog).outerWidth();
-    dialogHeight = $(dialog).outerHeight();
+    dialogWidth = $(dialogHtml).outerWidth();
+    dialogHeight = $(dialogHtml).outerHeight();
 
     left = (viewerWidth / 2) - (dialogWidth / 2) + "px";
     top = scrollTop + (viewerHeight / 2) - (dialogHeight / 2) + "px";
 
-    $(dialog).css({
+    $(dialogHtml).css({
         position: 'absolute',
         zIndex: 100,
         left: left,
         top: top
     });
 
-    $(dialog).hide().fadeIn(200);
+
+    viewer.removeScroll();
+
+    $(dialogHtml).hide().fadeIn(200);
 };
 
 
@@ -124,11 +132,15 @@ papaya.ui.Dialog.prototype.showDialog = function () {
         }
     }
 
+    if (!this.doWrap) {
+        $("." + PAPAYA_DIALOG_CONTENT_CSS).addClass(PAPAYA_DIALOG_CONTENT_NOWRAP_CSS);
+    }
+
     $("#" + this.id + "-Ok").click(papaya.utilities.ObjectUtils.bind(this, this.doOk));
 
     thisHtml = $(thisHtmlId);
-    papaya.ui.Dialog.showModalDialog(this.viewer, thisHtml[0]);
     bodyHtml.addClass(PAPAYA_DIALOG_STOPSCROLL);
+    papaya.ui.Dialog.showModalDialog(this, this.viewer, thisHtml[0]);
 };
 
 
@@ -145,11 +157,15 @@ papaya.ui.Dialog.prototype.doOk = function () {
     modalDialogHtml.remove();
     modelDialogBackgroundHtml.remove();
 
+    window.onmousewheel = this.scrollBehavior1;
+    document.onmousewheel = this.scrollBehavior2;
+
     if (this.callbackOk) {
         this.callbackOk();
     }
 
     $("body").removeClass(PAPAYA_DIALOG_STOPSCROLL);
+    this.container.viewer.addScroll();
 };
 
 

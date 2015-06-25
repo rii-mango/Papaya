@@ -579,3 +579,9 @@ papaya.volume.dicom.HeaderDICOM.prototype.getBestTransform = function () {
 papaya.volume.dicom.HeaderDICOM.prototype.getBestTransformOrigin = function () {
     return null;
 };
+
+
+
+papaya.volume.dicom.HeaderDICOM.prototype.toString = function () {
+    return this.series.images[0].toString();
+};
