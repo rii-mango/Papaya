@@ -45,7 +45,7 @@ See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the late
 - papaya-builder.sh (standard build, includes Jquery lib and DICOM support, ~610Kb) 
 - papaya-builder.sh -atlas (includes atlas)
 - papaya-builder.sh -atlas -local (builds for local usage -- i.e., encodes image data)
-- papaya-builder.sh -singlefile (combine all JS, CSS, and image data into single HTML file)
+- papaya-builder.sh -singlefile -local (combine all JS, CSS, and image data into single HTML file)
 
 ###Usage
 See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for a full list of configurable parameters.  
