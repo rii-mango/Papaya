@@ -1,7 +1,7 @@
 Papaya 
 ======
 
-Papaya is a pure JavaScript medical research image viewer, supporting DICOM and NIFTI formats, compatible across a range of popular web browsers.  The orthogonal viewer supports overlays and atlas labels. 
+Papaya is a pure JavaScript medical research image viewer, supporting DICOM and NIFTI formats, compatible across a range of popular web browsers.  This orthogonal viewer supports overlays and atlas labels. 
 
 [![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://rii.uthscsa.edu/mango/papayabeta/)
 
@@ -39,7 +39,7 @@ Load `tests/debug_local.html` or `tests/debug_server.html` in your [favorite](ht
 
 
 ###Building
-See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the latest release or run `papaya-builder.sh` to create your own build.  See [Papaya-Builder](https://github.com/rii-mango/Papaya-Builder) for more information.  A few typical uses:
+See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the latest release or run `papaya-builder.sh` to create your own build.  See the [Papaya-Builder](https://github.com/rii-mango/Papaya-Builder) project for more information.  A few typical uses:
 - papaya-builder.sh -nojquery -nodicom (smallest build, ~320Kb)
 - papaya-builder.sh (standard build, includes Jquery lib and DICOM support, ~678Kb) 
 - papaya-builder.sh -atlas (includes atlas)
