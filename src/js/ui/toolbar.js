@@ -135,10 +135,13 @@ papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA = {
 papaya.ui.Toolbar.PREFERENCES_DATA = {
     "items": [
         {"label": "Coordinate display of:", "field": "atlasLocks", "options": ["Mouse", "Crosshairs"]},
-        {"label": "Show crosshairs:", "field": "showCrosshairs", "options": ["All", "Main", "Lower", "None"]},
-        {"label": "Show orientation:", "field": "showOrientation", "options": ["Yes", "No"]},
         {"label": "Scroll wheel behavior:", "field": "scrollBehavior", "options": ["Zoom", "Increment Slice"],
             "disabled": "container.disableScrollWheel"},
+        {"spacer": "true"},
+        {"label": "Show crosshairs:", "field": "showCrosshairs", "options": ["All", "Main", "Lower", "None"]},
+        {"label": "Show orientation:", "field": "showOrientation", "options": ["Yes", "No"]},
+        {"label": "Show ruler:", "field": "showRuler", "options": ["Yes", "No"], "help": "Shift-click and grab the ruler ends"},
+        {"spacer": "true"},
         {"label": "Smooth display:", "field": "smoothDisplay", "options": ["Yes", "No"]},
         {"label": "Radiological display:", "field": "radiological", "options": ["Yes", "No"]}
     ]

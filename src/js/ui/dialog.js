@@ -2,7 +2,7 @@
 /*jslint browser: true, node: true */
 /*global $, PAPAYA_DIALOG_CSS, PAPAYA_DIALOG_CONTENT_CSS, PAPAYA_DIALOG_CONTENT_LABEL_CSS, PAPAYA_DIALOG_BACKGROUND,
  PAPAYA_DIALOG_CONTENT_CONTROL_CSS, PAPAYA_DIALOG_TITLE_CSS, PAPAYA_DIALOG_STOPSCROLL, PAPAYA_DIALOG_BUTTON_CSS,
- PAPAYA_DIALOG_CONTENT_NOWRAP_CSS */
+ PAPAYA_DIALOG_CONTENT_NOWRAP_CSS, PAPAYA_DIALOG_CONTENT_HELP */
 
 "use strict";
 
@@ -105,6 +105,10 @@ papaya.ui.Dialog.prototype.showDialog = function () {
                 }
 
                 html += "</select></td></tr>";
+
+                if (this.content.items[ctr].help) {
+                    html += "<tr><td colspan='2' class='" + PAPAYA_DIALOG_CONTENT_HELP + "'>" + this.content.items[ctr].help + "</td></tr>";
+                }
             }
         }
 

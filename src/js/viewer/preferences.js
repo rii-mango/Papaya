@@ -18,6 +18,7 @@ papaya.viewer.Preferences = papaya.viewer.Preferences || function () {
     this.scrollBehavior = papaya.viewer.Preferences.DEFAULT_SCROLL;
     this.smoothDisplay = papaya.viewer.Preferences.DEFAULT_SMOOTH_DISPLAY;
     this.radiological = papaya.viewer.Preferences.DEFAULT_RADIOLOGICAL;
+    this.showRuler = papaya.viewer.Preferences.DEFAULT_SHOW_RULER;
 
     this.readPreferences();
 };
@@ -33,6 +34,7 @@ papaya.viewer.Preferences.DEFAULT_SHOW_ORIENTATION = "Yes";
 papaya.viewer.Preferences.DEFAULT_SCROLL = "Increment Slice";
 papaya.viewer.Preferences.DEFAULT_SMOOTH_DISPLAY = "Yes";
 papaya.viewer.Preferences.DEFAULT_RADIOLOGICAL = "No";
+papaya.viewer.Preferences.DEFAULT_SHOW_RULER = "No";
 
 
 /*** Prototype Methods ***/

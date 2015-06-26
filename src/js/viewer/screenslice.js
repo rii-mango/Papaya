@@ -35,6 +35,9 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
     this.tempTransform2 = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
     this.imageData = [];
     this.manager = manager;
+    this.rulerPoints = [new papaya.core.Point(parseInt(width * 0.25), parseInt(height * 0.25)),
+        new papaya.core.Point(parseInt(width * 0.75), parseInt(height * 0.75))];
+    this.tempPoint = new papaya.core.Point();
 };
 
 
@@ -46,6 +49,7 @@ papaya.viewer.ScreenSlice.DIRECTION_CORONAL = 2;
 papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL = 3;
 papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX = 255;
 papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN = 0;
+papaya.viewer.ScreenSlice.GRAB_RADIUS = 5;
 
 
 /*** Prototype Methods ***/
@@ -337,4 +341,19 @@ papaya.viewer.ScreenSlice.prototype.updateFinalTransform = function () {
 papaya.viewer.ScreenSlice.prototype.isRadiologicalSensitive = function () {
     return ((this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) ||
         (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL));
+};
+
+
+
+papaya.viewer.ScreenSlice.prototype.findProximalRulerHandle = function (xLoc, yLoc) {
+    this.tempPoint.x = xLoc;
+    this.tempPoint.y = yLoc;
+
+    if (papaya.utilities.MathUtils.lineDistance(this.tempPoint, this.rulerPoints[0]) < papaya.viewer.ScreenSlice.GRAB_RADIUS) {
+        return this.rulerPoints[0];
+    } else if (papaya.utilities.MathUtils.lineDistance(this.tempPoint, this.rulerPoints[1]) < papaya.viewer.ScreenSlice.GRAB_RADIUS) {
+        return this.rulerPoints[1];
+    }
+
+    return null;
 };

@@ -36,7 +36,8 @@ var PAPAYA_DIALOG_CSS = "papaya-dialog",
     PAPAYA_DIALOG_TITLE_CSS = "papaya-dialog-title",
     PAPAYA_DIALOG_BUTTON_CSS = "papaya-dialog-button",
     PAPAYA_DIALOG_BACKGROUND = "papaya-dialog-background",
-    PAPAYA_DIALOG_STOPSCROLL = "papaya-dialog-stopscroll";
+    PAPAYA_DIALOG_STOPSCROLL = "papaya-dialog-stopscroll",
+    PAPAYA_DIALOG_CONTENT_HELP = "papaya-dialog-content-help";
 
 
 // Menu CSS classes

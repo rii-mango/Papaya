@@ -48,6 +48,14 @@
 }
 
 
+.papaya-dialog-content-help {
+    text-align: right;
+    padding: 5px;
+    color: lightgray;
+    font-size: 12px;
+}
+
+
 .papaya-dialog-title {
     color: #B5CBD3;
     font-weight: bold;
