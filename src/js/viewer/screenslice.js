@@ -349,9 +349,9 @@ papaya.viewer.ScreenSlice.prototype.findProximalRulerHandle = function (xLoc, yL
     this.tempPoint.x = xLoc;
     this.tempPoint.y = yLoc;
 
-    if (papaya.utilities.MathUtils.lineDistance(this.tempPoint, this.rulerPoints[0]) < papaya.viewer.ScreenSlice.GRAB_RADIUS) {
+    if (papaya.utilities.MathUtils.lineDistance(this.tempPoint.x, this.tempPoint.y, this.rulerPoints[0].x, this.rulerPoints[0].y) < papaya.viewer.ScreenSlice.GRAB_RADIUS) {
         return this.rulerPoints[0];
-    } else if (papaya.utilities.MathUtils.lineDistance(this.tempPoint, this.rulerPoints[1]) < papaya.viewer.ScreenSlice.GRAB_RADIUS) {
+    } else if (papaya.utilities.MathUtils.lineDistance(this.tempPoint.x, this.tempPoint.y, this.rulerPoints[1].x, this.rulerPoints[1].y) < papaya.viewer.ScreenSlice.GRAB_RADIUS) {
         return this.rulerPoints[1];
     }
 

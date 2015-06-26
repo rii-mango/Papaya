@@ -946,7 +946,11 @@ papaya.viewer.Viewer.prototype.drawRuler = function () {
     this.context.fill();
     this.context.closePath();
 
-    text = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(this.mainImage.rulerPoints[0], this.mainImage.rulerPoints[1]), false);
+    text = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+        this.mainImage.rulerPoints[0].x * this.mainImage.xSize,
+        this.mainImage.rulerPoints[0].y * this.mainImage.ySize,
+        this.mainImage.rulerPoints[1].x * this.mainImage.xSize,
+        this.mainImage.rulerPoints[1].y * this.mainImage.ySize), false);
     metrics = this.context.measureText(text);
     textWidth = metrics.width;
     textHeight = 14;
