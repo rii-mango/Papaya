@@ -1,7 +1,7 @@
 
 /*jslint browser: true, node: true */
 /*global $, PAPAYA_MENU_ICON_CSS, PAPAYA_MENU_BUTTON_CSS, PAPAYA_MENU_UNSELECTABLE, PAPAYA_MENU_TITLEBAR_CSS,
- PAPAYA_TITLEBAR_CSS, PAPAYA_MENU_LABEL_CSS, PAPAYA_MENU_CSS, PAPAYA_MENU_BUTTON_HOVERING_CSS */
+ PAPAYA_TITLEBAR_CSS, PAPAYA_MENU_LABEL_CSS, PAPAYA_MENU_CSS, PAPAYA_MENU_BUTTON_HOVERING_CSS, PAPAYA_SPACING */
 
 "use strict";
 
@@ -35,22 +35,31 @@ papaya.ui.Menu = papaya.ui.Menu || function (viewer, menuData, callback, dataSou
     this.menuId = (this.label + "Menu").replace(/ /g, "_").replace("...", "_") + (this.modifier || "");
     this.isRight = (menuData.icons !== null);
     this.isImageButton = menuData.imageButton;
+    this.htmlParent = ((this.viewer.container.showControls && this.viewer.container.kioskMode) ?
+        this.viewer.container.sliderControlHtml : this.viewer.container.toolbarHtml);
 };
 
 
 /*** Static Methods ***/
 // adapted from: http://stackoverflow.com/questions/158070/jquery-how-to-position-one-element-relative-to-another
 papaya.ui.Menu.doShowMenu = function (viewer, el, menu, right) {
-    var posV, pos, eWidth, mWidth, left, top;
+    var posV, pos, eWidth, mWidth, mHeight, left, top, dHeight;
 
     //get the position of the placeholder element
     posV = $(viewer.canvas).offset();
+    dHeight = $(viewer.container.display.canvas).outerHeight();
     pos = $(el).offset();
     eWidth = $(el).outerWidth();
     mWidth = $(menu).outerWidth();
+    mHeight = $(menu).outerHeight();
     left = pos.left + (right ? ((-1 * mWidth) + eWidth) : 5) +  "px";
 
-    top = (posV.top) + "px";
+    if (viewer.container.showControls && viewer.container.kioskMode) {
+        top = ((posV.top) + $(viewer.canvas).outerHeight() + PAPAYA_SPACING + dHeight - mHeight) + "px";
+    } else {
+        top = (posV.top) + "px";
+    }
+
     //show the menu directly over the placeholder
     $(menu).css({
         position: 'absolute',
@@ -92,13 +101,11 @@ papaya.ui.Menu.getNiceForegroundColor = function (rgbStr) {
 /*** Prototype Methods ***/
 
 papaya.ui.Menu.prototype.buildMenuButton = function () {
-    var html, menu, buttonHtml, buttonHtmlId, buttonImgHtml, buttonImgHtmlId, toolbarHtml;
+    var html, menu, buttonHtml, buttonHtmlId, buttonImgHtml, buttonImgHtmlId;
 
     buttonHtmlId = "#" + this.buttonId;
     buttonHtml = $(buttonHtmlId);
     buttonHtml.remove();
-
-    toolbarHtml = this.viewer.container.toolbarHtml;
 
     html = null;
 
@@ -125,14 +132,14 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
         html = "<div class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_TITLEBAR_CSS + " " + PAPAYA_TITLEBAR_CSS +
             "' style='z-index:-1;position:absolute;top:" +
             (this.viewer.container.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE) + "px;width:" +
-            toolbarHtml.width() + "px;text-align:center;color:" + papaya.ui.Menu.getNiceForegroundColor(this.viewer.bgColor) + "'>" +
+            this.htmlParent.width() + "px;text-align:center;color:" + papaya.ui.Menu.getNiceForegroundColor(this.viewer.bgColor) + "'>" +
             this.label + "</div>";
     } else {
         html = "<span id='" + this.buttonId + "' class='" + PAPAYA_MENU_UNSELECTABLE + " " +
             PAPAYA_MENU_LABEL_CSS + "'>" + this.label + "</span>";
     }
 
-    toolbarHtml.append(html);
+    this.htmlParent.append(html);
 
     if (!this.isTitleBar) {
         buttonHtml = $(buttonHtmlId);
@@ -195,10 +202,12 @@ papaya.ui.Menu.prototype.buildMenu = function () {
     var ctr, html, buttonHtml;
 
     html = "<ul id='" + this.menuId + "' class='" + PAPAYA_MENU_CSS + "'></ul>";
-    this.viewer.container.toolbarHtml.append(html);
+    this.htmlParent.append(html);
 
     for (ctr = 0; ctr < this.items.length; ctr += 1) {
-        buttonHtml = this.items[ctr].buildHTML(this.menuId);
+        if (!this.items[ctr].hide) {
+            buttonHtml = this.items[ctr].buildHTML(this.menuId);
+        }
     }
 };
 

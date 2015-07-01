@@ -47,6 +47,7 @@ papaya.viewer.ScreenSlice.DIRECTION_UNKNOWN = 0;
 papaya.viewer.ScreenSlice.DIRECTION_AXIAL = 1;
 papaya.viewer.ScreenSlice.DIRECTION_CORONAL = 2;
 papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL = 3;
+papaya.viewer.ScreenSlice.DIRECTION_TEMPORAL = 4;
 papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX = 255;
 papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN = 0;
 papaya.viewer.ScreenSlice.GRAB_RADIUS = 5;

@@ -1,6 +1,8 @@
 
 /*jslint browser: true, node: true */
-/*global $, PAPAYA_SPACING, papayaContainers, papayaFloorFast, papayaRoundFast */
+/*global $, PAPAYA_SPACING, papayaContainers, papayaFloorFast, papayaRoundFast, PAPAYA_CONTROL_DIRECTION_SLIDER,
+ PAPAYA_CONTROL_MAIN_SLIDER, PAPAYA_CONTROL_SWAP_BUTTON_CSS, PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS,
+ PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS */
 
 "use strict";
 
@@ -61,8 +63,13 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.isAltKeyDown = false;
     this.isShiftKeyDown = false;
     this.toggleMainCrosshairs = true;
-    this.sliceSliderControl = null;
+    this.mainSliderControl = null;
+    this.axialSliderControl = null;
+    this.coronalSliderControl = null;
+    this.sagittalSliderControl = null;
+    this.seriesSliderControl = null;
     this.bgColor = null;
+    this.hasSeries = false;
 
     this.listenerMouseMove = papaya.utilities.ObjectUtils.bind(this, this.mouseMoveEvent);
     this.listenerMouseDown = papaya.utilities.ObjectUtils.bind(this, this.mouseDownEvent);
@@ -324,7 +331,6 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
             this.volume.getYDim(), this.volume.getZDim(), this.volume.getYSize(), this.volume.getZSize(),
             this.screenVolumes, this);
 
-
         if ((this.container.params.mainView === undefined) ||
             (this.container.params.mainView.toLowerCase() === "axial")) {
             this.mainImage = this.axialSlice;
@@ -356,12 +362,108 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.canvas.addEventListener("touchend", this.listenerMouseUp, false);
         this.canvas.addEventListener("dblclick", this.listenerMouseDoubleClick, false);
 
-        if (!this.container.orthogonal) {
-            this.sliceSliderControl = $(this.container.sliderControlHtml.find("input"));
-            this.sliceSliderControl.on("input change", function () {
-                viewer.sliceSliderControlChanged();
+        if (this.container.showControls) {
+            // main slice
+            this.mainSliderControl = $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_MAIN_SLIDER).find("input"));
+            this.mainSliderControl.on("input change", function () {
+                viewer.mainSliderControlChanged();
+            });
+
+            $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_MAIN_SLIDER).find("button")).eq(0).click(function () {
+                if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                    viewer.incrementAxial(true);
+                } else if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                    viewer.incrementCoronal(true);
+                } else if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                    viewer.incrementSagittal(true);
+                }
+            });
+
+            $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_MAIN_SLIDER).find("button")).eq(1).click(function () {
+                if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                    viewer.incrementAxial(false);
+                } else if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                    viewer.incrementCoronal(false);
+                } else if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                    viewer.incrementSagittal(false);
+                }
+            });
+
+            // axial slice
+            this.axialSliderControl = $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).find("input").eq(0));
+            this.axialSliderControl.on("input change", function () {
+                viewer.axialSliderControlChanged();
+            });
+
+            $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(0).find("button").eq(0)).click(function () {
+                viewer.incrementAxial(false);
+            });
+
+            $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(0).find("button").eq(1)).click(function () {
+                viewer.incrementAxial(true);
+            });
+
+            // coronal slice
+            this.coronalSliderControl = $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).find("input").eq(1));
+            this.coronalSliderControl.on("input change", function () {
+                viewer.coronalSliderControlChanged();
+            });
+
+            $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(1).find("button").eq(0)).click(function () {
+                viewer.incrementCoronal(false);
+            });
+
+            $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(1).find("button").eq(1)).click(function () {
+                viewer.incrementCoronal(true);
+            });
+
+            // sagittal slice
+            this.sagittalSliderControl = $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).find("input").eq(2));
+            this.sagittalSliderControl.on("input change", function () {
+                viewer.sagittalSliderControlChanged();
+            });
+
+            $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(2).find("button").eq(0)).click(function () {
+                viewer.incrementSagittal(true);
+            });
+
+            $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(2).find("button").eq(1)).click(function () {
+                viewer.incrementSagittal(false);
+            });
+
+            // series
+            this.seriesSliderControl = $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).find("input").eq(3));
+            this.seriesSliderControl.on("input change", function () {
+                viewer.seriesSliderControlChanged();
+            });
+
+            $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(3).find("button").eq(0)).click(function () {
+                viewer.decrementSeriesPoint();
+            });
+
+            $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(3).find("button").eq(1)).click(function () {
+                viewer.incrementSeriesPoint();
+            });
+
+            // buttons
+            $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_SWAP_BUTTON_CSS)).click(function () {
+                viewer.rotateViews();
+            });
+
+            $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS)).click(function () {
+                var center = new papaya.core.Coordinate(Math.floor(viewer.volume.header.imageDimensions.xDim / 2),
+                    Math.floor(viewer.volume.header.imageDimensions.yDim / 2),
+                    Math.floor(viewer.volume.header.imageDimensions.zDim / 2));
+                viewer.gotoCoordinate(center);
+            });
+
+            $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS)).click(function () {
+                viewer.gotoCoordinate(viewer.volume.header.origin);
             });
         }
+
+        this.hasSeries = (this.volume.header.imageDimensions.timepoints > 1);
+        this.container.resizeViewerComponents();
 
         this.addScroll();
 
@@ -435,7 +537,7 @@ papaya.viewer.Viewer.prototype.updateOffsetRect = function () {
 
 
 papaya.viewer.Viewer.prototype.initializeOverlay = function () {
-    var screenParams, parametric;
+    var screenParams, parametric, ctr;
 
     if (this.loadingVolume.hasError()) {
         this.container.display.drawError(this.loadingVolume.error.message);
@@ -467,8 +569,16 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
             }
         }
 
-        this.updateWindowTitle();
+        this.hasSeries = false;
+        for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
+            if (this.screenVolumes[ctr].volume.header.imageDimensions.timepoints > 1) {
+                this.hasSeries = true;
+                break;
+            }
+        }
+        this.container.resizeViewerComponents();
 
+        this.updateWindowTitle();
         this.loadingVolume = null;
 
         if (!this.container.loadNext()) {
@@ -484,12 +594,23 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
 
 
 papaya.viewer.Viewer.prototype.closeOverlay = function (index) {
+    var ctr;
+
     this.screenVolumes.splice(index, 1);
     this.setCurrentScreenVol(this.screenVolumes.length - 1);
     this.drawViewer(true);
     this.container.toolbar.buildToolbar();
     this.container.toolbar.updateImageButtons();
     this.updateWindowTitle();
+
+    this.hasSeries = false;
+    for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
+        if (this.screenVolumes[ctr].volume.header.imageDimensions.timepoints > 1) {
+            this.hasSeries = true;
+            break;
+        }
+    }
+    this.container.resizeViewerComponents();
 };
 
 
@@ -1275,6 +1396,7 @@ papaya.viewer.Viewer.prototype.rotateViews = function () {
 
 papaya.viewer.Viewer.prototype.timepointChanged = function () {
     this.drawViewer(true);
+    this.updateSliceSliderControl();
     this.updateWindowTitle();
 };
 
@@ -1374,6 +1496,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
     this.grabbedHandle = null;
 
     this.updateWindowTitle();
+    this.updateSliceSliderControl();
     this.container.toolbar.closeAllMenus();
 };
 
@@ -1583,6 +1706,7 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     this.draggingSliceDir = 0;
     this.isDragging = false;
     this.isWindowControl = false;
+    this.hasSeries = false;
     this.previousMousePosition = new papaya.core.Point();
     this.canvas.removeEventListener("mousemove", this.listenerMouseMove, false);
     this.canvas.removeEventListener("mousedown", this.listenerMouseDown, false);
@@ -2101,13 +2225,13 @@ papaya.viewer.Viewer.prototype.isCollapsable = function () {
 
 
 
-papaya.viewer.Viewer.prototype.sliceSliderControlChanged = function () {
+papaya.viewer.Viewer.prototype.mainSliderControlChanged = function () {
     if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-        this.currentCoord.z = parseInt(this.sliceSliderControl.val(), 10);
+        this.currentCoord.z = parseInt(this.mainSliderControl.val(), 10);
     } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-        this.currentCoord.y = parseInt(this.sliceSliderControl.val(), 10);
+        this.currentCoord.y = parseInt(this.mainSliderControl.val(), 10);
     } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-        this.currentCoord.x = parseInt(this.sliceSliderControl.val(), 10);
+        this.currentCoord.x = parseInt(this.mainSliderControl.val(), 10);
     }
 
     this.gotoCoordinate(this.currentCoord);
@@ -2115,32 +2239,88 @@ papaya.viewer.Viewer.prototype.sliceSliderControlChanged = function () {
 
 
 
-papaya.viewer.Viewer.prototype.updateSliceSliderControl = function () {
-    if (this.sliceSliderControl) {
-        if (this.initialized) {
-            this.sliceSliderControl.prop("disabled", false);
-            this.sliceSliderControl.prop("min", "0");
-            this.sliceSliderControl.prop("step", "1");
+papaya.viewer.Viewer.prototype.axialSliderControlChanged = function () {
+    this.currentCoord.z = parseInt(this.axialSliderControl.val(), 10);
+    this.gotoCoordinate(this.currentCoord);
+};
 
-            if (this.sliceSliderControl) {
-                if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                    this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.zDim - 1).toString());
-                    this.sliceSliderControl.val(this.currentCoord.z);
-                } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                    this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.yDim - 1).toString());
-                    this.sliceSliderControl.val(this.currentCoord.y);
-                } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-                    this.sliceSliderControl.prop("max", (this.volume.header.imageDimensions.xDim - 1).toString());
-                    this.sliceSliderControl.val(this.currentCoord.x);
-                }
-            }
-        } else {
-            this.sliceSliderControl.prop("disabled", true);
-            this.sliceSliderControl.prop("min", "0");
-            this.sliceSliderControl.prop("step", "1");
-            this.sliceSliderControl.prop("max", "1");
-            this.sliceSliderControl.val(0);
+
+
+papaya.viewer.Viewer.prototype.coronalSliderControlChanged = function () {
+    this.currentCoord.y = parseInt(this.coronalSliderControl.val(), 10);
+    this.gotoCoordinate(this.currentCoord);
+};
+
+
+
+papaya.viewer.Viewer.prototype.sagittalSliderControlChanged = function () {
+    this.currentCoord.x = parseInt(this.sagittalSliderControl.val(), 10);
+    this.gotoCoordinate(this.currentCoord);
+};
+
+
+
+papaya.viewer.Viewer.prototype.seriesSliderControlChanged = function () {
+    this.currentScreenVolume.setTimepoint(parseInt(this.seriesSliderControl.val(), 10));
+    if (this.currentScreenVolume.isOverlay()) {
+        this.reconcileOverlaySeriesPoint(this.currentScreenVolume);
+    }
+
+    this.timepointChanged();
+};
+
+
+
+papaya.viewer.Viewer.prototype.updateSliceSliderControl = function () {
+    if (this.mainSliderControl) {
+        this.doUpdateSliceSliderControl(this.mainSliderControl, this.mainImage.sliceDirection);
+    }
+
+    if (this.axialSliderControl) {
+        this.doUpdateSliceSliderControl(this.axialSliderControl, papaya.viewer.ScreenSlice.DIRECTION_AXIAL);
+    }
+
+    if (this.coronalSliderControl) {
+        this.doUpdateSliceSliderControl(this.coronalSliderControl, papaya.viewer.ScreenSlice.DIRECTION_CORONAL);
+    }
+
+    if (this.sagittalSliderControl) {
+        this.doUpdateSliceSliderControl(this.sagittalSliderControl, papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL);
+    }
+
+    if (this.seriesSliderControl) {
+        this.doUpdateSliceSliderControl(this.seriesSliderControl, papaya.viewer.ScreenSlice.DIRECTION_TEMPORAL);
+    }
+};
+
+
+
+
+papaya.viewer.Viewer.prototype.doUpdateSliceSliderControl = function (slider, direction) {
+    if (this.initialized) {
+        slider.prop("disabled", false);
+        slider.prop("min", "0");
+        slider.prop("step", "1");
+
+        if (direction === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+            slider.prop("max", (this.volume.header.imageDimensions.zDim - 1).toString());
+            slider.val(this.currentCoord.z);
+        } else if (direction === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+            slider.prop("max", (this.volume.header.imageDimensions.yDim - 1).toString());
+            slider.val(this.currentCoord.y);
+        } else if (direction === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+            slider.prop("max", (this.volume.header.imageDimensions.xDim - 1).toString());
+            slider.val(this.currentCoord.x);
+        } else if (direction === papaya.viewer.ScreenSlice.DIRECTION_TEMPORAL) {
+            slider.prop("max", (this.currentScreenVolume.volume.header.imageDimensions.timepoints - 1).toString());
+            slider.val(this.currentScreenVolume.currentTimepoint);
         }
+    } else {
+        slider.prop("disabled", true);
+        slider.prop("min", "0");
+        slider.prop("step", "1");
+        slider.prop("max", "1");
+        slider.val(0);
     }
 };
 

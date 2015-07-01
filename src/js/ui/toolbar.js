@@ -35,6 +35,7 @@ papaya.ui.Toolbar.ICON_IMAGESPACE = "data:image/gif;base64,R0lGODlhFAAUAPcAMf///
     "ipAFUIHEiwoMB/A1coXLiwisOHVf4hVLFCosWLGC9SzMgR48Z/VEJSUVjFj0mTESdWBCmS5EmU/6oIXCly5IqSLx/OlFjT5Us/DneybIkzp8yPDE" +
     "lChCjwj8Q/UKOqmkqVatOnUaGqmsaVq1UVTv+lGjv2z9SuXlVdFUs2ldmtaKeubev2bFy1YCXSfYt2mty8/6CS5XtXRcasVRMftJj1beK/hicanK" +
     "wiIAA7";
+
 papaya.ui.Toolbar.ICON_WORLDSPACE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAAGXRFWHRTb2" +
     "Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAplJREFUeNqM1H1ozVEcx/Hr3p+7O08jQzbzMErznEItK0+Fv0Ye/tki20ia//wn+YMSaXkoEi" +
     "KkkCVKZhOipsnDstnFagzlrmGMNfeO6/Nd71unu2s59bq7O517ft/z/X7Pz+dLPUbLJrkqX+SbdEubfJZK2cC6PiOQYm61HJcpkintEpcmCcpryZ" +
@@ -62,6 +63,7 @@ papaya.ui.Toolbar.ICON_EXPAND =   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA
     "I8D9woLII0skOBcDAuhHrFxECmH488QkmFvbIJ0JcIpBGH6MmATHBDEiwCAMfylrJAhiQIBBGP5alkoQpHMB9Lr1PX6oJPS4tXsRY+geAkOlY2vX" +
     "1UXk/wTpXICa1P6w6hhzvXpbo+eHFUDZjeO60bnvpN53/1KCgAuQ1RyZyVxz7NYEARcgqz06k+P2+BYEaSjArcRvUmqh1/+dtAv/wGGDjFb3AXqT" +
     "fZP6YqtbxJBCUABwKAA4FAAcCgAOBQCHAoBDAcChAOBQAHAoADgUABwKAA4FAIcCgPMPvdAfn3qMP2kAAAAASUVORK5CYII=";
+
 papaya.ui.Toolbar.ICON_COLLAPSE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAEJGlDQ1BJQ0Mg" +
     "UHJvZmlsZQAAOBGFVd9v21QUPolvUqQWPyBYR4eKxa9VU1u5GxqtxgZJk6XtShal6dgqJOQ6N4mpGwfb6baqT3uBNwb8AUDZAw9IPCENBmJ72fbA" +
     "tElThyqqSUh76MQPISbtBVXhu3ZiJ1PEXPX6yznfOec7517bRD1fabWaGVWIlquunc8klZOnFpSeTYrSs9RLA9Sr6U4tkcvNEi7BFffO6+EdigjL" +
@@ -82,7 +84,6 @@ papaya.ui.Toolbar.ICON_COLLAPSE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA
     "sA4acG+U8Fr5GuHtIaItpb1cAW2gv18FEt0HC8CHfM0pVxXXavSSpRG0fMUK1NA5sAeWwSfQ6i7AEPhwf4mJAyDBO3AJVBO0dNLw8x+hFfnLsj0k" +
     "Slt0+kbYOuExiFuhng7JH2LFld0Ej2AeeCu6cF5cy3vs/XiDeAIWwS3Q298G8ZDoFuiBI7ACdKjegcZYSz2eBgjap1dAxafOkW9zyoUj7LnY/hCF" +
     "mNsByYQRzf9IR6L5XUKI/uXarHn/4Gvn/H5tQvqfi14rcXHzs6vPYh3RmT9N2ZHWxkYgt4/pN/LAOfka/AG9AAAAAElFTkSuQmCC";
-
 
 papaya.ui.Toolbar.MENU_DATA = {
     "menus": [
@@ -110,6 +111,13 @@ papaya.ui.Toolbar.MENU_DATA = {
     ]
 };
 
+papaya.ui.Toolbar.MENU_DATA_KIOSK = {
+    "menus": [
+        {"label": "EXPAND", "icons": [papaya.ui.Toolbar.ICON_EXPAND, papaya.ui.Toolbar.ICON_COLLAPSE], "items": [],
+            "method": "isCollapsable", "required": "isExpandable" }
+    ]
+};
+
 papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
     "items": [
         {"label": "Show Header", "action": "ShowHeader"},
@@ -117,7 +125,7 @@ papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
         {"label": "Transparency", "action": "ChangeAlpha", "type": "range", "method": "getAlpha"},
         {"label": "Color Table...", "action": "ColorTable", "items": [] },
-        {"label": "Close Overlay", "action": "CloseOverlay" },
+        {"label": "Close Overlay", "action": "CloseOverlay", "hide": "isKioskMode" },
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango" }
     ]
 };
@@ -206,13 +214,20 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
     this.container.toolbarHtml.find("." + PAPAYA_MENU_LABEL_CSS).remove();
     this.container.toolbarHtml.find("." + PAPAYA_TITLEBAR_CSS).remove();
 
-    this.buildOpenMenuItems();
+    if (this.container.kioskMode) {
+        for (ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA_KIOSK.menus.length; ctr += 1) {
+            this.buildMenu(papaya.ui.Toolbar.MENU_DATA_KIOSK.menus[ctr], null, this.viewer, null);
+        }
+    } else {
+        this.buildOpenMenuItems(papaya.ui.Toolbar.MENU_DATA);
 
-    for (ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA.menus.length; ctr += 1) {
-        this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, this.viewer, null);
+        for (ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA.menus.length; ctr += 1) {
+            this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, this.viewer, null);
+        }
+
+        this.buildAtlasMenu();
     }
 
-    this.buildAtlasMenu();
     this.buildColorMenuItems();
 
     this.container.titlebarHtml = this.container.containerHtml.find("." + PAPAYA_TITLEBAR_CSS);
@@ -236,6 +251,7 @@ papaya.ui.Toolbar.prototype.buildAtlasMenu = function () {
         }
     }
 };
+
 
 
 papaya.ui.Toolbar.prototype.buildColorMenuItems = function () {
@@ -267,21 +283,23 @@ papaya.ui.Toolbar.prototype.buildColorMenuItems = function () {
 
 
 
-papaya.ui.Toolbar.prototype.buildOpenMenuItems = function () {
+papaya.ui.Toolbar.prototype.buildOpenMenuItems = function (menuData) {
     var ctr, items, menuItemName;
 
-    for (ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA.menus.length; ctr += 1) {
-        if (papaya.ui.Toolbar.MENU_DATA.menus[ctr].label === "File") {
-            items = papaya.ui.Toolbar.MENU_DATA.menus[ctr].items;
+    for (ctr = 0; ctr < menuData.menus.length; ctr += 1) {
+        if (menuData.menus[ctr].label === "File") {
+            items = menuData.menus[ctr].items;
             break;
         }
     }
 
-    for (ctr = 0; ctr < papayaLoadableImages.length; ctr += 1) {
-        if (!papayaLoadableImages[ctr].hide) {
-            menuItemName = "Add " + papayaLoadableImages[ctr].nicename;
-            if (!this.menuContains(items, menuItemName)) {
-                items.splice(2, 0, {"label": menuItemName, "action": "Open-" + papayaLoadableImages[ctr].name});
+    if (items) {
+        for (ctr = 0; ctr < papayaLoadableImages.length; ctr += 1) {
+            if (!papayaLoadableImages[ctr].hide) {
+                menuItemName = "Add " + papayaLoadableImages[ctr].nicename;
+                if (!this.menuContains(items, menuItemName)) {
+                    items.splice(2, 0, {"label": menuItemName, "action": "Open-" + papayaLoadableImages[ctr].name});
+                }
             }
         }
     }
@@ -292,9 +310,11 @@ papaya.ui.Toolbar.prototype.buildOpenMenuItems = function () {
 papaya.ui.Toolbar.prototype.menuContains = function (menuItems, name) {
     var ctr;
 
-    for (ctr = 0; ctr < menuItems.length; ctr += 1) {
-        if (menuItems[ctr].label === name) {
-            return true;
+    if (menuItems) {
+        for (ctr = 0; ctr < menuItems.length; ctr += 1) {
+            if (menuItems[ctr].label === name) {
+                return true;
+            }
         }
     }
 
@@ -348,7 +368,7 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
             } else if (itemData[ctrItems].type === "file") {
                 item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label,
                     itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), false);
-            }  else if (itemData[ctrItems].type === "folder") {
+            } else if (itemData[ctrItems].type === "folder") {
                 if (!itemData[ctrItems].hide) {
                     item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label,
                         itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), true);
@@ -372,12 +392,16 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
             item = null;
         }
 
-        if (item) {
-            menu.addMenuItem(item);
 
-            if (itemData[ctrItems].items) {
-                menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier);
-                item.callback = papaya.utilities.ObjectUtils.bind(menu2, menu2.showMenu);
+        if (!itemData[ctrItems].hide || ((papaya.utilities.ObjectUtils.bind(this.container,
+                papaya.utilities.ObjectUtils.dereferenceIn(this.container, itemData[ctrItems].hide)))() === false)) {
+            if (item) {
+                menu.addMenuItem(item);
+
+                if (itemData[ctrItems].items) {
+                    menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier);
+                    item.callback = papaya.utilities.ObjectUtils.bind(menu2, menu2.showMenu);
+                }
             }
         }
     }
@@ -408,6 +432,7 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
             data.menus[0].items = papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items;
         }
 
+
         this.imageMenus[ctr] = (this.buildMenu(data.menus[0], null, screenVol, ctr.toString()));
     }
 };
@@ -420,6 +445,12 @@ papaya.ui.Toolbar.prototype.closeAllMenus = function () {
     menuHtml = this.container.toolbarHtml.find("." + PAPAYA_MENU_CSS);
     menuHtml.hide(100);
     menuHtml.remove();
+
+    if (this.container.showControls) {
+        menuHtml = this.container.sliderControlHtml.find("." + PAPAYA_MENU_CSS);
+        menuHtml.hide(100);
+        menuHtml.remove();
+    }
 
     modalDialogHtml = this.container.toolbarHtml.find("." + PAPAYA_DIALOG_CSS);
     modalDialogHtml.hide(100);
