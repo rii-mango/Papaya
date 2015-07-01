@@ -137,23 +137,23 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params)
                 containerHTML.append(
                     "<div id='" + PAPAYA_KIOSK_CONTROLS_CSS + papayaContainers.length + "' class='" + PAPAYA_KIOSK_CONTROLS_CSS + "'>" +
                         "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "main" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_MAIN_SLIDER + "'>" +
-                            "<span>Slice: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " + "<input type='range' class='" + PAPAYA_CONTROL_SLIDER_CSS + "'/>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" +
+                            "<span>Slice: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" +
                         "</div>" +
 
                         "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "axial" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
-                            "<span>Axial: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " + "<input type='range' class='" + PAPAYA_CONTROL_SLIDER_CSS + "'/>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" +
+                            "<span>Axial: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" +
                         "</div>" +
 
                         "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "coronal" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
-                            "<span>Coronal: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " + "<input type='range' class='" + PAPAYA_CONTROL_SLIDER_CSS + "'/>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" +
+                            "<span>Coronal: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" +
                         "</div>" +
 
                         "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "sagittal" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
-                            "<span>Sagittal: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " + "<input type='range' class='" + PAPAYA_CONTROL_SLIDER_CSS + "'/>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" +
+                            "<span>Sagittal: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" +
                         "</div>" +
 
                         "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "series" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
-                            "<span>Series: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " + "<input type='range' class='" + PAPAYA_CONTROL_SLIDER_CSS + "'/>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" +
+                            "<span>Series: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" +
                         "</div>" +
                         "&nbsp;&nbsp;&nbsp;" +
                         "<button type='button' " + (params.kioskMode ? "" : "style='float:right;margin-left:5px;' ") + "class='" + PAPAYA_CONTROL_SWAP_BUTTON_CSS + "'>Swap Main Slice</button> " +
@@ -475,7 +475,7 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
         if (this.kioskMode) {
             diff += 0;
         } else {
-            diff += -200;
+            diff += -50;
         }
 
         if (this.viewer.hasSeries) {
@@ -484,7 +484,7 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
             diff += 0;
         }
 
-        if (dims[0] < (1200 + diff)) {
+        if (dims[0] < (775 + diff)) {
             $("." + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS).css({display: "none"});
             $("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS).css({display: "none"});
         } else {
@@ -492,21 +492,16 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
             $("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS).css({display: "inline"});
         }
 
-        if (dims[0] < (1000 + diff)) {
+        if (dims[0] < (600 + diff)) {
             $("." + PAPAYA_CONTROL_DIRECTION_SLIDER).css({display: "none"});
             $("." + PAPAYA_CONTROL_MAIN_SLIDER).css({display: "inline"});
-            $("." + PAPAYA_CONTROL_MAIN_SLIDER).find("input[type=range]").css({width: "10%"});
-            $("." + PAPAYA_CONTROL_DIRECTION_SLIDER).find("input[type=range]").css({width: "10%"});
         } else {
             $("." + PAPAYA_CONTROL_DIRECTION_SLIDER).css({display: "inline"});
-            $("." + PAPAYA_CONTROL_DIRECTION_SLIDER).find("input[type=range]").css({width: "5%"});
             $("." + PAPAYA_CONTROL_MAIN_SLIDER).css({display: "none"});
         }
 
-        if (dims[0] < (700 + diff)) {
-            $("." + PAPAYA_CONTROL_SLIDER_CSS).css({display: "none"});
-        } else {
-            $("." + PAPAYA_CONTROL_SLIDER_CSS).css({display: "inline"});
+        if (this.viewer.hasSeries && (dims[0] < (400 + diff))) {
+            $("." + PAPAYA_CONTROL_MAIN_SLIDER).css({display: "none"});
         }
 
         if (this.viewer.hasSeries) {

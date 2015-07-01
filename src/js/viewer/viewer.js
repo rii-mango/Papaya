@@ -63,11 +63,6 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.isAltKeyDown = false;
     this.isShiftKeyDown = false;
     this.toggleMainCrosshairs = true;
-    this.mainSliderControl = null;
-    this.axialSliderControl = null;
-    this.coronalSliderControl = null;
-    this.sagittalSliderControl = null;
-    this.seriesSliderControl = null;
     this.bgColor = null;
     this.hasSeries = false;
 
@@ -364,11 +359,6 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
 
         if (this.container.showControls) {
             // main slice
-            this.mainSliderControl = $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_MAIN_SLIDER).find("input"));
-            this.mainSliderControl.on("input change", function () {
-                viewer.mainSliderControlChanged();
-            });
-
             $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_MAIN_SLIDER).find("button")).eq(0).click(function () {
                 if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
                     viewer.incrementAxial(false);
@@ -390,11 +380,6 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
             });
 
             // axial slice
-            this.axialSliderControl = $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).find("input").eq(0));
-            this.axialSliderControl.on("input change", function () {
-                viewer.axialSliderControlChanged();
-            });
-
             $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(0).find("button").eq(0)).click(function () {
                 viewer.incrementAxial(false);
             });
@@ -404,11 +389,6 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
             });
 
             // coronal slice
-            this.coronalSliderControl = $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).find("input").eq(1));
-            this.coronalSliderControl.on("input change", function () {
-                viewer.coronalSliderControlChanged();
-            });
-
             $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(1).find("button").eq(0)).click(function () {
                 viewer.incrementCoronal(false);
             });
@@ -418,11 +398,6 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
             });
 
             // sagittal slice
-            this.sagittalSliderControl = $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).find("input").eq(2));
-            this.sagittalSliderControl.on("input change", function () {
-                viewer.sagittalSliderControlChanged();
-            });
-
             $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(2).find("button").eq(0)).click(function () {
                 viewer.incrementSagittal(true);
             });
@@ -432,11 +407,6 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
             });
 
             // series
-            this.seriesSliderControl = $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).find("input").eq(3));
-            this.seriesSliderControl.on("input change", function () {
-                viewer.seriesSliderControlChanged();
-            });
-
             $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(3).find("button").eq(0)).click(function () {
                 viewer.decrementSeriesPoint();
             });
