@@ -42,6 +42,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.kioskMode = false;
     this.showControls = true;
     this.fullScreenPadding = true;
+    this.combineParametric = false;
     this.dropTimeout = null;
     this.resetComponents();
 };
@@ -191,6 +192,7 @@ papaya.Container.buildContainer = function (containerHTML, params) {
 
         container.nestedViewer = (containerHTML.parent()[0].tagName.toUpperCase() !== 'BODY');
         container.kioskMode = (container.params.kioskMode === true);
+        container.combineParametric = (container.params.combineParametric === true);
 
         if (container.params.showControls !== undefined) {  // default is true
             container.showControls = container.params.showControls;
@@ -868,8 +870,8 @@ papaya.Container.prototype.isNestedViewer = function () {
 
 
 
-papaya.Container.prototype.isKioskMode = function () {
-    return this.kioskMode;
+papaya.Container.prototype.isDesktopMode = function () {
+    return !this.kioskMode;
 };
 
 
@@ -890,6 +892,17 @@ papaya.Container.prototype.isExpandable = function () {
     return this.params.expandable && this.isNestedViewer();
 };
 
+
+
+papaya.Container.prototype.isParametricCombined = function (index) {
+    return this.combineParametric && this.viewer.hasParametricPair(index);
+};
+
+
+
+papaya.Container.prototype.isNonParametricCombined = function (index) {
+    return !this.isParametricCombined(index);
+};
 
 
 /*** Window Events ***/

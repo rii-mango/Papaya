@@ -12,6 +12,11 @@ papaya.ui = papaya.ui || {};
 /*** Constructor ***/
 papaya.ui.MenuItemRange = papaya.ui.MenuItemRange || function (viewer, label, action, callback, dataSource, method,
                                                                modifier) {
+    if (action === "ChangeRangeNeg") {
+        this.negatives = true;
+        modifier = viewer.getScreenVolumeIndex(viewer.screenVolumes[parseInt(modifier)].negativeScreenVol).toString();
+    }
+
     this.viewer = viewer;
     this.label = label;
 
@@ -221,7 +226,11 @@ papaya.ui.MenuItemRange.prototype.updateDataSource = function (focusMax) {
     minHtml.val(min);
     maxHtml.val(max);
 
-    this.dataSource.setScreenRange(min, max);
+    if (this.negatives) {
+        this.dataSource.setScreenRangeNegatives(min, max);
+    } else {
+        this.dataSource.setScreenRange(min, max);
+    }
 
     if (focusMax) {
         maxHtml.focus();

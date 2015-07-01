@@ -122,10 +122,15 @@ papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
     "items": [
         {"label": "Show Header", "action": "ShowHeader"},
         {"label": "Show Image Info", "action": "ImageInfo"},
+        {"type": "spacer", "required": "isParametricCombined"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
         {"label": "Transparency", "action": "ChangeAlpha", "type": "range", "method": "getAlpha"},
-        {"label": "Color Table...", "action": "ColorTable", "items": [] },
-        {"label": "Close Overlay", "action": "CloseOverlay", "required": "isKioskMode" },
+        {"label": "Color Table...", "action": "ColorTable", "items": [], "required": "isNonParametricCombined" },
+        {"type": "spacer", "required": "isParametricCombined"},
+        {"label": "DisplayRange", "action": "ChangeRangeNeg", "type": "displayrange", "method": "getRangeNegative", "required": "isParametricCombined"},
+        {"label": "Transparency", "action": "ChangeAlphaNeg", "type": "range", "method": "getAlpha", "required": "isParametricCombined"},
+        {"type": "spacer", "required": "isParametricCombined"},
+        {"label": "Close Overlay", "action": "CloseOverlay", "required": "isDesktopMode" },
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango" }
     ]
 };
@@ -358,8 +363,9 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
     }
 
     for (ctrItems = 0; ctrItems < itemData.length; ctrItems += 1) {
-        if (!itemData[ctrItems].required || ((papaya.utilities.ObjectUtils.bind(this.container, papaya.utilities.ObjectUtils.dereferenceIn(this.container,
-                itemData[ctrItems].required)))() === true)) {
+        if (!itemData[ctrItems].required || ((papaya.utilities.ObjectUtils.bind(this.container,
+                papaya.utilities.ObjectUtils.dereferenceIn(this.container,
+                itemData[ctrItems].required)))(parseInt(modifier)) === true)) {
             if (itemData[ctrItems].type === "spacer") {
                 item = new papaya.ui.MenuItemSpacer();
             } else if (itemData[ctrItems].type === "checkbox") {
@@ -392,15 +398,12 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
             item = null;
         }
 
-        if ((itemData[ctrItems].required === undefined) || ((papaya.utilities.ObjectUtils.bind(this.container,
-                papaya.utilities.ObjectUtils.dereferenceIn(this.container, itemData[ctrItems].required)))() === false)) {
-            if (item) {
-                menu.addMenuItem(item);
+        if (item) {
+            menu.addMenuItem(item);
 
-                if (itemData[ctrItems].items) {
-                    menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier);
-                    item.callback = papaya.utilities.ObjectUtils.bind(menu2, menu2.showMenu);
-                }
+            if (itemData[ctrItems].items) {
+                menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier);
+                item.callback = papaya.utilities.ObjectUtils.bind(menu2, menu2.showMenu);
             }
         }
     }
@@ -431,8 +434,9 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
             data.menus[0].items = papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items;
         }
 
-
-        this.imageMenus[ctr] = (this.buildMenu(data.menus[0], null, screenVol, ctr.toString()));
+        if (!this.container.combineParametric || !screenVol.parametric) {
+            this.imageMenus.push((this.buildMenu(data.menus[0], null, screenVol, ctr.toString())));
+        }
     }
 };
 

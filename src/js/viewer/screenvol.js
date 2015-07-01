@@ -21,6 +21,8 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.imageMax = this.volume.header.imageRange.imageMax;
     this.alpha = 1.0;
     this.currentTimepoint = 0;
+    this.parametric = (parametric !== undefined) && parametric;
+    this.negativeScreenVol = null;
 
     var screenParams = params[this.volume.fileName];
     if (screenParams) {
@@ -67,6 +69,12 @@ papaya.viewer.ScreenVolume.prototype.setScreenRange = function (min, max) {
     this.screenMin = min;
     this.screenMax = max;
     this.updateScreenRange();
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.setScreenRangeNegatives = function (min, max) {
+    this.negativeScreenVol.setScreenRange(min, max);
 };
 
 
@@ -213,6 +221,18 @@ papaya.viewer.ScreenVolume.prototype.getRange = function () {
     range[0] = ((this.colorTable.minLUT / (255.0 / (this.screenMax - this.screenMin))) + this.screenMin);
     range[1] = ((this.colorTable.maxLUT / (255.0 / (this.screenMax - this.screenMin))) + this.screenMin);
     return range;
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.getRangeNegative = function () {
+    return this.negativeScreenVol.getRange();
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.getAlphaNegative = function () {
+    return this.negativeScreenVol.alpha;
 };
 
 

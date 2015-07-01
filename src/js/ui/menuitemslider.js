@@ -12,6 +12,10 @@ papaya.ui = papaya.ui || {};
 /*** Constructor ***/
 papaya.ui.MenuItemSlider = papaya.ui.MenuItemSlider || function (viewer, label, action, callback, dataSource, method,
                                                                  modifier) {
+    if (action === "ChangeAlphaNeg") {
+        modifier = viewer.getScreenVolumeIndex(viewer.screenVolumes[parseInt(modifier)].negativeScreenVol).toString();
+    }
+
     this.viewer = viewer;
     this.label = label;
 

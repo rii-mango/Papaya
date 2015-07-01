@@ -537,7 +537,7 @@ papaya.viewer.Viewer.prototype.updateOffsetRect = function () {
 
 
 papaya.viewer.Viewer.prototype.initializeOverlay = function () {
-    var screenParams, parametric, ctr;
+    var screenParams, parametric, ctr, overlay, overlayNeg;
 
     if (this.loadingVolume.hasError()) {
         this.container.display.drawError(this.loadingVolume.error.message);
@@ -547,27 +547,27 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
         screenParams = this.container.params[this.loadingVolume.fileName];
         parametric = (screenParams && screenParams.parametric);
 
-        this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume,
+        this.screenVolumes[this.screenVolumes.length] = overlay = new papaya.viewer.ScreenVolume(this.loadingVolume,
             this.container.params, (parametric ? papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[0].name :
                 this.getNextColorTable()), false);
         this.setCurrentScreenVol(this.screenVolumes.length - 1);
-        this.drawViewer(true);
-        this.container.toolbar.buildToolbar();
-        this.container.toolbar.updateImageButtons();
 
         // even if "parametric" is set to true we should not add another screenVolume if the value range does not cross
         // zero
         if (parametric) {
             this.screenVolumes[this.screenVolumes.length - 1].findImageRange();
             if (this.screenVolumes[this.screenVolumes.length - 1].volume.header.imageRange.imageMin < 0) {
-                this.screenVolumes[this.screenVolumes.length] = new papaya.viewer.ScreenVolume(this.loadingVolume,
+                this.screenVolumes[this.screenVolumes.length] = overlayNeg = new papaya.viewer.ScreenVolume(this.loadingVolume,
                     this.container.params, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
+                overlay.negativeScreenVol = overlayNeg;
+
                 this.setCurrentScreenVol(this.screenVolumes.length - 1);
-                this.drawViewer(true);
-                this.container.toolbar.buildToolbar();
-                this.container.toolbar.updateImageButtons();
             }
         }
+
+        this.container.toolbar.buildToolbar();
+        this.container.toolbar.updateImageButtons();
+        this.drawViewer(true);
 
         this.hasSeries = false;
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
@@ -2370,4 +2370,29 @@ papaya.viewer.Viewer.prototype.reconcileOverlaySeriesPoint = function (screenVol
             }
         }
     }
+};
+
+
+
+papaya.viewer.Viewer.prototype.hasParametricPair = function (index) {
+    if (index) {
+        return (this.screenVolumes[index].negativeScreenVol !== null);
+    } else {
+        return false;
+    }
+};
+
+
+papaya.viewer.Viewer.prototype.getScreenVolumeIndex = function (screenVol) {
+    var ctr;
+
+    if (screenVol) {
+        for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
+            if (screenVol === this.screenVolumes[ctr]) {
+                return ctr;
+            }
+        }
+    }
+
+    return -1;
 };
