@@ -44,6 +44,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.fullScreenPadding = true;
     this.combineParametric = false;
     this.dropTimeout = null;
+    this.showRuler = false;
     this.resetComponents();
 };
 

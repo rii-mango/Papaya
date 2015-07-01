@@ -96,6 +96,14 @@ papaya.ui.Toolbar.MENU_DATA = {
                 {"label": "Close All", "action": "CloseAllImages"}
             ]
             },
+        {"label": "View", "icons": null,
+            "items": [
+                {"label": "Orientation", "action": "ShowOrientation", "type": "checkbox", "method": "isShowingOrientation"},
+                {"label": "Ruler", "action": "ShowRuler", "type": "checkbox", "method": "isShowingRuler"},
+                {"label": "Main Crosshairs", "action": "ShowMainCrosshairs", "type": "checkbox", "method": "isShowingMainCrosshairs"},
+                {"label": "Lower Crosshairs", "action": "ShowLowerCrosshairs", "type": "checkbox", "method": "isShowingLowerCrosshairs"}
+            ]
+        },
         {"label": "Options", "icons": null,
             "items": [
                 {"label": "Preferences", "action": "Preferences"},
@@ -149,10 +157,6 @@ papaya.ui.Toolbar.PREFERENCES_DATA = {
         {"label": "Coordinate display of:", "field": "atlasLocks", "options": ["Mouse", "Crosshairs"]},
         {"label": "Scroll wheel behavior:", "field": "scrollBehavior", "options": ["Zoom", "Increment Slice"],
             "disabled": "container.disableScrollWheel"},
-        {"spacer": "true"},
-        {"label": "Show crosshairs:", "field": "showCrosshairs", "options": ["All", "Main", "Lower", "None"]},
-        {"label": "Show orientation:", "field": "showOrientation", "options": ["Yes", "No"]},
-        {"label": "Show ruler:", "field": "showRuler", "options": ["Yes", "No"], "help": "Shift-click and grab the ruler ends"},
         {"spacer": "true"},
         {"label": "Smooth display:", "field": "smoothDisplay", "options": ["Yes", "No"]},
         {"label": "Radiological display:", "field": "radiological", "options": ["Yes", "No"]}
@@ -245,11 +249,11 @@ papaya.ui.Toolbar.prototype.buildAtlasMenu = function () {
             var items = this.spaceMenu.items;
 
             items[0] = {"label": papaya.data.Atlas.labels.atlas.header.name, "action": "AtlasChanged-" +
-                papaya.data.Atlas.labels.atlas.header.name, "type": "checkbox", "method": "isUsingAtlas"};
+                papaya.data.Atlas.labels.atlas.header.name, "type": "radiobutton", "method": "isUsingAtlas"};
 
             if (papaya.data.Atlas.labels.atlas.header.transformedname) {
                 items[1] = {"label": papaya.data.Atlas.labels.atlas.header.transformedname, "action": "AtlasChanged-" +
-                    papaya.data.Atlas.labels.atlas.header.transformedname, "type": "checkbox",
+                    papaya.data.Atlas.labels.atlas.header.transformedname, "type": "radiobutton",
                         "method": "isUsingAtlas"};
             }
         }
@@ -280,7 +284,7 @@ papaya.ui.Toolbar.prototype.buildColorMenuItems = function () {
 
     for (ctr = 0; ctr < allColorTables.length; ctr += 1) {
         item = {"label": allColorTables[ctr].name, "action": "ColorTable-" + allColorTables[ctr].name,
-            "type": "checkbox", "method": "isUsingColorTable"};
+            "type": "radiobutton", "method": "isUsingColorTable"};
         items[ctr] = item;
     }
 };
@@ -367,10 +371,13 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
                 itemData[ctrItems].required)))(parseInt(modifier)) === true)) {
             if (itemData[ctrItems].type === "spacer") {
                 item = new papaya.ui.MenuItemSpacer();
+            } else if (itemData[ctrItems].type === "radiobutton") {
+                item = new papaya.ui.MenuItemRadioButton(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action,
+                    papaya.utilities.ObjectUtils.bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
             } else if (itemData[ctrItems].type === "checkbox") {
                 item = new papaya.ui.MenuItemCheckBox(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action,
                     papaya.utilities.ObjectUtils.bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
-            } else if (itemData[ctrItems].type === "file") {
+            }else if (itemData[ctrItems].type === "file") {
                 if (!itemData[ctrItems].hide) {
                     item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label,
                         itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), false);
@@ -549,6 +556,46 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             atlasName = action.substring(action.lastIndexOf("-") + 1);
             this.viewer.atlas.currentAtlas = atlasName;
             this.viewer.drawViewer(true);
+        } else if (action.startsWith("ShowRuler")) {
+            if (this.container.preferences.showRuler === "Yes") {
+                this.container.preferences.showRuler = "No";
+            } else {
+                this.container.preferences.showRuler = "Yes";
+            }
+            this.viewer.drawViewer();
+            this.closeAllMenus();
+        } else if (action.startsWith("ShowOrientation")) {
+            if (this.container.preferences.showOrientation === "Yes") {
+                this.container.preferences.showOrientation = "No";
+            } else {
+                this.container.preferences.showOrientation = "Yes";
+            }
+            this.viewer.drawViewer();
+            this.closeAllMenus();
+        } else if (action.startsWith("ShowMainCrosshairs")) {
+            if (this.container.preferences.showCrosshairs === "All") {
+                this.container.preferences.showCrosshairs = "Lower";
+            } else if (this.container.preferences.showCrosshairs === "Main") {
+                this.container.preferences.showCrosshairs = "None";
+            } else if (this.container.preferences.showCrosshairs === "Lower") {
+                this.container.preferences.showCrosshairs = "All";
+            } else {
+                this.container.preferences.showCrosshairs = "Main";
+            }
+            this.viewer.drawViewer();
+            this.closeAllMenus();
+        } else if (action.startsWith("ShowLowerCrosshairs")) {
+            if (this.container.preferences.showCrosshairs === "All") {
+                this.container.preferences.showCrosshairs = "Main";
+            } else if (this.container.preferences.showCrosshairs === "Main") {
+                this.container.preferences.showCrosshairs = "All";
+            } else if (this.container.preferences.showCrosshairs === "Lower") {
+                this.container.preferences.showCrosshairs = "None";
+            } else {
+                this.container.preferences.showCrosshairs = "Lower";
+            }
+            this.viewer.drawViewer();
+            this.closeAllMenus();
         } else if (action.startsWith("EXPAND")) {
             if (this.container.collapsable) {
                 this.container.collapseViewer();

@@ -1430,14 +1430,16 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                 } else {
                     this.setZoomLocation();
                 }
-            } else if (this.isShiftKeyDown) {
+            } else {
                 if (this.selectedSlice) {
                     this.grabbedHandle = this.selectedSlice.findProximalRulerHandle(this.convertScreenToImageCoordinateX(this.previousMousePosition.x - this.canvasRect.left, this.selectedSlice),
                         this.convertScreenToImageCoordinateY(this.previousMousePosition.y - this.canvasRect.top, this.selectedSlice));
                 }
-            } else {
-                this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), false);
-                this.resetUpdateTimer(me);
+
+                if (this.grabbedHandle === null) {
+                    this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), false);
+                    this.resetUpdateTimer(me);
+                }
             }
 
             this.isDragging = true;
@@ -1898,6 +1900,10 @@ papaya.viewer.Viewer.prototype.processParams = function (params) {
 
     if (params.radiological !== undefined) {
         this.container.preferences.radiological = (params.radiological ? "Yes" : "No");
+    }
+
+    if (params.showRuler !== undefined) {
+        this.container.preferences.showRuler = (params.showRuler ? "Yes" : "No");
     }
 };
 
@@ -2371,4 +2377,28 @@ papaya.viewer.Viewer.prototype.getScreenVolumeIndex = function (screenVol) {
     }
 
     return -1;
+};
+
+
+
+papaya.viewer.Viewer.prototype.isShowingRuler = function () {
+    return (this.container.preferences.showRuler === "Yes");
+};
+
+
+
+papaya.viewer.Viewer.prototype.isShowingOrientation = function () {
+    return (this.container.preferences.showOrientation === "Yes");
+};
+
+
+
+papaya.viewer.Viewer.prototype.isShowingMainCrosshairs = function () {
+    return (this.container.preferences.showCrosshairs === "Main") || (this.container.preferences.showCrosshairs === "All");
+};
+
+
+
+papaya.viewer.Viewer.prototype.isShowingLowerCrosshairs = function () {
+    return (this.container.preferences.showCrosshairs === "Lower") || (this.container.preferences.showCrosshairs === "All");
 };
