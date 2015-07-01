@@ -140,7 +140,7 @@ papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA = {
         {"label": "Show Header", "action": "ShowHeader"},
         {"label": "Show Image Info", "action": "ImageInfo"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
-        papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items[4],
+        papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items[5],
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango"  }
     ]
 };
