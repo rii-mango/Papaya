@@ -107,6 +107,7 @@ papaya.ui.Toolbar.MENU_DATA = {
         {"label": "Options", "icons": null,
             "items": [
                 {"label": "Preferences", "action": "Preferences"},
+                {"label": "Show Keyboard Reference", "action": "KeyboardRef"},
                 {"label": "Show License", "action": "License"}
             ]
             },
@@ -207,6 +208,12 @@ papaya.ui.Toolbar.HEADER_DATA = {
 papaya.ui.Toolbar.LICENSE_DATA = {
     "items": [
         {"label": "", "field": "getLicense", "readonly": "true"}
+    ]
+};
+
+papaya.ui.Toolbar.KEYBOARD_REF_DATA = {
+    "items": [
+        {"label": "", "field": "getKeyboardReference", "readonly": "true"}
     ]
 };
 
@@ -528,6 +535,10 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             dialog.showDialog();
         } else if (action === "License") {
             dialog = new papaya.ui.Dialog(this.container, "License", papaya.ui.Toolbar.LICENSE_DATA,
+                papaya.Container, null, null, null, true);
+            dialog.showDialog();
+        } else if (action === "KeyboardRef") {
+            dialog = new papaya.ui.Dialog(this.container, "Keyboard Reference", papaya.ui.Toolbar.KEYBOARD_REF_DATA,
                 papaya.Container, null, null, null, true);
             dialog.showDialog();
         } else if (action.startsWith("ImageInfo")) {

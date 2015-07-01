@@ -61,6 +61,15 @@ papaya.Container.papayaLicenseText = "THIS PRODUCT IS NOT FOR CLINICAL USE.<br /
     "derivatives.<br /><br />" +
     "By using this software, you agree to be bounded by the terms of this license.  If you do not agree to the terms " +
     "of this license, do not use this software.";
+papaya.Container.papayaKeyboardRefText = "<span style='color:#B5CBD3'>[Spacebar]</span> Cycle the main slice view in a clockwise rotation.<br /><br />" +
+    "<span style='color:#B5CBD3'>[Page Up]</span> or <span style='color:#B5CBD3'>[']</span> Increment the axial slice.<br /><br />" +
+    "<span style='color:#B5CBD3'>[Arrow Up]</span> and <span style='color:#B5CBD3'>[Arrow Down]</span> Increment/decrement the coronal slice.<br /><br />" +
+    "<span style='color:#B5CBD3'>[Arrow Right]</span> and <span style='color:#B5CBD3'>[Arrow Left]</span> Increment/decrement the sagittal slice.<br /><br />" +
+    "<span style='color:#B5CBD3'>[g]</span> and <span style='color:#B5CBD3'>[v]</span> Increment/decrement main slice.<br /><br />" +
+    "<span style='color:#B5CBD3'>[<]</span> or <span style='color:#B5CBD3'>[,]</span> Decrement the series point.<br /><br />" +
+    "<span style='color:#B5CBD3'>[>]</span> or <span style='color:#B5CBD3'>[.]</span> Increment the series point.<br /><br />" +
+    "<span style='color:#B5CBD3'>[o]</span> Navigate viewer to the image origin.<br /><br />" +
+    "<span style='color:#B5CBD3'>[c]</span> Navigate viewer to the center of the image.";
 papaya.Container.DICOM_SUPPORT = true;
 
 /*** Static Methods ***/
@@ -368,6 +377,12 @@ papaya.Container.setToFullPage = function () {
 
 papaya.Container.getLicense = function () {
     return papaya.Container.papayaLicenseText;
+};
+
+
+
+papaya.Container.getKeyboardReference = function () {
+    return papaya.Container.papayaKeyboardRefText;
 };
 
 
