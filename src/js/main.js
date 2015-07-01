@@ -500,8 +500,14 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
             $("." + PAPAYA_CONTROL_MAIN_SLIDER).css({display: "none"});
         }
 
-        if (this.viewer.hasSeries && (dims[0] < (400 + diff))) {
+        if (this.viewer.hasSeries && (dims[0] < (450 + diff))) {
             $("." + PAPAYA_CONTROL_MAIN_SLIDER).css({display: "none"});
+        }
+
+        if (dims[0] < 400) {
+            $("." + PAPAYA_CONTROL_SWAP_BUTTON_CSS).css({display: "none"});
+        } else {
+            $("." + PAPAYA_CONTROL_SWAP_BUTTON_CSS).css({display: "inline"});
         }
 
         if (this.viewer.hasSeries) {
