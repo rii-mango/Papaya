@@ -371,9 +371,9 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
 
             $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_MAIN_SLIDER).find("button")).eq(0).click(function () {
                 if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                    viewer.incrementAxial(true);
+                    viewer.incrementAxial(false);
                 } else if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                    viewer.incrementCoronal(true);
+                    viewer.incrementCoronal(false);
                 } else if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
                     viewer.incrementSagittal(true);
                 }
@@ -381,9 +381,9 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
 
             $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_MAIN_SLIDER).find("button")).eq(1).click(function () {
                 if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                    viewer.incrementAxial(false);
+                    viewer.incrementAxial(true);
                 } else if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                    viewer.incrementCoronal(false);
+                    viewer.incrementCoronal(true);
                 } else if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
                     viewer.incrementSagittal(false);
                 }
