@@ -563,6 +563,12 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
 
 
 
+papaya.viewer.Viewer.prototype.closeOverlayByRef = function (screenVol) {
+    this.closeOverlay(this.getScreenVolumeIndex(screenVol));
+};
+
+
+
 papaya.viewer.Viewer.prototype.closeOverlay = function (index) {
     var ctr;
 

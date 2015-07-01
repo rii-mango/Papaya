@@ -89,10 +89,9 @@ papaya.ui.Toolbar.MENU_DATA = {
     "menus": [
         {"label": "File", "icons": null,
             "items": [
-                {"label": "Add Image...", "action": "OpenImage", "type": "file"},
+                {"label": "Add Image...", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
                 {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
                     "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
-                {"type": "spacer"},
                 {"type": "spacer"},
                 {"label": "Close All", "action": "CloseAllImages"}
             ]
@@ -372,8 +371,10 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
                 item = new papaya.ui.MenuItemCheckBox(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action,
                     papaya.utilities.ObjectUtils.bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
             } else if (itemData[ctrItems].type === "file") {
-                item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label,
-                    itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), false);
+                if (!itemData[ctrItems].hide) {
+                    item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label,
+                        itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), false);
+                }
             } else if (itemData[ctrItems].type === "folder") {
                 if (!itemData[ctrItems].hide) {
                     item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label,
@@ -478,7 +479,7 @@ papaya.ui.Toolbar.prototype.isShowingMenus = function () {
 
 
 papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
-    var imageIndex, colorTableName, dialog, atlasName, imageName;
+    var imageIndex, colorTableName, dialog, atlasName, imageName, screenVol, screenVolNeg;
 
     if (!keepopen) {
         this.closeAllMenus();
@@ -572,7 +573,16 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             }
         } else if (action.startsWith("CloseOverlay")) {
             imageIndex = parseInt(action.substring(action.lastIndexOf("-") + 1), 10);
-            this.viewer.closeOverlay(imageIndex);
+            screenVol = this.container.viewer.screenVolumes[imageIndex];
+            screenVolNeg = screenVol.negativeScreenVol;
+
+            this.container.viewer.closeOverlayByRef(screenVol);
+
+            if (this.container.combineParametric) {
+                this.container.viewer.closeOverlayByRef(screenVolNeg);
+            }
+
+            this.container.viewer.drawViewer(true, false);
         }
     }
 };
