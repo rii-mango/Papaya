@@ -125,7 +125,7 @@ papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
         {"label": "Transparency", "action": "ChangeAlpha", "type": "range", "method": "getAlpha"},
         {"label": "Color Table...", "action": "ColorTable", "items": [] },
-        {"label": "Close Overlay", "action": "CloseOverlay", "hide": "isKioskMode" },
+        {"label": "Close Overlay", "action": "CloseOverlay", "ignore": "isKioskMode" },
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango" }
     ]
 };
@@ -392,9 +392,8 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
             item = null;
         }
 
-
-        if (!itemData[ctrItems].hide || ((papaya.utilities.ObjectUtils.bind(this.container,
-                papaya.utilities.ObjectUtils.dereferenceIn(this.container, itemData[ctrItems].hide)))() === false)) {
+        if ((itemData[ctrItems].ignore === undefined) || ((papaya.utilities.ObjectUtils.bind(this.container,
+                papaya.utilities.ObjectUtils.dereferenceIn(this.container, itemData[ctrItems].ignore)))() === false)) {
             if (item) {
                 menu.addMenuItem(item);
 
