@@ -569,41 +569,41 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.viewer.drawViewer(true);
         } else if (action.startsWith("ShowRuler")) {
             if (this.container.preferences.showRuler === "Yes") {
-                this.container.preferences.showRuler = "No";
+                this.container.preferences.updatePreference("showRuler", "No");
             } else {
-                this.container.preferences.showRuler = "Yes";
+                this.container.preferences.updatePreference("showRuler", "Yes");
             }
             this.viewer.drawViewer();
             this.closeAllMenus();
         } else if (action.startsWith("ShowOrientation")) {
             if (this.container.preferences.showOrientation === "Yes") {
-                this.container.preferences.showOrientation = "No";
+                this.container.preferences.updatePreference("showOrientation", "No");
             } else {
-                this.container.preferences.showOrientation = "Yes";
+                this.container.preferences.updatePreference("showOrientation", "Yes");
             }
             this.viewer.drawViewer();
             this.closeAllMenus();
         } else if (action.startsWith("ShowMainCrosshairs")) {
             if (this.container.preferences.showCrosshairs === "All") {
-                this.container.preferences.showCrosshairs = "Lower";
+                this.container.preferences.updatePreference("showCrosshairs", "Lower");
             } else if (this.container.preferences.showCrosshairs === "Main") {
-                this.container.preferences.showCrosshairs = "None";
+                this.container.preferences.updatePreference("showCrosshairs", "None");
             } else if (this.container.preferences.showCrosshairs === "Lower") {
-                this.container.preferences.showCrosshairs = "All";
+                this.container.preferences.updatePreference("showCrosshairs", "All");
             } else {
-                this.container.preferences.showCrosshairs = "Main";
+                this.container.preferences.updatePreference("showCrosshairs", "Main");
             }
             this.viewer.drawViewer();
             this.closeAllMenus();
         } else if (action.startsWith("ShowLowerCrosshairs")) {
             if (this.container.preferences.showCrosshairs === "All") {
-                this.container.preferences.showCrosshairs = "Main";
+                this.container.preferences.updatePreference("showCrosshairs", "Main");
             } else if (this.container.preferences.showCrosshairs === "Main") {
-                this.container.preferences.showCrosshairs = "All";
+                this.container.preferences.updatePreference("showCrosshairs", "All");
             } else if (this.container.preferences.showCrosshairs === "Lower") {
-                this.container.preferences.showCrosshairs = "None";
+                this.container.preferences.updatePreference("showCrosshairs", "None");
             } else {
-                this.container.preferences.showCrosshairs = "Lower";
+                this.container.preferences.updatePreference("showCrosshairs", "Lower");
             }
             this.viewer.drawViewer();
             this.closeAllMenus();
