@@ -1,8 +1,8 @@
 .idea/
 .project
 .DS_Store
-build.xml
-release.xml
+build.sh
+release.sh
 /build/
 /tests/build/**/
 .jshint*
