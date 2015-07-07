@@ -1886,24 +1886,27 @@ papaya.viewer.Viewer.prototype.processParams = function (params) {
         this.worldSpace = true;
     }
 
-    if (params.showOrientation !== undefined) {
-        this.container.preferences.showOrientation = (params.showOrientation ? "Yes" : "No");
-    }
-
     if (params.coordinate) {
         this.initialCoordinate = params.coordinate;
     }
 
-    if (params.smoothDisplay !== undefined) {
-        this.container.preferences.smoothDisplay = (params.smoothDisplay ? "Yes" : "No");
-    }
 
-    if (params.radiological !== undefined) {
-        this.container.preferences.radiological = (params.radiological ? "Yes" : "No");
-    }
+    if (this.container.isDesktopMode()) {
+        if (params.showOrientation !== undefined) {
+            this.container.preferences.showOrientation = (params.showOrientation ? "Yes" : "No");
+        }
 
-    if (params.showRuler !== undefined) {
-        this.container.preferences.showRuler = (params.showRuler ? "Yes" : "No");
+        if (params.smoothDisplay !== undefined) {
+            this.container.preferences.smoothDisplay = (params.smoothDisplay ? "Yes" : "No");
+        }
+
+        if (params.radiological !== undefined) {
+            this.container.preferences.radiological = (params.radiological ? "Yes" : "No");
+        }
+
+        if (params.showRuler !== undefined) {
+            this.container.preferences.showRuler = (params.showRuler ? "Yes" : "No");
+        }
     }
 };
 

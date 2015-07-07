@@ -217,6 +217,10 @@ papaya.Container.buildContainer = function (containerHTML, params) {
             container.orthogonal = container.params.orthogonal;
         }
 
+        if (container.isDesktopMode()) {
+            container.preferences.readPreferences();
+        }
+
         container.buildViewer(container.params);
         container.buildDisplay();
 
