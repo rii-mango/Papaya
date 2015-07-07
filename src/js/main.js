@@ -69,7 +69,8 @@ papaya.Container.papayaKeyboardRefText = "<span style='color:#B5CBD3'>[Spacebar]
     "<span style='color:#B5CBD3'>[<]</span> or <span style='color:#B5CBD3'>[,]</span> Decrement the series point.<br /><br />" +
     "<span style='color:#B5CBD3'>[>]</span> or <span style='color:#B5CBD3'>[.]</span> Increment the series point.<br /><br />" +
     "<span style='color:#B5CBD3'>[o]</span> Navigate viewer to the image origin.<br /><br />" +
-    "<span style='color:#B5CBD3'>[c]</span> Navigate viewer to the center of the image.";
+    "<span style='color:#B5CBD3'>[c]</span> Navigate viewer to the center of the image.<br /><br />" +
+    "<span style='color:#B5CBD3'>[a]</span> Toggle main crosshairs on/off.";
 papaya.Container.DICOM_SUPPORT = true;
 
 /*** Static Methods ***/
