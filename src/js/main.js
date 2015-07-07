@@ -152,7 +152,7 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params)
             "' class='" + PAPAYA_DISPLAY_CSS + "'></div>");
 
         if (params && ((params.showControls === undefined) || params.showControls)) {
-            containerHTML.find("." + PAPAYA_VIEWER_CSS).append(
+            containerHTML.append(
                 "<div id='" + PAPAYA_KIOSK_CONTROLS_CSS + papayaContainers.length + "' class='" + PAPAYA_KIOSK_CONTROLS_CSS + "'>" +
                 "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "main" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_MAIN_SLIDER + "'>" +
                 "<span>Slice: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" +
