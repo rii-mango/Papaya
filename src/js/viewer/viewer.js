@@ -2,7 +2,9 @@
 /*jslint browser: true, node: true */
 /*global $, PAPAYA_SPACING, papayaContainers, papayaFloorFast, papayaRoundFast, PAPAYA_CONTROL_DIRECTION_SLIDER,
  PAPAYA_CONTROL_MAIN_SLIDER, PAPAYA_CONTROL_SWAP_BUTTON_CSS, PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS,
- PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS */
+ PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS,  PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS, PAPAYA_PADDING,
+ PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS, PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS,
+ PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS, PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS */
 
 "use strict";
 
@@ -65,10 +67,12 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.toggleMainCrosshairs = true;
     this.bgColor = null;
     this.hasSeries = false;
+    this.controlsHidden = false;
 
     this.listenerMouseMove = papaya.utilities.ObjectUtils.bind(this, this.mouseMoveEvent);
     this.listenerMouseDown = papaya.utilities.ObjectUtils.bind(this, this.mouseDownEvent);
     this.listenerMouseOut = papaya.utilities.ObjectUtils.bind(this, this.mouseOutEvent);
+    this.listenerMouseLeave = papaya.utilities.ObjectUtils.bind(this, this.mouseLeaveEvent);
     this.listenerMouseUp = papaya.utilities.ObjectUtils.bind(this, this.mouseUpEvent);
     this.listenerMouseDoubleClick = papaya.utilities.ObjectUtils.bind(this, this.mouseDoubleClickEvent);
     this.listenerKeyDown = papaya.utilities.ObjectUtils.bind(this, this.keyDownEvent);
@@ -348,6 +352,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.canvas.addEventListener("mousemove", this.listenerMouseMove, false);
         this.canvas.addEventListener("mousedown", this.listenerMouseDown, false);
         this.canvas.addEventListener("mouseout", this.listenerMouseOut, false);
+        this.canvas.addEventListener("mouseleave", this.listenerMouseLeave, false);
         this.canvas.addEventListener("mouseup", this.listenerMouseUp, false);
         document.addEventListener("keydown", this.listenerKeyDown, true);
         document.addEventListener("keyup", this.listenerKeyUp, true);
@@ -357,7 +362,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.canvas.addEventListener("touchend", this.listenerMouseUp, false);
         this.canvas.addEventListener("dblclick", this.listenerMouseDoubleClick, false);
 
-        if (this.container.showControls) {
+        if (this.container.showControlBar) {
             // main slice
             $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_MAIN_SLIDER).find("button")).eq(0).click(function () {
                 if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
@@ -430,10 +435,44 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
             $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS)).click(function () {
                 viewer.gotoCoordinate(viewer.volume.header.origin);
             });
+        } else if (this.container.showControls) {
+            $(this.container.containerHtml.find("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + this.container.containerIndex)).click(function () {
+                viewer.rotateViews();
+            });
+
+            $(this.container.containerHtml.find("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + this.container.containerIndex)).click(function () {
+                if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                    viewer.incrementAxial(false);
+                } else if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                    viewer.incrementCoronal(false);
+                } else if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                    viewer.incrementSagittal(true);
+                }
+            });
+
+            $(this.container.containerHtml.find("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + this.container.containerIndex)).click(function () {
+                if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                    viewer.incrementAxial(true);
+                } else if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                    viewer.incrementCoronal(true);
+                } else if (viewer.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                    viewer.incrementSagittal(false);
+                }
+            });
+
+            $(this.container.containerHtml.find("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.container.containerIndex)).click(function () {
+                var center = new papaya.core.Coordinate(Math.floor(viewer.volume.header.imageDimensions.xDim / 2),
+                    Math.floor(viewer.volume.header.imageDimensions.yDim / 2),
+                    Math.floor(viewer.volume.header.imageDimensions.zDim / 2));
+                viewer.gotoCoordinate(center);
+            });
+
+            $(this.container.containerHtml.find("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + this.container.containerIndex)).click(function () {
+                viewer.gotoCoordinate(viewer.volume.header.origin);
+            });
         }
 
         this.hasSeries = (this.volume.header.imageDimensions.timepoints > 1);
-        this.container.resizeViewerComponents();
 
         this.addScroll();
 
@@ -454,6 +493,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.context.fillRect(0, 0, this.canvas.offsetWidth, this.canvas.offsetHeight);
 
         this.initialized = true;
+        this.container.resizeViewerComponents(true);
         this.drawViewer();
 
         this.container.toolbar.buildToolbar();
@@ -1445,6 +1485,10 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
             this.isDragging = true;
             me.handled = true;
         }
+
+        if (!this.controlsHidden) {
+            this.controlsHiddenPrimed = true;
+        }
     }
 };
 
@@ -1466,6 +1510,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
             this.isZoomMode = false;
             this.isPanning = false;
             this.selectedSlice = null;
+            this.controlsHiddenPrimed = false;
 
             me.handled = true;
         }
@@ -1476,6 +1521,22 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
     this.updateWindowTitle();
     this.updateSliceSliderControl();
     this.container.toolbar.closeAllMenus();
+
+    if (this.controlsHidden) {
+        this.controlsHidden = false;
+
+        if (this.container.getViewerDimensions()[0] < 600) {
+            $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + this.container.containerIndex).fadeIn();
+            $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + this.container.containerIndex).fadeIn();
+            $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + this.container.containerIndex).fadeIn();
+        } else {
+            $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + this.container.containerIndex).fadeIn();
+            $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + this.container.containerIndex).fadeIn();
+            $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + this.container.containerIndex).fadeIn();
+            $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.container.containerIndex).fadeIn();
+            $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + this.container.containerIndex).fadeIn();
+        }
+    }
 };
 
 
@@ -1545,6 +1606,47 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
         this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
         this.isZoomMode = false;
     }
+
+    if (this.controlsHidden && !this.isDragging) {
+        this.controlsHidden = false;
+
+        if (this.container.getViewerDimensions()[0] < 600) {
+            $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + this.container.containerIndex).fadeIn();
+            $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + this.container.containerIndex).fadeIn();
+            $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + this.container.containerIndex).fadeIn();
+        } else {
+            $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + this.container.containerIndex).fadeIn();
+            $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + this.container.containerIndex).fadeIn();
+            $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + this.container.containerIndex).fadeIn();
+            $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.container.containerIndex).fadeIn();
+            $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + this.container.containerIndex).fadeIn();
+        }
+    }
+
+    if (this.controlsTimer) {
+        clearTimeout(this.controlsTimer);
+        this.controlsTimer = null;
+    }
+
+    this.controlsTimer = setTimeout(papaya.utilities.ObjectUtils.bind(this, function () {
+        this.controlsHidden = true;
+
+        $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + this.container.containerIndex).fadeOut();
+        $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + this.container.containerIndex).fadeOut();
+        $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + this.container.containerIndex).fadeOut();
+        $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.container.containerIndex).fadeOut();
+        $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + this.container.containerIndex).fadeOut();
+        }), 8000);
+
+    if (this.controlsHiddenPrimed) {
+        this.controlsHiddenPrimed = false;
+        this.controlsHidden = true;
+        $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + this.container.containerIndex).fadeOut();
+        $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + this.container.containerIndex).fadeOut();
+        $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + this.container.containerIndex).fadeOut();
+        $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.container.containerIndex).fadeOut();
+        $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + this.container.containerIndex).fadeOut();
+    }
 };
 
 
@@ -1568,6 +1670,10 @@ papaya.viewer.Viewer.prototype.mouseOutEvent = function () {
     this.grabbedHandle = null;
 };
 
+
+
+
+papaya.viewer.Viewer.prototype.mouseLeaveEvent = function () {};
 
 
 papaya.viewer.Viewer.prototype.touchMoveEvent = function (me) {
@@ -1618,6 +1724,7 @@ papaya.viewer.Viewer.prototype.gotoCoordinate = function (coor) {
 
 
 papaya.viewer.Viewer.prototype.resizeViewer = function (dims) {
+    var halfPadding = PAPAYA_PADDING / 2, offset, swapButton, originButton, incButton, decButton, centerButton;
     this.canvas.width = dims[0];
     this.canvas.height = dims[1];
 
@@ -1625,6 +1732,40 @@ papaya.viewer.Viewer.prototype.resizeViewer = function (dims) {
         this.calculateScreenSliceTransforms();
         this.canvasRect = this.canvas.getBoundingClientRect();
         this.drawViewer(true);
+
+        if (this.container.showControls) {
+            offset = $(this.canvas).offset();
+
+            incButton = $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + this.container.containerIndex);
+            incButton.css({
+                top: offset.top + halfPadding,
+                left: offset.left + this.mainImage.screenDim - incButton.outerWidth() - halfPadding,
+                position:'absolute'});
+
+            decButton = $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + this.container.containerIndex);
+            decButton.css({
+                top: offset.top + decButton.outerHeight() + PAPAYA_PADDING,
+                left: offset.left + this.mainImage.screenDim - decButton.outerWidth() - halfPadding,
+                position:'absolute'});
+
+            swapButton = $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + this.container.containerIndex);
+            swapButton.css({
+                top: offset.top + this.mainImage.screenDim - swapButton.outerHeight() - halfPadding,
+                left: offset.left + this.mainImage.screenDim - swapButton.outerWidth() - halfPadding,
+                position:'absolute'});
+
+            centerButton = $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.container.containerIndex);
+            centerButton.css({
+                top: offset.top + this.mainImage.screenDim - centerButton.outerHeight() - halfPadding,
+                left: offset.left + halfPadding,
+                position:'absolute'});
+
+            originButton = $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + this.container.containerIndex);
+            originButton.css({
+                top: offset.top + this.mainImage.screenDim - originButton.outerHeight() - halfPadding,
+                left: offset.left + halfPadding + originButton.outerWidth() + PAPAYA_PADDING,
+                position:'absolute'});
+        }
     }
 };
 
@@ -1689,6 +1830,7 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     this.canvas.removeEventListener("mousemove", this.listenerMouseMove, false);
     this.canvas.removeEventListener("mousedown", this.listenerMouseDown, false);
     this.canvas.removeEventListener("mouseout", this.listenerMouseOut, false);
+    this.canvas.removeEventListener("mouseleave", this.listenerMouseLeave, false);
     this.canvas.removeEventListener("mouseup", this.listenerMouseUp, false);
     document.removeEventListener("keydown", this.listenerKeyDown, true);
     document.removeEventListener("keyup", this.listenerKeyUp, true);

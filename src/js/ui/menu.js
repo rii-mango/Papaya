@@ -35,7 +35,7 @@ papaya.ui.Menu = papaya.ui.Menu || function (viewer, menuData, callback, dataSou
     this.menuId = (this.label + "Menu").replace(/ /g, "_").replace("...", "_") + (this.modifier || "");
     this.isRight = (menuData.icons !== null);
     this.isImageButton = menuData.imageButton;
-    this.htmlParent = ((this.viewer.container.showControls && this.viewer.container.kioskMode) ?
+    this.htmlParent = ((this.viewer.container.showControlBar && this.viewer.container.kioskMode) ?
         this.viewer.container.sliderControlHtml : this.viewer.container.toolbarHtml);
 };
 
@@ -54,7 +54,7 @@ papaya.ui.Menu.doShowMenu = function (viewer, el, menu, right) {
     mHeight = $(menu).outerHeight();
     left = pos.left + (right ? ((-1 * mWidth) + eWidth) : 5) +  "px";
 
-    if (viewer.container.showControls && viewer.container.kioskMode) {
+    if (viewer.container.showControlBar && viewer.container.kioskMode) {
         top = ((posV.top) + $(viewer.canvas).outerHeight() + PAPAYA_SPACING + dHeight - mHeight) + "px";
     } else {
         top = (posV.top) + "px";

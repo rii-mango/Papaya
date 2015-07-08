@@ -59,12 +59,17 @@ var PAPAYA_MENU_CSS = "papaya-menu",
 
 // Control CSS classes
 var PAPAYA_CONTROL_INCREMENT_BUTTON_CSS = "papaya-control-increment",
-    PAPAYA_CONTROL_SLIDER_CSS = "papaya-control-slider",
     PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS = "papaya-control-goto-center",
     PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS = "papaya-control-goto-origin",
     PAPAYA_CONTROL_SWAP_BUTTON_CSS = "papaya-control-swap",
     PAPAYA_CONTROL_DIRECTION_SLIDER = "papaya-direction-slider",
-    PAPAYA_CONTROL_MAIN_SLIDER = "papaya-main-slider";
+    PAPAYA_CONTROL_MAIN_SLIDER = "papaya-main-slider",
+    PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS = "papaya-main-increment",
+    PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS = "papaya-main-decrement",
+    PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS = "papaya-main-swap",
+    PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS = "papaya-main-goto-center",
+    PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS = "papaya-main-goto-origin";
+
 
 
 // Utils CSS classes

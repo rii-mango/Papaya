@@ -464,7 +464,7 @@ papaya.ui.Toolbar.prototype.closeAllMenus = function () {
     menuHtml.hide(100);
     menuHtml.remove();
 
-    if (this.container.showControls) {
+    if (this.container.showControlBar) {
         menuHtml = this.container.sliderControlHtml.find("." + PAPAYA_MENU_CSS);
         menuHtml.hide(100);
         menuHtml.remove();

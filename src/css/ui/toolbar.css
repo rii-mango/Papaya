@@ -33,6 +33,52 @@
 }
 
 
+.papaya-main-increment {
+    font-size: 14px;
+    height: 25px;
+    width: 25px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 16px;
+    box-sizing: border-box;
+}
+
+
+.papaya-main-decrement {
+    font-size: 14px;
+    height: 25px;
+    width: 25px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 16px;
+    box-sizing: border-box;
+}
+
+
+.papaya-main-swap {
+    font-size: 14px;
+    height: 22px;
+}
+
+
+.papaya-main-goto-center {
+    font-size: 14px;
+    height: 22px;
+}
+
+
+.papaya-main-goto-origin {
+    font-size: 14px;
+    height: 22px;
+}
+
+
 .papaya-slider-slice {
     padding: 0 5px;
     display: inline;
