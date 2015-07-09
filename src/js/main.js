@@ -183,6 +183,11 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params)
                 "<button type='button' " + (params.kioskMode ? "" : "style='float:right;margin-left:5px;' ") + "class='" + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS + "'>Go To Center</button> " +
                 "<button type='button' " + (params.kioskMode ? "" : "style='float:right;margin-left:5px;' ") + "class='" + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS + "'>Go To Origin</button> " +
                 "</div>");
+
+            $("." + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS).prop('disabled', true);
+            $("." + PAPAYA_CONTROL_SWAP_BUTTON_CSS).prop('disabled', true);
+            $("." + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS).prop('disabled', true);
+            $("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS).prop('disabled', true);
         } else if (params && ((params.showControls === undefined ) || params.showControls)) {
             containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + papayaContainers.length) + "' class='" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + "'>+</button> ");
             containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + papayaContainers.length) + "' class='" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + "'>-</button> ");

@@ -3,7 +3,7 @@
 /*global $, PAPAYA_SPACING, papayaContainers, papayaFloorFast, papayaRoundFast, PAPAYA_CONTROL_DIRECTION_SLIDER,
  PAPAYA_CONTROL_MAIN_SLIDER, PAPAYA_CONTROL_SWAP_BUTTON_CSS, PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS,
  PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS,  PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS, PAPAYA_PADDING,
- PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS, PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS,
+ PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS, PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS, PAPAYA_CONTROL_INCREMENT_BUTTON_CSS,
  PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS, PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS */
 
 "use strict";
@@ -435,6 +435,11 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
             $(this.container.sliderControlHtml.find("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS)).click(function () {
                 viewer.gotoCoordinate(viewer.volume.header.origin);
             });
+
+            $("." + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS).prop('disabled', false);
+            $("." + PAPAYA_CONTROL_SWAP_BUTTON_CSS).prop('disabled', false);
+            $("." + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS).prop('disabled', false);
+            $("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS).prop('disabled', false);
         } else if (this.container.showControls) {
             $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + this.container.containerIndex).css({display: "inline"});
             $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + this.container.containerIndex).css({display: "inline"});
@@ -1812,6 +1817,21 @@ papaya.viewer.Viewer.prototype.getCurrentValueAt = function (ctrX, ctrY, ctrZ) {
 
 
 papaya.viewer.Viewer.prototype.resetViewer = function () {
+    if (this.container.showControlBar) {
+        $("." + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS).prop('disabled', true);
+        $("." + PAPAYA_CONTROL_SWAP_BUTTON_CSS).prop('disabled', true);
+        $("." + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS).prop('disabled', true);
+        $("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS).prop('disabled', true);
+    } else if (this.container.showControls) {
+        $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + this.container.containerIndex).css({display: "none"});
+        $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + this.container.containerIndex).css({display: "none"});
+        $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + this.container.containerIndex).css({display: "none"});
+        $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.container.containerIndex).css({display: "none"});
+        $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + this.container.containerIndex).css({display: "none"});
+    }
+
+
+
     this.initialized = false;
     this.loadingVolume = null;
     this.volume = new papaya.volume.Volume(this.container.display, this);
