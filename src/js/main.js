@@ -189,6 +189,12 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params)
             containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + papayaContainers.length) + "' class='" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + "'>Swap Main Slice</button> ");
             containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + papayaContainers.length) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + "'>Go To Center</button> ");
             containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + papayaContainers.length) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + "'>Go To Origin</button> ");
+
+            $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + papayaContainers.length).css({display: "none"});
+            $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + papayaContainers.length).css({display: "none"});
+            $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + papayaContainers.length).css({display: "none"});
+            $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + papayaContainers.length).css({display: "none"});
+            $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + papayaContainers.length).css({display: "none"});
         }
     }
 
@@ -557,7 +563,7 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
         } else {
             $("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(3).css({display: "none"});
         }
-    } else if (this.showControls) {
+    } else if (this.showControls && this.viewer.initialized) {
         if (dims[0] < 600) {
             $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.containerIndex).css({display: "none"});
             $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + this.containerIndex).css({display: "none"});

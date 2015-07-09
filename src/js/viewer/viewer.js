@@ -436,6 +436,10 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
                 viewer.gotoCoordinate(viewer.volume.header.origin);
             });
         } else if (this.container.showControls) {
+            $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + this.container.containerIndex).css({display: "inline"});
+            $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + this.container.containerIndex).css({display: "inline"});
+            $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + this.container.containerIndex).css({display: "inline"});
+
             $(this.container.containerHtml.find("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + this.container.containerIndex)).click(function () {
                 viewer.rotateViews();
             });
