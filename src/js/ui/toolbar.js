@@ -246,6 +246,11 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
     this.buildColorMenuItems();
 
     this.container.titlebarHtml = this.container.containerHtml.find("." + PAPAYA_TITLEBAR_CSS);
+    if (this.container.getViewerDimensions()[0] < 600) {
+        this.container.titlebarHtml.css({visibility: "hidden"});
+    } else {
+        this.container.titlebarHtml.css({visibility: "visible"});
+    }
 };
 
 

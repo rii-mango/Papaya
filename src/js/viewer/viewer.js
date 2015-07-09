@@ -1098,6 +1098,7 @@ papaya.viewer.Viewer.prototype.drawRuler = function () {
     this.context.fillStyle = "#FFFFFF";
     this.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight+ (padding * 2), 5, true, false);
 
+    this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px Arial";
     this.context.strokeStyle = "#FF1493";
     this.context.fillStyle = "#FF1493";
     this.context.fillText(text, xText, yText);

@@ -567,6 +567,14 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
         }
     }
 
+    if (this.isDesktopMode()) {
+        if (dims[0] < 600) {
+            this.titlebarHtml.css({visibility: "hidden"});
+        } else {
+            this.titlebarHtml.css({visibility: "visible"});
+        }
+    }
+
     if ((!this.nestedViewer || this.collapsable) && this.fullScreenPadding) {
         this.containerHtml.css({paddingTop: PAPAYA_CONTAINER_PADDING_TOP + "px"});
     } else {
