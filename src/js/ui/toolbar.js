@@ -108,6 +108,7 @@ papaya.ui.Toolbar.MENU_DATA = {
             "items": [
                 {"label": "Preferences", "action": "Preferences"},
                 {"label": "Show Keyboard Reference", "action": "KeyboardRef"},
+                {"label": "Show Mouse Reference", "action": "MouseRef"},
                 {"label": "Show License", "action": "License"}
             ]
             },
@@ -217,6 +218,11 @@ papaya.ui.Toolbar.KEYBOARD_REF_DATA = {
     ]
 };
 
+papaya.ui.Toolbar.MOUSE_REF_DATA = {
+    "items": [
+        {"label": "", "field": "getMouseReference", "readonly": "true"}
+    ]
+};
 
 
 papaya.ui.Toolbar.prototype.buildToolbar = function () {
@@ -544,6 +550,10 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             dialog.showDialog();
         } else if (action === "KeyboardRef") {
             dialog = new papaya.ui.Dialog(this.container, "Keyboard Reference", papaya.ui.Toolbar.KEYBOARD_REF_DATA,
+                papaya.Container, null, null, null, true);
+            dialog.showDialog();
+        } else if (action === "MouseRef") {
+            dialog = new papaya.ui.Dialog(this.container, "Mouse Reference", papaya.ui.Toolbar.MOUSE_REF_DATA,
                 papaya.Container, null, null, null, true);
             dialog.showDialog();
         } else if (action.startsWith("ImageInfo")) {
