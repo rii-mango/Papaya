@@ -29,11 +29,19 @@
 
 
 .papaya-kiosk-controls button {
+    -webkit-appearance: none;
+    border-radius: 0;
+    -webkit-border-radius:0;
     font-size: 14px;
+    height: 25px;
+    background-color: lightgray;
 }
 
 
-.papaya-main-increment {
+.papaya-control-increment {
+    -webkit-appearance: none;
+    border-radius: 0;
+    -webkit-border-radius:0;
     font-size: 14px;
     height: 25px;
     width: 25px;
@@ -44,39 +52,80 @@
     margin-right: auto;
     line-height: 16px;
     box-sizing: border-box;
+    font-family: "Courier New", Courier, monospace;
+}
+
+.papaya-main-increment {
+    -webkit-appearance: none;
+    border-radius: 0;
+    -webkit-border-radius:0;
+    font-size: 14px;
+    height: 25px;
+    width: 25px;
+    text-align: center;
+    font-family: "Courier New", Courier, monospace;
+    background-color: lightgray;
+    vertical-align: middle;
+    padding: 0;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+    outline: none;
 }
 
 
 .papaya-main-decrement {
+    -webkit-appearance: none;
+    border-radius: 0;
+    -webkit-border-radius:0;
     font-size: 14px;
     height: 25px;
     width: 25px;
     text-align: center;
+    font-family: "Courier New", Courier, monospace;
+    background-color: lightgray;
     vertical-align: middle;
     padding: 0;
     margin-left: auto;
     margin-right: auto;
-    line-height: 16px;
     box-sizing: border-box;
+    outline: none;
 }
 
 
 .papaya-main-swap {
+    -webkit-appearance: none;
+    border-radius: 0;
+    -webkit-border-radius:0;
     font-size: 14px;
-    height: 22px;
+    height: 25px;
+    background-color: lightgray;
+    outline: none;
 }
 
 
 .papaya-main-goto-center {
+    -webkit-appearance: none;
+    border-radius: 0;
+    -webkit-border-radius:0;
     font-size: 14px;
-    height: 22px;
+    height: 25px;
+    background-color: lightgray;
+    outline: none;
 }
+
 
 
 .papaya-main-goto-origin {
+    -webkit-appearance: none;
+    border-radius: 0;
+    -webkit-border-radius:0;
     font-size: 14px;
-    height: 22px;
+    height: 25px;
+    background-color: lightgray;
+    outline: none;
 }
+
 
 
 .papaya-slider-slice {
@@ -93,6 +142,11 @@
 
 
 .papaya-slider-slice button {
+    -webkit-appearance: none;
+    border-radius: 0;
+    -webkit-border-radius:0;
     vertical-align: middle;
     font-size: 14px;
+    height: 25px;
+    background-color: lightgray;
 }
