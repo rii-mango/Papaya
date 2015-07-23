@@ -436,6 +436,7 @@ papaya.Container.getMouseReference = function () {
 };
 
 
+
 papaya.Container.setLicenseRead = function () {
     papaya.utilities.UrlUtils.createCookie(papaya.viewer.Preferences.COOKIE_PREFIX + "eula", "Yes",
         papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS);
