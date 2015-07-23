@@ -143,7 +143,6 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getOrientation = function () {
 
 
 
-
 papaya.volume.nifti.HeaderNIFTI.prototype.getOrientationQform = function () {
     var orientation = papaya.volume.nifti.HeaderNIFTI.ORIENTATION_DEFAULT,
         qFormMatParams = this.nifti.convertNiftiQFormToNiftiSForm(this.nifti.quatern_b, this.nifti.quatern_c,

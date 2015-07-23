@@ -39,10 +39,9 @@ papaya.volume.ImageData.prototype.readFileData = function (header, buffer, onRea
     } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_UNSIGNED) &&
         (header.imageType.numBytes === 4)) {
         this.data = new Uint32Array(buffer, 0, buffer.byteLength / 4);
-    } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_FLOAT) &&
-        (header.imageType.numBytes === 4)) {
+    } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_FLOAT) && (header.imageType.numBytes === 4)) {
         if (header.imageType.swapped) {
-            numVoxels = buffer.byteLength / 4;
+            numVoxels = buffer.byteLength / Float32Array.BYTES_PER_ELEMENT;
             dv = new DataView(buffer, 0);
             this.data = new Float32Array(numVoxels);
 
@@ -51,6 +50,18 @@ papaya.volume.ImageData.prototype.readFileData = function (header, buffer, onRea
             }
         } else {
             this.data = new Float32Array(buffer, 0, buffer.byteLength / 4);
+        }
+    } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_FLOAT) && (header.imageType.numBytes === 8)) {
+        if (header.imageType.swapped) {
+            numVoxels = buffer.byteLength / Float64Array.BYTES_PER_ELEMENT;
+            dv = new DataView(buffer, 0);
+            this.data = new Float64Array(numVoxels);
+
+            for (ctr = 0; ctr < numVoxels; ctr += 1) {
+                this.data[ctr] = dv.getFloat64(ctr * Float64Array.BYTES_PER_ELEMENT);
+            }
+        } else {
+            this.data = new Float64Array(buffer, 0, buffer.byteLength / 4);
         }
     }
 
