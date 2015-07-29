@@ -121,10 +121,15 @@ papaya.volume.Volume.prototype.readURLs = function (urls, callback) {
 
 
 papaya.volume.Volume.prototype.readNextURL = function (vol, index) {
-    var supported, xhr;
+    var supported, xhr, progPerc;
 
     if (index < vol.urls.length) {
         try {
+
+            progPerc = parseInt(100 * (index + 1) / vol.urls.length, 10);
+
+            vol.progressMeter.drawProgress(index / vol.urls.length, papaya.volume.Volume.PROGRESS_LABEL_LOADING + ' image ' + (index + 1) + ' of ' + vol.urls.length + ' (' + progPerc + '%)');
+
             supported = typeof new XMLHttpRequest().responseType === 'string';
             if (supported) {
                 xhr = new XMLHttpRequest();
@@ -146,7 +151,9 @@ papaya.volume.Volume.prototype.readNextURL = function (vol, index) {
                 };
 
                 xhr.onprogress = function (evt) {
-                    vol.progressMeter.drawProgress(evt.loaded / evt.total, papaya.volume.Volume.PROGRESS_LABEL_LOADING);
+                    if(evt.lengthComputable) {
+                        vol.progressMeter.drawProgress(evt.loaded / evt.total, papaya.volume.Volume.PROGRESS_LABEL_LOADING);
+                    }
                 };
 
                 xhr.send(null);
