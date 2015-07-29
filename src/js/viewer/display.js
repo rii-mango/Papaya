@@ -117,7 +117,6 @@ papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
             zLoc = this.viewer.currentCoord.z;
         }
 
-
         // canvas background
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.context.fillStyle = "#000000";

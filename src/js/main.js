@@ -78,6 +78,13 @@ papaya.Container.KEYBOARD_REF_TEXT = "<span style='color:#B5CBD3'>[Spacebar]</sp
     "<span style='color:#B5CBD3'>[c]</span> Navigate viewer to the center of the image.<br /><br />" +
     "<span style='color:#B5CBD3'>[a]</span> Toggle main crosshairs on/off.";
 
+papaya.Container.MOUSE_REF_TEXT = "<span style='color:#B5CBD3'>(Left-click and drag)</span> Change current coordinate.<br /><br />" +
+    "<span style='color:#B5CBD3'>[Alt](Left-click and drag)</span> Zoom in and out.<br /><br />" +
+    "<span style='color:#B5CBD3'>[Alt](Double left-click)</span> Reset zoom.<br /><br />" +
+    "<span style='color:#B5CBD3'>[Alt][Shift](Left-click and drag)</span> Pan zoomed image.<br /><br />" +
+    "<span style='color:#B5CBD3'>(Right-click and drag)</span> Window level controls.<br /><br />" +
+    "<span style='color:#B5CBD3'>(Scroll wheel)</span> See Preferences.<br /><br />";
+
 papaya.Container.DICOM_SUPPORT = true;
 
 
@@ -433,6 +440,12 @@ papaya.Container.getLicense = function () {
 
 papaya.Container.getKeyboardReference = function () {
     return papaya.Container.KEYBOARD_REF_TEXT;
+};
+
+
+
+papaya.Container.getMouseReference = function () {
+    return papaya.Container.MOUSE_REF_TEXT;
 };
 
 

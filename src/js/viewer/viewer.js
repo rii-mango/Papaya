@@ -1807,11 +1807,19 @@ papaya.viewer.Viewer.prototype.getNextColorTable = function () {
 
 
 papaya.viewer.Viewer.prototype.getCurrentValueAt = function (ctrX, ctrY, ctrZ) {
-    return this.currentScreenVolume.volume.getVoxelAtCoordinate((ctrX - this.volume.header.origin.x) *
-        this.volume.header.voxelDimensions.xSize,
-        (this.volume.header.origin.y - ctrY) * this.volume.header.voxelDimensions.ySize,
-        (this.volume.header.origin.z - ctrZ) * this.volume.header.voxelDimensions.zSize,
-        this.currentScreenVolume.currentTimepoint, false);
+    if (this.worldSpace) {
+        return this.currentScreenVolume.volume.getVoxelAtCoordinate(
+            (ctrX - this.volume.header.origin.x) * this.volume.header.voxelDimensions.xSize,
+            (this.volume.header.origin.y - ctrY) * this.volume.header.voxelDimensions.ySize,
+            (this.volume.header.origin.z - ctrZ) * this.volume.header.voxelDimensions.zSize,
+            this.currentScreenVolume.currentTimepoint, false);
+    } else {
+        return this.currentScreenVolume.volume.getVoxelAtMM(
+            ctrX * this.volume.header.voxelDimensions.xSize,
+            ctrY * this.volume.header.voxelDimensions.ySize,
+            ctrZ * this.volume.header.voxelDimensions.zSize,
+            this.currentScreenVolume.currentTimepoint, false);
+    }
 };
 
 

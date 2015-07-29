@@ -24,6 +24,7 @@ Uncompressed:
 - 1.2.840.10008.1.2.2 (Explicit VR Big Endian)
  
 Compressed:
+- 1.2.840.10008.1.2.1.99 (Deflated Explicit VR Little Endian)
 - 1.2.840.10008.1.2.4.50 (JPEG Baseline (Process 1) Lossy JPEG 8-bit)
 - 1.2.840.10008.1.2.4.57 (JPEG Lossless, Nonhierarchical (Processes 14))
 - 1.2.840.10008.1.2.4.70 (JPEG Lossless, Nonhierarchical (Processes 14 [Selection 1]))

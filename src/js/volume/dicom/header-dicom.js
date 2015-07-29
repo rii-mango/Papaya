@@ -29,6 +29,9 @@ papaya.volume.dicom.HeaderDICOM.SUPPORTED_TRANSFER_SYNTAXES = [
     "1.2.840.10008.1.2.1",
     "1.2.840.10008.1.2.2",
 
+    // deflated
+    "1.2.840.10008.1.2.1.99",
+
     // jpeg baseline compressed
     "1.2.840.10008.1.2.4.50",  // 8-bit
 
