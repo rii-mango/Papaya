@@ -119,7 +119,9 @@ papaya.volume.dicom.HeaderDICOM.prototype.getDataScaleIntercept = function (isEl
 papaya.volume.dicom.HeaderDICOM.prototype.finishedHeaderRead = function () {
     var dialogData, allSeries, ctr;
 
-    if (Object.keys(this.seriesMap).length > 1) {
+    if (this.error) {
+        this.onFinishedHeaderRead();
+    } else if (Object.keys(this.seriesMap).length > 1) {
         this.series = this.seriesMap[Object.keys(this.seriesMap)[0]];
 
         allSeries = [];
@@ -212,6 +214,8 @@ papaya.volume.dicom.HeaderDICOM.prototype.readNextHeaderData = function (data, i
             }
 
             series.addImage(image);
+        } else {
+            this.error = new Error("No pixel data found!");
         }
 
         if (this.error) {
