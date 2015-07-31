@@ -108,11 +108,24 @@ papaya.Container.findParameters = function (containerHTML) {
         }
     }
 
+/*
     if (paramsName) {
         loadedParams = window[paramsName];
     }
+*/
 
-    papaya.utilities.UrlUtils.getQueryParams(loadedParams);
+    if(paramsName) {
+        if(typeof paramsName === 'object') {
+            loadedParams = paramsName;
+        }
+        else if(window[paramsName]) {
+            loadedParams = window[paramsName];
+        }
+    }
+
+    if(loadedParams)
+        papaya.utilities.UrlUtils.getQueryParams(loadedParams);
+
 
     return loadedParams;
 };
@@ -452,7 +465,7 @@ papaya.Container.isLicenseRead = function () {
 
 
 papaya.Container.showLicense = function (params) {
-    var showEula = (params.showEULA !== undefined) && params.showEULA;
+    var showEula = (params && params.showEULA !== undefined) && params.showEULA;
 
     if (showEula && !papaya.Container.isLicenseRead()) {
         var dialog = new papaya.ui.Dialog(this, "License", papaya.ui.Toolbar.LICENSE_DATA,
