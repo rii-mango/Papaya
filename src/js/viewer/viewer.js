@@ -203,11 +203,11 @@ papaya.viewer.Viewer.getOffsetRect = function (elem) {
 
 /*** Prototype Methods ***/
 
-papaya.viewer.Viewer.prototype.loadImage = function (name, forceUrl, forceEncode) {
+papaya.viewer.Viewer.prototype.loadImage = function (refs, forceUrl, forceEncode) {
     if (this.screenVolumes.length === 0) {
-        this.loadBaseImage(name, forceUrl, forceEncode);
+        this.loadBaseImage(refs, forceUrl, forceEncode);
     } else {
-        this.loadOverlay(name, forceUrl, forceEncode);
+        this.loadOverlay(refs, forceUrl, forceEncode);
     }
 };
 
@@ -229,8 +229,8 @@ papaya.viewer.Viewer.prototype.showDialog = function (title, data, datasource, c
 
 
 
-papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEncode) {
-    var imageRefs, loadableImage = this.container.findLoadableImage(name, forceUrl, forceEncode);
+papaya.viewer.Viewer.prototype.loadBaseImage = function (refs, forceUrl, forceEncode) {
+    var imageRefs, loadableImage = this.container.findLoadableImage(refs, forceUrl, forceEncode);
     this.volume = new papaya.volume.Volume(this.container.display, this);
 
     if (forceEncode) {
@@ -250,18 +250,18 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function (name, forceUrl, forceEn
 
         this.volume.readEncodedData(imageRefs, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
     } else if (forceUrl) {
-        this.volume.readURLs(name, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
+        this.volume.readURLs(refs, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
     } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
         this.volume.readURLs([loadableImage.url], papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
     } else {
-        this.volume.readFiles(name, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
+        this.volume.readFiles(refs, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
     }
 };
 
 
 
-papaya.viewer.Viewer.prototype.loadOverlay = function (name, forceUrl, forceEncode) {
-    var imageRefs, loadableImage = this.container.findLoadableImage(name);
+papaya.viewer.Viewer.prototype.loadOverlay = function (refs, forceUrl, forceEncode) {
+    var imageRefs, loadableImage = this.container.findLoadableImage(refs);
     this.loadingVolume = new papaya.volume.Volume(this.container.display, this);
 
     if (this.screenVolumes.length > papaya.viewer.Viewer.MAX_OVERLAYS) {
@@ -286,11 +286,11 @@ papaya.viewer.Viewer.prototype.loadOverlay = function (name, forceUrl, forceEnco
 
             this.loadingVolume.readEncodedData(imageRefs, papaya.utilities.ObjectUtils.bind(this, this.initializeOverlay));
         } else if (forceUrl) {
-            this.loadingVolume.readURLs(name, papaya.utilities.ObjectUtils.bind(this, this.initializeOverlay));
+            this.loadingVolume.readURLs(refs, papaya.utilities.ObjectUtils.bind(this, this.initializeOverlay));
         } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
             this.loadingVolume.readURLs([loadableImage.url], papaya.utilities.ObjectUtils.bind(this, this.initializeOverlay));
         } else {
-            this.loadingVolume.readFiles(name, papaya.utilities.ObjectUtils.bind(this, this.initializeOverlay));
+            this.loadingVolume.readFiles(refs, papaya.utilities.ObjectUtils.bind(this, this.initializeOverlay));
         }
     }
 };
@@ -2579,4 +2579,11 @@ papaya.viewer.Viewer.prototype.isShowingMainCrosshairs = function () {
 
 papaya.viewer.Viewer.prototype.isShowingLowerCrosshairs = function () {
     return (this.container.preferences.showCrosshairs === "Lower") || (this.container.preferences.showCrosshairs === "All");
+};
+
+
+papaya.viewer.Viewer.prototype.restart = function (refs, forceUrl, forceEncode) {
+    this.resetViewer();
+    this.container.toolbar.updateImageButtons();
+    this.loadImage(refs, forceUrl, forceEncode);
 };

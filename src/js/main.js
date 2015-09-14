@@ -95,6 +95,12 @@ papaya.Container.papayaLastHoveredViewer = null;
 
 /*** Static Methods ***/
 
+papaya.Container.restartViewer = function (index, refs, forceUrl, forceEncode) {
+    papayaContainers[index].viewer.restart(refs, forceUrl, forceEncode);
+};
+
+
+
 papaya.Container.findParameters = function (containerHTML) {
     var viewerHTML, paramsName, loadedParams = null;
 
@@ -108,24 +114,24 @@ papaya.Container.findParameters = function (containerHTML) {
         }
     }
 
-/*
-    if (paramsName) {
-        loadedParams = window[paramsName];
-    }
-*/
+    /*
+     if (paramsName) {
+     loadedParams = window[paramsName];
+     }
+     */
 
-    if(paramsName) {
-        if(typeof paramsName === 'object') {
+    if (paramsName) {
+        if (typeof paramsName === 'object') {
             loadedParams = paramsName;
         }
-        else if(window[paramsName]) {
+        else if (window[paramsName]) {
             loadedParams = window[paramsName];
         }
     }
 
-    if(loadedParams)
+    if (loadedParams) {
         papaya.utilities.UrlUtils.getQueryParams(loadedParams);
-
+    }
 
     return loadedParams;
 };
