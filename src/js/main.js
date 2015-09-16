@@ -39,7 +39,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.toolbar = null;
     this.preferences = null;
     this.params = [];
-    this.loadingImageIndex = 0;
+    this.loadingImageIndex = 1;
     this.nestedViewer = false;
     this.collapsable = false;
     this.orthogonal = true;
@@ -97,6 +97,21 @@ papaya.Container.papayaLastHoveredViewer = null;
 
 papaya.Container.restartViewer = function (index, refs, forceUrl, forceEncode) {
     papayaContainers[index].viewer.restart(refs, forceUrl, forceEncode);
+};
+
+
+
+papaya.Container.resetViewer = function (index, params) {
+    if (!params) {
+        params = [];
+    }
+
+    papayaContainers[index].viewer.resetViewer();
+    papayaContainers[index].toolbar.updateImageButtons();
+    papayaContainers[index].reset();
+    papayaContainers[index].params = params;
+    papayaContainers[index].viewer.processParams(params);
+    papayaContainers[index].loadNext();
 };
 
 
@@ -527,6 +542,21 @@ papaya.Container.prototype.getViewerPadding = function () {
 
 
 
+papaya.Container.prototype.reset = function () {
+    this.loadingImageIndex = 0;
+    this.nestedViewer = false;
+    this.collapsable = false;
+    this.orthogonal = true;
+    this.kioskMode = false;
+    this.showControls = true;
+    this.showControlBar = false;
+    this.fullScreenPadding = true;
+    this.combineParametric = false;
+    this.showRuler = false;
+};
+
+
+
 papaya.Container.prototype.resizeViewerComponents = function (resize) {
     var dims, padding, diff = 0;
 
@@ -828,8 +858,6 @@ papaya.Container.prototype.clearParams = function () {
 papaya.Container.prototype.loadNext = function () {
     var loadingNext = false, imageRefs;
 
-    this.loadingImageIndex += 1;
-
     if (this.params.images) {
         if (this.loadingImageIndex < this.params.images.length) {
             loadingNext = true;
@@ -855,6 +883,8 @@ papaya.Container.prototype.loadNext = function () {
             this.viewer.loadImage(this.params.encodedImages[this.loadingImageIndex], false, true);
         }
     }
+
+    this.loadingImageIndex += 1;
 
     return loadingNext;
 };
