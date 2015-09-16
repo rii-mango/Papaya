@@ -103,13 +103,14 @@ papaya.Container.restartViewer = function (index, refs, forceUrl, forceEncode) {
 
 papaya.Container.resetViewer = function (index, params) {
     if (!params) {
-        params = [];
+        params = papayaContainers[index].params;
     }
 
     papayaContainers[index].viewer.resetViewer();
     papayaContainers[index].toolbar.updateImageButtons();
     papayaContainers[index].reset();
     papayaContainers[index].params = params;
+    papayaContainers[index].readGlobalParams();
     papayaContainers[index].viewer.processParams(params);
     papayaContainers[index].loadNext();
 };
@@ -271,23 +272,10 @@ papaya.Container.buildContainer = function (containerHTML, params) {
         }
 
         container.nestedViewer = (containerHTML.parent()[0].tagName.toUpperCase() !== 'BODY');
-        container.kioskMode = (container.params.kioskMode === true);
-        container.combineParametric = (container.params.combineParametric === true);
-
-        if (container.params.showControls !== undefined) {  // default is true
-            container.showControls = container.params.showControls;
-        }
+        container.readGlobalParams();
 
         if (container.params.showControlBar !== undefined) {  // default is true
             container.showControlBar = container.showControls && container.params.showControlBar;
-        }
-
-        if (container.params.fullScreenPadding !== undefined) {  // default is true
-            container.fullScreenPadding = container.params.fullScreenPadding;
-        }
-
-        if (container.params.orthogonal !== undefined) {  // default is true
-            container.orthogonal = container.params.orthogonal;
         }
 
         if (container.isDesktopMode()) {
@@ -538,6 +526,25 @@ papaya.Container.prototype.getViewerPadding = function () {
     padding = ((parentWidth - viewerDims[0]) / 2);
 
     return padding;
+};
+
+
+
+papaya.Container.prototype.readGlobalParams = function() {
+    this.kioskMode = (this.params.kioskMode === true);
+    this.combineParametric = (this.params.combineParametric === true);
+
+    if (this.params.showControls !== undefined) {  // default is true
+        this.showControls = this.params.showControls;
+    }
+
+    if (this.params.fullScreenPadding !== undefined) {  // default is true
+        this.fullScreenPadding = this.params.fullScreenPadding;
+    }
+
+    if (this.params.orthogonal !== undefined) {  // default is true
+        this.orthogonal = this.params.orthogonal;
+    }
 };
 
 
