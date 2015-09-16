@@ -61,7 +61,7 @@ papaya.volume.ImageData.prototype.readFileData = function (header, buffer, onRea
                 this.data[ctr] = dv.getFloat64(ctr * Float64Array.BYTES_PER_ELEMENT);
             }
         } else {
-            this.data = new Float64Array(buffer, 0, buffer.byteLength / 4);
+            this.data = new Float64Array(buffer, 0, buffer.byteLength / 8);
         }
     }
 
