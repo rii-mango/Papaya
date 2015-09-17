@@ -16,6 +16,7 @@ papaya.volume.ImageType = papaya.volume.ImageType || function (datatype, numByte
     this.littleEndian = littleEndian;
     this.swapped = false;
     this.compressed = compressed;
+    this.rgbBySample = false;
 };
 
 

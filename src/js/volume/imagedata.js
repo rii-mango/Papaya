@@ -18,14 +18,40 @@ papaya.volume.ImageData = papaya.volume.ImageData || function () {
 /*** Prototype Methods ***/
 
 papaya.volume.ImageData.prototype.readFileData = function (header, buffer, onReadFinish) {
-    var numVoxels, dv, ctr;
+    var numVoxels, dv, ctr, numVoxels2, rgbBySample;
 
     // create typed array
-    if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_SIGNED) &&
+    if (header.imageType.datatype === papaya.volume.ImageType.DATATYPE_RGB) {
+        /*jslint bitwise: true */
+
+        numVoxels = buffer.byteLength / 3;
+        numVoxels2 = 2 * numVoxels;
+        rgbBySample = header.imageType.rgbBySample;
+        dv = new DataView(buffer, 0);
+        this.data = new Uint32Array(numVoxels);
+
+        if (rgbBySample) {
+            for (ctr = 0; ctr < numVoxels; ctr += 1) {
+                this.data[ctr] |= ((dv.getUint8(ctr) << 16));
+            }
+
+            for (ctr = 0; ctr < numVoxels; ctr += 1) {
+                this.data[ctr] |= ((dv.getUint8(ctr + numVoxels) << 8));
+            }
+
+            for (ctr = 0; ctr < numVoxels; ctr += 1) {
+                this.data[ctr] |= ((dv.getUint8(ctr + numVoxels2)));
+            }
+        } else {
+            for (ctr = 0; ctr < numVoxels; ctr += 1) {
+                this.data[ctr] = ((dv.getUint8(ctr * 3) << 16) | (dv.getUint8(ctr * 3 + 1) << 8) | dv.getUint8(ctr * 3 + 2));
+            }
+        }
+    } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_SIGNED) &&
         (header.imageType.numBytes === 1)) {
         this.data = new Int8Array(buffer, 0, buffer.byteLength);
-    } else if (((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_UNSIGNED) &&
-        (header.imageType.numBytes === 1)) || (header.imageType.datatype === papaya.volume.ImageType.DATATYPE_RGB)) {
+    } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_UNSIGNED) &&
+        (header.imageType.numBytes === 1)) {
         this.data = new Uint8Array(buffer, 0, buffer.byteLength);
     } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_SIGNED) &&
         (header.imageType.numBytes === 2)) {

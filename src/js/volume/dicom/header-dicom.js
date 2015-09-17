@@ -344,7 +344,7 @@ papaya.volume.dicom.HeaderDICOM.prototype.getVoxelDimensions = function () {
 
 
 papaya.volume.dicom.HeaderDICOM.prototype.getImageType = function () {
-    var dataTypeDICOM, dataTypeCode;
+    var dataTypeDICOM, dataTypeCode, it;
     dataTypeDICOM = this.series.images[0].getDataType();
 
     if (dataTypeDICOM === daikon.Image.BYTE_TYPE_INTEGER) {
@@ -359,8 +359,12 @@ papaya.volume.dicom.HeaderDICOM.prototype.getImageType = function () {
         dataTypeCode = papaya.volume.ImageType.DATATYPE_UNKNOWN;
     }
 
-    return new papaya.volume.ImageType(dataTypeCode, parseInt(this.series.images[0].getBitsAllocated() / 8),
+    it = new papaya.volume.ImageType(dataTypeCode, parseInt(this.series.images[0].getBitsAllocated() / 8),
         this.series.images[0].littleEndian, false);
+
+    it.rgbBySample = (this.series.images[0].getPlanarConfig() === 1);
+
+    return it;
 };
 
 
