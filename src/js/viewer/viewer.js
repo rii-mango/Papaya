@@ -509,6 +509,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.container.toolbar.updateImageButtons();
         this.updateWindowTitle();
 
+        this.container.loadingImageIndex = 1;
         if (!this.container.loadNext()) {
             if (this.hasDefinedAtlas()) {
                 this.loadAtlas();
@@ -1837,8 +1838,6 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
         $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.container.containerIndex).css({display: "none"});
         $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + this.container.containerIndex).css({display: "none"});
     }
-
-
 
     this.initialized = false;
     this.loadingVolume = null;

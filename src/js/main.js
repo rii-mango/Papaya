@@ -39,7 +39,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.toolbar = null;
     this.preferences = null;
     this.params = [];
-    this.loadingImageIndex = 1;
+    this.loadingImageIndex = 0;
     this.nestedViewer = false;
     this.collapsable = false;
     this.orthogonal = true;
@@ -851,7 +851,7 @@ papaya.Container.prototype.addDroppedFile = function (file) {
 
 papaya.Container.prototype.droppedFilesFinishedLoading = function () {
     this.viewer.loadImage(papayaDroppedFiles);
-    papayaDroppedFiles = null;
+    papayaDroppedFiles = [];
 };
 
 
@@ -900,9 +900,9 @@ papaya.Container.prototype.loadNext = function () {
 
 papaya.Container.prototype.readyForDnD = function () {
     return !this.kioskMode && ((this.params.images === undefined) ||
-        (this.params.images.length === this.loadingImageIndex)) &&
+        (this.loadingImageIndex >= this.params.images.length)) &&
         ((this.params.encodedImages === undefined) ||
-        (this.params.encodedImages.length === this.loadingImageIndex));
+        (this.loadingImageIndex >= this.params.encodedImages.length));
 };
 
 
