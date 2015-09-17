@@ -23,6 +23,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.currentTimepoint = 0;
     this.parametric = (parametric !== undefined) && parametric;
     this.negativeScreenVol = null;
+    this.rgb = (this.volume.header.imageType.datatype === papaya.volume.ImageType.DATATYPE_RGB);
 
     var screenParams = params[this.volume.fileName];
     if (screenParams) {

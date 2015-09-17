@@ -1463,7 +1463,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
             this.findClickedSlice(this, this.previousMousePosition.x, this.previousMousePosition.y);
 
-            if ((me.which === 3) || this.isControlKeyDown) {
+            if (((me.which === 3) || this.isControlKeyDown) && !this.currentScreenVolume.rgb) {
                 this.isWindowControl = true;
                 this.container.toolbar.showImageMenu(this.getCurrentScreenVolIndex());
             } else if (this.isAltKeyDown && this.selectedSlice) {

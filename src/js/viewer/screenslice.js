@@ -74,7 +74,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
 
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
             timepoint = this.screenVolumes[ctr].currentTimepoint;
-            rgb = (this.screenVolumes[ctr].volume.header.imageType.datatype === papaya.volume.ImageType.DATATYPE_RGB);
+            rgb = this.screenVolumes[ctr].rgb;
 
             for (ctrY = 0; ctrY < this.yDim; ctrY += 1) {
                 for (ctrX = 0; ctrX < this.xDim; ctrX += 1) {
@@ -176,7 +176,7 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
 
     if (this.imageData.length === this.screenVolumes.length) {
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
-            rgb = (this.screenVolumes[ctr].volume.header.imageType.datatype === papaya.volume.ImageType.DATATYPE_RGB);
+            rgb = this.screenVolumes[ctr].rgb;
 
             for (ctrY = 0; ctrY < this.yDim; ctrY += 1) {
                 for (ctrX = 0; ctrX < this.xDim; ctrX += 1) {

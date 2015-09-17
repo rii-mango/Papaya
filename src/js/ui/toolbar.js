@@ -85,17 +85,25 @@ papaya.ui.Toolbar.ICON_COLLAPSE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA
     "Slt0+kbYOuExiFuhng7JH2LFld0Ej2AeeCu6cF5cy3vs/XiDeAIWwS3Q298G8ZDoFuiBI7ACdKjegcZYSz2eBgjap1dAxafOkW9zyoUj7LnY/hCF" +
     "mNsByYQRzf9IR6L5XUKI/uXarHn/4Gvn/H5tQvqfi14rcXHzs6vPYh3RmT9N2ZHWxkYgt4/pN/LAOfka/AG9AAAAAElFTkSuQmCC";
 
+papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "File", "icons": null,
+    "items": [
+        {"label": "Add Image...", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
+        {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
+            "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
+        {"type": "spacer"},
+        {"label": "Close All", "action": "CloseAllImages"}
+    ]
+};
+
+papaya.ui.Toolbar.RGB_FILE_MENU_DATA = {"label": "File", "icons": null,
+    "items": [
+        {"label": "Close All", "action": "CloseAllImages"}
+    ]
+};
+
 papaya.ui.Toolbar.MENU_DATA = {
     "menus": [
-        {"label": "File", "icons": null,
-            "items": [
-                {"label": "Add Image...", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
-                {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
-                    "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
-                {"type": "spacer"},
-                {"label": "Close All", "action": "CloseAllImages"}
-            ]
-            },
+        papaya.ui.Toolbar.FILE_MENU_DATA,
         {"label": "View", "icons": null,
             "items": [
                 {"label": "Orientation", "action": "ShowOrientation", "type": "checkbox", "method": "isShowingOrientation"},
@@ -150,6 +158,14 @@ papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA = {
         {"label": "Show Image Info", "action": "ImageInfo"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
         papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items[5],
+        {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango"  }
+    ]
+};
+
+papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA = {
+    "items": [
+        {"label": "Show Header", "action": "ShowHeader"},
+        {"label": "Show Image Info", "action": "ImageInfo"},
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango"  }
     ]
 };
@@ -240,7 +256,12 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
             this.buildMenu(papaya.ui.Toolbar.MENU_DATA_KIOSK.menus[ctr], null, this.viewer, null);
         }
     } else {
-        this.buildOpenMenuItems(papaya.ui.Toolbar.MENU_DATA);
+        if ((this.container.viewer.screenVolumes.length > 0) && this.container.viewer.screenVolumes[0].rgb) {
+            papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.RGB_FILE_MENU_DATA;
+        } else {
+            papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.FILE_MENU_DATA;
+            this.buildOpenMenuItems(papaya.ui.Toolbar.MENU_DATA);
+        }
 
         for (ctr = 0; ctr < papaya.ui.Toolbar.MENU_DATA.menus.length; ctr += 1) {
             this.buildMenu(papaya.ui.Toolbar.MENU_DATA.menus[ctr], null, this.viewer, null);
@@ -455,7 +476,11 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
         };
 
         if (ctr === 0) {
-            data.menus[0].items = papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA.items;
+            if (screenVol.rgb) {
+                data.menus[0].items = papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA.items;
+            } else {
+                data.menus[0].items = papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA.items;
+            }
         } else {
             data.menus[0].items = papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items;
         }
