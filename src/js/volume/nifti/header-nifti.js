@@ -115,6 +115,8 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getImageType = function () {
     } else if ((this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_FLOAT32) ||
         (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_FLOAT64)) {
         datatype = papaya.volume.ImageType.DATATYPE_FLOAT;
+    } else if (this.nifti.datatypeCode === papaya.volume.nifti.NIFTI_TYPE_RGB24) {
+        datatype = papaya.volume.ImageType.DATATYPE_RGB;
     }
 
     return new papaya.volume.ImageType(datatype, this.nifti.numBitsPerVoxel / 8, this.nifti.littleEndian,
