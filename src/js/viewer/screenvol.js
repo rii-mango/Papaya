@@ -36,7 +36,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
                 this.screenMax = screenParams.max;
             }
         } else {
-            this.findDisplayRange(parametric, screenParams.symmetric);
+            this.findDisplayRange(parametric, screenParams);
         }
 
         if (parametric) {
@@ -55,7 +55,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
             this.alpha = screenParams.alpha;
         }
     } else {
-        this.findDisplayRange(parametric, false);
+        this.findDisplayRange(parametric, {});
     }
 
     this.negative = (this.screenMax < this.screenMin);
@@ -129,7 +129,7 @@ papaya.viewer.ScreenVolume.prototype.findImageRange = function () {
 
 
 
-papaya.viewer.ScreenVolume.prototype.findDisplayRange = function (parametric, symmetric) {
+papaya.viewer.ScreenVolume.prototype.findDisplayRange = function (parametric, screenParams) {
     var hasImageRange, min, max, temp;
 
     hasImageRange = (this.volume.header.imageRange.imageMin !== this.volume.header.imageRange.imageMax);
@@ -145,13 +145,27 @@ papaya.viewer.ScreenVolume.prototype.findDisplayRange = function (parametric, sy
         }
     }
 
-    if (this.isOverlay()) {
+    if (!parametric && ((screenParams.minPercent !== undefined) || (screenParams.maxPercent !== undefined))) {
+        this.findImageRange();
+
+        if (screenParams.minPercent !== undefined) {
+            min = this.imageMax * screenParams.minPercent;
+        } else {
+            min = this.imageMin;
+        }
+
+        if (screenParams.maxPercent !== undefined) {
+            max = this.imageMax * screenParams.maxPercent;
+        } else {
+            max = this.imageMax;
+        }
+    } else if (this.isOverlay()) {
         if ((min === max) || ((min < 0) && (max > 0)) || ((min > 0) && (max < 0)) || (parametric && ((min > 0) ||
-            (max > 0))) || symmetric) {  // if not set or crosses zero
+            (max > 0))) || screenParams.symmetric) {  // if not set or crosses zero
             this.findImageRange();
 
             if (parametric) {
-                if (symmetric || (this.imageMin === 0)) {
+                if (screenParams.symmetric || (this.imageMin === 0)) {
                     min = -1 * (this.imageMax - (this.imageMax * 0.75));
                     max = -1 * (this.imageMax - (this.imageMax * 0.25));
                 } else {
