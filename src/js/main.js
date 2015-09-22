@@ -887,7 +887,19 @@ papaya.Container.prototype.loadNext = function () {
                 imageRefs[0] = this.params.encodedImages[this.loadingImageIndex];
             }
 
-            this.viewer.loadImage(this.params.encodedImages[this.loadingImageIndex], false, true);
+            this.viewer.loadImage(imageRefs, false, true);
+        }
+    } else if (this.params.files) {
+        if (this.loadingImageIndex < this.params.files.length) {
+            loadingNext = true;
+            imageRefs = this.params.files[this.loadingImageIndex];
+
+            if (!(imageRefs instanceof Array)) {
+                imageRefs = [];
+                imageRefs[0] = this.params.files[this.loadingImageIndex];
+            }
+
+            this.viewer.loadImage(imageRefs, false, false);
         }
     }
 
