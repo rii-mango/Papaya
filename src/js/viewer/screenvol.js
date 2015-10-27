@@ -24,6 +24,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.parametric = (parametric !== undefined) && parametric;
     this.negativeScreenVol = null;
     this.rgb = (this.volume.header.imageType.datatype === papaya.volume.ImageType.DATATYPE_RGB);
+    this.hasCheckedImageRange = false;
 
     var screenParams = params[this.volume.fileName];
     if (screenParams) {
@@ -97,7 +98,8 @@ papaya.viewer.ScreenVolume.prototype.findImageRange = function () {
 
     hasImageRange = (this.volume.header.imageRange.imageMin !== this.volume.header.imageRange.imageMax);
 
-    if (!hasImageRange) {
+    if (!hasImageRange && !this.hasCheckedImageRange) {
+        this.hasCheckedImageRange = true;
         console.log("scanning image range of " + this.volume.fileName + "...");
         min = Number.MAX_VALUE;
         max = Number.MIN_VALUE;

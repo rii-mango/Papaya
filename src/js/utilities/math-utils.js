@@ -10,6 +10,12 @@ papaya.utilities = papaya.utilities || {};
 papaya.utilities.MathUtils = papaya.utilities.MathUtils || {};
 
 
+/*** Static Pseudo-constants ***/
+
+papaya.utilities.MathUtils.EPSILON = 0.00000001;
+
+
+
 /*** Static Methods ***/
 
 papaya.utilities.MathUtils.signum = function (val) {
@@ -30,6 +36,11 @@ papaya.utilities.MathUtils.lineDistance = function (point1x, point1y, point2x, p
     return Math.sqrt(xs + ys);
 };
 
+
+papaya.utilities.MathUtils.essentiallyEqual = function (a, b) {
+    return (a === b) || (Math.abs(a - b) <= ((Math.abs(a) > Math.abs(b) ? Math.abs(b) : Math.abs(a)) *
+        papaya.utilities.MathUtils.EPSILON));
+};
 
 
 function papayaRoundFast(val) {
