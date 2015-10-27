@@ -731,6 +731,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
         }
     }
 
+    this.container.coordinateChanged(this);
     viewer.drawViewer(false, crosshairsOnly);
 };
 
@@ -1723,15 +1724,50 @@ papaya.viewer.Viewer.prototype.windowLevelChanged = function (contrastChange, br
 
 
 
-papaya.viewer.Viewer.prototype.gotoCoordinate = function (coor) {
-    this.currentCoord.x = coor.x;
-    this.currentCoord.y = coor.y;
-    this.currentCoord.z = coor.z;
+papaya.viewer.Viewer.prototype.gotoCoordinate = function (coor, nosync) {
+    var xDim = this.volume.header.imageDimensions.xDim;
+    var yDim = this.volume.header.imageDimensions.yDim;
+    var zDim = this.volume.header.imageDimensions.zDim;
+
+    if (coor.x < 0) {
+        this.currentCoord.x = 0;
+    } else if (coor.x >= xDim) {
+        this.currentCoord.x = (xDim - 1);
+    } else {
+        this.currentCoord.x = coor.x;
+    }
+
+    if (coor.y < 0) {
+        this.currentCoord.y = 0;
+    } else if (coor.y >= yDim) {
+        this.currentCoord.y = (yDim - 1);
+    } else {
+        this.currentCoord.y = coor.y;
+    }
+
+    if (coor.z < 0) {
+        this.currentCoord.z = 0;
+    } else if (coor.z >= zDim) {
+        this.currentCoord.z = (zDim - 1);
+    } else {
+        this.currentCoord.z = coor.z;
+    }
 
     this.drawViewer(true);
     this.updateSliceSliderControl();
+
+    if (nosync) {
+        return;
+    }
+
+    this.container.coordinateChanged(this);
 };
 
+
+papaya.viewer.Viewer.prototype.gotoWorldCoordinate = function (coorWorld, nosync) {
+    var coor = new papaya.core.Coordinate();
+    this.gotoCoordinate(this.getIndexCoordinateAtWorld(coorWorld.x, coorWorld.y, coorWorld.z, coor), nosync);
+};
 
 
 papaya.viewer.Viewer.prototype.resizeViewer = function (dims) {
