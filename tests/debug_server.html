@@ -92,13 +92,8 @@
         /* DO NOT EDIT (end) */
 
         var params = [];
-        params["images"] = ["../data/sample_image.nii.gz", "../data/zstat1.nii.gz"];
+        params["images"] = ["../data/sample_image.nii.gz"];
         params["atlas"] = ["Talairach_labels_1mm"];
-        params["zstat1.nii.gz"] = {min:2, max:4};
-
-        setTimeout(function() {
-            papaya.Container.resetViewer(0);
-        }, 5000);
     </script>
 
     <title>URL Load</title>
