@@ -106,6 +106,18 @@ papaya.Container.restartViewer = function (index, refs, forceUrl, forceEncode) {
 papaya.Container.resetViewer = function (index, params) {
     if (!params) {
         params = papayaContainers[index].params;
+
+        if (params.loadedImages) {
+            params.images = params.loadedImages;
+        }
+
+        if (params.loadedEncodedImages) {
+            params.encodedImages = params.loadedEncodedImages;
+        }
+
+        if (params.loadedFiles) {
+            params.files = params.loadedFiles;
+        }
     }
 
     papayaContainers[index].viewer.resetViewer();
@@ -878,6 +890,9 @@ papaya.Container.prototype.loadNext = function () {
             }
 
             this.viewer.loadImage(imageRefs, true, false);
+        } else {
+            this.params.loadedImages = this.params.images;
+            this.params.images = [];
         }
     } else if (this.params.encodedImages) {
         if (this.loadingImageIndex < this.params.encodedImages.length) {
@@ -890,6 +905,9 @@ papaya.Container.prototype.loadNext = function () {
             }
 
             this.viewer.loadImage(imageRefs, false, true);
+        } else {
+            this.params.loadedEncodedImages = this.params.encodedImages;
+            this.params.encodedImages = [];
         }
     } else if (this.params.files) {
         if (this.loadingImageIndex < this.params.files.length) {
@@ -902,6 +920,9 @@ papaya.Container.prototype.loadNext = function () {
             }
 
             this.viewer.loadImage(imageRefs, false, false);
+        } else {
+            this.params.loadedFiles = this.params.files;
+            this.params.files = [];
         }
     }
 
