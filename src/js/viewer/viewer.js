@@ -2074,7 +2074,10 @@ papaya.viewer.Viewer.prototype.getCurrentScreenVolIndex = function () {
 
 papaya.viewer.Viewer.prototype.toggleWorldSpace = function () {
     this.worldSpace = !this.worldSpace;
-    this.reconcileOverlaySeriesPoint(this.currentScreenVolume);
+
+    if (this.container.syncOverlaySeries) {
+        this.reconcileOverlaySeriesPoint(this.currentScreenVolume);
+    }
 };
 
 
@@ -2457,7 +2460,7 @@ papaya.viewer.Viewer.prototype.sagittalSliderControlChanged = function () {
 
 papaya.viewer.Viewer.prototype.seriesSliderControlChanged = function () {
     this.currentScreenVolume.setTimepoint(parseInt(this.seriesSliderControl.val(), 10));
-    if (this.currentScreenVolume.isOverlay()) {
+    if (this.currentScreenVolume.isOverlay() && this.container.syncOverlaySeries) {
         this.reconcileOverlaySeriesPoint(this.currentScreenVolume);
     }
 
@@ -2524,7 +2527,7 @@ papaya.viewer.Viewer.prototype.doUpdateSliceSliderControl = function (slider, di
 papaya.viewer.Viewer.prototype.incrementSeriesPoint = function () {
     this.currentScreenVolume.incrementTimepoint();
 
-    if (this.currentScreenVolume.isOverlay()) {
+    if (this.currentScreenVolume.isOverlay() && this.container.syncOverlaySeries) {
         this.reconcileOverlaySeriesPoint(this.currentScreenVolume);
     }
 
@@ -2536,7 +2539,7 @@ papaya.viewer.Viewer.prototype.incrementSeriesPoint = function () {
 papaya.viewer.Viewer.prototype.decrementSeriesPoint = function () {
     this.currentScreenVolume.decrementTimepoint();
 
-    if (this.currentScreenVolume.isOverlay()) {
+    if (this.currentScreenVolume.isOverlay() && this.container.syncOverlaySeries) {
         this.reconcileOverlaySeriesPoint(this.currentScreenVolume);
     }
 

@@ -50,6 +50,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.combineParametric = false;
     this.dropTimeout = null;
     this.showRuler = false;
+    this.syncOverlaySeries = true;
     this.resetComponents();
 };
 
@@ -232,7 +233,7 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params)
                 "</div>" +
 
                 "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "series" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
-                "<span>Series: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>"+ " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> "  +
+                "<span>Series: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>&lt;</button>"+ " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>&gt;</button> "  +
                 "</div>" +
                 "&nbsp;&nbsp;&nbsp;" +
                 "<button type='button' " + (params.kioskMode ? "" : "style='float:right;margin-left:5px;' ") + "class='" + PAPAYA_CONTROL_SWAP_BUTTON_CSS + "'>Swap Main Slice</button> " +
@@ -558,6 +559,10 @@ papaya.Container.prototype.readGlobalParams = function() {
 
     if (this.params.orthogonal !== undefined) {  // default is true
         this.orthogonal = this.params.orthogonal;
+    }
+
+    if (this.params.syncOverlaySeries !== undefined) {  // default is true
+        this.syncOverlaySeries = this.params.syncOverlaySeries;
     }
 };
 
