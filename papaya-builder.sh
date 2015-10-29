@@ -14,7 +14,7 @@ if [[ "$JAVA_VER" < "17" ]]; then
     exit 1
 fi
 
-java -Xmx512M -jar lib/papaya-builder.jar $*
+java -Xmx512M -jar lib/papaya-builder.jar "$@"
 
 if [ -f build/papaya.js ]
 then
