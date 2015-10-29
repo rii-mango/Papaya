@@ -951,7 +951,7 @@ papaya.Container.prototype.findLoadableImage = function (name) {
     var ctr;
 
     for (ctr = 0; ctr < papayaLoadableImages.length; ctr += 1) {
-        if (papayaLoadableImages[ctr].name === name) {
+        if (papayaLoadableImages[ctr].name == name) {  // needs to be ==, not ===
             return papayaLoadableImages[ctr];
         }
     }
