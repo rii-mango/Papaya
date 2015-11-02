@@ -308,7 +308,7 @@ papaya.volume.Volume.prototype.finishedReadHeaderData = function () {
 
     if (this.header.hasError()) {
         this.error = this.header.error;
-        console.error(this.error);
+        console.error(this.error.stack);
         this.onFinishedRead(this);
         return;
     }
