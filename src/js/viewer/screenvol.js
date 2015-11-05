@@ -14,7 +14,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     /*jslint sub: true */
     this.volume = vol;
     this.lutName = lutName;
-    this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
+    this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage);
     this.screenMin = this.volume.header.imageRange.displayMin;
     this.screenMax = this.volume.header.imageRange.displayMax;
     this.imageMin = this.volume.header.imageRange.imageMin;
@@ -43,12 +43,12 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
         if (parametric) {
             if (screenParams.negative_lut !== undefined) {
                 this.lutName = screenParams.negative_lut;
-                this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
+                this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage);
             }
         } else {
             if (screenParams.lut !== undefined) {
                 this.lutName = screenParams.lut;
-                this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage, true);
+                this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage);
             }
         }
 
@@ -226,7 +226,7 @@ papaya.viewer.ScreenVolume.prototype.isUsingColorTable = function (lutName) {
 
 
 papaya.viewer.ScreenVolume.prototype.changeColorTable = function (viewer, lutName) {
-    this.colorTable = new papaya.viewer.ColorTable(lutName, !this.isOverlay(), true);
+    this.colorTable = new papaya.viewer.ColorTable(lutName, !this.isOverlay());
     this.lutName = lutName;
     viewer.drawViewer(true);
 };
