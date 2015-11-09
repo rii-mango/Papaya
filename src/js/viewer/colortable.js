@@ -10,8 +10,10 @@ papaya.viewer = papaya.viewer || {};
 
 
 /*** Constructor ***/
-papaya.viewer.ColorTable = papaya.viewer.ColorTable || function (lutName, baseImage, gradation) {
-    this.lut = papaya.viewer.ColorTable.findLUT(lutName);
+papaya.viewer.ColorTable = papaya.viewer.ColorTable || function (lutName, baseImage) {
+    var lut = papaya.viewer.ColorTable.findLUT(lutName);
+
+    this.lutData = lut.data;
     this.maxLUT = 0;
     this.minLUT = 0;
     this.knotThresholds = [];
@@ -22,9 +24,9 @@ papaya.viewer.ColorTable = papaya.viewer.ColorTable || function (lutName, baseIm
     this.LUTarrayB = new Array(256);
     this.isBaseImage = baseImage;
 
-    this.knotMin = this.lut[0];
-    this.knotMax = this.lut[this.lut.length - 1];
-    this.useGradation = gradation;
+    this.knotMin = this.lutData[0];
+    this.knotMax = this.lutData[this.lutData.length - 1];
+    this.useGradation = (typeof lut.gradation === "undefined") || lut.gradation;
 
     this.canvasIcon = document.createElement("canvas");
     this.canvasIcon.width = papaya.viewer.ColorTable.ICON_SIZE;
@@ -50,22 +52,26 @@ papaya.viewer.ColorTable = papaya.viewer.ColorTable || function (lutName, baseIm
 
 /*** Static Pseudo-constants ***/
 
-papaya.viewer.ColorTable.TABLE_GRAYSCALE = {"name": "Grayscale", "data": [[0, 0, 0, 0], [1, 1, 1, 1]]};
+papaya.viewer.ColorTable.TABLE_GRAYSCALE = {"name": "Grayscale", "data": [[0, 0, 0, 0], [1, 1, 1, 1]],
+    "gradation": true};
 papaya.viewer.ColorTable.TABLE_SPECTRUM = {"name": "Spectrum", "data": [[0, 0, 0, 0], [0.1, 0, 0, 1], [0.33, 0, 1, 1],
-    [0.5, 0, 1, 0], [0.66, 1, 1, 0], [0.9, 1, 0, 0], [1, 1, 1, 1]]};
-papaya.viewer.ColorTable.TABLE_RED2YELLOW = {"name": "Overlay (Positives)", "data": [[0, 1, 0, 0], [1, 1, 1, 0]]};
-papaya.viewer.ColorTable.TABLE_BLUE2GREEN = {"name": "Overlay (Negatives)", "data": [[0, 0, 0, 1], [1, 0, 1, 0]]};
+    [0.5, 0, 1, 0], [0.66, 1, 1, 0], [0.9, 1, 0, 0], [1, 1, 1, 1]], "gradation": true};
+papaya.viewer.ColorTable.TABLE_RED2YELLOW = {"name": "Overlay (Positives)", "data": [[0, 1, 0, 0], [1, 1, 1, 0]],
+    "gradation": true};
+papaya.viewer.ColorTable.TABLE_BLUE2GREEN = {"name": "Overlay (Negatives)", "data": [[0, 0, 0, 1], [1, 0, 1, 0]],
+    "gradation": true};
 papaya.viewer.ColorTable.TABLE_HOTANDCOLD = {"name": "Hot-and-Cold", "data": [[0, 0, 0, 1], [0.15, 0, 1, 1],
-    [0.3, 0, 1, 0], [0.45, 0, 0, 0], [0.5, 0, 0, 0], [0.55, 0, 0, 0], [0.7, 1, 1, 0], [0.85, 1, 0, 0], [1, 1, 1, 1]]};
+    [0.3, 0, 1, 0], [0.45, 0, 0, 0], [0.5, 0, 0, 0], [0.55, 0, 0, 0], [0.7, 1, 1, 0], [0.85, 1, 0, 0], [1, 1, 1, 1]],
+    "gradation": true};
 papaya.viewer.ColorTable.TABLE_GOLD = {"name": "Gold", "data": [[0, 0, 0, 0], [0.13, 0.19, 0.03, 0],
     [0.25, 0.39, 0.12, 0], [0.38, 0.59, 0.26, 0], [0.50, 0.80, 0.46, 0.08], [0.63, 0.99, 0.71, 0.21],
-    [0.75, 0.99, 0.88, 0.34], [0.88, 0.99, 0.99, 0.48], [1, 0.90, 0.95, 0.61]]};
+    [0.75, 0.99, 0.88, 0.34], [0.88, 0.99, 0.99, 0.48], [1, 0.90, 0.95, 0.61]], "gradation": true};
 papaya.viewer.ColorTable.TABLE_RED2WHITE = {"name": "Red Overlay", "data": [[0, 0.75, 0, 0], [0.5, 1, 0.5, 0],
-    [0.95, 1, 1, 0], [1, 1, 1, 1]]};
+    [0.95, 1, 1, 0], [1, 1, 1, 1]], "gradation": true};
 papaya.viewer.ColorTable.TABLE_GREEN2WHITE = {"name": "Green Overlay", "data": [[0, 0, 0.75, 0], [0.5, 0.5, 1, 0],
-    [0.95, 1, 1, 0], [1, 1, 1, 1]]};
+    [0.95, 1, 1, 0], [1, 1, 1, 1]], "gradation": true};
 papaya.viewer.ColorTable.TABLE_BLUE2WHITE = {"name": "Blue Overlay", "data": [[0, 0, 0, 1], [0.5, 0, 0.5, 1],
-    [0.95, 0, 1, 1], [1, 1, 1, 1]]};
+    [0.95, 0, 1, 1], [1, 1, 1, 1]], "gradation": true};
 
 papaya.viewer.ColorTable.ARROW_ICON = "data:image/gif;base64,R0lGODlhCwARAPfGMf//////zP//mf//Zv//M///AP/M///MzP/Mmf/M" +
     "Zv/MM//MAP+Z//+ZzP+Zmf+ZZv+ZM/+ZAP9m//9mzP9mmf9mZv9mM/9mAP8z//8zzP8zmf8zZv8zM/8zAP8A//8AzP8Amf8AZv8AM/8AAMz//8z/" +
@@ -114,18 +120,18 @@ papaya.viewer.ColorTable.findLUT = function (name) {
     var ctr;
 
     for (ctr = 0; ctr < papaya.viewer.ColorTable.TABLE_ALL.length; ctr += 1) {
-        if (papaya.viewer.ColorTable.TABLE_ALL[ctr].name === name) {
-            return papaya.viewer.ColorTable.TABLE_ALL[ctr].data;
+        if (papaya.viewer.ColorTable.TABLE_ALL[ctr].name == name) {  // needs to be ==, not ===
+            return papaya.viewer.ColorTable.TABLE_ALL[ctr];
         }
     }
 
-    return papaya.viewer.ColorTable.TABLE_GRAYSCALE.data;
+    return papaya.viewer.ColorTable.TABLE_GRAYSCALE;
 };
 
 
 
 papaya.viewer.ColorTable.addCustomLUT = function (lut) {
-    if (papaya.viewer.ColorTable.findLUT(lut.name) === papaya.viewer.ColorTable.TABLE_GRAYSCALE.data) {
+    if (papaya.viewer.ColorTable.findLUT(lut.name).data === papaya.viewer.ColorTable.TABLE_GRAYSCALE.data) {
         papaya.viewer.ColorTable.TABLE_ALL.push(lut);
     }
 };
@@ -152,11 +158,11 @@ papaya.viewer.ColorTable.prototype.updateLUT = function (minLUTnew, maxLUTnew) {
     this.minLUT = minLUTnew;
     range = this.maxLUT - this.minLUT;
 
-    for (ctr = 0; ctr < this.lut.length; ctr += 1) {
-        this.knotThresholds[ctr] = (this.lut[ctr][0] * range) + this.minLUT;
+    for (ctr = 0; ctr < this.lutData.length; ctr += 1) {
+        this.knotThresholds[ctr] = (this.lutData[ctr][0] * range) + this.minLUT;
     }
 
-    for (ctr = 0; ctr < (this.lut.length - 1); ctr += 1) {
+    for (ctr = 0; ctr < (this.lutData.length - 1); ctr += 1) {
         this.knotRangeRatios[ctr] = papaya.viewer.ColorTable.LUT_MAX / (this.knotThresholds[ctr + 1] -
             this.knotThresholds[ctr]);
     }
@@ -171,22 +177,22 @@ papaya.viewer.ColorTable.prototype.updateLUT = function (minLUTnew, maxLUTnew) {
             this.LUTarrayG[ctr] = this.knotMax[2] * papaya.viewer.ColorTable.LUT_MAX;
             this.LUTarrayB[ctr] = this.knotMax[3] * papaya.viewer.ColorTable.LUT_MAX;
         } else {
-            for (ctrKnot = 0; ctrKnot < (this.lut.length - 1); ctrKnot += 1) {
+            for (ctrKnot = 0; ctrKnot < (this.lutData.length - 1); ctrKnot += 1) {
                 if ((ctr > this.knotThresholds[ctrKnot]) && (ctr <= this.knotThresholds[ctrKnot + 1])) {
                     if (this.useGradation) {
                         value = (((ctr - this.knotThresholds[ctrKnot]) * this.knotRangeRatios[ctrKnot]) + 0.5) /
                             papaya.viewer.ColorTable.LUT_MAX;
 
-                        this.LUTarrayR[ctr] = (((1 - value) * this.lut[ctrKnot][1]) +
-                            (value * this.lut[ctrKnot + 1][1])) * papaya.viewer.ColorTable.LUT_MAX;
-                        this.LUTarrayG[ctr] = (((1 - value) * this.lut[ctrKnot][2]) +
-                            (value * this.lut[ctrKnot + 1][2])) * papaya.viewer.ColorTable.LUT_MAX;
-                        this.LUTarrayB[ctr] = (((1 - value) * this.lut[ctrKnot][3]) +
-                            (value * this.lut[ctrKnot + 1][3])) * papaya.viewer.ColorTable.LUT_MAX;
+                        this.LUTarrayR[ctr] = (((1 - value) * this.lutData[ctrKnot][1]) +
+                            (value * this.lutData[ctrKnot + 1][1])) * papaya.viewer.ColorTable.LUT_MAX;
+                        this.LUTarrayG[ctr] = (((1 - value) * this.lutData[ctrKnot][2]) +
+                            (value * this.lutData[ctrKnot + 1][2])) * papaya.viewer.ColorTable.LUT_MAX;
+                        this.LUTarrayB[ctr] = (((1 - value) * this.lutData[ctrKnot][3]) +
+                            (value * this.lutData[ctrKnot + 1][3])) * papaya.viewer.ColorTable.LUT_MAX;
                     } else {
-                        this.LUTarrayR[ctr] = (this.lut[ctrKnot][1]) * papaya.viewer.ColorTable.LUT_MAX;
-                        this.LUTarrayG[ctr] = (this.lut[ctrKnot][2]) * papaya.viewer.ColorTable.LUT_MAX;
-                        this.LUTarrayB[ctr] = (this.lut[ctrKnot][3]) * papaya.viewer.ColorTable.LUT_MAX;
+                        this.LUTarrayR[ctr] = (this.lutData[ctrKnot][1]) * papaya.viewer.ColorTable.LUT_MAX;
+                        this.LUTarrayG[ctr] = (this.lutData[ctrKnot][2]) * papaya.viewer.ColorTable.LUT_MAX;
+                        this.LUTarrayB[ctr] = (this.lutData[ctrKnot][3]) * papaya.viewer.ColorTable.LUT_MAX;
                     }
                 }
             }
