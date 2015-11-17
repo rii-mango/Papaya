@@ -2620,8 +2620,26 @@ papaya.viewer.Viewer.prototype.isShowingLowerCrosshairs = function () {
 };
 
 
+
 papaya.viewer.Viewer.prototype.restart = function (refs, forceUrl, forceEncode) {
     this.resetViewer();
     this.container.toolbar.updateImageButtons();
     this.loadImage(refs, forceUrl, forceEncode);
+};
+
+
+
+papaya.viewer.Viewer.prototype.removeOverlay = function (imageIndex) {
+    var screenVol, screenVolNeg;
+
+    screenVol = this.container.viewer.screenVolumes[imageIndex];
+    screenVolNeg = screenVol.negativeScreenVol;
+
+    this.closeOverlayByRef(screenVol);
+
+    if (this.container.combineParametric) {
+        this.closeOverlayByRef(screenVolNeg);
+    }
+
+    this.drawViewer(true, false);
 };

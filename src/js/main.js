@@ -132,6 +132,30 @@ papaya.Container.resetViewer = function (index, params) {
 
 
 
+papaya.Container.removeImage = function (index, imageIndex) {
+    if (imageIndex < 1) {
+        console.log("Cannot remove the base image.  Try papaya.Container.resetViewer() instead.");
+    }
+
+    papayaContainers[index].viewer.removeOverlay(imageIndex);
+};
+
+
+
+papaya.Container.addImage = function (index, imageRef, imageParams) {
+    if (imageParams) {
+        papayaContainers[index].params = $.extend({}, papayaContainers[index].params, imageParams);
+    }
+
+    if (papayaContainers[index].params.images) {
+        papayaContainers[index].viewer.loadImage(imageRef, true, false);
+    } else if (papayaContainers[index].params.encodedImages) {
+        papayaContainers[index].viewer.loadImage(imageRef, false, true);
+    }
+};
+
+
+
 papaya.Container.findParameters = function (containerHTML) {
     var viewerHTML, paramsName, loadedParams = null;
 

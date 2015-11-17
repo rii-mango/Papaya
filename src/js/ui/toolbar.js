@@ -671,16 +671,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             }
         } else if (action.startsWith("CloseOverlay")) {
             imageIndex = parseInt(action.substring(action.lastIndexOf("-") + 1), 10);
-            screenVol = this.container.viewer.screenVolumes[imageIndex];
-            screenVolNeg = screenVol.negativeScreenVol;
-
-            this.container.viewer.closeOverlayByRef(screenVol);
-
-            if (this.container.combineParametric) {
-                this.container.viewer.closeOverlayByRef(screenVolNeg);
-            }
-
-            this.container.viewer.drawViewer(true, false);
+            this.container.viewer.removeOverlay(imageIndex);
         }
     }
 };
