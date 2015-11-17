@@ -143,14 +143,23 @@ papaya.Container.removeImage = function (index, imageIndex) {
 
 
 papaya.Container.addImage = function (index, imageRef, imageParams) {
+    var imageRefs;
+
     if (imageParams) {
         papayaContainers[index].params = $.extend({}, papayaContainers[index].params, imageParams);
     }
 
+    if (!(imageRef instanceof Array)) {
+        imageRefs = [];
+        imageRefs[0] = imageRef;
+    } else {
+        imageRefs = imageRef;
+    }
+
     if (papayaContainers[index].params.images) {
-        papayaContainers[index].viewer.loadImage(imageRef, true, false);
+        papayaContainers[index].viewer.loadImage(imageRefs, true, false);
     } else if (papayaContainers[index].params.encodedImages) {
-        papayaContainers[index].viewer.loadImage(imageRef, false, true);
+        papayaContainers[index].viewer.loadImage(imageRefs, false, true);
     }
 };
 
