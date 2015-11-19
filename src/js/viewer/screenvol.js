@@ -23,6 +23,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.currentTimepoint = 0;
     this.parametric = (parametric !== undefined) && parametric;
     this.negativeScreenVol = null;
+    this.dti = false;
     this.rgb = (this.volume.header.imageType.datatype === papaya.volume.ImageType.DATATYPE_RGB);
     this.hasCheckedImageRange = false;
 
@@ -111,7 +112,7 @@ papaya.viewer.ScreenVolume.prototype.findImageRange = function () {
         for (ctrZ = 0; ctrZ < zDim; ctrZ += 1) {
             for (ctrY = 0; ctrY < yDim; ctrY += 1) {
                 for (ctrX = 0; ctrX < xDim; ctrX += 1) {
-                    value = this.volume.getVoxelAtIndex(ctrX, ctrY, ctrZ, 0, true);
+                    value = this.volume.getVoxelAtIndexNative(ctrX, ctrY, ctrZ, 0, true);
 
                     if (value > max) {
                         max = value;
@@ -328,4 +329,14 @@ papaya.viewer.ScreenVolume.prototype.setCurrentTime = function (seconds) {
     } else {
         this.setTimepoint(parseInt(Math.round(seconds / secondsPerSeriesPoint), 10));
     }
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.initDTI = function () {
+    this.dti = true;
+    this.rgb = true;
+    this.volume.header.imageDimensions.timepoints = 1;
+    this.volume.numTimepoints = 1;
+    this.volume.transform.voxelValue.dti = true;
 };

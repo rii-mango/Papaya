@@ -66,10 +66,21 @@ papaya.volume.Orientation.isValidOrientationString = function (orientationStr) {
 
 /*** Prototype Methods ***/
 
-papaya.volume.Orientation.prototype.convertIndexToOffset2 = function (xLoc, yLoc, zLoc) {
+papaya.volume.Orientation.prototype.convertIndexToOffsetNative = function (xLoc, yLoc, zLoc) {
     return (xLoc * this.xIncrement) + (yLoc * this.yIncrement) + (zLoc * this.zIncrement);
 };
 
+
+
+papaya.volume.Orientation.prototype.convertIndexToOffset = function (xLoc, yLoc, zLoc) {
+    var xLoc2, yLoc2, zLoc2;
+
+    xLoc2 = papayaFloorFast((xLoc * this.orientMat[0][0]) + (yLoc * this.orientMat[0][1]) + (zLoc * this.orientMat[0][2]) + (this.orientMat[0][3]));
+    yLoc2 = papayaFloorFast((xLoc * this.orientMat[1][0]) + (yLoc * this.orientMat[1][1]) + (zLoc * this.orientMat[1][2]) + (this.orientMat[1][3]));
+    zLoc2 = papayaFloorFast((xLoc * this.orientMat[2][0]) + (yLoc * this.orientMat[2][1]) + (zLoc * this.orientMat[2][2]) + (this.orientMat[2][3]));
+
+    return (xLoc2 * this.xIncrement) + (yLoc2 * this.yIncrement) + (zLoc2 * this.zIncrement);
+}
 
 
 papaya.volume.Orientation.prototype.convertCoordinate = function (coord, coordConverted) {

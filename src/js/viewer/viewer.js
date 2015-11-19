@@ -304,9 +304,20 @@ papaya.viewer.Viewer.prototype.atlasLoaded = function () {
 
 
 papaya.viewer.Viewer.prototype.initializeViewer = function () {
-    var message, viewer;
+    var message, viewer, screenParams, dti;
 
     viewer = this;
+
+    screenParams = this.container.params[this.volume.fileName];
+    dti = (screenParams && screenParams.dti) || papaya.Container.dti;
+
+    if (dti) {
+        papaya.Container.dti = true;
+    }
+
+    if (dti && (this.volume.numTimepoints !== 3)) {
+        this.volume.error = new Error("DTI vector series must have 3 series points!");
+    }
 
     if (this.volume.hasError()) {
         message = this.volume.error.message;
@@ -316,6 +327,11 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
     } else {
         this.screenVolumes[0] = new papaya.viewer.ScreenVolume(this.volume, this.container.params,
             papaya.viewer.ColorTable.DEFAULT_COLOR_TABLE.name, true);
+
+        if (dti) {
+            this.screenVolumes[0].initDTI();
+        }
+
         this.setCurrentScreenVol(0);
 
         this.axialSlice = new papaya.viewer.ScreenSlice(this.volume, papaya.viewer.ScreenSlice.DIRECTION_AXIAL,

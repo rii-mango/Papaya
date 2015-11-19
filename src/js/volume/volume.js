@@ -214,8 +214,14 @@ papaya.volume.Volume.prototype.readNextEncodedData = function (vol, index, names
 
 
 
+papaya.volume.Volume.prototype.getVoxelAtIndexNative = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
+    return this.transform.getVoxelAtIndexNative(ctrX, ctrY, ctrZ, 0, useNN);
+};
+
+
+
 papaya.volume.Volume.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
-    return this.transform.getVoxelAtIndex(ctrX, ctrY, ctrZ, timepoint, useNN);
+    return this.transform.getVoxelAtIndex(ctrX, ctrY, ctrZ, 0, useNN);
 };
 
 

@@ -18,8 +18,10 @@ papaya.ui.Toolbar = papaya.ui.Toolbar || function (container) {
 };
 
 
+/*** Static Fields ***/
 
 papaya.ui.Toolbar.SIZE = 22;
+
 
 // http://dataurl.net/#dataurlmaker
 papaya.ui.Toolbar.ICON_IMAGESPACE = "data:image/gif;base64,R0lGODlhFAAUAPcAMf//////GP////////////////////////////////" +
@@ -91,6 +93,20 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "File", "icons": null,
         {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
             "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
         {"type": "spacer"},
+        {"label": "Close All", "action": "CloseAllImages"}
+    ]
+};
+
+papaya.ui.Toolbar.DTI_VECTOR_FILE_MENU_DATA = {"label": "File", "icons": null,
+    "items": [
+        {"label": "Add DTI Vector Series...", "action": "OpenImage", "type": "file"},
+        {"label": "Close All", "action": "CloseAllImages"}
+    ]
+};
+
+papaya.ui.Toolbar.DTI_FA_FILE_MENU_DATA = {"label": "File", "icons": null,
+    "items": [
+        {"label": "Apply FA...", "action": "OpenImage", "type": "file"},
         {"label": "Close All", "action": "CloseAllImages"}
     ]
 };
@@ -256,7 +272,15 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
             this.buildMenu(papaya.ui.Toolbar.MENU_DATA_KIOSK.menus[ctr], null, this.viewer, null);
         }
     } else {
-        if ((this.container.viewer.screenVolumes.length > 0) && this.container.viewer.screenVolumes[0].rgb) {
+        if (papaya.Container.dti) {
+            if (this.container.viewer.screenVolumes.length === 0) {
+                papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.DTI_VECTOR_FILE_MENU_DATA;
+            } else if (this.container.viewer.screenVolumes.length === 1) {
+                papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.DTI_FA_FILE_MENU_DATA;
+            } else {
+                papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.RGB_FILE_MENU_DATA;
+            }
+        } else if ((this.container.viewer.screenVolumes.length > 0) && this.container.viewer.screenVolumes[0].rgb) {
             papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.RGB_FILE_MENU_DATA;
         } else {
             papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.FILE_MENU_DATA;
@@ -465,28 +489,30 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
 
     this.imageMenus = [];
 
-    for (ctr = this.viewer.screenVolumes.length - 1; ctr >= 0; ctr -= 1) {
-        screenVol = this.viewer.screenVolumes[ctr];
-        dataUrl = screenVol.colorTable.icon;
+    if (!papaya.Container.dti) {
+        for (ctr = this.viewer.screenVolumes.length - 1; ctr >= 0; ctr -= 1) {
+            screenVol = this.viewer.screenVolumes[ctr];
+            dataUrl = screenVol.colorTable.icon;
 
-        data = {
-            "menus" : [
-                {"label": "ImageButton", "icons": [dataUrl], "items": null, "imageButton": true}
-            ]
-        };
+            data = {
+                "menus" : [
+                    {"label": "ImageButton", "icons": [dataUrl], "items": null, "imageButton": true}
+                ]
+            };
 
-        if (ctr === 0) {
-            if (screenVol.rgb) {
-                data.menus[0].items = papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA.items;
+            if (ctr === 0) {
+                if (screenVol.rgb) {
+                    data.menus[0].items = papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA.items;
+                } else {
+                    data.menus[0].items = papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA.items;
+                }
             } else {
-                data.menus[0].items = papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA.items;
+                data.menus[0].items = papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items;
             }
-        } else {
-            data.menus[0].items = papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items;
-        }
 
-        if (!this.container.combineParametric || !screenVol.parametric) {
-            this.imageMenus.push((this.buildMenu(data.menus[0], null, screenVol, ctr.toString())));
+            if (!this.container.combineParametric || !screenVol.parametric) {
+                this.imageMenus.push((this.buildMenu(data.menus[0], null, screenVol, ctr.toString())));
+            }
         }
     }
 };

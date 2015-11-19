@@ -74,7 +74,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
 
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
             timepoint = this.screenVolumes[ctr].currentTimepoint;
-            rgb = this.screenVolumes[ctr].rgb;
+            rgb = this.screenVolumes[0].rgb;
 
             for (ctrY = 0; ctrY < this.yDim; ctrY += 1) {
                 for (ctrX = 0; ctrX < this.xDim; ctrX += 1) {
@@ -94,12 +94,14 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                         index = ((ctrY * this.xDim) + ctrX) * 4;
                         this.imageData[ctr][index] = value;
 
-                        if ((thresholdAlpha > 0) || (ctr === 0)) {
+                        if (ctr === 0) {
                             /*jslint bitwise: true */
                             this.imageDataDraw.data[index] = (value >> 16) & 0xff;
                             this.imageDataDraw.data[index + 1] = (value >> 8) & 0xff;
                             this.imageDataDraw.data[index + 2] = (value) & 0xff;
                             this.imageDataDraw.data[index + 3] = thresholdAlpha;
+                        } else {
+                            this.imageDataDraw.data[index + 3] = Math.min(255, papayaRoundFast(255 * value));
                         }
                     } else {
                         if (worldSpace) {
@@ -176,7 +178,7 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
 
     if (this.imageData.length === this.screenVolumes.length) {
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
-            rgb = this.screenVolumes[ctr].rgb;
+            rgb = this.screenVolumes[0].rgb;
 
             for (ctrY = 0; ctrY < this.yDim; ctrY += 1) {
                 for (ctrX = 0; ctrX < this.xDim; ctrX += 1) {
@@ -188,11 +190,15 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                     value = this.imageData[ctr][index];
 
                     if (rgb) {
-                        /*jslint bitwise: true */
-                        this.imageDataDraw.data[index] = (value >> 16) & 0xff;
-                        this.imageDataDraw.data[index + 1] = (value >> 8) & 0xff;
-                        this.imageDataDraw.data[index + 2] = (value) & 0xff;
-                        this.imageDataDraw.data[index + 3] = thresholdAlpha;
+                        if (ctr === 0) {
+                            /*jslint bitwise: true */
+                            this.imageDataDraw.data[index] = (value >> 16) & 0xff;
+                            this.imageDataDraw.data[index + 1] = (value >> 8) & 0xff;
+                            this.imageDataDraw.data[index + 2] = (value) & 0xff;
+                            this.imageDataDraw.data[index + 3] = thresholdAlpha;
+                        } else {
+                            this.imageDataDraw.data[index + 3] = Math.min(255, papayaRoundFast(255 * value));
+                        }
                     } else {
                         if ((!this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMin)) ||
                             (this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMin)) ||

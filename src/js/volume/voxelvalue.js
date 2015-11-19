@@ -35,21 +35,54 @@ papaya.volume.VoxelValue = papaya.volume.VoxelValue || function (imageData, imag
     this.usesGlobalDataScale = imageRange.usesGlobalDataScale;
     this.interpFirstPass = [[0, 0], [0, 0]];
     this.interpSecondPass = [0, 0];
+    this.dti = false;
 };
 
 
 /*** Prototype Methods ***/
 
-papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
+papaya.volume.VoxelValue.prototype.getVoxelAtIndexNative = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
     if (useNN) {
         ctrX = papayaRoundFast(ctrX);
         ctrY = papayaRoundFast(ctrY);
         ctrZ = papayaRoundFast(ctrZ);
 
-        return this.getVoxelAtOffset(this.orientation.convertIndexToOffset2(ctrX, ctrY, ctrZ), timepoint, ctrX, ctrY, ctrZ);
+        return this.getVoxelAtOffset(this.orientation.convertIndexToOffsetNative(ctrX, ctrY, ctrZ), timepoint, ctrX, ctrY, ctrZ);
     }
 
     return this.getVoxelAtIndexLinear(ctrX, ctrY, ctrZ, timepoint);
+};
+
+
+
+papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
+    if (this.dti) {
+        return this.getDTIValueAtIndex(ctrX, ctrY, ctrZ);
+    }
+
+    if (useNN) {
+        ctrX = papayaRoundFast(ctrX);
+        ctrY = papayaRoundFast(ctrY);
+        ctrZ = papayaRoundFast(ctrZ);
+
+        return this.getVoxelAtOffset(this.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ), timepoint, ctrX, ctrY, ctrZ);
+    }
+
+    return this.getVoxelAtIndexLinear(ctrX, ctrY, ctrZ, timepoint);
+};
+
+
+
+papaya.volume.VoxelValue.prototype.getDTIValueAtIndex = function (ctrX, ctrY, ctrZ) {
+    /*jslint bitwise: true */
+
+    var red, green, blue;
+
+    red = papayaRoundFast(Math.abs((255 * this.getVoxelAtOffset(this.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ), 0, ctrX, ctrY, ctrZ))));
+    green = papayaRoundFast(Math.abs((255 * this.getVoxelAtOffset(this.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ), 1, ctrX, ctrY, ctrZ))));
+    blue = papayaRoundFast(Math.abs((255 * this.getVoxelAtOffset(this.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ), 2, ctrX, ctrY, ctrZ))));
+
+    return (((red & 0xFF) << 16) | ((green & 0xFF) << 8) | (blue & 0xFF));
 };
 
 
@@ -94,9 +127,9 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc,
     if (interpolateX && interpolateY && interpolateZ) {
         for (ctrX = 0; ctrX < 2; ctrX +=  1) {
             for (ctrY = 0; ctrY < 2; ctrY += 1) {
-                offset = this.orientation.convertIndexToOffset2(xInt + ctrX, yInt + ctrY, zInt);
+                offset = this.orientation.convertIndexToOffsetNative(xInt + ctrX, yInt + ctrY, zInt);
                 tempVal1 = this.getVoxelAtOffset(offset, timepoint, xInt + ctrX, yInt + ctrY, zInt) * (1 - fracZ);
-                offset = this.orientation.convertIndexToOffset2(xInt + ctrX, yInt + ctrY, zInt + 1);
+                offset = this.orientation.convertIndexToOffsetNative(xInt + ctrX, yInt + ctrY, zInt + 1);
                 tempVal2 = this.getVoxelAtOffset(offset, timepoint, xInt + ctrX, yInt + ctrY, zInt + 1) * fracZ;
                 this.interpFirstPass[ctrX][ctrY] = tempVal1 + tempVal2;
             }
@@ -108,9 +141,9 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc,
         value = (this.interpSecondPass[0] * (1 - fracX)) + (this.interpSecondPass[1] * fracX);
     } else if (interpolateX && interpolateY && !interpolateZ) {
         for (ctrX = 0; ctrX < 2; ctrX += 1) {
-            offset = this.orientation.convertIndexToOffset2(xInt + ctrX, yInt, zInt);
+            offset = this.orientation.convertIndexToOffsetNative(xInt + ctrX, yInt, zInt);
             tempVal1 = this.getVoxelAtOffset(offset, timepoint, xInt + ctrX, yInt, zInt) * (1 - fracY);
-            offset = this.orientation.convertIndexToOffset2(xInt + ctrX, yInt + 1, zInt);
+            offset = this.orientation.convertIndexToOffsetNative(xInt + ctrX, yInt + 1, zInt);
             tempVal2 = this.getVoxelAtOffset(offset, timepoint, xInt + ctrX, yInt + 1, zInt) * fracY;
             this.interpSecondPass[ctrX] = tempVal1 + tempVal2;
         }
@@ -118,9 +151,9 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc,
         value = (this.interpSecondPass[0] * (1 - fracX)) + (this.interpSecondPass[1] * fracX);
     } else if (interpolateX && !interpolateY && interpolateZ) {
         for (ctrX = 0; ctrX < 2; ctrX += 1) {
-            offset = this.orientation.convertIndexToOffset2(xInt + ctrX, yInt, zInt);
+            offset = this.orientation.convertIndexToOffsetNative(xInt + ctrX, yInt, zInt);
             tempVal1 = this.getVoxelAtOffset(offset, timepoint, xInt + ctrX, yInt, zInt) * (1 - fracZ);
-            offset = this.orientation.convertIndexToOffset2(xInt + ctrX, yInt, zInt + 1);
+            offset = this.orientation.convertIndexToOffsetNative(xInt + ctrX, yInt, zInt + 1);
             tempVal2 = this.getVoxelAtOffset(offset, timepoint, xInt + ctrX, yInt, zInt + 1) * fracZ;
             this.interpSecondPass[ctrX] = tempVal1 + tempVal2;
         }
@@ -128,34 +161,34 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexLinear = function (xLoc, yLoc,
         value = (this.interpSecondPass[0] * (1 - fracX)) + (this.interpSecondPass[1] * fracX);
     } else if (!interpolateX && interpolateY && interpolateZ) {
         for (ctrY = 0; ctrY < 2; ctrY += 1) {
-            offset = this.orientation.convertIndexToOffset2(xInt, yInt + ctrY, zInt);
+            offset = this.orientation.convertIndexToOffsetNative(xInt, yInt + ctrY, zInt);
             tempVal1 = this.getVoxelAtOffset(offset, timepoint, xInt, yInt + ctrY, zInt) * (1 - fracZ);
-            offset = this.orientation.convertIndexToOffset2(xInt, yInt + ctrY, zInt + 1);
+            offset = this.orientation.convertIndexToOffsetNative(xInt, yInt + ctrY, zInt + 1);
             tempVal2 = this.getVoxelAtOffset(offset, timepoint, xInt, yInt + ctrY, zInt + 1) * fracZ;
             this.interpSecondPass[ctrY] = tempVal1 + tempVal2;
         }
 
         value = (this.interpSecondPass[0] * (1 - fracY)) + (this.interpSecondPass[1] * fracY);
     } else if (!interpolateX && !interpolateY && interpolateZ) {
-        offset = this.orientation.convertIndexToOffset2(xInt, yInt, zInt);
+        offset = this.orientation.convertIndexToOffsetNative(xInt, yInt, zInt);
         tempVal1 = this.getVoxelAtOffset(offset, timepoint, xInt, yInt, zInt)* (1 - fracZ);
-        offset = this.orientation.convertIndexToOffset2(xInt, yInt, zInt + 1);
+        offset = this.orientation.convertIndexToOffsetNative(xInt, yInt, zInt + 1);
         tempVal2 = this.getVoxelAtOffset(offset, timepoint, xInt, yInt, zInt + 1) * fracZ;
         value = tempVal1 + tempVal2;
     } else if (!interpolateX && interpolateY && !interpolateZ) {
-        offset = this.orientation.convertIndexToOffset2(xInt, yInt, zInt);
+        offset = this.orientation.convertIndexToOffsetNative(xInt, yInt, zInt);
         tempVal1 = this.getVoxelAtOffset(offset, timepoint, xInt, yInt, zInt) * (1 - fracY);
-        offset = this.orientation.convertIndexToOffset2(xInt, yInt + 1, zInt);
+        offset = this.orientation.convertIndexToOffsetNative(xInt, yInt + 1, zInt);
         tempVal2 = this.getVoxelAtOffset(offset, timepoint, xInt, yInt + 1, zInt) * fracY;
         value = tempVal1 + tempVal2;
     } else if (interpolateX && !interpolateY && !interpolateZ) {
-        offset = this.orientation.convertIndexToOffset2(xInt, yInt, zInt);
+        offset = this.orientation.convertIndexToOffsetNative(xInt, yInt, zInt);
         tempVal1 = this.getVoxelAtOffset(offset, timepoint, xInt, yInt, zInt) * (1 - fracX);
-        offset = this.orientation.convertIndexToOffset2(xInt + 1, yInt, zInt);
+        offset = this.orientation.convertIndexToOffsetNative(xInt + 1, yInt, zInt);
         tempVal2 = this.getVoxelAtOffset(offset, timepoint, xInt + 1, yInt, zInt)* fracX;
         value = tempVal1 + tempVal2;
     } else { // if(!interpolateX && !interpolateY && !interpolateZ)
-        value = this.getVoxelAtOffset(this.orientation.convertIndexToOffset2(xLoc, yLoc, zLoc), timepoint, xLoc, yLoc, zLoc);
+        value = this.getVoxelAtOffset(this.orientation.convertIndexToOffsetNative(xLoc, yLoc, zLoc), timepoint, xLoc, yLoc, zLoc);
     }
 
     return value;
