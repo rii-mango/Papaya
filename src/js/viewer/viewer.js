@@ -517,6 +517,10 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.context.fillStyle = this.bgColor;
         this.context.fillRect(0, 0, this.canvas.offsetWidth, this.canvas.offsetHeight);
 
+        if (this.volume.isWorldSpaceOnly()) {
+            this.worldSpace = true;
+        }
+
         this.initialized = true;
         this.container.resizeViewerComponents(true);
         this.drawViewer();

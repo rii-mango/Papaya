@@ -381,3 +381,27 @@ papaya.volume.Volume.prototype.applyBestTransform = function () {
         this.transform.updateWorldMat();
     }
 };
+
+
+
+papaya.volume.Volume.prototype.isWorldSpaceOnly = function () {
+    /*jslint bitwise: true */
+
+    var nifti, foundDataOrderTransform = false;
+
+    if (this.header.fileFormat instanceof papaya.volume.nifti.HeaderNIFTI) {
+        nifti = this.header.fileFormat;
+
+        if (nifti.nifti.qform_code > 0) {
+            foundDataOrderTransform |= !nifti.qFormHasRotations();
+        }
+
+        if (nifti.nifti.sform_code > 0) {
+            foundDataOrderTransform |= !nifti.sFormHasRotations();
+        }
+
+        return !foundDataOrderTransform;
+    }
+
+    return false;
+};
