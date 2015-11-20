@@ -35,7 +35,7 @@ papaya.volume.VoxelValue = papaya.volume.VoxelValue || function (imageData, imag
     this.usesGlobalDataScale = imageRange.usesGlobalDataScale;
     this.interpFirstPass = [[0, 0], [0, 0]];
     this.interpSecondPass = [0, 0];
-    this.dti = false;
+    this.forceABS = false;
 };
 
 
@@ -56,10 +56,6 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndexNative = function (ctrX, ctrY,
 
 
 papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
-    if (this.dti) {
-        return this.getDTIValueAtIndex(ctrX, ctrY, ctrZ);
-    }
-
     if (useNN) {
         ctrX = papayaRoundFast(ctrX);
         ctrY = papayaRoundFast(ctrY);
@@ -73,35 +69,27 @@ papaya.volume.VoxelValue.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ,
 
 
 
-papaya.volume.VoxelValue.prototype.getDTIValueAtIndex = function (ctrX, ctrY, ctrZ) {
-    /*jslint bitwise: true */
-
-    var red, green, blue;
-
-    red = papayaRoundFast(Math.abs((255 * this.getVoxelAtOffset(this.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ), 0, ctrX, ctrY, ctrZ))));
-    green = papayaRoundFast(Math.abs((255 * this.getVoxelAtOffset(this.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ), 1, ctrX, ctrY, ctrZ))));
-    blue = papayaRoundFast(Math.abs((255 * this.getVoxelAtOffset(this.orientation.convertIndexToOffset(ctrX, ctrY, ctrZ), 2, ctrX, ctrY, ctrZ))));
-
-    return (((red & 0xFF) << 16) | ((green & 0xFF) << 8) | (blue & 0xFF));
-};
-
-
-
 papaya.volume.VoxelValue.prototype.getVoxelAtOffset = function (volOffset, timepoint, xLoc, yLoc, zLoc) {
     var dataScaleIndex,
-        offset = volOffset + (this.volSize * timepoint);
+        offset = volOffset + (this.volSize * timepoint), value;
 
     if ((xLoc < 0) || (xLoc >= this.xDim) || (yLoc < 0) || (yLoc >= this.yDim) || (zLoc < 0) || (zLoc >= this.zDim)) {
         return 0;
     }
 
     if (this.usesGlobalDataScale) {
-        return (this.checkSwap(this.imageData.data[offset]) * this.globalDataScaleSlope) +
+        value = (this.checkSwap(this.imageData.data[offset]) * this.globalDataScaleSlope) +
             this.globalDataScaleIntercept;
     } else {
         dataScaleIndex = parseInt(offset / this.sliceSize);
-        return (this.checkSwap(this.imageData.data[offset]) * this.dataScaleSlopes[dataScaleIndex]) +
+        value = (this.checkSwap(this.imageData.data[offset]) * this.dataScaleSlopes[dataScaleIndex]) +
             this.dataScaleIntercepts[dataScaleIndex];
+    }
+
+    if (this.forceABS) {
+        return Math.abs(value);
+    } else {
+        return value;
     }
 };
 

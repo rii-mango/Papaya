@@ -221,7 +221,7 @@ papaya.volume.Volume.prototype.getVoxelAtIndexNative = function (ctrX, ctrY, ctr
 
 
 papaya.volume.Volume.prototype.getVoxelAtIndex = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
-    return this.transform.getVoxelAtIndex(ctrX, ctrY, ctrZ, 0, useNN);
+    return this.transform.getVoxelAtIndex(ctrX, ctrY, ctrZ, timepoint, useNN);
 };
 
 

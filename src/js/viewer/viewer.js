@@ -304,20 +304,9 @@ papaya.viewer.Viewer.prototype.atlasLoaded = function () {
 
 
 papaya.viewer.Viewer.prototype.initializeViewer = function () {
-    var message, viewer, screenParams, dti;
+    var message, viewer;
 
     viewer = this;
-
-    screenParams = this.container.params[this.volume.fileName];
-    dti = (screenParams && screenParams.dti) || papaya.Container.dti;
-
-    if (dti) {
-        papaya.Container.dti = true;
-    }
-
-    if (dti && (this.volume.numTimepoints !== 3)) {
-        this.volume.error = new Error("DTI vector series must have 3 series points!");
-    }
 
     if (this.volume.hasError()) {
         message = this.volume.error.message;
@@ -328,8 +317,24 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.screenVolumes[0] = new papaya.viewer.ScreenVolume(this.volume, this.container.params,
             papaya.viewer.ColorTable.DEFAULT_COLOR_TABLE.name, true);
 
-        if (dti) {
-            this.screenVolumes[0].initDTI();
+        if (papaya.Container.dti) {
+            this.screenVolumes[0].dti = true;
+
+            if (this.screenVolumes[0].dti && (this.screenVolumes[0].volume.numTimepoints !== 3)) {
+                this.screenVolumes[0].error = new Error("DTI vector series must have 3 series points!");
+            }
+
+            if (this.screenVolumes[0].dti) {
+                this.screenVolumes[0].initDTI();
+            }
+        }
+
+        if (this.screenVolumes[0].hasError()) {
+            message = this.screenVolumes[0].error.message;
+            this.resetViewer();
+            this.container.clearParams();
+            this.container.display.drawError(message);
+            return;
         }
 
         this.setCurrentScreenVol(0);
@@ -577,7 +582,7 @@ papaya.viewer.Viewer.prototype.updateOffsetRect = function () {
 
 
 papaya.viewer.Viewer.prototype.initializeOverlay = function () {
-    var screenParams, parametric, ctr, overlay, overlayNeg;
+    var screenParams, parametric, ctr, overlay, overlayNeg, dti, screenVolV1;
 
     if (this.loadingVolume.hasError()) {
         this.container.display.drawError(this.loadingVolume.error.message);
@@ -586,22 +591,42 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
     } else {
         screenParams = this.container.params[this.loadingVolume.fileName];
         parametric = (screenParams && screenParams.parametric);
+        dti = (screenParams && screenParams.dtiFA);
 
-        this.screenVolumes[this.screenVolumes.length] = overlay = new papaya.viewer.ScreenVolume(this.loadingVolume,
-            this.container.params, (parametric ? papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[0].name :
-                this.getNextColorTable()), false);
-        this.setCurrentScreenVol(this.screenVolumes.length - 1);
+        if (dti) {
+            screenVolV1 = this.getScreenVolumeByName(screenParams.v1);
 
-        // even if "parametric" is set to true we should not add another screenVolume if the value range does not cross
-        // zero
-        if (parametric) {
-            this.screenVolumes[this.screenVolumes.length - 1].findImageRange();
-            if (this.screenVolumes[this.screenVolumes.length - 1].volume.header.imageRange.imageMin < 0) {
-                this.screenVolumes[this.screenVolumes.length] = overlayNeg = new papaya.viewer.ScreenVolume(this.loadingVolume,
-                    this.container.params, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
-                overlay.negativeScreenVol = overlayNeg;
+            if (screenVolV1) {
+                screenVolV1.dtiVolumeFA = this.loadingVolume;
+            }
+        } else if (papaya.Container.dti) {
+            this.screenVolumes[0].dtiVolumeFA = this.loadingVolume;
+        } else {
+            overlay = new papaya.viewer.ScreenVolume(this.loadingVolume,
+                this.container.params, (parametric ? papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[0].name :
+                    this.getNextColorTable()), false);
 
-                this.setCurrentScreenVol(this.screenVolumes.length - 1);
+            if (overlay.hasError()) {
+                this.container.display.drawError(overlay.error.message);
+                this.container.clearParams();
+                this.loadingVolume = null;
+                return;
+            }
+
+            this.screenVolumes[this.screenVolumes.length] = overlay;
+            this.setCurrentScreenVol(this.screenVolumes.length - 1);
+
+            // even if "parametric" is set to true we should not add another screenVolume if the value range does not cross
+            // zero
+            if (parametric) {
+                this.screenVolumes[this.screenVolumes.length - 1].findImageRange();
+                if (this.screenVolumes[this.screenVolumes.length - 1].volume.header.imageRange.imageMin < 0) {
+                    this.screenVolumes[this.screenVolumes.length] = overlayNeg = new papaya.viewer.ScreenVolume(this.loadingVolume,
+                        this.container.params, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
+                    overlay.negativeScreenVol = overlayNeg;
+
+                    this.setCurrentScreenVol(this.screenVolumes.length - 1);
+                }
             }
         }
 
@@ -616,6 +641,7 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
                 break;
             }
         }
+
         this.container.resizeViewerComponents();
 
         this.updateWindowTitle();
@@ -1857,7 +1883,16 @@ papaya.viewer.Viewer.prototype.getIndexCoordinateAtWorld = function (ctrX, ctrY,
 
 
 papaya.viewer.Viewer.prototype.getNextColorTable = function () {
-    var value = (this.screenVolumes.length - 1) % papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES.length;
+    var ctr, count = 0, value;
+
+    for (ctr = 1; ctr < this.screenVolumes.length; ctr += 1) {
+        if (!this.screenVolumes[ctr].dti) {
+            count += 1;
+        }
+    }
+
+    value = count % papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES.length;
+
     return papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES[value].name;
 };
 
@@ -2613,6 +2648,20 @@ papaya.viewer.Viewer.prototype.getScreenVolumeIndex = function (screenVol) {
     }
 
     return -1;
+};
+
+
+
+papaya.viewer.Viewer.prototype.getScreenVolumeByName = function (name) {
+    var ctr;
+
+    for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
+        if (name == this.screenVolumes[ctr].volume.fileName) {
+            return this.screenVolumes[ctr];
+        }
+    }
+
+    return null;
 };
 
 

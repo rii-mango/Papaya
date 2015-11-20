@@ -10,8 +10,14 @@ papaya.viewer = papaya.viewer || {};
 
 
 /*** Constructor ***/
-papaya.viewer.ColorTable = papaya.viewer.ColorTable || function (lutName, baseImage) {
-    var lut = papaya.viewer.ColorTable.findLUT(lutName);
+papaya.viewer.ColorTable = papaya.viewer.ColorTable || function (lutName, baseImage, colorTable) {
+    var lut = null;
+
+    if (colorTable !== undefined) {
+        lut = colorTable;
+    } else {
+        lut = papaya.viewer.ColorTable.findLUT(lutName);
+    }
 
     this.lutData = lut.data;
     this.maxLUT = 0;
@@ -72,6 +78,8 @@ papaya.viewer.ColorTable.TABLE_GREEN2WHITE = {"name": "Green Overlay", "data": [
     [0.95, 1, 1, 0], [1, 1, 1, 1]], "gradation": true};
 papaya.viewer.ColorTable.TABLE_BLUE2WHITE = {"name": "Blue Overlay", "data": [[0, 0, 0, 1], [0.5, 0, 0.5, 1],
     [0.95, 0, 1, 1], [1, 1, 1, 1]], "gradation": true};
+papaya.viewer.ColorTable.TABLE_DTI_SPECTRUM = {"name": "Spectrum", "data": [[0, 1, 0, 0], [0.5, 0, 1, 0], [1, 0, 0, 1]],
+    "gradation": true};
 
 papaya.viewer.ColorTable.ARROW_ICON = "data:image/gif;base64,R0lGODlhCwARAPfGMf//////zP//mf//Zv//M///AP/M///MzP/Mmf/M" +
     "Zv/MM//MAP+Z//+ZzP+Zmf+ZZv+ZM/+ZAP9m//9mzP9mmf9mZv9mM/9mAP8z//8zzP8zmf8zZv8zM/8zAP8A//8AzP8Amf8AZv8AM/8AAMz//8z/" +
@@ -87,8 +95,10 @@ papaya.viewer.ColorTable.ARROW_ICON = "data:image/gif;base64,R0lGODlhCwARAPfGMf/
 papaya.viewer.ColorTable.ARROW_ICON_WIDTH = 11;
 
 papaya.viewer.ColorTable.DEFAULT_COLOR_TABLE = papaya.viewer.ColorTable.TABLE_GRAYSCALE;
+
 papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES = [papaya.viewer.ColorTable.TABLE_RED2YELLOW,
     papaya.viewer.ColorTable.TABLE_BLUE2GREEN];
+
 papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES = [
     papaya.viewer.ColorTable.TABLE_RED2WHITE,
     papaya.viewer.ColorTable.TABLE_GREEN2WHITE,

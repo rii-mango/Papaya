@@ -1,6 +1,6 @@
 
 /*jslint browser: true, node: true */
-/*global */
+/*global papayaRoundFast */
 
 "use strict";
 
@@ -24,11 +24,25 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.parametric = (parametric !== undefined) && parametric;
     this.negativeScreenVol = null;
     this.dti = false;
+    this.dtiVolumeFA = null;
     this.rgb = (this.volume.header.imageType.datatype === papaya.volume.ImageType.DATATYPE_RGB);
     this.hasCheckedImageRange = false;
+    this.error = null;
 
     var screenParams = params[this.volume.fileName];
     if (screenParams) {
+        if (screenParams.dtiV1 !== undefined) {
+            this.dti = screenParams.dtiV1;
+
+            if (this.dti && (this.volume.numTimepoints !== 3)) {
+                this.error = new Error("DTI vector series must have 3 series points!");
+            }
+
+            if (this.dti) {
+                this.initDTI();
+            }
+        }
+
         if ((screenParams.min !== undefined) && (screenParams.max !== undefined)) {
             if (parametric) {
                 this.screenMin = -1 * Math.abs(screenParams.min);
@@ -333,10 +347,49 @@ papaya.viewer.ScreenVolume.prototype.setCurrentTime = function (seconds) {
 
 
 
+papaya.viewer.ScreenVolume.prototype.getDTIVoxelAtCoordinate = function (ctrX, ctrY, ctrZ) {
+    /*jslint bitwise: true */
+    var red, green, blue, alpha = 255;
+
+    red = papayaRoundFast(Math.abs((255 * this.volume.getVoxelAtCoordinate(ctrX, ctrY, ctrZ, 0, false))));
+    green = papayaRoundFast(Math.abs((255 * this.volume.getVoxelAtCoordinate(ctrX, ctrY, ctrZ, 1, false))));
+    blue = papayaRoundFast(Math.abs((255 * this.volume.getVoxelAtCoordinate(ctrX, ctrY, ctrZ, 2, false))));
+
+    if (this.dtiVolumeFA) {
+        alpha = Math.min(255, papayaRoundFast(255 * this.dtiVolumeFA.getVoxelAtCoordinate(ctrX, ctrY, ctrZ, 0, false)));
+    }
+
+    return (((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | (blue & 0xFF));
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.getDTIVoxelAtMM = function (ctrX, ctrY, ctrZ) {
+    /*jslint bitwise: true */
+    var red, green, blue, alpha = 255;
+
+    red = papayaRoundFast(Math.abs((255 * this.volume.getVoxelAtMM(ctrX, ctrY, ctrZ, 0, false))));
+    green = papayaRoundFast(Math.abs((255 * this.volume.getVoxelAtMM(ctrX, ctrY, ctrZ, 1, false))));
+    blue = papayaRoundFast(Math.abs((255 * this.volume.getVoxelAtMM(ctrX, ctrY, ctrZ, 2, false))));
+
+    if (this.dtiVolumeFA) {
+        alpha = Math.min(255, papayaRoundFast(255 * this.dtiVolumeFA.getVoxelAtMM(ctrX, ctrY, ctrZ, 0, false)));
+    }
+
+    return (((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | (blue & 0xFF));
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.hasError = function () {
+    return (this.error !== null);
+};
+
+
+
 papaya.viewer.ScreenVolume.prototype.initDTI = function () {
-    this.dti = true;
-    this.rgb = true;
-    this.volume.header.imageDimensions.timepoints = 1;
     this.volume.numTimepoints = 1;
-    this.volume.transform.voxelValue.dti = true;
+    this.volume.header.imageDimensions.timepoints = 1;
+    this.colorTable = new papaya.viewer.ColorTable(this.lutName, false, papaya.viewer.ColorTable.TABLE_DTI_SPECTRUM);
+    this.volume.transform.voxelValue.forceABS = true;
 };

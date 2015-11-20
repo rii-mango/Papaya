@@ -275,7 +275,7 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
         if (papaya.Container.dti) {
             if (this.container.viewer.screenVolumes.length === 0) {
                 papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.DTI_VECTOR_FILE_MENU_DATA;
-            } else if (this.container.viewer.screenVolumes.length === 1) {
+            } else if ((this.container.viewer.screenVolumes.length === 1) && (this.container.viewer.screenVolumes[0].dtiVolumeFA === null)) {
                 papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.DTI_FA_FILE_MENU_DATA;
             } else {
                 papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.RGB_FILE_MENU_DATA;
@@ -489,30 +489,32 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
 
     this.imageMenus = [];
 
-    if (!papaya.Container.dti) {
-        for (ctr = this.viewer.screenVolumes.length - 1; ctr >= 0; ctr -= 1) {
-            screenVol = this.viewer.screenVolumes[ctr];
-            dataUrl = screenVol.colorTable.icon;
+    for (ctr = this.viewer.screenVolumes.length - 1; ctr >= 0; ctr -= 1) {
+        screenVol = this.viewer.screenVolumes[ctr];
+        dataUrl = screenVol.colorTable.icon;
 
-            data = {
-                "menus" : [
-                    {"label": "ImageButton", "icons": [dataUrl], "items": null, "imageButton": true}
-                ]
-            };
+        data = {
+            "menus" : [
+                {"label": "ImageButton", "icons": [dataUrl], "items": null, "imageButton": true}
+            ]
+        };
 
-            if (ctr === 0) {
-                if (screenVol.rgb) {
-                    data.menus[0].items = papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA.items;
-                } else {
-                    data.menus[0].items = papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA.items;
-                }
+        if (ctr === 0) {
+            if (screenVol.rgb || screenVol.dti) {
+                data.menus[0].items = papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA.items;
+            } else {
+                data.menus[0].items = papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA.items;
+            }
+        } else {
+            if (screenVol.dti) {
+                data.menus[0].items = papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA.items;
             } else {
                 data.menus[0].items = papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items;
             }
+        }
 
-            if (!this.container.combineParametric || !screenVol.parametric) {
-                this.imageMenus.push((this.buildMenu(data.menus[0], null, screenVol, ctr.toString())));
-            }
+        if (!this.container.combineParametric || !screenVol.parametric) {
+            this.imageMenus.push((this.buildMenu(data.menus[0], null, screenVol, ctr.toString())));
         }
     }
 };
