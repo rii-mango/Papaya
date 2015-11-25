@@ -356,40 +356,6 @@ papaya.viewer.ScreenVolume.prototype.setCurrentTime = function (seconds) {
 
 
 
-papaya.viewer.ScreenVolume.prototype.getDTIVoxelAtCoordinate = function (ctrX, ctrY, ctrZ) {
-    /*jslint bitwise: true */
-    var red, green, blue, alpha = 255;
-
-    red = papayaRoundFast(Math.abs((255 * this.volume.getVoxelAtCoordinate(ctrX, ctrY, ctrZ, 0, false))));
-    green = papayaRoundFast(Math.abs((255 * this.volume.getVoxelAtCoordinate(ctrX, ctrY, ctrZ, 1, false))));
-    blue = papayaRoundFast(Math.abs((255 * this.volume.getVoxelAtCoordinate(ctrX, ctrY, ctrZ, 2, false))));
-
-    if (this.dtiVolumeFA) {
-        alpha = Math.min(255, papayaRoundFast(255 * this.dtiVolumeFA.getVoxelAtCoordinate(ctrX, ctrY, ctrZ, 0, false)));
-    }
-
-    return (((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | (blue & 0xFF));
-};
-
-
-
-papaya.viewer.ScreenVolume.prototype.getDTIVoxelAtMM = function (ctrX, ctrY, ctrZ) {
-    /*jslint bitwise: true */
-    var red, green, blue, alpha = 255;
-
-    red = papayaRoundFast(Math.abs((255 * this.volume.getVoxelAtMM(ctrX, ctrY, ctrZ, 0, false))));
-    green = papayaRoundFast(Math.abs((255 * this.volume.getVoxelAtMM(ctrX, ctrY, ctrZ, 1, false))));
-    blue = papayaRoundFast(Math.abs((255 * this.volume.getVoxelAtMM(ctrX, ctrY, ctrZ, 2, false))));
-
-    if (this.dtiVolumeFA) {
-        alpha = Math.min(255, papayaRoundFast(255 * this.dtiVolumeFA.getVoxelAtMM(ctrX, ctrY, ctrZ, 0, false)));
-    }
-
-    return (((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | (blue & 0xFF));
-};
-
-
-
 papaya.viewer.ScreenVolume.prototype.hasError = function () {
     return (this.error !== null);
 };
@@ -400,5 +366,5 @@ papaya.viewer.ScreenVolume.prototype.initDTI = function () {
     this.volume.numTimepoints = 1;
     this.volume.header.imageDimensions.timepoints = 1;
     this.colorTable = new papaya.viewer.ColorTable(this.lutName, false, papaya.viewer.ColorTable.TABLE_DTI_SPECTRUM);
-    this.volume.transform.voxelValue.forceABS = true;
+    this.volume.transform.voxelValue.forceABS = !this.dtiLines;
 };
