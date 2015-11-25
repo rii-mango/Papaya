@@ -65,7 +65,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
 
     var origin, voxelDims, ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha, timepoint, rgb, dti, valueA,
         dtiLines, dtiX1, dtiY1, dtiX2, dtiY2, dtiX1T, dtiY1T, dtiX2T, dtiY2T, dtiXC, dtiYC, valueR, valueG, valueB,
-        angle, s, c, dtiColors, dtiLocX, dtiLocY, dtiLocZ, dtiRGB, worldSpace = this.manager.isWorldMode();
+        angle, s, c, dtiColors, dtiLocX, dtiLocY, dtiLocZ, dtiRGB, angle2, worldSpace = this.manager.isWorldMode();
 
     slice = Math.round(slice);
 
@@ -175,8 +175,6 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
 
                         if (dtiLines) {
                             if ((valueR !== 0) || (valueG !== 0) || (valueB !== 0)) {
-                                var angle2 = 0;
-
                                 if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
                                     angle = Math.atan2(valueG, valueR);
                                     angle2 = Math.acos(Math.abs(valueB) / Math.sqrt(valueR * valueR + valueG * valueG + valueB * valueB));
@@ -200,7 +198,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                                     dtiRGB = (value & 0x00FFFFFF);
 
                                     this.contextDTILines.beginPath();
-                                    this.contextDTILines.strokeStyle = '#' + dtiRGB.toString(16);
+                                    this.contextDTILines.strokeStyle = '#' + papaya.utilities.StringUtils.pad(dtiRGB.toString(16), 6);
                                 }
 
                                 this.imageData[ctr][index] = angle;
@@ -343,10 +341,6 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
 
     if (this.imageData.length === this.screenVolumes.length) {
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
-            this.contextMain.beginPath();
-            this.contextMain.strokeStyle = '#ff0000';
-            this.contextMain.lineWidth = 1;
-
             rgb = this.screenVolumes[ctr].rgb;
             dti = this.screenVolumes[ctr].dti;
             dtiLines = this.screenVolumes[ctr].dtiLines;
@@ -385,7 +379,7 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
 
                                 if (dtiColors) {
                                     this.contextDTILines.beginPath();
-                                    this.contextDTILines.strokeStyle = '#' + dtiRGB.toString(16);
+                                    this.contextDTILines.strokeStyle = '#' + papaya.utilities.StringUtils.pad(dtiRGB.toString(16), 6);
                                 }
 
                                 s = Math.sin(angle);
