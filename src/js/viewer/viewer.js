@@ -947,6 +947,10 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
     this.context.drawImage(this.mainImage.canvasMain, 0, 0);
     this.context.restore();
 
+    if (this.mainImage.canvasDTILines) {
+        this.context.drawImage(this.mainImage.canvasDTILines, 0, 0);
+    }
+
     if (this.container.orthogonal) {
         this.context.setTransform(1, 0, 0, 1, 0, 0);
         this.context.fillRect(this.lowerImageBot.screenOffsetX, this.lowerImageBot.screenOffsetY,
@@ -962,6 +966,11 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
         this.context.drawImage(this.lowerImageBot.canvasMain, 0, 0);
         this.context.restore();
 
+        if (this.lowerImageBot.canvasDTILines) {
+            this.context.drawImage(this.lowerImageBot.canvasDTILines, this.lowerImageBot.screenOffsetX,
+                this.lowerImageBot.screenOffsetY);
+        }
+
         this.context.setTransform(1, 0, 0, 1, 0, 0);
         this.context.fillRect(this.lowerImageTop.screenOffsetX, this.lowerImageTop.screenOffsetY,
             this.lowerImageTop.screenDim, this.lowerImageTop.screenDim);
@@ -975,6 +984,11 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
             this.lowerImageTop.finalTransform[1][2]);
         this.context.drawImage(this.lowerImageTop.canvasMain, 0, 0);
         this.context.restore();
+
+        if (this.lowerImageTop.canvasDTILines) {
+            this.context.drawImage(this.lowerImageTop.canvasDTILines, this.lowerImageTop.screenOffsetX,
+                this.lowerImageTop.screenOffsetY);
+        }
     }
 
     if (showOrientation || radiological) {
@@ -1331,6 +1345,11 @@ papaya.viewer.Viewer.prototype.getTransformParameters = function (image, height,
     image.screenTransform[1][1] = scaleY;
     image.screenTransform[0][2] = transX;
     image.screenTransform[1][2] = transY;
+
+    image.screenTransform2[0][0] = scaleX;
+    image.screenTransform2[1][1] = scaleY;
+    image.screenTransform2[0][2] = transX;
+    image.screenTransform2[1][2] = transY;
 };
 
 
@@ -1462,7 +1481,11 @@ papaya.viewer.Viewer.prototype.rotateViews = function () {
     this.mainImage = temp;
     this.calculateScreenSliceTransforms();
 
-    this.drawViewer();
+    this.lowerImageBot.clearDTILinesImage();
+    this.lowerImageTop.clearDTILinesImage();
+    this.mainImage.clearDTILinesImage();
+
+    this.drawViewer(true);
     this.updateSliceSliderControl();
 };
 

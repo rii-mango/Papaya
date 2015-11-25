@@ -24,6 +24,8 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.parametric = (parametric !== undefined) && parametric;
     this.negativeScreenVol = null;
     this.dti = false;
+    this.dtiLines = false;
+    this.dtiColors = false;
     this.dtiVolumeFA = null;
     this.rgb = (this.volume.header.imageType.datatype === papaya.volume.ImageType.DATATYPE_RGB);
     this.hasCheckedImageRange = false;
@@ -39,6 +41,13 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
             }
 
             if (this.dti) {
+                this.dtiLines = screenParams.dtiLines;
+                this.dtiColors = screenParams.dtiColors;
+
+                if (!this.dtiLines && !this.dtiColors) {
+                    this.dtiColors = true;
+                }
+
                 this.initDTI();
             }
         }
