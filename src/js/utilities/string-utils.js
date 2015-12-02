@@ -88,6 +88,11 @@ papaya.utilities.StringUtils.truncateMiddleString = function (fullStr, strLen) {
 };
 
 
+papaya.utilities.StringUtils.pad = function (num, size) {
+    return ('000000000' + num).substr(-size);
+};
+
+
 /*** String (Prototype Methods) ***/
 
 if (typeof String.prototype.startsWith !== 'function') {
