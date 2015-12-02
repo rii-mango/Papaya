@@ -275,7 +275,7 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
         if (papaya.Container.dti) {
             if (this.container.viewer.screenVolumes.length === 0) {
                 papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.DTI_VECTOR_FILE_MENU_DATA;
-            } else if ((this.container.viewer.screenVolumes.length === 1) && (this.container.viewer.screenVolumes[0].dtiVolumeFA === null)) {
+            } else if ((this.container.viewer.screenVolumes.length === 1) && (this.container.viewer.screenVolumes[0].dtiVolumeMod === null)) {
                 papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.DTI_FA_FILE_MENU_DATA;
             } else {
                 papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.RGB_FILE_MENU_DATA;

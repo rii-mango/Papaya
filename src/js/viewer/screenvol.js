@@ -26,15 +26,16 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.dti = false;
     this.dtiLines = false;
     this.dtiColors = false;
-    this.dtiVolumeFA = null;
+    this.dtiVolumeMod = null;
+    this.dtiAlphaFactor = 1.0;
     this.rgb = (this.volume.header.imageType.datatype === papaya.volume.ImageType.DATATYPE_RGB);
     this.hasCheckedImageRange = false;
     this.error = null;
 
     var screenParams = params[this.volume.fileName];
     if (screenParams) {
-        if (screenParams.dtiV1 !== undefined) {
-            this.dti = screenParams.dtiV1;
+        if (screenParams.dti !== undefined) {
+            this.dti = screenParams.dti;
 
             if (this.dti && (this.volume.numTimepoints !== 3)) {
                 this.error = new Error("DTI vector series must have 3 series points!");

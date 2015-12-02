@@ -591,16 +591,22 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
     } else {
         screenParams = this.container.params[this.loadingVolume.fileName];
         parametric = (screenParams && screenParams.parametric);
-        dti = (screenParams && screenParams.dtiFA);
+        dti = (screenParams && screenParams.dtiMod);
 
         if (dti) {
-            screenVolV1 = this.getScreenVolumeByName(screenParams.v1);
+            screenVolV1 = this.getScreenVolumeByName(screenParams.dtiRef);
 
             if (screenVolV1) {
-                screenVolV1.dtiVolumeFA = this.loadingVolume;
+                screenVolV1.dtiVolumeMod = this.loadingVolume;
+
+                if (screenParams.dtiModAlphaFactor !== undefined) {
+                    screenVolV1.dtiAlphaFactor = screenParams.dtiModAlphaFactor;
+                } else {
+                    screenVolV1.dtiAlphaFactor = 1.0;
+                }
             }
         } else if (papaya.Container.dti) {
-            this.screenVolumes[0].dtiVolumeFA = this.loadingVolume;
+            this.screenVolumes[0].dtiVolumeMod = this.loadingVolume;
         } else {
             overlay = new papaya.viewer.ScreenVolume(this.loadingVolume,
                 this.container.params, (parametric ? papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[0].name :
