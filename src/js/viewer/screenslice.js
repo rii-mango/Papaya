@@ -66,10 +66,16 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
 
     var origin, voxelDims, ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha, timepoint, rgb, dti, valueA,
         dtiLines, dtiX1, dtiY1, dtiX2, dtiY2, dtiX1T, dtiY1T, dtiX2T, dtiY2T, dtiXC, dtiYC, valueR, valueG, valueB,
-        angle, s, c, dtiColors, dtiLocX, dtiLocY, dtiLocZ, dtiRGB, angle2, dtiAlphaFactor, firstRaster = false,
-        dtiColorIndex = 0, worldSpace = this.manager.isWorldMode();
+        angle, s, c, dtiColors, dtiLocX, dtiLocY, dtiLocZ, dtiRGB, angle2, dtiAlphaFactor, readFirstRaster = false,
+        radioFactor, dtiColorIndex = 0, worldSpace = this.manager.isWorldMode();
 
     slice = Math.round(slice);
+
+    if ((this.manager.isRadiologicalMode() && this.isRadiologicalSensitive())) {
+        radioFactor = -1;
+    } else {
+        radioFactor = 1;
+    }
 
     if (force || (this.currentSlice !== slice)) {
         this.currentSlice = slice;
@@ -104,10 +110,6 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                     dtiColorIndex += 1;
                     dtiColorIndex = dtiColorIndex % 3;
                 }
-            } else if (firstRaster) {
-                firstRaster = false;
-            } else {
-                firstRaster = true;
             }
 
             for (ctrY = 0; ctrY < this.yDim; ctrY += 1) {
@@ -133,8 +135,6 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                         this.imageDataDraw.data[index + 2] = (value) & 0xff;
                         this.imageDataDraw.data[index + 3] = thresholdAlpha;
                     } else if (dti) {
-                        valueA = layerAlpha;
-
                         if (worldSpace) {
                             if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
                                 dtiLocX = (ctrX - origin.x) * voxelDims.xSize;
@@ -155,7 +155,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                             valueB = this.screenVolumes[ctr].volume.getVoxelAtCoordinate(dtiLocX, dtiLocY, dtiLocZ, 2, false);
 
                             if (this.screenVolumes[ctr].dtiVolumeMod) {
-                                valueA = Math.min(1.0, this.screenVolumes[ctr].dtiVolumeMod.getVoxelAtCoordinate(dtiLocX, dtiLocY, dtiLocZ, 0, false));
+                                layerAlpha = Math.min(1.0, this.screenVolumes[ctr].dtiVolumeMod.getVoxelAtCoordinate(dtiLocX, dtiLocY, dtiLocZ, 0, false));
                             }
                         } else {
                             if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
@@ -177,7 +177,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                             valueB = this.screenVolumes[ctr].volume.getVoxelAtMM(dtiLocX, dtiLocY, dtiLocZ, 2, false);
 
                             if (this.screenVolumes[ctr].dtiVolumeMod) {
-                                valueA = Math.min(1.0, this.screenVolumes[ctr].dtiVolumeMod.getVoxelAtMM(dtiLocX, dtiLocY, dtiLocZ, 0, false));
+                                layerAlpha = Math.min(1.0, this.screenVolumes[ctr].dtiVolumeMod.getVoxelAtMM(dtiLocX, dtiLocY, dtiLocZ, 0, false));
                             }
                         }
 
@@ -186,10 +186,10 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                         if (dtiLines) {
                             if ((valueR !== 0) || (valueG !== 0) || (valueB !== 0)) {
                                 if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                                    angle = Math.atan2(valueG, valueR);
+                                    angle = Math.atan2(radioFactor * valueG, valueR);
                                     angle2 = Math.acos(Math.abs(valueB) / Math.sqrt(valueR * valueR + valueG * valueG + valueB * valueB));
                                 } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                                    angle = Math.atan2(valueB, valueR);
+                                    angle = Math.atan2(radioFactor * valueB, valueR);
                                     angle2 = Math.acos(Math.abs(valueG) / Math.sqrt(valueR * valueR + valueG * valueG + valueB * valueB));
                                 } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
                                     angle = Math.atan2(valueB, valueG);
@@ -201,7 +201,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                                 valueR = papayaRoundFast(Math.abs((255 * valueR)));
                                 valueG = papayaRoundFast(Math.abs((255 * valueG)));
                                 valueB = papayaRoundFast(Math.abs((255 * valueB)));
-                                valueA = papayaRoundFast(255 * valueA);
+                                valueA = papayaRoundFast(255 * layerAlpha);
 
                                 value = (((valueA & 0xFF) << 24) | ((valueR & 0xFF) << 16) | ((valueG & 0xFF) << 8) | (valueB & 0xFF));
 
@@ -221,26 +221,24 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                                 dtiXC = (this.finalTransform2[0][2] + (ctrX + 0.5) * this.finalTransform2[0][0]);
                                 dtiYC = (this.finalTransform2[1][2] + (ctrY + 0.5) * this.finalTransform2[1][1]);
 
-                                dtiX1 = (this.finalTransform2[0][2] + (ctrX + (0.5 * angle2)) * this.finalTransform2[0][0]);
+                                dtiX1 = (this.finalTransform2[0][2] + (ctrX + (0.4 * angle2)) * this.finalTransform2[0][0]);
                                 dtiY1 = (this.finalTransform2[1][2] + (ctrY + 0.5) * this.finalTransform2[1][1]);
                                 dtiX1T = c * (dtiX1 - dtiXC) - s * (dtiY1 - dtiYC) + dtiXC;
                                 dtiY1T = s * (dtiX1 - dtiXC) + c * (dtiY1 - dtiYC) + dtiYC;
                                 this.contextDTILines.moveTo(dtiX1T, dtiY1T);
 
-                                dtiX2 = (this.finalTransform2[0][2] + (ctrX + 1 - (0.5 * angle2)) * this.finalTransform2[0][0]);
+                                dtiX2 = (this.finalTransform2[0][2] + (ctrX + 1 - (0.4 * angle2)) * this.finalTransform2[0][0]);
                                 dtiY2 = (this.finalTransform2[1][2] + (ctrY + 0.5) * this.finalTransform2[1][1]);
                                 dtiX2T = c * (dtiX2 - dtiXC) - s * (dtiY2 - dtiYC) + dtiXC;
                                 dtiY2T = s * (dtiX2 - dtiXC) + c * (dtiY2 - dtiYC) + dtiYC;
                                 this.contextDTILines.lineTo(dtiX2T, dtiY2T);
-
-                                this.contextDTILines.closePath();
                                 this.contextDTILines.stroke();
                             } else {
                                 this.imageData[ctr][index] = Number.NaN;
                             }
                         } else {
                             if ((valueR !== 0) || (valueG !== 0) || (valueB !== 0)) {
-                                layerAlpha = ((valueA & 0xff) / 255.0);
+                                layerAlpha = (1 - (((1 - layerAlpha) * dtiAlphaFactor)));
                             } else {
                                 layerAlpha = 0;
                             }
@@ -248,11 +246,11 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                             valueR = papayaRoundFast(Math.abs((255 * valueR)));
                             valueG = papayaRoundFast(Math.abs((255 * valueG)));
                             valueB = papayaRoundFast(Math.abs((255 * valueB)));
-                            valueA = papayaRoundFast(255 * (1 - (((1 - valueA) * dtiAlphaFactor))));
+                            valueA = papayaRoundFast(255 * layerAlpha);
 
                             this.imageData[ctr][index] = (((valueA & 0xFF) << 24) | ((valueR & 0xFF) << 16) | ((valueG & 0xFF) << 8) | (valueB & 0xFF));
 
-                            if (firstRaster) {
+                            if (!readFirstRaster) {
                                 this.imageDataDraw.data[index] = valueR & 0xff;
                                 this.imageDataDraw.data[index + 1] = valueG & 0xff;
                                 this.imageDataDraw.data[index + 2] = valueB & 0xff;
@@ -299,19 +297,24 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                         this.imageData[ctr][index] = value;
 
                         if ((!this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMin)) ||
-                            (this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMin)) ||
-                            isNaN(value)) {
+                                (this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMin)) ||
+                                isNaN(value)) {
                             value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN;  // screen value
                             thresholdAlpha = this.screenVolumes[ctr].isOverlay() ? 0 : 255;
                         } else if ((!this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMax)) ||
-                            (this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMax))) {
+                                (this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMax))) {
                             value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX;  // screen value
                         } else {
                             value = papayaRoundFast(((value - this.screenVolumes[ctr].screenMin) *
                                 this.screenVolumes[ctr].screenRatio) + 0.5);  // screen value
                         }
 
-                        if ((thresholdAlpha > 0) || (firstRaster)) {
+                        if (!readFirstRaster) {
+                            this.imageDataDraw.data[index] = this.screenVolumes[ctr].colorTable.lookupRed(value) * layerAlpha;
+                            this.imageDataDraw.data[index + 1] = this.screenVolumes[ctr].colorTable.lookupGreen(value) * layerAlpha;
+                            this.imageDataDraw.data[index + 2] = this.screenVolumes[ctr].colorTable.lookupBlue(value) * layerAlpha;
+                            this.imageDataDraw.data[index + 3] = thresholdAlpha;
+                        } else if (thresholdAlpha > 0) {
                             this.imageDataDraw.data[index] = (this.imageDataDraw.data[index] * (1 - layerAlpha) +
                                 this.screenVolumes[ctr].colorTable.lookupRed(value) * layerAlpha);
                             this.imageDataDraw.data[index + 1] = (this.imageDataDraw.data[index + 1] * (1 - layerAlpha) +
@@ -322,6 +325,10 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                         }
                     }
                 }
+            }
+
+            if (!dtiLines) {
+                readFirstRaster = true;
             }
         }
 
@@ -336,7 +343,7 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
 
     var ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha, rgb, dti, dtiLines, dtiRGB, angle2,
         dtiXC, dtiYC, dtiX1, dtiX2, dtiY1, dtiY2, dtiX1T, dtiX2T, dtiY1T, dtiY2T, angle, s, c, dtiColors,
-        valueR, valueG, valueB, dtiColorIndex = 0, firstRaster = false;
+        valueR, valueG, valueB, dtiColorIndex = 0, readFirstRaster = false;
 
     slice = Math.round(slice);
 
@@ -363,15 +370,11 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                     dtiColorIndex += 1;
                     dtiColorIndex = dtiColorIndex % 3;
                 }
-            } else if (firstRaster) {
-                firstRaster = false;
-            } else {
-                firstRaster = true;
             }
 
             for (ctrY = 0; ctrY < this.yDim; ctrY += 1) {
                 for (ctrX = 0; ctrX < this.xDim; ctrX += 1) {
-                    value = 0;
+                    value = this.imageData[ctr][index];
                     thresholdAlpha = 255;
                     layerAlpha = this.screenVolumes[ctr].alpha;
 
@@ -416,19 +419,17 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                                 dtiXC = (this.finalTransform2[0][2] + (ctrX + 0.5) * this.finalTransform2[0][0]);
                                 dtiYC = (this.finalTransform2[1][2] + (ctrY + 0.5) * this.finalTransform2[1][1]);
 
-                                dtiX1 = (this.finalTransform2[0][2] + (ctrX + (0.5 * angle2)) * this.finalTransform2[0][0]);
+                                dtiX1 = (this.finalTransform2[0][2] + (ctrX + (0.4 * angle2)) * this.finalTransform2[0][0]);
                                 dtiY1 = (this.finalTransform2[1][2] + (ctrY + 0.5) * this.finalTransform2[1][1]);
                                 dtiX1T = c * (dtiX1 - dtiXC) - s * (dtiY1 - dtiYC) + dtiXC;
                                 dtiY1T = s * (dtiX1 - dtiXC) + c * (dtiY1 - dtiYC) + dtiYC;
                                 this.contextDTILines.moveTo(dtiX1T, dtiY1T);
 
-                                dtiX2 = (this.finalTransform2[0][2] + (ctrX + 1 - (0.5 * angle2)) * this.finalTransform2[0][0]);
+                                dtiX2 = (this.finalTransform2[0][2] + (ctrX + 1 - (0.4 * angle2)) * this.finalTransform2[0][0]);
                                 dtiY2 = (this.finalTransform2[1][2] + (ctrY + 0.5) * this.finalTransform2[1][1]);
                                 dtiX2T = c * (dtiX2 - dtiXC) - s * (dtiY2 - dtiYC) + dtiXC;
                                 dtiY2T = s * (dtiX2 - dtiXC) + c * (dtiY2 - dtiYC) + dtiYC;
                                 this.contextDTILines.lineTo(dtiX2T, dtiY2T);
-
-                                this.contextDTILines.closePath();
                                 this.contextDTILines.stroke();
                             }
                         } else {
@@ -441,7 +442,7 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                                 layerAlpha = 0;
                             }
 
-                            if (firstRaster) {
+                            if (!readFirstRaster) {
                                 this.imageDataDraw.data[index] = (value >> 16) & 0xff;
                                 this.imageDataDraw.data[index + 1] = (value >> 8) & 0xff;
                                 this.imageDataDraw.data[index + 2] = (value) & 0xff;
@@ -457,6 +458,8 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                             }
                         }
                     } else {
+                        value = this.imageData[ctr][index];
+
                         if ((!this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMin)) ||
                                 (this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMin)) ||
                                 isNaN(value)) {
@@ -470,7 +473,12 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                                 this.screenVolumes[ctr].screenRatio) + 0.5);  // screen value
                         }
 
-                        if ((thresholdAlpha > 0) || firstRaster) {
+                        if (!readFirstRaster) {
+                            this.imageDataDraw.data[index] = this.screenVolumes[ctr].colorTable.lookupRed(value) * layerAlpha;
+                            this.imageDataDraw.data[index + 1] = this.screenVolumes[ctr].colorTable.lookupGreen(value) * layerAlpha;
+                            this.imageDataDraw.data[index + 2] = this.screenVolumes[ctr].colorTable.lookupBlue(value) * layerAlpha;
+                            this.imageDataDraw.data[index + 3] = thresholdAlpha;
+                        } else if (thresholdAlpha > 0) {
                             this.imageDataDraw.data[index] = (this.imageDataDraw.data[index] * (1 - layerAlpha) +
                                 this.screenVolumes[ctr].colorTable.lookupRed(value) * layerAlpha);
                             this.imageDataDraw.data[index + 1] = (this.imageDataDraw.data[index + 1] * (1 - layerAlpha) +
@@ -483,8 +491,12 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                 }
             }
 
-            this.contextMain.putImageData(this.imageDataDraw, 0, 0);
+            if (!dtiLines) {
+                readFirstRaster = true;
+            }
         }
+
+        this.contextMain.putImageData(this.imageDataDraw, 0, 0);
     } else {
         this.updateSlice(slice, force, worldSpace);
     }
@@ -615,6 +627,31 @@ papaya.viewer.ScreenSlice.prototype.updateFinalTransform = function () {
         for (ctrOut = 0; ctrOut < 3; ctrOut += 1) {
             for (ctrIn = 0; ctrIn < 3; ctrIn += 1) {
                 this.finalTransform[ctrOut][ctrIn] =
+                    (this.tempTransform2[ctrOut][0] * this.zoomTransform[0][ctrIn]) +
+                    (this.tempTransform2[ctrOut][1] * this.zoomTransform[1][ctrIn]) +
+                    (this.tempTransform2[ctrOut][2] * this.zoomTransform[2][ctrIn]);
+            }
+        }
+
+
+        for (ctrOut = 0; ctrOut < 3; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 3; ctrIn += 1) {
+                this.tempTransform[ctrOut][ctrIn] = this.screenTransform2[ctrOut][ctrIn];
+            }
+        }
+
+        for (ctrOut = 0; ctrOut < 3; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 3; ctrIn += 1) {
+                this.tempTransform2[ctrOut][ctrIn] =
+                    (this.tempTransform[ctrOut][0] * this.radiologicalTransform[0][ctrIn]) +
+                    (this.tempTransform[ctrOut][1] * this.radiologicalTransform[1][ctrIn]) +
+                    (this.tempTransform[ctrOut][2] * this.radiologicalTransform[2][ctrIn]);
+            }
+        }
+
+        for (ctrOut = 0; ctrOut < 3; ctrOut += 1) {
+            for (ctrIn = 0; ctrIn < 3; ctrIn += 1) {
+                this.finalTransform2[ctrOut][ctrIn] =
                     (this.tempTransform2[ctrOut][0] * this.zoomTransform[0][ctrIn]) +
                     (this.tempTransform2[ctrOut][1] * this.zoomTransform[1][ctrIn]) +
                     (this.tempTransform2[ctrOut][2] * this.zoomTransform[2][ctrIn]);
