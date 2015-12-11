@@ -30,10 +30,15 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.dtiAlphaFactor = 1.0;
     this.rgb = (this.volume.header.imageType.datatype === papaya.volume.ImageType.DATATYPE_RGB);
     this.hasCheckedImageRange = false;
+    this.interpolation = true;
     this.error = null;
 
     var screenParams = params[this.volume.fileName];
     if (screenParams) {
+        if (screenParams.interpolation !== undefined) {
+            this.interpolation = screenParams.interpolation;
+        }
+
         if (screenParams.dti !== undefined) {
             this.dti = screenParams.dti;
 
