@@ -163,6 +163,7 @@ papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
         {"label": "DisplayRange", "action": "ChangeRangeNeg", "type": "displayrange", "method": "getRangeNegative", "required": "isParametricCombined"},
         {"label": "Transparency", "action": "ChangeAlphaNeg", "type": "range", "method": "getAlpha", "required": "isParametricCombined"},
         {"type": "spacer", "required": "isParametricCombined"},
+        {"label": "Hide Overlay", "action": "ToggleOverlay", "method": "getHiddenLabel" },
         {"label": "Close Overlay", "action": "CloseOverlay", "required": "isDesktopMode" },
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango" }
     ]
@@ -463,7 +464,7 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
                 }
             } else {
                 item = new papaya.ui.MenuItem(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action,
-                    papaya.utilities.ObjectUtils.bind(this, this.doAction), modifier);
+                    papaya.utilities.ObjectUtils.bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
             }
         } else {
             item = null;
@@ -557,7 +558,7 @@ papaya.ui.Toolbar.prototype.isShowingMenus = function () {
 
 
 papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
-    var imageIndex, colorTableName, dialog, atlasName, imageName, screenVol, screenVolNeg;
+    var imageIndex, colorTableName, dialog, atlasName, imageName;
 
     if (!keepopen) {
         this.closeAllMenus();
@@ -700,6 +701,9 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
         } else if (action.startsWith("CloseOverlay")) {
             imageIndex = parseInt(action.substring(action.lastIndexOf("-") + 1), 10);
             this.container.viewer.removeOverlay(imageIndex);
+        } else if (action.startsWith("ToggleOverlay")) {
+            imageIndex = parseInt(action.substring(action.lastIndexOf("-") + 1), 10);
+            this.container.viewer.toggleOverlay(imageIndex);
         }
     }
 };

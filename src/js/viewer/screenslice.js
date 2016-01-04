@@ -94,6 +94,10 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
         }
 
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
+            if ((ctr > 0) && (this.screenVolumes[ctr].hidden)) {
+                continue;
+            }
+
             timepoint = this.screenVolumes[ctr].currentTimepoint;
             rgb = this.screenVolumes[ctr].rgb;
             dti = this.screenVolumes[ctr].dti;
@@ -343,7 +347,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
 papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace) {
     /*jslint bitwise: true */
 
-    var ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha, rgb, dti, dtiLines, dtiRGB, angle2,
+    var ctr, ctrY, ctrX, value, thresholdAlpha, index = 0, layerAlpha, rgb, dti, dtiLines, dtiRGB, angle2,
         dtiXC, dtiYC, dtiX1, dtiX2, dtiY1, dtiY2, dtiX1T, dtiX2T, dtiY1T, dtiY2T, angle, s, c, dtiColors,
         valueR, valueG, valueB, dtiColorIndex = 0, readFirstRaster = false;
 
@@ -359,6 +363,10 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
 
     if (this.imageData.length === this.screenVolumes.length) {
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
+            if ((ctr > 0) && (this.screenVolumes[ctr].hidden)) {
+                continue;
+            }
+
             rgb = this.screenVolumes[ctr].rgb;
             dti = this.screenVolumes[ctr].dti;
             dtiLines = this.screenVolumes[ctr].dtiLines;

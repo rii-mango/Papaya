@@ -10,13 +10,21 @@ papaya.ui = papaya.ui || {};
 
 
 /*** Constructor ***/
-papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, callback, modifier) {
+papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, callback, dataSource, method, modifier) {
     this.viewer = viewer;
-    this.label = label;
 
     this.modifier = "";
     if (!papaya.utilities.StringUtils.isStringBlank(modifier)) {
         this.modifier = "-" + modifier;
+    }
+
+    this.dataSource = dataSource;
+    this.method = method;
+
+    if (this.dataSource && this.method) {
+        this.label = this.dataSource[this.method]();
+    } else {
+        this.label = label;
     }
 
     this.action = action + this.modifier;
@@ -28,9 +36,15 @@ papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, call
 /*** Prototype Methods ***/
 
 papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
-    var html, thisHtml;
+    var html, thisHtml, label;
 
-    html = "<li id='" + this.id + "'><span class='" + PAPAYA_MENU_UNSELECTABLE + "'>" + this.label + "</span></li>";
+    if (this.dataSource && this.method) {
+        label = this.dataSource[this.method]();
+    } else {
+        label = this.label;
+    }
+
+    html = "<li id='" + this.id + "'><span class='" + PAPAYA_MENU_UNSELECTABLE + "'>" + label + "</span></li>";
     $("#" + parentId).append(html);
 
     thisHtml = $("#" + this.id);
@@ -39,7 +53,7 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
             this.doAction();
         }));
 
-    thisHtml.hover(function () {$(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
+    thisHtml.hover(function () { $(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
 };
 
 

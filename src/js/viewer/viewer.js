@@ -2746,3 +2746,22 @@ papaya.viewer.Viewer.prototype.removeOverlay = function (imageIndex) {
 
     this.drawViewer(true, false);
 };
+
+
+
+papaya.viewer.Viewer.prototype.toggleOverlay = function (imageIndex) {
+    var screenVol, screenVolNeg;
+
+    screenVol = this.container.viewer.screenVolumes[imageIndex];
+    screenVol.hidden = !screenVol.hidden;
+
+    screenVolNeg = screenVol.negativeScreenVol;
+
+    if (this.container.combineParametric && screenVolNeg) {
+        screenVolNeg.hidden = !screenVolNeg.hidden;
+    }
+
+    this.drawViewer(true, false);
+
+    return screenVol.hidden;
+};

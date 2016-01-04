@@ -32,6 +32,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.hasCheckedImageRange = false;
     this.interpolation = true;
     this.error = null;
+    this.hidden = false;
 
     var screenParams = params[this.volume.fileName];
     if (screenParams) {
@@ -373,4 +374,14 @@ papaya.viewer.ScreenVolume.prototype.initDTI = function () {
     this.volume.header.imageDimensions.timepoints = 1;
     this.colorTable = new papaya.viewer.ColorTable(this.lutName, false, papaya.viewer.ColorTable.TABLE_DTI_SPECTRUM);
     this.volume.transform.voxelValue.forceABS = !this.dtiLines;
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.getHiddenLabel = function () {
+    if (this.hidden) {
+        return "Show Overlay";
+    } else {
+        return "Hide Overlay";
+    }
 };
