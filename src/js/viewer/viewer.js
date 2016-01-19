@@ -1308,7 +1308,7 @@ papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function () {
         this.lowerImageBot.screenTransform[1][2] += this.lowerImageBot.screenOffsetY = this.viewerDim + (papaya.viewer.Viewer.GAP);
 
         this.getTransformParameters(this.lowerImageTop, this.viewerDim, true);
-        this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX = this.viewerDim / 2;
+        this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX = (((this.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
         this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY =  this.viewerDim + (papaya.viewer.Viewer.GAP);
     } else {
         this.viewerDim = this.canvas.height;
