@@ -1558,7 +1558,10 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
             if (((me.which === 3) || this.isControlKeyDown) && !this.currentScreenVolume.rgb) {
                 this.isWindowControl = true;
-                this.container.toolbar.showImageMenu(this.getCurrentScreenVolIndex());
+
+                if (this.container.showControlBar || !this.container.kioskMode) {
+                    this.container.toolbar.showImageMenu(this.getCurrentScreenVolIndex());
+                }
             } else if (this.isAltKeyDown && this.selectedSlice) {
                 this.isZoomMode = true;
 
