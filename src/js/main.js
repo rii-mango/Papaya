@@ -43,6 +43,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.nestedViewer = false;
     this.collapsable = false;
     this.orthogonal = true;
+    this.orthogonalTall = false;
     this.kioskMode = false;
     this.showControls = true;
     this.showControlBar = false;
@@ -545,20 +546,37 @@ papaya.Container.prototype.resetComponents = function () {
 
 
 papaya.Container.prototype.getViewerDimensions = function () {
-    var parentWidth, height, width, ratio, maxHeight;
+    var parentWidth, height, width, ratio, maxHeight, maxWidth;
 
     parentWidth = this.containerHtml.parent().width() - (this.fullScreenPadding ? (2 * PAPAYA_PADDING) : 0);
     ratio = (this.orthogonal ? 1.5 : 1);
-    width = parentWidth;
-    height = papayaRoundFast(width / ratio);
+
+    if (this.orthogonalTall) {
+        height = (this.collapsable ? window.innerHeight : this.containerHtml.parent().height()) - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
+            PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding && !this.nestedViewer ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
+            (this.showControlBar ? papaya.ui.Toolbar.SIZE : 0);
+
+        width = papayaRoundFast(height / ratio);
+    } else {
+        width = parentWidth;
+        height = papayaRoundFast(width / ratio);
+    }
 
     if (!this.nestedViewer || this.collapsable) {
-        maxHeight = window.innerHeight - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
-            PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
-        (this.showControlBar ? papaya.ui.Toolbar.SIZE : 0);
-        if (height > maxHeight) {
-            height = maxHeight;
-            width = papayaRoundFast(height * ratio);
+        if (this.orthogonalTall) {
+            maxWidth = window.innerWidth - (this.fullScreenPadding ? (2 * PAPAYA_PADDING) : 0);
+            if (width > maxWidth) {
+                width = maxWidth;
+                height = papayaRoundFast(width * ratio);
+            }
+        } else {
+            maxHeight = window.innerHeight - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
+                PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
+                (this.showControlBar ? papaya.ui.Toolbar.SIZE : 0);
+            if (height > maxHeight) {
+                height = maxHeight;
+                width = papayaRoundFast(height * ratio);
+            }
         }
     }
 
@@ -595,6 +613,8 @@ papaya.Container.prototype.readGlobalParams = function() {
         this.orthogonal = this.params.orthogonal;
     }
 
+    this.orthogonalTall = this.orthogonal && (this.params.orthogonalTall === true);
+
     if (this.params.syncOverlaySeries !== undefined) {  // default is true
         this.syncOverlaySeries = this.params.syncOverlaySeries;
     }
@@ -607,6 +627,7 @@ papaya.Container.prototype.reset = function () {
     this.nestedViewer = false;
     this.collapsable = false;
     this.orthogonal = true;
+    this.orthogonalTall = false;
     this.kioskMode = false;
     this.showControls = true;
     this.showControlBar = false;
