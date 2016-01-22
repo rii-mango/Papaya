@@ -144,6 +144,20 @@ papaya.Container.removeImage = function (index, imageIndex) {
 
 
 
+papaya.Container.hideImage = function (index, imageIndex) {
+    papayaContainers[index].viewer.screenVolumes[imageIndex].hidden = true;
+    papayaContainers[index].viewer.drawViewer(true, false);
+};
+
+
+
+papaya.Container.showImage = function (index, imageIndex) {
+    papayaContainers[index].viewer.screenVolumes[imageIndex].hidden = false;
+    papayaContainers[index].viewer.drawViewer(true, false);
+};
+
+
+
 papaya.Container.addImage = function (index, imageRef, imageParams) {
     var imageRefs;
 

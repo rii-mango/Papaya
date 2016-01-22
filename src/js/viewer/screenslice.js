@@ -94,7 +94,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
         }
 
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
-            if ((ctr > 0) && (this.screenVolumes[ctr].hidden)) {
+            if (this.screenVolumes[ctr].hidden) {
                 continue;
             }
 
@@ -363,7 +363,7 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
 
     if (this.imageData.length === this.screenVolumes.length) {
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
-            if ((ctr > 0) && (this.screenVolumes[ctr].hidden)) {
+            if (this.screenVolumes[ctr].hidden) {
                 continue;
             }
 
