@@ -13,7 +13,7 @@ papaya.utilities.StringUtils = papaya.utilities.StringUtils || {};
 /*** Static Methods ***/
 
 papaya.utilities.StringUtils.isStringBlank = function (str) {
-    if (str) {
+    if (str && typeof str == 'String') {
         return (str.trim().length === 0);
     }
 
