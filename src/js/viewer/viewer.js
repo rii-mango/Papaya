@@ -2032,7 +2032,7 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
 
 
 papaya.viewer.Viewer.prototype.getHeaderDescription = function (index) {
-	index = index || 0;
+    index = index || 0;
     return this.screenVolumes[index].volume.header.toString();
 };
 
