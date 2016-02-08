@@ -13,7 +13,7 @@ Developer Guide: http://rii.uthscsa.edu/mango/papaya_devguide.html
 Click [here](http://rii.uthscsa.edu/mango/papayabeta/) to try Papaya right now...
 
 ###Supported Formats
-- NIFTI (.nii and .nii.gz)
+- NIFTI-1 and NIFTI-2 (.nii and .nii.gz)
 - DICOM (compressed/uncompressed, big/little endian, implicit/explicit types)
 
 ####Supported DICOM Transfer Syntax
