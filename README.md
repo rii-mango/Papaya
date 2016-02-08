@@ -89,7 +89,7 @@ See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for
 
 Acknowledgments
 -----
-Papaya uses [Daikon](https://github.com/rii-mango/Daikon) for DICOM support, as well as the following third-party libraries:
+Papaya uses [Daikon](https://github.com/rii-mango/Daikon) for DICOM support, [NIFTI-Reader-JS](https://github.com/rii-mango/NIFTI-Reader-JS) for NIFTI support as well as the following third-party libraries:
 - [bowser](https://github.com/ded/bowser) &mdash; for browser detection
 - [Closure Compiler](https://developers.google.com/closure/compiler/) &mdash; JavaScript compression
 - [jquery](http://jquery.com/) &mdash; DOM manipulation
