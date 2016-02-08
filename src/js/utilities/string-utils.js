@@ -13,7 +13,7 @@ papaya.utilities.StringUtils = papaya.utilities.StringUtils || {};
 /*** Static Methods ***/
 
 papaya.utilities.StringUtils.isStringBlank = function (str) {
-    if (str && typeof str == 'String') {
+    if (str && (typeof str).toLowerCase() == 'string') {
         return (str.trim().length === 0);
     }
 
