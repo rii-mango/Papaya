@@ -41,12 +41,9 @@ papaya.volume.nifti.HeaderNIFTI.isThisFormat = function (filename, data) {
 
 papaya.volume.nifti.HeaderNIFTI.prototype.readHeaderData = function (data, progressMeter, dialogHandler,
                                                                      onFinishedHeaderRead) {
-    var imageDimensions;
     this.nifti = nifti.readHeader(data[0]);
     this.isNIFTI2 = nifti.isNIFTI2(data[0]);
-    imageDimensions = this.getImageDimensions();
-    this.imageData = data[0].slice(imageDimensions.dataOffsets[0], imageDimensions.dataOffsets[0] +
-    imageDimensions.dataLengths[0]);
+    this.imageData = nifti.readImage(this.nifti, data[0]);
     onFinishedHeaderRead();
 };
 
