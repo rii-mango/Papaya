@@ -338,10 +338,6 @@ papaya.Container.buildContainer = function (containerHTML, params) {
         container.nestedViewer = (containerHTML.parent()[0].tagName.toUpperCase() !== 'BODY');
         container.readGlobalParams();
 
-        if (container.params.showControlBar !== undefined) {  // default is true
-            container.showControlBar = container.showControls && container.params.showControlBar;
-        }
-
         if (container.isDesktopMode()) {
             container.preferences.readPreferences();
         }
@@ -631,6 +627,10 @@ papaya.Container.prototype.readGlobalParams = function() {
 
     if (this.params.syncOverlaySeries !== undefined) {  // default is true
         this.syncOverlaySeries = this.params.syncOverlaySeries;
+    }
+
+    if (this.params.showControlBar !== undefined) {  // default is true
+        this.showControlBar = this.showControls && this.params.showControlBar;
     }
 };
 
