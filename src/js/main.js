@@ -128,8 +128,8 @@ papaya.Container.resetViewer = function (index, params) {
     papayaContainers[index].reset();
     papayaContainers[index].params = params;
     papayaContainers[index].readGlobalParams();
+    papayaContainers[index].rebuildContainer(params, index);
     papayaContainers[index].viewer.processParams(params);
-    papayaContainers[index].loadNext();
 };
 
 
@@ -314,7 +314,7 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params)
 
 
 
-papaya.Container.buildContainer = function (containerHTML, params) {
+papaya.Container.buildContainer = function (containerHTML, params, replaceIndex) {
     var container, message, viewerHtml, loadUrl, imageRefs = null;
 
     message = papaya.utilities.PlatformUtils.checkForBrowserCompatibility();
@@ -388,7 +388,25 @@ papaya.Container.buildContainer = function (containerHTML, params) {
             containerHTML.parent().width("100%");
         }
 
-        papayaContainers.push(container);
+        if (replaceIndex !== undefined) {
+            papayaContainers[replaceIndex] = container;
+        } else {
+            papayaContainers.push(container);
+        }
+    }
+};
+
+
+
+papaya.Container.prototype.rebuildContainer = function (params, index) {
+    this.containerHtml.empty();
+    papaya.Container.fillContainerHTML(this.containerHtml, false, params);
+    papaya.Container.buildContainer(this.containerHtml, params, index);
+
+    if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
+        $("html").addClass(PAPAYA_CONTAINER_FULLSCREEN);
+        $("body").addClass(PAPAYA_CONTAINER_FULLSCREEN);
+        papaya.Container.setToFullPage();
     }
 };
 
