@@ -40,6 +40,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.preferences = null;
     this.params = [];
     this.loadingImageIndex = 0;
+    this.loadingSurfaceIndex = 0;
     this.nestedViewer = false;
     this.collapsable = false;
     this.orthogonal = true;
@@ -52,6 +53,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.dropTimeout = null;
     this.showRuler = false;
     this.syncOverlaySeries = true;
+    this.surfaceLink = false;
     this.resetComponents();
 };
 
@@ -573,11 +575,18 @@ papaya.Container.prototype.resetComponents = function () {
 
 
 
+papaya.Container.prototype.hasSurface = function () {
+    return (this.viewer && (this.viewer.surfaces.length > 0));
+};
+
+
+
+
 papaya.Container.prototype.getViewerDimensions = function () {
     var parentWidth, height, width, ratio, maxHeight, maxWidth;
 
     parentWidth = this.containerHtml.parent().width() - (this.fullScreenPadding ? (2 * PAPAYA_PADDING) : 0);
-    ratio = (this.orthogonal ? 1.5 : 1);
+    ratio = (this.orthogonal ? (this.hasSurface() ? 1.333 : 1.5) : 1);
 
     if (this.orthogonalTall) {
         height = (this.collapsable ? window.innerHeight : this.containerHtml.parent().height()) - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
@@ -641,7 +650,19 @@ papaya.Container.prototype.readGlobalParams = function() {
         this.orthogonal = this.params.orthogonal;
     }
 
+    this.surfaceLink = (this.params.surfaceLink === true);
+
     this.orthogonalTall = this.orthogonal && (this.params.orthogonalTall === true);
+
+    if (papaya.utilities.PlatformUtils.mobile) {
+        if (this.orthogonal) {
+            if ($(window).height() > $(window).width()) {
+                this.orthogonalTall = true;
+            } else {
+                this.orthogonalTall = false;
+            }
+        }
+    }
 
     if (this.params.syncOverlaySeries !== undefined) {  // default is true
         this.syncOverlaySeries = this.params.syncOverlaySeries;
@@ -956,7 +977,12 @@ papaya.Container.prototype.addDroppedFile = function (file) {
 
 
 papaya.Container.prototype.droppedFilesFinishedLoading = function () {
-    this.viewer.loadImage(papayaDroppedFiles);
+    if (gifti.isThisFormat(papayaDroppedFiles[0].name)) {
+        this.viewer.loadSurface(papayaDroppedFiles);
+    } else {
+        this.viewer.loadImage(papayaDroppedFiles);
+    }
+
     papayaDroppedFiles = [];
 };
 
@@ -969,6 +995,76 @@ papaya.Container.prototype.clearParams = function () {
 
 
 papaya.Container.prototype.loadNext = function () {
+    if (this.hasImageToLoad()) {
+        this.loadNextImage();
+    } else if (this.hasSurfaceToLoad()) {
+        this.loadNextSurface();
+    } else if (this.hasAtlasToLoad()) {
+        this.viewer.loadAtlas();
+    }
+};
+
+
+
+papaya.Container.prototype.hasMoreToLoad = function () {
+    return (this.hasImageToLoad() || this.hasSurfaceToLoad() || this.hasAtlasToLoad());
+};
+
+
+
+papaya.Container.prototype.hasImageToLoad = function () {
+    if (this.params.images) {
+        return (this.loadingImageIndex < this.params.images.length);
+    } else if (this.params.encodedImages) {
+        return (this.loadingImageIndex < this.params.encodedImages.length);
+    } else if (this.params.files) {
+        return (this.loadingImageIndex < this.params.files.length);
+    }
+
+    return false;
+};
+
+
+
+papaya.Container.prototype.hasAtlasToLoad = function () {
+    return this.viewer.hasDefinedAtlas();
+};
+
+
+papaya.Container.prototype.hasSurfaceToLoad = function () {
+    if (this.params.surfaces) {
+        if (!papaya.utilities.PlatformUtils.isWebGLSupported()) {
+            console.log("Warning: This browser version is not able to load surfaces.");
+            return false;
+        }
+
+        return (this.loadingSurfaceIndex < this.params.surfaces.length);
+    }
+
+    return false;
+};
+
+
+
+papaya.Container.prototype.loadNextSurface = function () {
+    var loadingNext = false, imageRef;
+
+    if (this.loadingSurfaceIndex < this.params.surfaces.length) {
+        loadingNext = true;
+        imageRef = this.params.surfaces[this.loadingSurfaceIndex];
+        this.loadingSurfaceIndex += 1;
+        this.viewer.loadSurface(imageRef, true, false);
+    } else {
+        this.params.loadedSurfaces = this.params.surfaces;
+        this.params.surfaces = [];
+    }
+
+    return loadingNext;
+};
+
+
+
+papaya.Container.prototype.loadNextImage = function () {
     var loadingNext = false, imageRefs;
 
     if (this.params.images) {
@@ -982,6 +1078,7 @@ papaya.Container.prototype.loadNext = function () {
             }
 
             this.viewer.loadImage(imageRefs, true, false);
+            this.loadingImageIndex += 1;
         } else {
             this.params.loadedImages = this.params.images;
             this.params.images = [];
@@ -997,12 +1094,14 @@ papaya.Container.prototype.loadNext = function () {
             }
 
             this.viewer.loadImage(imageRefs, false, true);
+            this.loadingImageIndex += 1;
         } else {
             this.params.loadedEncodedImages = this.params.encodedImages;
             this.params.encodedImages = [];
         }
     } else if (this.params.files) {
         if (this.loadingImageIndex < this.params.files.length) {
+
             loadingNext = true;
             imageRefs = this.params.files[this.loadingImageIndex];
 
@@ -1012,13 +1111,12 @@ papaya.Container.prototype.loadNext = function () {
             }
 
             this.viewer.loadImage(imageRefs, false, false);
+            this.loadingImageIndex += 1;
         } else {
             this.params.loadedFiles = this.params.files;
             this.params.files = [];
         }
     }
-
-    this.loadingImageIndex += 1;
 
     return loadingNext;
 };
@@ -1191,6 +1289,11 @@ papaya.Container.prototype.coordinateChanged = function (viewer) {
             }
         }
     }
+
+    if (viewer.surfaceView) {
+        viewer.surfaceView.updateActivePlanes();
+        viewer.surfaceView.draw();
+    }
 };
 
 
@@ -1209,6 +1312,18 @@ window.onorientationchange = function () {
 
     for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
         papayaContainers[ctr].toolbar.closeAllMenus();
+    }
+
+    if (papaya.utilities.PlatformUtils.mobile) {
+        for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
+            if (papayaContainers[ctr].orthogonal) {
+                if ($(window).height() > $(window).width()) {
+                    papayaContainers[ctr].orthogonalTall = true;
+                } else {
+                    papayaContainers[ctr].orthogonalTall = false;
+                }
+            }
+        }
     }
 
     papaya.Container.resizePapaya();

@@ -23,6 +23,7 @@ papaya.utilities.PlatformUtils.os = null;
 papaya.utilities.PlatformUtils.browser = bowser.name;
 papaya.utilities.PlatformUtils.browserVersion = bowser.version;
 papaya.utilities.PlatformUtils.ios = bowser.ios;
+papaya.utilities.PlatformUtils.mobile = bowser.mobile;
 papaya.utilities.PlatformUtils.lastScrollEventTimestamp = 0;
 
 
@@ -67,6 +68,32 @@ papaya.utilities.PlatformUtils.checkForBrowserCompatibility = function () {
     }
 
     return null;
+};
+
+
+
+papaya.utilities.PlatformUtils.isWebGLSupported = function () {
+    var canvas;
+    var ctx;
+    var ext;
+
+    try {
+        canvas = document.createElement('canvas');
+        ctx = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        ext = ctx.getExtension('OES_element_index_uint');
+        if (!ext) {
+            return false;
+        }
+    } catch (e) {
+        console.log("There was a problem detecting WebGL! " + e);
+        return false;
+    }
+
+    canvas = null;
+    ctx = null;
+    ext = null;
+
+    return true;
 };
 
 

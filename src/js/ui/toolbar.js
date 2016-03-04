@@ -90,6 +90,7 @@ papaya.ui.Toolbar.ICON_COLLAPSE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA
 papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "File", "icons": null,
     "items": [
         {"label": "Add Image...", "action": "OpenImage", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
+        {"label": "Add Surface...", "action": "OpenSurface", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
         {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
             "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
         {"type": "spacer"},
@@ -575,6 +576,9 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
         } else if (action === "OpenImage") {
             this.container.display.drawProgress(0.1, "Loading");
             this.viewer.loadImage(file);
+        } else if (action === "OpenSurface") {
+            this.container.display.drawProgress(0.1, "Loading");
+            this.viewer.loadSurface(file);
         } else if (action === "OpenFolder") {
             this.container.display.drawProgress(0.1, "Loading");
             this.viewer.loadImage(file);
