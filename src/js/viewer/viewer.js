@@ -314,7 +314,7 @@ papaya.viewer.Viewer.prototype.loadSurface = function (ref, forceUrl) {
     if (forceUrl) {
         surface.readURL(ref, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
     } else {
-        if (this.surfaces.length === 1) {
+        if (this.surfaces.length === 0) {
             this.container.surfaceLink = true;
         }
 
