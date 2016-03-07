@@ -829,7 +829,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
                 this.draggingSliceDir = papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL;
             }
         }
-    } else if (this.insideScreenSlice(viewer.surfaceView, xLoc, yLoc, viewer.surfaceView.screenDim,
+    } else if (viewer.surfaceView && this.insideScreenSlice(viewer.surfaceView, xLoc, yLoc, viewer.surfaceView.screenDim,
             viewer.surfaceView.screenDim)) {
         viewer.surfaceView.updateDynamic(originalX, originalY);
     }
@@ -1711,7 +1711,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                 if (this.selectedSlice && (this.selectedSlice !== this.surfaceView)) {
                     this.grabbedHandle = this.selectedSlice.findProximalRulerHandle(this.convertScreenToImageCoordinateX(this.previousMousePosition.x - this.canvasRect.left, this.selectedSlice),
                         this.convertScreenToImageCoordinateY(this.previousMousePosition.y - this.canvasRect.top, this.selectedSlice));
-                } else if (this.selectedSlice === this.surfaceView) {
+                } else if (this.selectedSlice && (this.selectedSlice === this.surfaceView)) {
                     this.surfaceView.setStartDynamic(this.previousMousePosition.x, this.previousMousePosition.y);
                 }
 
