@@ -6,3 +6,4 @@ release.sh
 /build/
 /tests/build/**/
 .jshint*
+juelich/
