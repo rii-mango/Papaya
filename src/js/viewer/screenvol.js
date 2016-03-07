@@ -78,8 +78,13 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
             }
         } else {
             if (screenParams.lut !== undefined) {
-                this.lutName = screenParams.lut;
-                this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage);
+                if (typeof screenParams.lut === 'string' || screenParams.lut instanceof String) {
+                    this.lutName = screenParams.lut;
+                    this.colorTable = new papaya.viewer.ColorTable(this.lutName, baseImage);
+                } else {
+                    this.lutName = "Object";
+                    this.colorTable = screenParams.lut;
+                }
             }
         }
 
