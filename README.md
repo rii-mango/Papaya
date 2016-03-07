@@ -5,7 +5,7 @@ Papaya is a pure JavaScript medical research image viewer, supporting DICOM and 
 
 [![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/README-img.png)](http://rii.uthscsa.edu/mango/papayabeta/)
 
-Requirements: Firefox (7+), Chrome (7+), Safari (6+), MobileSafari (iOS 6+), IE (10+)<br />
+Requirements: Firefox (7+), Chrome (7+), Safari (6+), iOS (6+), IE (10+), Edge (12+)<br />
 User Guide: http://ric.uthscsa.edu/mango/papaya_userguide.html<br />
 Developer Guide: http://rii.uthscsa.edu/mango/papaya_devguide.html
 
