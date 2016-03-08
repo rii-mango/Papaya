@@ -1687,7 +1687,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
             this.findClickedSlice(this, this.previousMousePosition.x, this.previousMousePosition.y);
 
-            if (((me.which === 3) || this.isControlKeyDown) && !this.currentScreenVolume.rgb) {
+            if (((me.button === 2) || this.isControlKeyDown) && !this.currentScreenVolume.rgb && !this.container.kioskMode) {
                 this.isWindowControl = true;
 
                 if (this.container.showControlBar || !this.container.kioskMode) {
