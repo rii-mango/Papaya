@@ -54,6 +54,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.showRuler = false;
     this.syncOverlaySeries = true;
     this.surfaceLink = false;
+    this.contextManager = null;
     this.resetComponents();
 };
 
@@ -670,6 +671,10 @@ papaya.Container.prototype.readGlobalParams = function() {
 
     if (this.params.showControlBar !== undefined) {  // default is true
         this.showControlBar = this.showControls && this.params.showControlBar;
+    }
+
+    if (this.params.contextManager !== undefined) {
+        this.contextManager = this.params.contextManager;
     }
 };
 

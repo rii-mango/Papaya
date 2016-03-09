@@ -22,6 +22,7 @@ papaya.ui.Menu = papaya.ui.Menu || function (viewer, menuData, callback, dataSou
     this.items = [];
     this.rangeItem = null;
     this.menuOnHover = menuData.menuOnHover;
+    this.contextMenu = false;
 
     if ((modifier === undefined) || (modifier === null)) {
         this.imageIndex = -1;
@@ -223,8 +224,47 @@ papaya.ui.Menu.prototype.addMenuItem = function (menuitem) {
 
 
 
+papaya.ui.Menu.prototype.showContextMenu = function () {
+    var isShowing, menuHtml, menuHtmlId;
+
+    if (this.items.length > 0) {
+        menuHtmlId = "#" + this.menuId;
+        menuHtml = $(menuHtmlId);
+
+        isShowing = menuHtml.is(":visible");
+
+        menuHtml.remove();
+
+        if (!isShowing) {
+            this.htmlParent = this.viewer.container.viewerHtml;
+            this.buildMenu();
+
+            menuHtml = $(menuHtmlId);
+            menuHtml.hide();
+
+            menuHtml.css({
+                position: 'absolute',
+                zIndex: 100,
+                left: this.viewer.contextMenuMousePositionX,
+                top: this.viewer.contextMenuMousePositionY
+            });
+
+            menuHtml.hide().fadeIn(200);
+        }
+    }
+};
+
+
+
 papaya.ui.Menu.prototype.showMenu = function () {
     var isShowing, button, menuHtml, menuHtmlId;
+
+    this.viewer.container.toolbar.closeAllMenus();
+
+    if (this.contextMenu) {
+        this.showContextMenu();
+        return;
+    }
 
     if (this.items.length > 0) {
         menuHtmlId = "#" + this.menuId;

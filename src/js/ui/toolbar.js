@@ -259,6 +259,26 @@ papaya.ui.Toolbar.MOUSE_REF_DATA = {
 };
 
 
+/*** Static Methods ***/
+
+papaya.ui.Toolbar.applyContextState = function (menu) {
+    var ctr;
+
+    menu.contextMenu = true;
+
+    if (menu.items) {
+        for (ctr = 0; ctr < menu.items.length; ctr += 1) {
+            if (menu.items[ctr].menu) {
+                papaya.ui.Toolbar.applyContextState(menu.items[ctr].menu);
+            }
+        }
+    }
+};
+
+
+
+/*** Prototype Methods ***/
+
 papaya.ui.Toolbar.prototype.buildToolbar = function () {
     var ctr;
 
@@ -476,6 +496,7 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
 
             if (itemData[ctrItems].items) {
                 menu2 = this.buildMenu(itemData[ctrItems], topLevelButtonId, dataSource, modifier);
+                item.menu = menu2;
                 item.callback = papaya.utilities.ObjectUtils.bind(menu2, menu2.showMenu);
             }
         }
@@ -523,8 +544,8 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
 
 
 
-papaya.ui.Toolbar.prototype.closeAllMenus = function () {
-    var menuHtml, modalDialogHtml, modalDialogBackgroundHtml;
+papaya.ui.Toolbar.prototype.closeAllMenus = function (skipContext) {
+    var menuHtml, modalDialogHtml, modalDialogBackgroundHtml, contextMenuHtml;
 
     menuHtml = this.container.toolbarHtml.find("." + PAPAYA_MENU_CSS);
     menuHtml.hide(100);
@@ -543,6 +564,15 @@ papaya.ui.Toolbar.prototype.closeAllMenus = function () {
     modalDialogBackgroundHtml = this.container.toolbarHtml.find("." + PAPAYA_DIALOG_BACKGROUND);
     modalDialogBackgroundHtml.hide(100);
     modalDialogBackgroundHtml.remove();
+
+    // context menu
+    if (!skipContext) {
+        contextMenuHtml = this.container.viewerHtml.find("." + PAPAYA_MENU_CSS);
+        if (contextMenuHtml) {
+            contextMenuHtml.hide(100);
+            contextMenuHtml.remove();
+        }
+    }
 };
 
 

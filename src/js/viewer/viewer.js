@@ -44,6 +44,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.viewerDim = 0;
     this.worldSpace = false;
     this.currentCoord = new papaya.core.Coordinate(0, 0, 0);
+    this.cursorPosition = new papaya.core.Coordinate(0, 0, 0);
     this.longestDim = 0;
     this.longestDimSize = 0;
     this.draggingSliceDir = 0;
@@ -72,6 +73,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.hasSeries = false;
     this.controlsHidden = false;
 
+    this.listenerContextMenu = function (me) { me.preventDefault(); return false; };
     this.listenerMouseMove = papaya.utilities.ObjectUtils.bind(this, this.mouseMoveEvent);
     this.listenerMouseDown = papaya.utilities.ObjectUtils.bind(this, this.mouseDownEvent);
     this.listenerMouseOut = papaya.utilities.ObjectUtils.bind(this, this.mouseOutEvent);
@@ -86,7 +88,6 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
 
     this.updateTimer = null;
     this.updateTimerEvent = null;
-    this.listenerContextMenu = function (e) { e.preventDefault(); return false; };
     this.drawEmptyViewer();
 
     this.processParams(params);
@@ -427,11 +428,11 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.canvas.addEventListener("mouseup", this.listenerMouseUp, false);
         document.addEventListener("keydown", this.listenerKeyDown, true);
         document.addEventListener("keyup", this.listenerKeyUp, true);
-        this.canvas.addEventListener("contextmenu", this.listenerContextMenu, false);
         this.canvas.addEventListener("touchmove", this.listenerTouchMove, false);
         this.canvas.addEventListener("touchstart", this.listenerMouseDown, false);
         this.canvas.addEventListener("touchend", this.listenerMouseUp, false);
         this.canvas.addEventListener("dblclick", this.listenerMouseDoubleClick, false);
+        document.addEventListener("contextmenu", this.listenerContextMenu, false);
 
         if (this.container.showControlBar) {
             // main slice
@@ -881,6 +882,10 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yL
         }
 
         if (found) {
+            this.cursorPosition.x = xImageLoc;
+            this.cursorPosition.y = yImageLoc;
+            this.cursorPosition.z = zImageLoc;
+
             this.container.display.drawDisplay(xImageLoc, yImageLoc, zImageLoc);
         } else {
             this.container.display.drawEmptyDisplay();
@@ -1675,6 +1680,8 @@ papaya.viewer.Viewer.prototype.resetUpdateTimer = function (me) {
 
 
 papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
+    var draggingStarted = true, menuData, menu;
+
     me.stopPropagation();
     me.preventDefault();
 
@@ -1687,7 +1694,15 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
             this.findClickedSlice(this, this.previousMousePosition.x, this.previousMousePosition.y);
 
-            if (((me.button === 2) || this.isControlKeyDown) && !this.currentScreenVolume.rgb && !this.container.kioskMode) {
+            if (((me.button === 2) || this.isControlKeyDown) && this.container.contextManager && (this.selectedSlice === this.mainImage)) {
+                menuData = this.container.contextManager.getContextAtImagePosition(this.cursorPosition.x, this.cursorPosition.y, this.cursorPosition.z);
+                menu = this.container.toolbar.buildMenu(menuData);
+                papaya.ui.Toolbar.applyContextState(menu);
+                this.contextMenuMousePositionX = this.previousMousePosition.x;
+                this.contextMenuMousePositionY = this.previousMousePosition.y;
+                draggingStarted = false;
+                menu.showMenu();
+            } else if (((me.button === 2) || this.isControlKeyDown) && !this.currentScreenVolume.rgb && !this.container.kioskMode) {
                 this.isWindowControl = true;
 
                 if (this.container.showControlBar || !this.container.kioskMode) {
@@ -1721,7 +1736,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                 }
             }
 
-            this.isDragging = true;
+            this.isDragging = draggingStarted;
             me.handled = true;
         }
 
@@ -1759,7 +1774,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
 
     this.updateWindowTitle();
     this.updateSliceSliderControl();
-    this.container.toolbar.closeAllMenus();
+    this.container.toolbar.closeAllMenus(true);
 
     if (this.hasSurface()) {
         this.surfaceView.updateCurrent();
@@ -2154,7 +2169,7 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     this.canvas.removeEventListener("mouseup", this.listenerMouseUp, false);
     document.removeEventListener("keydown", this.listenerKeyDown, true);
     document.removeEventListener("keyup", this.listenerKeyUp, true);
-    this.canvas.removeEventListener("contextmenu", this.listenerContextMenu, false);
+    document.removeEventListener("contextmenu", this.listenerContextMenu, false);
     this.canvas.removeEventListener("touchmove", this.listenerTouchMove, false);
     this.canvas.removeEventListener("touchstart", this.listenerMouseDown, false);
     this.canvas.removeEventListener("touchend", this.listenerMouseUp, false);

@@ -30,6 +30,7 @@ papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, call
     this.action = action + this.modifier;
     this.id = this.action.replace(/ /g, "_") + this.viewer.container.containerIndex;
     this.callback = callback;
+    this.menu = null;
 };
 
 
