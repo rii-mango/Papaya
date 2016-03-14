@@ -45,7 +45,7 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
         label = this.label;
     }
 
-    html = "<li id='" + this.id + "'><span class='" + PAPAYA_MENU_UNSELECTABLE + "'>" + label + "</span></li>";
+    html = "<li id='" + this.id + "'><span class='" + PAPAYA_MENU_UNSELECTABLE + "'>" + label + "</span>" + (this.menu ? "<span style='float:right'>&nbsp;&#x25B6;</span>" : "") + "</li>";
     $("#" + parentId).append(html);
 
     thisHtml = $("#" + this.id);

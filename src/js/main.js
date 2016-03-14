@@ -55,6 +55,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.syncOverlaySeries = true;
     this.surfaceLink = false;
     this.contextManager = null;
+    this.allowScroll = true;
     this.resetComponents();
 };
 
@@ -654,6 +655,10 @@ papaya.Container.prototype.readGlobalParams = function() {
     this.surfaceLink = (this.params.surfaceLink === true);
 
     this.orthogonalTall = this.orthogonal && (this.params.orthogonalTall === true);
+
+    if (this.params.allowScroll !== undefined) {  // default is true
+        this.allowScroll = this.params.allowScroll;
+    }
 
     if (papaya.utilities.PlatformUtils.mobile) {
         if (this.orthogonal) {
@@ -1299,6 +1304,10 @@ papaya.Container.prototype.coordinateChanged = function (viewer) {
         viewer.surfaceView.updateActivePlanes();
         viewer.surfaceView.draw();
     }
+
+    if (this.contextManager) {
+        this.contextManager.clearContext();
+    }
 };
 
 
@@ -1307,9 +1316,7 @@ papaya.Container.prototype.coordinateChanged = function (viewer) {
 window.onload = papaya.Container.startPapaya;
 
 
-
-window.onresize = papaya.Container.resizePapaya;
-
+window.addEventListener('resize', papaya.Container.resizePapaya);
 
 
 window.onorientationchange = function () {

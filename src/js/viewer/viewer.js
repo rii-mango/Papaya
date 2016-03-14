@@ -555,7 +555,9 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
 
         this.hasSeries = (this.volume.header.imageDimensions.timepoints > 1);
 
-        this.addScroll();
+        if (this.container.allowScroll) {
+            this.addScroll();
+        }
 
         this.setLongestDim(this.volume);
         this.calculateScreenSliceTransforms(this);
@@ -1037,6 +1039,10 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
         this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z,
             this.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z));
     }
+
+    if (this.container.contextManager) {
+        this.container.contextManager.drawToViewer(this.context);
+    }
 };
 
 
@@ -1060,8 +1066,7 @@ papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
         this.context.beginPath();
         this.context.rect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
         this.context.clip();
-        this.context.setTransform(slice.finalTransform[0][0], 0, 0, slice.finalTransform[1][1], slice.finalTransform[0][2],
-            slice.finalTransform[1][2]);
+        this.context.setTransform(slice.finalTransform[0][0], 0, 0, slice.finalTransform[1][1], slice.finalTransform[0][2], slice.finalTransform[1][2]);
         this.context.drawImage(slice.canvasMain, 0, 0);
         this.context.restore();
 
@@ -1471,8 +1476,8 @@ papaya.viewer.Viewer.prototype.getTransformParameters = function (image, height,
             (image.getYSize() / this.longestDimSize);
     }
 
-    transX = (((lower ? height - papaya.viewer.Viewer.GAP : height) / bigScale) - (image.getXDim() * scaleX)) / 3;
-    transY = (((lower ? height - papaya.viewer.Viewer.GAP : height) / bigScale) - (image.getYDim() * scaleY)) / 3;
+    transX = (((lower ? height - papaya.viewer.Viewer.GAP : height) / bigScale) - (image.getXDim() * scaleX)) / 2;
+    transY = (((lower ? height - papaya.viewer.Viewer.GAP : height) / bigScale) - (image.getYDim() * scaleY)) / 2;
 
     image.screenDim = (lower ? (height - papaya.viewer.Viewer.GAP) / factor : height);
     image.screenTransform[0][0] = scaleX;
@@ -1609,6 +1614,10 @@ papaya.viewer.Viewer.prototype.keyUpEvent = function (ke) {
 papaya.viewer.Viewer.prototype.rotateViews = function () {
     var temp;
 
+    if (this.container.contextManager) {
+        this.container.contextManager.clearContext();
+    }
+
     if (this.hasSurface()) {
         temp = this.lowerImageBot2;
         this.lowerImageBot2 = this.lowerImageBot;
@@ -1695,13 +1704,16 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
             this.findClickedSlice(this, this.previousMousePosition.x, this.previousMousePosition.y);
 
             if (((me.button === 2) || this.isControlKeyDown) && this.container.contextManager && (this.selectedSlice === this.mainImage)) {
+                this.contextMenuMousePositionX = this.previousMousePosition.x - this.canvasRect.left;
+                this.contextMenuMousePositionY = this.previousMousePosition.y - this.canvasRect.top;
                 menuData = this.container.contextManager.getContextAtImagePosition(this.cursorPosition.x, this.cursorPosition.y, this.cursorPosition.z);
-                menu = this.container.toolbar.buildMenu(menuData);
-                papaya.ui.Toolbar.applyContextState(menu);
-                this.contextMenuMousePositionX = this.previousMousePosition.x;
-                this.contextMenuMousePositionY = this.previousMousePosition.y;
-                draggingStarted = false;
-                menu.showMenu();
+
+                if (menuData) {
+                    menu = this.container.toolbar.buildMenu(menuData);
+                    papaya.ui.Toolbar.applyContextState(menu);
+                    draggingStarted = false;
+                    menu.showMenu();
+                }
             } else if (((me.button === 2) || this.isControlKeyDown) && !this.currentScreenVolume.rgb && !this.container.kioskMode) {
                 this.isWindowControl = true;
 

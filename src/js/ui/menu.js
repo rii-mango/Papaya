@@ -53,7 +53,7 @@ papaya.ui.Menu.doShowMenu = function (viewer, el, menu, right) {
     eWidth = $(el).outerWidth();
     mWidth = $(menu).outerWidth();
     mHeight = $(menu).outerHeight();
-    left = pos.left + (right ? ((-1 * mWidth) + eWidth) : 5) +  "px";
+    left = pos.left + (right ? ((-1 * mWidth) + eWidth) : 5) + "px";
 
     if (viewer.container.showControlBar && viewer.container.kioskMode) {
         top = ((posV.top) + $(viewer.canvas).outerHeight() + PAPAYA_SPACING + dHeight - mHeight) + "px";
@@ -225,14 +225,12 @@ papaya.ui.Menu.prototype.addMenuItem = function (menuitem) {
 
 
 papaya.ui.Menu.prototype.showContextMenu = function () {
-    var isShowing, menuHtml, menuHtmlId;
+    var isShowing, menuHtml, menuHtmlId, mHeight, offset = 0, posV, dHeight;
 
     if (this.items.length > 0) {
         menuHtmlId = "#" + this.menuId;
         menuHtml = $(menuHtmlId);
-
         isShowing = menuHtml.is(":visible");
-
         menuHtml.remove();
 
         if (!isShowing) {
@@ -242,11 +240,19 @@ papaya.ui.Menu.prototype.showContextMenu = function () {
             menuHtml = $(menuHtmlId);
             menuHtml.hide();
 
+            mHeight = menuHtml.outerHeight();
+            posV = $(this.viewer.canvas).offset();
+            dHeight = $(this.viewer.container.display.canvas).outerHeight();
+
+            if ((this.viewer.contextMenuMousePositionY + mHeight) > (posV.top + dHeight + $(this.viewer.canvas).outerHeight() + PAPAYA_SPACING)) {
+                offset = (this.viewer.contextMenuMousePositionY + mHeight) - (posV.top + dHeight + $(this.viewer.canvas).outerHeight() + PAPAYA_SPACING) - 1;
+            }
+
             menuHtml.css({
                 position: 'absolute',
                 zIndex: 100,
                 left: this.viewer.contextMenuMousePositionX,
-                top: this.viewer.contextMenuMousePositionY
+                top: this.viewer.contextMenuMousePositionY - offset
             });
 
             menuHtml.hide().fadeIn(200);

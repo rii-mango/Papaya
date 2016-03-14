@@ -159,7 +159,7 @@ papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
         {"type": "spacer", "required": "isParametricCombined"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
         {"label": "Transparency", "action": "ChangeAlpha", "type": "range", "method": "getAlpha"},
-        {"label": "Color Table...", "action": "ColorTable", "items": [], "required": "isNonParametricCombined" },
+        {"label": "Color Table", "action": "ColorTable", "items": [], "required": "isNonParametricCombined" },
         {"type": "spacer", "required": "isParametricCombined"},
         {"label": "DisplayRange", "action": "ChangeRangeNeg", "type": "displayrange", "method": "getRangeNegative", "required": "isParametricCombined"},
         {"label": "Transparency", "action": "ChangeAlphaNeg", "type": "range", "method": "getAlpha", "required": "isParametricCombined"},
@@ -361,7 +361,7 @@ papaya.ui.Toolbar.prototype.buildColorMenuItems = function () {
     items = papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items;
 
     for (ctr = 0; ctr < items.length; ctr += 1) {
-        if (items[ctr].label === "Color Table...") {
+        if (items[ctr].label === "Color Table") {
             items = items[ctr].items;
             break;
         }
@@ -738,6 +738,8 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
         } else if (action.startsWith("ToggleOverlay")) {
             imageIndex = parseInt(action.substring(action.lastIndexOf("-") + 1), 10);
             this.container.viewer.toggleOverlay(imageIndex);
+        } else if (action.startsWith("Context-")) {
+            this.container.contextManager.actionPerformed(action.substring(8));
         }
     }
 };
