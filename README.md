@@ -5,9 +5,10 @@ Papaya is a pure JavaScript medical research image viewer, supporting DICOM and 
 
 ![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/docs/images/splash1.png)![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/docs/images/splash2.png)
 
-Requirements: Firefox (7+), Chrome (7+), Safari (6+), iOS (6+), IE (10+), Edge (12+)<br />
-User Guide: http://ric.uthscsa.edu/mango/papaya_userguide.html<br />
-Developer Guide: http://rii.uthscsa.edu/mango/papaya_devguide.html
+[Requirements](https://github.com/rii-mango/Papaya/wiki/Requirements): Firefox (7+), Chrome (7+), Safari (6+), iOS (6+), IE (10+), Edge (12+)<br />
+[Supported Formats](https://github.com/rii-mango/Papaya/wiki/Supported-Formats): NIFTI (.nii, .nii.gz, DICOM (compressed/uncompressed), GIFTI (.surf.gii)<br />
+[Usage](https://github.com/rii-mango/Papaya/wiki/Usage)<br />
+[Configuration](https://github.com/rii-mango/Papaya/wiki/Configuration)
 
 ###Demo
 Click [here](http://rii.uthscsa.edu/mango/papayabeta/) to try Papaya right now...
@@ -16,23 +17,6 @@ Click [here](http://rii.uthscsa.edu/mango/papayabeta/) to try Papaya right now..
 - NIFTI-1 and NIFTI-2 (.nii and .nii.gz)
 - DICOM (compressed/uncompressed, big/little endian, implicit/explicit types)
 
-####Supported DICOM Transfer Syntax
-
-Uncompressed:
-- 1.2.840.10008.1.2 (Implicit VR Little Endian)
-- 1.2.840.10008.1.2.1 (Explicit VR Little Endian)
-- 1.2.840.10008.1.2.2 (Explicit VR Big Endian)
- 
-Compressed:
-- 1.2.840.10008.1.2.1.99 (Deflated Explicit VR Little Endian)
-- 1.2.840.10008.1.2.4.50 (JPEG Baseline (Process 1) Lossy JPEG 8-bit)
-- 1.2.840.10008.1.2.4.51 (JPEG Baseline (Processes 2 & 4) Lossy JPEG 12-bit)
-- 1.2.840.10008.1.2.4.57 (JPEG Lossless, Nonhierarchical (Processes 14))
-- 1.2.840.10008.1.2.4.70 (JPEG Lossless, Nonhierarchical (Processes 14 [Selection 1]))
-- 1.2.840.10008.1.2.4.90 (JPEG 2000 Image Compression (Lossless Only))
-- 1.2.840.10008.1.2.4.91 (JPEG 2000 Image Compression)
-- 1.2.840.10008.1.2.5 (RLE Lossless)
-
 Quickstart Guide
 ------
 
@@ -40,7 +24,7 @@ Quickstart Guide
 Load `tests/debug_local.html` or `tests/debug_server.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
 
 
-###Building
+###[Building](https://github.com/rii-mango/Papaya/wiki/How-To-Build-Papaya)
 See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the latest release or run `papaya-builder.sh` to create your own build.  See the [Papaya-Builder](https://github.com/rii-mango/Papaya-Builder) project for more information.  A few typical uses:
 - papaya-builder.sh -nojquery -nodicom (smallest build, ~252Kb)
 - papaya-builder.sh -nojquery (includes DICOM support, ~517Kb) 
@@ -49,8 +33,7 @@ See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the late
 - papaya-builder.sh -atlas -local (builds for local usage -- i.e., encodes image data)
 - papaya-builder.sh -singlefile -local (combine all JS, CSS, and image data into single HTML file)
 
-###Usage
-See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for a full list of configurable parameters.  
+###[Usage](https://github.com/rii-mango/Papaya/wiki/Usage) & [Configuration](https://github.com/rii-mango/Papaya/wiki/Configuration)
 
 ####Basic usage (loads a blank viewer)
 ```html
@@ -77,7 +60,6 @@ See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for
         params["worldSpace"] = true;
         params["images"] = ["data/myBaseImage.nii.gz", "data/myOverlayImage.nii.gz"];
         params["myOverlayImage.nii.gz"] = {"min": 4, "max": 10};
-        // for more options, see http://ric.uthscsa.edu/mango/papaya_devguide.html
     </script>
 </head>
 
