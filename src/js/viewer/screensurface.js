@@ -30,6 +30,7 @@ var shaderVert = [
     "uniform bool uActivePlaneEdge;",
     "uniform bool uCrosshairs;",
     "uniform bool uColors;",
+    "uniform bool uColorPicking;",
 
     "varying vec3 vLightWeighting;",
     "varying lowp vec4 vColor;",
@@ -56,6 +57,7 @@ var shaderFrag = [
     "uniform bool uActivePlaneEdge;",
     "uniform bool uCrosshairs;",
     "uniform bool uColors;",
+    "uniform bool uColorPicking;",
 
     "varying vec3 vLightWeighting;",
     "varying lowp vec4 vColor;",
@@ -73,6 +75,8 @@ var shaderFrag = [
     "       gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);",
     "    } else if (uCrosshairs) {",
     "       gl_FragColor = vec4(0.10980392156863, 0.52549019607843, 0.93333333333333, 1.0);",
+    "    } else if (uColorPicking) {",
+    "       gl_FragColor = vec4(fragmentColor.r, fragmentColor.g, fragmentColor.b, 1);",
     "    } else {",
     "       gl_FragColor = vec4(fragmentColor.rgb * vLightWeighting, fragmentColor.a);",
     "    }",
@@ -96,6 +100,7 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.trianglesBuffer = null;
     this.normalsBuffer = null;
     this.colorsBuffer = null;
+    this.pickingBuffer = null;
     this.initialized = false;
     this.screenOffsetX = 0;
     this.screenOffsetY = 0;
@@ -141,7 +146,11 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.zSize = this.volume.header.voxelDimensions.zSize;
     this.zDim = this.volume.header.imageDimensions.zDim;
     this.zHalf = (this.zDim * this.zSize) / 2.0;
-    this.link = this.viewer.container.surfaceLink;
+    this.surfaceLink = this.viewer.container.surfaceLink;
+    this.pickLocX = 0;
+    this.pickLocY = 0;
+    this.needsPickColor = false;
+    this.pickedColor = null;
 };
 
 
@@ -212,6 +221,7 @@ papaya.viewer.ScreenSurface.initShaders = function (gl, colors) {
     shaderProgram.pointLightingColorUniform = gl.getUniformLocation(shaderProgram, "uPointLightingColor");
     shaderProgram.activePlane = gl.getUniformLocation(shaderProgram, "uActivePlane");
     shaderProgram.activePlaneEdge = gl.getUniformLocation(shaderProgram, "uActivePlaneEdge");
+    shaderProgram.colorPicking = gl.getUniformLocation(shaderProgram, "uColorPicking");
     shaderProgram.crosshairs = gl.getUniformLocation(shaderProgram, "uCrosshairs");
     shaderProgram.hasColors = gl.getUniformLocation(shaderProgram, "uColors");
 
@@ -409,6 +419,15 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     gl.uniform1i(this.shaderProgram.activePlaneEdge, 0);
     gl.uniform1i(this.shaderProgram.crosshairs, 0);
     gl.uniform1i(this.shaderProgram.hasColors, 0);
+    gl.uniform1i(this.shaderProgram.colorPicking, 0);
+
+    if (this.needsPickColor) {
+        gl.uniform1i(this.shaderProgram.colorPicking, 1);
+
+        if ((this.pickingBuffer === null) || (this.pickingBuffer.length !== (gl.viewportWidth * gl.viewportHeight * 4))) {
+            this.pickingBuffer = new Uint8Array(gl.viewportWidth * gl.viewportHeight * 4);
+        }
+    }
 
     // draw surface
     gl.enable(gl.DEPTH_TEST);
@@ -428,7 +447,13 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.trianglesBuffer);
     gl.drawElements(gl.TRIANGLES, this.trianglesBuffer.numItems, gl.UNSIGNED_INT, 0);
 
-    if (this.link) {
+    if (this.needsPickColor) {
+        this.needsPickColor = false;
+
+        gl.readPixels(0, 0, gl.viewportWidth, gl.viewportHeight, gl.RGBA, gl.UNSIGNED_BYTE, this.pickingBuffer);
+        this.pickedColor = this.findPickedColor(gl);
+        gl.uniform1i(this.shaderProgram.colorPicking, 0);
+    } else if (this.surfaceLink) {
         // draw active planes
         if (this.needsUpdateActivePlanes) {
             this.needsUpdateActivePlanes = false;
@@ -576,7 +601,7 @@ papaya.viewer.ScreenSurface.prototype.clearTransform = function (xform) {
 papaya.viewer.ScreenSurface.prototype.updateActivePlanes = function () {
     var xSlice, ySlice, zSlice;
 
-    if (!this.link) {
+    if (!this.surfaceLink) {
         return;
     }
 
@@ -763,3 +788,22 @@ papaya.viewer.ScreenSurface.prototype.updateActivePlanes = function () {
 
     this.needsUpdateActivePlanes = true;
 };
+
+
+
+papaya.viewer.ScreenSurface.prototype.pickColor = function (xLoc, yLoc) {
+    this.needsPickColor = true;
+    this.pickLocX = xLoc;
+    this.pickLocY = yLoc;
+    this.draw(); // do picking
+    this.draw(); // redraw scene
+    return this.pickedColor;
+};
+
+
+
+
+papaya.viewer.ScreenSurface.prototype.findPickedColor = function (gl) {
+    var index = (gl.viewportHeight - 1 - this.pickLocY) * gl.viewportWidth * 4 + this.pickLocX * 4;
+    return [this.pickingBuffer[index], this.pickingBuffer[index + 1], this.pickingBuffer[index + 2]];
+}
