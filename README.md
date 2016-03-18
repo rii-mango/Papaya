@@ -6,10 +6,10 @@ Papaya is a pure JavaScript medical research image viewer, supporting DICOM and 
 ![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/docs/images/splash1.png)![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/docs/images/splash2.png)
 
 ###[Documentation](https://github.com/rii-mango/Papaya/wiki)
+Go [here](https://github.com/rii-mango/Papaya/wiki) for the full documentation.
+
 * [Requirements](https://github.com/rii-mango/Papaya/wiki/Requirements): Firefox (7+), Chrome (7+), Safari (6+), iOS (6+), IE (10+), Edge (12+)
 * [Supported Formats](https://github.com/rii-mango/Papaya/wiki/Supported-Formats): NIFTI (.nii, .nii.gz, DICOM (compressed/uncompressed), GIFTI (.surf.gii)
-* [Usage](https://github.com/rii-mango/Papaya/wiki/Usage)
-* [Configuration](https://github.com/rii-mango/Papaya/wiki/Configuration)
 
 ###Demo
 Click [here](http://rii.uthscsa.edu/mango/papayabeta/) to try Papaya right now...
