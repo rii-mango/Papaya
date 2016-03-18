@@ -43,6 +43,7 @@ See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the late
         var params = [];
         params["worldSpace"] = true;
         params["images"] = ["data/myBaseImage.nii.gz", "data/myOverlayImage.nii.gz"];
+        params["surfaces"] = ["data/mySurface.surf.gii"];
         params["myOverlayImage.nii.gz"] = {"min": 4, "max": 10};
     </script>
 </head>
