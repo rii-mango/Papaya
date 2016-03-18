@@ -48,6 +48,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.kioskMode = false;
     this.showControls = true;
     this.showControlBar = false;
+    this.showImageButtons = true;
     this.fullScreenPadding = true;
     this.combineParametric = false;
     this.dropTimeout = null;
@@ -266,7 +267,7 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params)
         containerHTML.append("<div id='" + (PAPAYA_DEFAULT_DISPLAY_ID + papayaContainers.length) +
             "' class='" + PAPAYA_DISPLAY_CSS + "'></div>");
 
-        if (params && params.showControlBar) {
+        if (params && params.showControlBar && ((params.showControls === undefined) || params.showControls)) {
             containerHTML.append(
                 "<div id='" + PAPAYA_KIOSK_CONTROLS_CSS + papayaContainers.length + "' class='" + PAPAYA_KIOSK_CONTROLS_CSS + "'>" +
                 "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "main" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_MAIN_SLIDER + "'>" +
@@ -289,9 +290,9 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params)
                 "<span>Series: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>&lt;</button>"+ " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>&gt;</button> "  +
                 "</div>" +
                 "&nbsp;&nbsp;&nbsp;" +
-                "<button type='button' " + (params.kioskMode ? "" : "style='float:right;margin-left:5px;' ") + "class='" + PAPAYA_CONTROL_SWAP_BUTTON_CSS + "'>Swap Main Slice</button> " +
-                "<button type='button' " + (params.kioskMode ? "" : "style='float:right;margin-left:5px;' ") + "class='" + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS + "'>Go To Center</button> " +
-                "<button type='button' " + (params.kioskMode ? "" : "style='float:right;margin-left:5px;' ") + "class='" + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS + "'>Go To Origin</button> " +
+                "<button type='button' " + ((params.kioskMode && ((params.showImageButtons === undefined) || params.showImageButtons)) ? "" : "style='float:right;margin-left:5px;' ") + "class='" + PAPAYA_CONTROL_SWAP_BUTTON_CSS + "'>Swap View</button> " +
+                "<button type='button' " + ((params.kioskMode && ((params.showImageButtons === undefined) || params.showImageButtons)) ? "" : "style='float:right;margin-left:5px;' ") + "class='" + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS + "'>Go To Center</button> " +
+                "<button type='button' " + ((params.kioskMode && ((params.showImageButtons === undefined) || params.showImageButtons)) ? "" : "style='float:right;margin-left:5px;' ") + "class='" + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS + "'>Go To Origin</button> " +
                 "</div>");
 
             $("." + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS).prop('disabled', true);
@@ -644,6 +645,10 @@ papaya.Container.prototype.readGlobalParams = function() {
         this.showControls = this.params.showControls;
     }
 
+    if (this.params.showImageButtons !== undefined) {  // default is true
+        this.showImageButtons = this.params.showImageButtons;
+    }
+
     if (this.params.fullScreenPadding !== undefined) {  // default is true
         this.fullScreenPadding = this.params.fullScreenPadding;
     }
@@ -763,7 +768,7 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
             $("." + PAPAYA_CONTROL_MAIN_SLIDER).css({display: "none"});
         }
 
-        if (dims[0] < 400) {
+        if (dims[0] < 200) {
             $("." + PAPAYA_CONTROL_SWAP_BUTTON_CSS).css({display: "none"});
         } else {
             $("." + PAPAYA_CONTROL_SWAP_BUTTON_CSS).css({display: "inline"});

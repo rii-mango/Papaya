@@ -51,6 +51,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.isDragging = false;
     this.isWindowControl = false;
     this.isZoomMode = false;
+    this.isContextMode = false;
     this.isPanning = false;
     this.zoomFactor = papaya.viewer.Viewer.ZOOM_FACTOR_MIN;
     this.zoomFactorPrevious = papaya.viewer.Viewer.ZOOM_FACTOR_MIN;
@@ -83,6 +84,8 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.listenerKeyDown = papaya.utilities.ObjectUtils.bind(this, this.keyDownEvent);
     this.listenerKeyUp = papaya.utilities.ObjectUtils.bind(this, this.keyUpEvent);
     this.listenerTouchMove = papaya.utilities.ObjectUtils.bind(this, this.touchMoveEvent);
+    this.listenerTouchStart = papaya.utilities.ObjectUtils.bind(this, this.touchStartEvent);
+    this.listenerTouchEnd = papaya.utilities.ObjectUtils.bind(this, this.touchEndEvent);
     this.initialCoordinate = null;
     this.listenerScroll = papaya.utilities.ObjectUtils.bind(this, this.scrolled);
 
@@ -429,8 +432,8 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         document.addEventListener("keydown", this.listenerKeyDown, true);
         document.addEventListener("keyup", this.listenerKeyUp, true);
         this.canvas.addEventListener("touchmove", this.listenerTouchMove, false);
-        this.canvas.addEventListener("touchstart", this.listenerMouseDown, false);
-        this.canvas.addEventListener("touchend", this.listenerMouseUp, false);
+        this.canvas.addEventListener("touchstart", this.listenerTouchStart, false);
+        this.canvas.addEventListener("touchend", this.listenerTouchEnd, false);
         this.canvas.addEventListener("dblclick", this.listenerMouseDoubleClick, false);
         document.addEventListener("contextmenu", this.listenerContextMenu, false);
 
@@ -837,6 +840,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
         viewer.surfaceView.updateDynamic(originalX, originalY);
     }
 
+
     this.container.coordinateChanged(this);
     viewer.drawViewer(false, crosshairsOnly);
 };
@@ -869,14 +873,12 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yL
             yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.axialSlice);
             zImageLoc = viewer.axialSlice.currentSlice;
             found = true;
-        } else if (this.insideScreenSlice(viewer.coronalSlice, xLoc, yLoc, viewer.volume.getXDim(),
-                viewer.volume.getZDim())) {
+        } else if (this.insideScreenSlice(viewer.coronalSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getZDim())) {
             xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.coronalSlice);
             zImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.coronalSlice);
             yImageLoc = viewer.coronalSlice.currentSlice;
             found = true;
-        } else if (this.insideScreenSlice(viewer.sagittalSlice, xLoc, yLoc, viewer.volume.getYDim(),
-                viewer.volume.getZDim())) {
+        } else if (this.insideScreenSlice(viewer.sagittalSlice, xLoc, yLoc, viewer.volume.getYDim(), viewer.volume.getZDim())) {
             yImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.sagittalSlice);
             zImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.sagittalSlice);
             xImageLoc = viewer.sagittalSlice.currentSlice;
@@ -909,7 +911,6 @@ papaya.viewer.Viewer.prototype.insideScreenSlice = function (screenSlice, xLoc, 
         xEnd = screenSlice.screenOffsetX + screenSlice.screenDim;
         yStart = screenSlice.screenOffsetY;
         yEnd = screenSlice.screenOffsetY + screenSlice.screenDim;
-
     } else {
         xStart = papayaRoundFast(screenSlice.screenTransform[0][2]);
         xEnd = papayaRoundFast(screenSlice.screenTransform[0][2] + xBound * screenSlice.screenTransform[0][0]);
@@ -1689,7 +1690,7 @@ papaya.viewer.Viewer.prototype.resetUpdateTimer = function (me) {
 
 
 papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
-    var draggingStarted = true, menuData, menu;
+    var draggingStarted = true, menuData, menu, pickedColor;
 
     me.stopPropagation();
     me.preventDefault();
@@ -1703,12 +1704,31 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
             this.findClickedSlice(this, this.previousMousePosition.x, this.previousMousePosition.y);
 
-            if (((me.button === 2) || this.isControlKeyDown) && this.container.contextManager && (this.selectedSlice === this.mainImage)) {
+            if (((me.button === 2) || this.isControlKeyDown) && this.container.contextManager && (this.selectedSlice === this.mainImage) && (this.mainImage === this.surfaceView)) {
+                this.contextMenuMousePositionX = this.previousMousePosition.x - this.canvasRect.left;
+                this.contextMenuMousePositionY = this.previousMousePosition.y - this.canvasRect.top;
+
+                if (this.container.contextManager.prefersColorPicking && this.container.contextManager.prefersColorPicking()) {
+                    pickedColor = this.surfaceView.pickColor(this.contextMenuMousePositionX, this.contextMenuMousePositionY);
+                    menuData = this.container.contextManager.getContextAtColor(pickedColor[0], pickedColor[1], pickedColor[2]);
+                }
+
+                if (menuData) {
+                    this.isContextMode = true;
+                    menu = this.container.toolbar.buildMenu(menuData);
+                    papaya.ui.Toolbar.applyContextState(menu);
+                    draggingStarted = false;
+                    menu.showMenu();
+                }
+
+                this.isContextMode = true;
+            } else if (((me.button === 2) || this.isControlKeyDown) && this.container.contextManager && (this.selectedSlice === this.mainImage)) {
                 this.contextMenuMousePositionX = this.previousMousePosition.x - this.canvasRect.left;
                 this.contextMenuMousePositionY = this.previousMousePosition.y - this.canvasRect.top;
                 menuData = this.container.contextManager.getContextAtImagePosition(this.cursorPosition.x, this.cursorPosition.y, this.cursorPosition.z);
 
                 if (menuData) {
+                    this.isContextMode = true;
                     menu = this.container.toolbar.buildMenu(menuData);
                     papaya.ui.Toolbar.applyContextState(menu);
                     draggingStarted = false;
@@ -1717,7 +1737,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
             } else if (((me.button === 2) || this.isControlKeyDown) && !this.currentScreenVolume.rgb && !this.container.kioskMode) {
                 this.isWindowControl = true;
 
-                if (this.container.showControlBar || !this.container.kioskMode) {
+                if (this.container.showImageButtons && (this.container.showControlBar || !this.container.kioskMode)) {
                     this.container.toolbar.showImageMenu(this.getCurrentScreenVolIndex());
                 }
             } else if (this.isAltKeyDown && this.selectedSlice) {
@@ -1766,7 +1786,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
 
     if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
         if (me.handled !== true) {
-            if (!this.isWindowControl && !this.isZoomMode && (this.grabbedHandle === null)) {
+            if (!this.isWindowControl && !this.isZoomMode && !this.isContextMode && (this.grabbedHandle === null)) {
                 this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
             }
 
@@ -1783,6 +1803,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
     }
 
     this.grabbedHandle = null;
+    this.isContextMode = false;
 
     this.updateWindowTitle();
     this.updateSliceSliderControl();
@@ -1950,10 +1971,19 @@ papaya.viewer.Viewer.prototype.mouseLeaveEvent = function () {};
 
 
 papaya.viewer.Viewer.prototype.touchMoveEvent = function (me) {
-    this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), true);
-    this.resetUpdateTimer(me);
+    this.mouseMoveEvent(me);
+};
 
-    me.preventDefault();
+
+
+papaya.viewer.Viewer.prototype.touchStartEvent = function (me) {
+    this.mouseDownEvent(me);
+};
+
+
+
+papaya.viewer.Viewer.prototype.touchEndEvent = function (me) {
+    this.mouseUpEvent(me);
 };
 
 
@@ -1978,8 +2008,12 @@ papaya.viewer.Viewer.prototype.windowLevelChanged = function (contrastChange, br
     }
 
     this.currentScreenVolume.setScreenRange(minFinal, maxFinal);
-    this.container.toolbar.updateImageMenuRange(this.getCurrentScreenVolIndex(), parseFloat(minFinal.toPrecision(7)),
-        parseFloat(maxFinal.toPrecision(7)));
+
+    if (this.container.showImageButtons) {
+        this.container.toolbar.updateImageMenuRange(this.getCurrentScreenVolIndex(), parseFloat(minFinal.toPrecision(7)),
+            parseFloat(maxFinal.toPrecision(7)));
+    }
+
     this.drawViewer(true);
 };
 
@@ -2183,8 +2217,8 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     document.removeEventListener("keyup", this.listenerKeyUp, true);
     document.removeEventListener("contextmenu", this.listenerContextMenu, false);
     this.canvas.removeEventListener("touchmove", this.listenerTouchMove, false);
-    this.canvas.removeEventListener("touchstart", this.listenerMouseDown, false);
-    this.canvas.removeEventListener("touchend", this.listenerMouseUp, false);
+    this.canvas.removeEventListener("touchstart", this.listenerTouchStart, false);
+    this.canvas.removeEventListener("touchend", this.listenerTouchEnd, false);
     this.canvas.removeEventListener("dblclick", this.listenerMouseDoubleClick, false);
 
     this.removeScroll();

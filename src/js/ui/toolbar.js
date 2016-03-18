@@ -512,32 +512,34 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
 
     this.imageMenus = [];
 
-    for (ctr = this.viewer.screenVolumes.length - 1; ctr >= 0; ctr -= 1) {
-        screenVol = this.viewer.screenVolumes[ctr];
-        dataUrl = screenVol.colorTable.icon;
+    if (this.container.showImageButtons) {
+        for (ctr = this.viewer.screenVolumes.length - 1; ctr >= 0; ctr -= 1) {
+            screenVol = this.viewer.screenVolumes[ctr];
+            dataUrl = screenVol.colorTable.icon;
 
-        data = {
-            "menus" : [
-                {"label": "ImageButton", "icons": [dataUrl], "items": null, "imageButton": true}
-            ]
-        };
+            data = {
+                "menus" : [
+                    {"label": "ImageButton", "icons": [dataUrl], "items": null, "imageButton": true}
+                ]
+            };
 
-        if (ctr === 0) {
-            if (screenVol.rgb || screenVol.dti) {
-                data.menus[0].items = papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA.items;
+            if (ctr === 0) {
+                if (screenVol.rgb || screenVol.dti) {
+                    data.menus[0].items = papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA.items;
+                } else {
+                    data.menus[0].items = papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA.items;
+                }
             } else {
-                data.menus[0].items = papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA.items;
+                if (screenVol.dti) {
+                    data.menus[0].items = papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA.items;
+                } else {
+                    data.menus[0].items = papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items;
+                }
             }
-        } else {
-            if (screenVol.dti) {
-                data.menus[0].items = papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA.items;
-            } else {
-                data.menus[0].items = papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items;
-            }
-        }
 
-        if (!this.container.combineParametric || !screenVol.parametric) {
-            this.imageMenus.push((this.buildMenu(data.menus[0], null, screenVol, ctr.toString())));
+            if (!this.container.combineParametric || !screenVol.parametric) {
+                this.imageMenus.push((this.buildMenu(data.menus[0], null, screenVol, ctr.toString())));
+            }
         }
     }
 };

@@ -36,7 +36,7 @@ papaya.ui.Menu = papaya.ui.Menu || function (viewer, menuData, callback, dataSou
     this.menuId = (this.label + "Menu").replace(/ /g, "_").replace("...", "_") + (this.modifier || "");
     this.isRight = (menuData.icons !== null);
     this.isImageButton = menuData.imageButton;
-    this.htmlParent = ((this.viewer.container.showControlBar && this.viewer.container.kioskMode) ?
+    this.htmlParent = ((this.viewer.container.showControlBar && this.viewer.container.kioskMode && this.viewer.container.showImageButtons) ?
         this.viewer.container.sliderControlHtml : this.viewer.container.toolbarHtml);
 };
 
@@ -55,7 +55,7 @@ papaya.ui.Menu.doShowMenu = function (viewer, el, menu, right) {
     mHeight = $(menu).outerHeight();
     left = pos.left + (right ? ((-1 * mWidth) + eWidth) : 5) + "px";
 
-    if (viewer.container.showControlBar && viewer.container.kioskMode) {
+    if (viewer.container.showControlBar && viewer.container.kioskMode && viewer.container.showImageButtons) {
         top = ((posV.top) + $(viewer.canvas).outerHeight() + PAPAYA_SPACING + dHeight - mHeight) + "px";
     } else {
         top = (posV.top) + "px";
@@ -251,8 +251,8 @@ papaya.ui.Menu.prototype.showContextMenu = function () {
             menuHtml.css({
                 position: 'absolute',
                 zIndex: 100,
-                left: this.viewer.contextMenuMousePositionX,
-                top: this.viewer.contextMenuMousePositionY - offset
+                left: this.viewer.contextMenuMousePositionX + this.viewer.canvasRect.left,
+                top: this.viewer.contextMenuMousePositionY + this.viewer.canvasRect.top - offset
             });
 
             menuHtml.hide().fadeIn(200);
