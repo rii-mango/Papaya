@@ -22,13 +22,7 @@ Load `tests/debug_local.html` or `tests/debug_server.html` in your [favorite](ht
 
 
 ###[Building](https://github.com/rii-mango/Papaya/wiki/How-To-Build-Papaya)
-See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the latest release or run `papaya-builder.sh` to create your own build.  See the [Papaya-Builder](https://github.com/rii-mango/Papaya-Builder) project for more information.  A few typical uses:
-- papaya-builder.sh -nojquery -nodicom (smallest build, ~252Kb)
-- papaya-builder.sh -nojquery (includes DICOM support, ~517Kb) 
-- papaya-builder.sh (standard build, includes Jquery lib and DICOM support, ~610Kb) 
-- papaya-builder.sh -atlas (includes atlas)
-- papaya-builder.sh -atlas -local (builds for local usage -- i.e., encodes image data)
-- papaya-builder.sh -singlefile -local (combine all JS, CSS, and image data into single HTML file)
+See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the latest release or run `papaya-builder.sh` to create your own build.  See the [documentation](https://github.com/rii-mango/Papaya/wiki/How-To-Build-Papaya) or check out the [Papaya-Builder](https://github.com/rii-mango/Papaya-Builder) project for more information.
 
 ###[Usage](https://github.com/rii-mango/Papaya/wiki/Usage) & [Configuration](https://github.com/rii-mango/Papaya/wiki/Configuration)
 
