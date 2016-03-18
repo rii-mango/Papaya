@@ -79,7 +79,7 @@ See the [developer guide](http://ric.uthscsa.edu/mango/papaya_devguide.html) for
         params["myOverlayImage.nii.gz"] = {"min": 4, "max": 10};
         // for more options, see http://ric.uthscsa.edu/mango/papaya_devguide.html
     </script>
-<head>
+</head>
 
 ...
 
