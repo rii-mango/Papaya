@@ -68,11 +68,14 @@ See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the late
 
 Acknowledgments
 -----
-Papaya uses [Daikon](https://github.com/rii-mango/Daikon) for DICOM support, [NIFTI-Reader-JS](https://github.com/rii-mango/NIFTI-Reader-JS) for NIFTI support as well as the following third-party libraries:
+Papaya uses:
+- [Daikon](https://github.com/rii-mango/Daikon) for DICOM support
+- [NIFTI-Reader-JS](https://github.com/rii-mango/NIFTI-Reader-JS) for NIFTI support 
+- [GIFTI-Reader-JS](https://github.com/rii-mango/GIFTI-Reader-JS) for GIFTI support 
+
+As well as the following third-party libraries:
 - [bowser](https://github.com/ded/bowser) &mdash; for browser detection
 - [Closure Compiler](https://developers.google.com/closure/compiler/) &mdash; JavaScript compression
 - [jquery](http://jquery.com/) &mdash; DOM manipulation
 - [numerics](http://numericjs.com/) &mdash; for matrix math
 - [pako](https://github.com/nodeca/pako) &mdash; for GZIP inflating
-
-
