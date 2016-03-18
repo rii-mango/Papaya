@@ -14,10 +14,6 @@ Papaya is a pure JavaScript medical research image viewer, supporting DICOM and 
 ###Demo
 Click [here](http://rii.uthscsa.edu/mango/papayabeta/) to try Papaya right now...
 
-###Supported Formats
-- NIFTI-1 and NIFTI-2 (.nii and .nii.gz)
-- DICOM (compressed/uncompressed, big/little endian, implicit/explicit types)
-
 Quickstart Guide
 ------
 
