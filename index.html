@@ -1,100 +1,86 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html>
   <head>
-    <meta charset="UTF-8">
-    <title>Papaya by rii-mango</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Papaya by rii-mango</title>
   </head>
+
   <body>
-    <section class="page-header">
-      <h1 class="project-name">Papaya</h1>
-      <h2 class="project-tagline">A pure JavaScript medical research image viewer. </h2>
-      <a href="https://github.com/rii-mango/Papaya" class="btn">View on GitHub</a>
-      <a href="https://github.com/rii-mango/Papaya/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/rii-mango/Papaya/tarball/master" class="btn">Download .tar.gz</a>
-    </section>
+    <div id="container">
+      <div class="inner">
 
-    <section class="main-content">
-      <h1>
-<a id="papaya-" class="anchor" href="#papaya-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Papaya </h1>
+        <header>
+          <h1>Papaya</h1>
+          <h2>A pure JavaScript medical research image viewer. </h2>
+        </header>
 
-<p>Papaya is a pure JavaScript medical research image viewer, supporting DICOM and NIFTI formats, compatible across a range of web browsers.  This orthogonal viewer supports overlays and atlases. </p>
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/rii-mango/Papaya/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/rii-mango/Papaya/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/rii-mango/Papaya" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
 
-<p><a href="http://rii.uthscsa.edu/mango/papayabeta/"><img src="https://raw.github.com/rii-mango/Papaya/master/README-img.png" alt="ScreenShot"></a></p>
+        <hr>
 
-<p>Requirements: Firefox (7+), Chrome (7+), Safari (6+), MobileSafari (iOS 6+), IE (10+)<br>
-User Guide: <a href="http://ric.uthscsa.edu/mango/papaya_userguide.html">http://ric.uthscsa.edu/mango/papaya_userguide.html</a><br>
-Developer Guide: <a href="http://rii.uthscsa.edu/mango/papaya_devguide.html">http://rii.uthscsa.edu/mango/papaya_devguide.html</a></p>
+        <section id="main_content">
+          <h1>
+<a id="papaya-" class="anchor" href="#papaya-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Papaya </h1>
+
+<p>Papaya is a pure JavaScript medical research image viewer, supporting <a href="https://github.com/rii-mango/Papaya/wiki/Supported-Formats">DICOM and NIFTI formats</a>, compatible across a <a href="https://github.com/rii-mango/Papaya/wiki/Requirements">range of web browsers</a>.  This orthogonal viewer supports <a href="https://github.com/rii-mango/Papaya/wiki/Configuration#images">overlays</a>, <a href="https://github.com/rii-mango/Papaya/wiki/How-To-Use-Atlases">atlases</a>, <a href="https://github.com/rii-mango/Papaya/wiki/Configuration#surfaces">GIFTI surface data</a> and <a href="https://github.com/rii-mango/Papaya/wiki/Configuration#dti">DTI data</a>.  The Papaya UI is highly <a href="https://github.com/rii-mango/Papaya/wiki/Configuration">configurable</a> with many options for <a href="https://github.com/rii-mango/Papaya/wiki/Configuration#display-parameters">menus and control bars</a> and can be configured to run on a <a href="https://github.com/rii-mango/Papaya/wiki/How-To-Build-Papaya">web server or as a local, shareable file</a>.</p>
+
+<p><img src="https://raw.github.com/rii-mango/Papaya/master/docs/images/splash1.png" alt="ScreenShot">   <img src="https://raw.github.com/rii-mango/Papaya/master/docs/images/splash2.png" alt="ScreenShot"></p>
 
 <h3>
-<a id="demo" class="anchor" href="#demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demo</h3>
+<a id="documentation--demo" class="anchor" href="#documentation--demo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a href="https://github.com/rii-mango/Papaya/wiki">Documentation</a> &amp; <a href="http://rii.uthscsa.edu/mango/papayabeta/">Demo</a>
+</h3>
 
-<p>Click <a href="http://rii.uthscsa.edu/mango/papayabeta/">here</a> to try Papaya right now...</p>
+<ul>
+<li>
+<a href="https://github.com/rii-mango/Papaya/wiki/Requirements">Requirements</a>: Firefox (7+), Chrome (7+), Safari (6+), iOS (6+), IE (10+), Edge (12+)</li>
+<li>
+<a href="https://github.com/rii-mango/Papaya/wiki/Supported-Formats">Supported Formats</a>: NIFTI (.nii, .nii.gz), DICOM (compressed/uncompressed), GIFTI (.surf.gii)</li>
+</ul>
 
 <h3>
-<a id="supported-formats" class="anchor" href="#supported-formats" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported Formats</h3>
+<a id="related-projects" class="anchor" href="#related-projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Related Projects</h3>
 
 <ul>
-<li>NIFTI (.nii and .nii.gz)</li>
-<li>DICOM (compressed/uncompressed, big/little endian, implicit/explicit types)</li>
-</ul>
-
-<h4>
-<a id="supported-dicom-transfer-syntax" class="anchor" href="#supported-dicom-transfer-syntax" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported DICOM Transfer Syntax</h4>
-
-<p>Uncompressed:</p>
-
-<ul>
-<li>1.2.840.10008.1.2 (Implicit VR Little Endian)</li>
-<li>1.2.840.10008.1.2.1 (Explicit VR Little Endian)</li>
-<li>1.2.840.10008.1.2.2 (Explicit VR Big Endian)</li>
-</ul>
-
-<p>Compressed:</p>
-
-<ul>
-<li>1.2.840.10008.1.2.1.99 (Deflated Explicit VR Little Endian)</li>
-<li>1.2.840.10008.1.2.4.50 (JPEG Baseline (Process 1) Lossy JPEG 8-bit)</li>
-<li>1.2.840.10008.1.2.4.57 (JPEG Lossless, Nonhierarchical (Processes 14))</li>
-<li>1.2.840.10008.1.2.4.70 (JPEG Lossless, Nonhierarchical (Processes 14 [Selection 1]))</li>
-<li>1.2.840.10008.1.2.4.90 (JPEG 2000 Image Compression (Lossless Only))</li>
-<li>1.2.840.10008.1.2.4.91 (JPEG 2000 Image Compression)</li>
-<li>1.2.840.10008.1.2.5 (RLE Lossless)</li>
+<li>
+<a href="https://github.com/rii-mango/Daikon">Daikon</a> for DICOM support</li>
+<li>
+<a href="https://github.com/rii-mango/NIFTI-Reader-JS">NIFTI-Reader-JS</a> for NIFTI support </li>
+<li>
+<a href="https://github.com/rii-mango/GIFTI-Reader-JS">GIFTI-Reader-JS</a> for GIFTI support </li>
 </ul>
 
 <h2>
-<a id="quickstart-guide" class="anchor" href="#quickstart-guide" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quickstart Guide</h2>
+<a id="quickstart-guide" class="anchor" href="#quickstart-guide" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Quickstart Guide</h2>
 
 <h3>
-<a id="development" class="anchor" href="#development" aria-hidden="true"><span class="octicon octicon-link"></span></a>Development</h3>
+<a id="development" class="anchor" href="#development" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Development</h3>
 
 <p>Load <code>tests/debug_local.html</code> or <code>tests/debug_server.html</code> in your <a href="http://www.jetbrains.com/webstorm/">favorite</a> JavaScript debugger.</p>
 
 <h3>
-<a id="building" class="anchor" href="#building" aria-hidden="true"><span class="octicon octicon-link"></span></a>Building</h3>
+<a id="building" class="anchor" href="#building" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a href="https://github.com/rii-mango/Papaya/wiki/How-To-Build-Papaya">Building</a>
+</h3>
 
-<p>See <a href="https://github.com/rii-mango/Papaya/tree/master/release">here</a> for the latest release or run <code>papaya-builder.sh</code> to create your own build.  See the <a href="https://github.com/rii-mango/Papaya-Builder">Papaya-Builder</a> project for more information.  A few typical uses:</p>
-
-<ul>
-<li>papaya-builder.sh -nojquery -nodicom (smallest build, ~252Kb)</li>
-<li>papaya-builder.sh -nojquery (includes DICOM support, ~517Kb) </li>
-<li>papaya-builder.sh (standard build, includes Jquery lib and DICOM support, ~610Kb) </li>
-<li>papaya-builder.sh -atlas (includes atlas)</li>
-<li>papaya-builder.sh -atlas -local (builds for local usage -- i.e., encodes image data)</li>
-<li>papaya-builder.sh -singlefile -local (combine all JS, CSS, and image data into single HTML file)</li>
-</ul>
+<p>See <a href="https://github.com/rii-mango/Papaya/tree/master/release">here</a> for the latest release or run <code>papaya-builder.sh</code> to create your own build.  See the <a href="https://github.com/rii-mango/Papaya/wiki/How-To-Build-Papaya">documentation</a> for more information.</p>
 
 <h3>
-<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h3>
-
-<p>See the <a href="http://ric.uthscsa.edu/mango/papaya_devguide.html">developer guide</a> for a full list of configurable parameters.  </p>
+<a id="usage--configuration" class="anchor" href="#usage--configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a href="https://github.com/rii-mango/Papaya/wiki/Usage">Usage</a> &amp; <a href="https://github.com/rii-mango/Papaya/wiki/Configuration">Configuration</a>
+</h3>
 
 <h4>
-<a id="basic-usage-loads-a-blank-viewer" class="anchor" href="#basic-usage-loads-a-blank-viewer" aria-hidden="true"><span class="octicon octicon-link"></span></a>Basic usage (loads a blank viewer)</h4>
+<a id="basic-usage-loads-a-blank-viewer" class="anchor" href="#basic-usage-loads-a-blank-viewer" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Basic usage (loads a blank viewer)</h4>
 
 <div class="highlight highlight-text-html-basic"><pre>&lt;!DOCTYPE html&gt;
 &lt;<span class="pl-ent">html</span> <span class="pl-e">xmlns</span>=<span class="pl-s"><span class="pl-pds">"</span>http://www.w3.org/1999/xhtml<span class="pl-pds">"</span></span> <span class="pl-e">lang</span>=<span class="pl-s"><span class="pl-pds">"</span>en<span class="pl-pds">"</span></span>&gt;
@@ -110,7 +96,7 @@ Developer Guide: <a href="http://rii.uthscsa.edu/mango/papaya_devguide.html">htt
 &lt;/<span class="pl-ent">html</span>&gt;</pre></div>
 
 <h4>
-<a id="to-automatically-load-images-and-specify-other-options" class="anchor" href="#to-automatically-load-images-and-specify-other-options" aria-hidden="true"><span class="octicon octicon-link"></span></a>To automatically load images and specify other options</h4>
+<a id="to-automatically-load-images-and-configure-other-options" class="anchor" href="#to-automatically-load-images-and-configure-other-options" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>To automatically load images and configure other options</h4>
 
 <div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">head</span>&gt;
     ...
@@ -118,42 +104,24 @@ Developer Guide: <a href="http://rii.uthscsa.edu/mango/papaya_devguide.html">htt
 <span class="pl-s1">        <span class="pl-k">var</span> params <span class="pl-k">=</span> [];</span>
 <span class="pl-s1">        params[<span class="pl-s"><span class="pl-pds">"</span>worldSpace<span class="pl-pds">"</span></span>] <span class="pl-k">=</span> <span class="pl-c1">true</span>;</span>
 <span class="pl-s1">        params[<span class="pl-s"><span class="pl-pds">"</span>images<span class="pl-pds">"</span></span>] <span class="pl-k">=</span> [<span class="pl-s"><span class="pl-pds">"</span>data/myBaseImage.nii.gz<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>data/myOverlayImage.nii.gz<span class="pl-pds">"</span></span>];</span>
+<span class="pl-s1">        params[<span class="pl-s"><span class="pl-pds">"</span>surfaces<span class="pl-pds">"</span></span>] <span class="pl-k">=</span> [<span class="pl-s"><span class="pl-pds">"</span>data/mySurface.surf.gii<span class="pl-pds">"</span></span>];</span>
 <span class="pl-s1">        params[<span class="pl-s"><span class="pl-pds">"</span>myOverlayImage.nii.gz<span class="pl-pds">"</span></span>] <span class="pl-k">=</span> {<span class="pl-s"><span class="pl-pds">"</span>min<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">4</span>, <span class="pl-s"><span class="pl-pds">"</span>max<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">10</span>};</span>
-<span class="pl-s1">        <span class="pl-c">// for more options, see http://ric.uthscsa.edu/mango/papaya_devguide.html</span></span>
 <span class="pl-s1">    &lt;/<span class="pl-ent">script</span>&gt;</span>
-&lt;<span class="pl-ent">head</span>&gt;
+&lt;/<span class="pl-ent">head</span>&gt;
 
 ...
 
 &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>papaya<span class="pl-pds">"</span></span> <span class="pl-e">data-params</span>=<span class="pl-s"><span class="pl-pds">"</span>params<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">div</span>&gt;
 </pre></div>
+        </section>
 
-<h2>
-<a id="acknowledgments" class="anchor" href="#acknowledgments" aria-hidden="true"><span class="octicon octicon-link"></span></a>Acknowledgments</h2>
+        <footer>
+          Papaya is maintained by <a href="https://github.com/rii-mango">rii-mango</a><br>
+          This page was generated by <a href="https://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
 
-<p>Papaya uses <a href="https://github.com/rii-mango/Daikon">Daikon</a> for DICOM support, as well as the following third-party libraries:</p>
-
-<ul>
-<li>
-<a href="https://github.com/ded/bowser">bowser</a> — for browser detection</li>
-<li>
-<a href="https://developers.google.com/closure/compiler/">Closure Compiler</a> — JavaScript compression</li>
-<li>
-<a href="http://jquery.com/">jquery</a> — DOM manipulation</li>
-<li>
-<a href="http://numericjs.com/">numerics</a> — for matrix math</li>
-<li>
-<a href="https://github.com/nodeca/pako">pako</a> — for GZIP inflating</li>
-</ul>
-
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/rii-mango/Papaya">Papaya</a> is maintained by <a href="https://github.com/rii-mango">rii-mango</a>.</span>
-
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
-      </footer>
-
-    </section>
-
-  
+        
+      </div>
+    </div>
   </body>
 </html>
