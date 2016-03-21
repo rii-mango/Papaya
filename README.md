@@ -1,6 +1,6 @@
 Papaya 
 ======
-Papaya is a pure JavaScript medical research image viewer, supporting DICOM and NIFTI formats, compatible across a range of web browsers.  This orthogonal viewer supports overlays, atlases and surfaces. 
+Papaya is a pure JavaScript medical research image viewer, supporting DICOM and NIFTI formats, compatible across a range of web browsers.  This orthogonal viewer supports overlays, atlases, GIFTI surface data and DTI data. 
 
 ![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/docs/images/splash1.png)&nbsp;&nbsp;&nbsp;![ScreenShot](https://raw.github.com/rii-mango/Papaya/master/docs/images/splash2.png)
 
