@@ -10,7 +10,7 @@ papaya.surface = papaya.surface || {};
 
 
 /*** Constructor ***/
-papaya.surface.Surface = papaya.surface.Surface || function (progressMeter) {
+papaya.surface.Surface = papaya.surface.Surface || function (progressMeter, params) {
     this.progressMeter = progressMeter;
     this.error = null;
     this.filename = null;
@@ -22,6 +22,12 @@ papaya.surface.Surface = papaya.surface.Surface || function (progressMeter) {
     this.colorsData = null;
     this.numPoints = 0;
     this.numTriangles = 0;
+    this.pointsBuffer = null;
+    this.trianglesBuffer = null;
+    this.normalsBuffer = null;
+    this.colorsBuffer = null;
+    this.solidColor = null;
+        this.params = params;
 };
 
 
@@ -74,7 +80,7 @@ papaya.surface.Surface.prototype.readFile = function (file, callback) {
     var blob = papaya.utilities.PlatformUtils.makeSlice(file, 0, file.size),
         surface = this;
 
-    this.fileName = file.name;
+    this.filename = file.name;
     this.onFinishedRead = callback;
 
     try {
@@ -111,7 +117,22 @@ papaya.surface.Surface.prototype.finishedLoading = function () {
 papaya.surface.Surface.prototype.readData = function () {
     if (this.error) {
         console.log(this.error);
-        this.callback(null);
+        this.onFinishedRead(this);
+        return;
+    }
+
+    if (!gifti.isThisFormat(this.filename)) {
+        this.error = new Error("This surface format is not supported!");
+        console.log(this.error);
+        this.onFinishedRead(this);
+        return;
+    }
+
+    var screenParams = params[this.filename];
+    if (screenParams) {
+        if (screenParams.color !== undefined) {
+            this.solidColor = screenParams.color;
+        }
     }
 
     var gii = gifti.parse(this.rawData);

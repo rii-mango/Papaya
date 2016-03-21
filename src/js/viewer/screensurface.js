@@ -31,6 +31,8 @@ var shaderVert = [
     "uniform bool uCrosshairs;",
     "uniform bool uColors;",
     "uniform bool uColorPicking;",
+    "uniform bool uColorSolid;",
+    "uniform vec4 uSolidColor;",
 
     "varying vec3 vLightWeighting;",
     "varying lowp vec4 vColor;",
@@ -45,6 +47,8 @@ var shaderVert = [
     "       vLightWeighting = uAmbientColor + uPointLightingColor * directionalLightWeighting;",
     "       if (uColors) {",
     "           vColor = aVertexColor;",
+    "       } else if (uColorSolid) {",
+    "           vColor = uSolidColor;",
     "       }",
     "    }",
     "}"
@@ -58,6 +62,8 @@ var shaderFrag = [
     "uniform bool uCrosshairs;",
     "uniform bool uColors;",
     "uniform bool uColorPicking;",
+    "uniform bool uColorSolid;",
+    "uniform vec4 uSolidColor;",
 
     "varying vec3 vLightWeighting;",
     "varying lowp vec4 vColor;",
@@ -66,6 +72,8 @@ var shaderFrag = [
     "    vec4 fragmentColor = vec4(1.0, 1.0, 1.0, 1.0);",
 
     "    if (uColors) {",
+    "       fragmentColor = vColor;",
+    "    } else if (uColorSolid) {",
     "       fragmentColor = vColor;",
     "    }",
 
@@ -96,10 +104,6 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.centerMatInv = mat4.create();
     this.tempMat = mat4.create();
     this.tempMat2 = mat4.create();
-    this.pointsBuffer = null;
-    this.trianglesBuffer = null;
-    this.normalsBuffer = null;
-    this.colorsBuffer = null;
     this.pickingBuffer = null;
     this.initialized = false;
     this.screenOffsetX = 0;
@@ -224,6 +228,8 @@ papaya.viewer.ScreenSurface.initShaders = function (gl, colors) {
     shaderProgram.colorPicking = gl.getUniformLocation(shaderProgram, "uColorPicking");
     shaderProgram.crosshairs = gl.getUniformLocation(shaderProgram, "uCrosshairs");
     shaderProgram.hasColors = gl.getUniformLocation(shaderProgram, "uColors");
+    shaderProgram.hasSolidColor = gl.getUniformLocation(shaderProgram, "uColorSolid");
+    shaderProgram.solidColor = gl.getUniformLocation(shaderProgram, "uSolidColor");
 
     return shaderProgram;
 };
@@ -233,6 +239,8 @@ papaya.viewer.ScreenSurface.initShaders = function (gl, colors) {
 /*** Prototype Methods ***/
 
 papaya.viewer.ScreenSurface.prototype.initialize = function () {
+    var ctr;
+
     this.initialized = true;
 
     this.canvas = document.createElement("canvas");
@@ -246,7 +254,12 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
     this.initPerspective();
 
     this.shaderProgram = papaya.viewer.ScreenSurface.initShaders(this.context, this.surfaces[0].colorsData);
-    this.initBuffers(this.context);
+
+    for (ctr = 0; ctr < this.surfaces.length; ctr += 1) {
+        this.initBuffers(this.context, this.surfaces[0]);
+    }
+
+    this.initActivePlaneBuffers(this.context);
 
     papaya.viewer.ScreenSurface.EXT_INT = this.context.getExtension('OES_element_index_uint');
     if (!papaya.viewer.ScreenSurface.EXT_INT) {
@@ -293,33 +306,37 @@ papaya.viewer.ScreenSurface.prototype.draw = function () {
 
 
 
-papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl) {
-    this.pointsBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.pointsBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.surfaces[0].pointData, gl.STATIC_DRAW);
-    this.pointsBuffer.itemSize = 3;
-    this.pointsBuffer.numItems = this.surfaces[0].numPoints;
+papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
+    surface.pointsBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, surface.pointsBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, surface.pointData, gl.STATIC_DRAW);
+    surface.pointsBuffer.itemSize = 3;
+    surface.pointsBuffer.numItems = surface.numPoints;
 
-    this.normalsBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.normalsBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.surfaces[0].normalsData, gl.STATIC_DRAW);
-    this.normalsBuffer.itemSize = 3;
-    this.normalsBuffer.numItems = this.surfaces[0].numPoints;
+    surface.normalsBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, surface.normalsBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, surface.normalsData, gl.STATIC_DRAW);
+    surface.normalsBuffer.itemSize = 3;
+    surface.normalsBuffer.numItems = surface.numPoints;
 
-    if (this.surfaces[0].colorsData) {
-        this.colorsBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorsBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.surfaces[0].colorsData, gl.STATIC_DRAW);
-        this.colorsBuffer.itemSize = 4;
-        this.colorsBuffer.numItems = this.surfaces[0].numPoints;
+    if (surface.colorsData) {
+        surface.colorsBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, surface.colorsBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, surface.colorsData, gl.STATIC_DRAW);
+        surface.colorsBuffer.itemSize = 4;
+        surface.colorsBuffer.numItems = surface.numPoints;
     }
 
-    this.trianglesBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.trianglesBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.surfaces[0].triangleData, gl.STATIC_DRAW);
-    this.trianglesBuffer.itemSize = 1;
-    this.trianglesBuffer.numItems = this.surfaces[0].numTriangles * 3;
+    surface.trianglesBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, surface.trianglesBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, surface.triangleData, gl.STATIC_DRAW);
+    surface.trianglesBuffer.itemSize = 1;
+    surface.trianglesBuffer.numItems = surface.numTriangles * 3;
+};
 
+
+
+papaya.viewer.ScreenSurface.prototype.initActivePlaneBuffers = function (gl) {
     this.updateActivePlanes();
 
     this.activePlaneAxialBuffer = gl.createBuffer();
@@ -400,6 +417,8 @@ papaya.viewer.ScreenSurface.prototype.updatePerspective = function () {
 
 
 papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
+    var ctr;
+
     // initialize
     gl.clearColor(0.5, 0.5, 0.5, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -432,24 +451,34 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     // draw surface
     gl.enable(gl.DEPTH_TEST);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.pointsBuffer);
-    gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.pointsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    for (ctr = 0; ctr < this.surfaces.length; ctr += 1) {
+        gl.uniform1i(this.shaderProgram.hasSolidColor, 0);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.normalsBuffer);
-    gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, this.normalsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        if (this.surfaces[ctr].solidColor) {
+            gl.uniform1i(this.shaderProgram.hasSolidColor, 1);
+            gl.uniform4f(this.shaderProgram.solidColor, this.surfaces[ctr].solidColor[0], this.surfaces[ctr].solidColor[1], this.surfaces[ctr].solidColor[2], 1.0);
+        }
 
-    if (this.surfaces[0].colorsData) {
-        gl.uniform1i(this.shaderProgram.hasColors, 1);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorsBuffer);
-        gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, this.colorsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[ctr].pointsBuffer);
+        gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.surfaces[ctr].pointsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[ctr].normalsBuffer);
+        gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, this.surfaces[ctr].normalsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        if (this.surfaces[0].colorsData) {
+            gl.uniform1i(this.shaderProgram.hasColors, 1);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[ctr].colorsBuffer);
+            gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, this.surfaces[ctr].colorsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        }
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.surfaces[ctr].trianglesBuffer);
+        gl.drawElements(gl.TRIANGLES, this.surfaces[ctr].trianglesBuffer.numItems, gl.UNSIGNED_INT, 0);
     }
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.trianglesBuffer);
-    gl.drawElements(gl.TRIANGLES, this.trianglesBuffer.numItems, gl.UNSIGNED_INT, 0);
+    gl.uniform1i(this.shaderProgram.hasSolidColor, 0);
 
     if (this.needsPickColor) {
         this.needsPickColor = false;
-
         gl.readPixels(0, 0, gl.viewportWidth, gl.viewportHeight, gl.RGBA, gl.UNSIGNED_BYTE, this.pickingBuffer);
         this.pickedColor = this.findPickedColor(gl);
         gl.uniform1i(this.shaderProgram.colorPicking, 0);

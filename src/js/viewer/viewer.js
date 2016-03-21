@@ -308,12 +308,9 @@ papaya.viewer.Viewer.prototype.loadSurface = function (ref, forceUrl) {
     if (this.screenVolumes.length == 0) {
         this.container.display.drawError("Load an image before loading a surface!");
         return;
-    } else if (this.surfaces.length > 0) {
-        this.container.display.drawError("Only a single surface can be loaded!");
-        return;
     }
 
-    var surface = new papaya.surface.Surface(this.container.display);
+    var surface = new papaya.surface.Surface(this.container.display, this.container.params);
 
     if (forceUrl) {
         surface.readURL(ref, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
@@ -336,6 +333,8 @@ papaya.viewer.Viewer.prototype.initializeSurface = function (surface) {
         if (this.surfaceView === null) {
             this.lowerImageBot2 = this.surfaceView = new papaya.viewer.ScreenSurface(this.volume, this.surfaces, this);
             this.container.resizeViewerComponents(true);
+        } else {
+            this.surfaceView.initBuffers(this.surfaceView.context, surface);
         }
 
         if (this.container.hasMoreToLoad()) {
