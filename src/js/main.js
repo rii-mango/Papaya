@@ -383,7 +383,15 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
                 imageRefs[0] = container.params.encodedImages[0];
             }
 
-            container.viewer.loadImage(container.params.encodedImages[0], false, true);
+            container.viewer.loadImage(imageRefs, false, true);
+        } else if (container.params.files) {
+            imageRefs = container.params.files[0];
+            if (!(imageRefs instanceof Array)) {
+                imageRefs = [];
+                imageRefs[0] = container.params.files[0];
+            }
+
+            container.viewer.loadImage(imageRefs, false, false);
         }
 
         container.resizeViewerComponents(false);
