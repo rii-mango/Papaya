@@ -161,9 +161,7 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
 
 /*** Static Pseudo-constants ***/
 
-papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION = [-0.6540161112031582, 0.7404771237240793, -0.15477905390611574, 0.0,
-    0.45373659842363206, 0.2202656463411315, -0.8634848836505182, 0.0, -0.6052982946760322, -0.6349619471143849, -0.48003885278074304, 0.0, 0.0, 0.0,
-    0.0, 1.0];
+papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION = [-0.015552218963737041, 0.09408106275544359, -0.9954430697501158, 0, -0.9696501263313991, 0.24152923619118966, 0.03797658948646743, 0, 0.24400145970103732, 0.965822108594413, 0.0874693978960848, 0, 0, 0, 0, 1];
 papaya.viewer.ScreenSurface.MOUSE_SENSITIVITY = 0.3;
 papaya.viewer.ScreenSurface.BACKGROUND_COLOR = "rgba(128, 128, 128, 255)";
 
@@ -260,6 +258,9 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
     }
 
     this.initActivePlaneBuffers(this.context);
+
+    //mat4.multiply(this.centerMat, papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION, this.tempMat);
+    //mat4.multiply(this.tempMat, this.centerMatInv, this.mouseRotCurrent);
 
     papaya.viewer.ScreenSurface.EXT_INT = this.context.getExtension('OES_element_index_uint');
     if (!papaya.viewer.ScreenSurface.EXT_INT) {
