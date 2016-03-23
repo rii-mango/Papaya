@@ -56,7 +56,6 @@ papaya.ui.Dialog.showModalDialog = function (dialog, viewer, dialogHtml) {
         top: top
     });
 
-
     viewer.removeScroll();
 
     $(dialogHtml).hide().fadeIn(200);
