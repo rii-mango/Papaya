@@ -1,6 +1,7 @@
 
 .papaya-viewer {
     line-height: 1;
+    font-family: sans-serif;
 }
 
 
@@ -11,6 +12,7 @@
     font: inherit;
     font-size: 100%;
     vertical-align: baseline;
+    font-family: sans-serif;
 }
 
 
