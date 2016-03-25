@@ -270,6 +270,8 @@ papaya.ui.Toolbar.applyContextState = function (menu) {
         for (ctr = 0; ctr < menu.items.length; ctr += 1) {
             if (menu.items[ctr].menu) {
                 papaya.ui.Toolbar.applyContextState(menu.items[ctr].menu);
+            } else {
+                menu.items[ctr].isContext = true;
             }
         }
     }

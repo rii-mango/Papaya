@@ -31,6 +31,7 @@ papaya.ui.MenuItem = papaya.ui.MenuItem || function (viewer, label, action, call
     this.id = this.action.replace(/ /g, "_") + this.viewer.container.containerIndex;
     this.callback = callback;
     this.menu = null;
+    this.isContext = false;
 };
 
 
@@ -50,8 +51,8 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
 
     thisHtml = $("#" + this.id);
     thisHtml.click(papaya.utilities.ObjectUtils.bind(this,
-        function () {
-            this.doAction();
+        function (e) {
+            this.doAction(this.isContext && e.shiftKey);
         }));
 
     thisHtml.hover(function () { $(this).toggleClass(PAPAYA_MENU_HOVERING_CSS); });
@@ -59,6 +60,10 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
 
 
 
-papaya.ui.MenuItem.prototype.doAction = function () {
-    this.callback(this.action);
+papaya.ui.MenuItem.prototype.doAction = function (keepOpen) {
+    if (!keepOpen && !this.menu) {
+        this.viewer.showingContextMenu = false;
+    }
+
+    this.callback(this.action, null, keepOpen);
 };

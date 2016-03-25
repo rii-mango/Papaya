@@ -1694,6 +1694,12 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
     me.stopPropagation();
     me.preventDefault();
 
+    if (this.showingContextMenu) {
+        this.container.toolbar.closeAllMenus();
+        me.handled = true;
+        return;
+    }
+
     if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
         if (me.handled !== true) {
             this.container.toolbar.closeAllMenus();
@@ -1718,6 +1724,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                     papaya.ui.Toolbar.applyContextState(menu);
                     draggingStarted = false;
                     menu.showMenu();
+                    this.showingContextMenu = true;
                 }
 
                 this.isContextMode = true;
@@ -1732,6 +1739,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                     papaya.ui.Toolbar.applyContextState(menu);
                     draggingStarted = false;
                     menu.showMenu();
+                    this.showingContextMenu = true;
                 }
             } else if (((me.button === 2) || this.isControlKeyDown) && !this.currentScreenVolume.rgb && !this.container.kioskMode) {
                 this.isWindowControl = true;
@@ -1782,6 +1790,12 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
     me.stopPropagation();
     me.preventDefault();
+
+    if (this.showingContextMenu) {
+        this.showingContextMenu = false;
+        me.handled = true;
+        return;
+    }
 
     if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
         if (me.handled !== true) {
