@@ -934,7 +934,7 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
 
     if (this.container.readyForDnD()) {
         fontSize = 18;
-        this.context.font = fontSize + "px Arial";
+        this.context.font = fontSize + "px sans-serif";
         locY = this.canvas.height - 22;
         text = "Drop here or click the File menu";
         metrics = this.context.measureText(text);
@@ -945,14 +945,14 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
     if (this.canvas.width > 900) {
         // draw supported formats
         fontSize = 14;
-        this.context.font = fontSize + "px Arial";
+        this.context.font = fontSize + "px sans-serif";
         locY = this.canvas.height - 20;
         text = "Supported formats: NIFTI" + (papaya.Container.DICOM_SUPPORT ? ", DICOM" : "");
         this.context.fillText(text, 20, locY);
 
         // draw Papaya version info
         fontSize = 14;
-        this.context.font = fontSize + "px Arial";
+        this.context.font = fontSize + "px sans-serif";
         locY = this.canvas.height - 20;
 
         text = "Papaya v" + (PAPAYA_VERSION_ID || "Dev") +
@@ -1089,7 +1089,7 @@ papaya.viewer.Viewer.prototype.drawOrientation = function () {
 
     this.context.setTransform(1, 0, 0, 1, 0, 0);
     this.context.fillStyle = this.getOrientationCertaintyColor();
-    this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px Arial";
+    this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
     metrics = this.context.measureText("X");
     textWidth = metrics.width;
     radiological = (this.container.preferences.radiological === "Yes");
@@ -1244,7 +1244,7 @@ papaya.viewer.Viewer.prototype.drawRuler = function () {
     this.context.fillStyle = "#FFFFFF";
     this.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight+ (padding * 2), 5, true, false);
 
-    this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px Arial";
+    this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
     this.context.strokeStyle = "#FF1493";
     this.context.fillStyle = "#FF1493";
     this.context.fillText(text, xText, yText);
