@@ -27,7 +27,7 @@ papaya.surface.Surface = papaya.surface.Surface || function (progressMeter, para
     this.normalsBuffer = null;
     this.colorsBuffer = null;
     this.solidColor = null;
-        this.params = params;
+    this.params = params;
 };
 
 

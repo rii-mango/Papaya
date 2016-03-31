@@ -1881,6 +1881,11 @@ papaya.viewer.Viewer.prototype.findClickedSlice = function (viewer, xLoc, yLoc) 
 papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
     me.preventDefault();
 
+    if (this.showingContextMenu) {
+        me.handled = true;
+        return;
+    }
+
     var currentMouseX, currentMouseY, zoomFactorCurrent;
 
     papaya.Container.papayaLastHoveredViewer = this;
