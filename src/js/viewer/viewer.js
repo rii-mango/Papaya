@@ -2508,7 +2508,7 @@ papaya.viewer.Viewer.prototype.isUsingAtlas = function (name) {
 
 
 papaya.viewer.Viewer.prototype.scrolled = function (e) {
-    var scrollSign;
+    var scrollSign, isSliceScroll;
 
     if (this.container.nestedViewer || ((papayaContainers.length > 1) && !this.container.collapsable)) {
         return;
@@ -2521,9 +2521,10 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
 
     e.returnValue = false;
 
-    scrollSign = papaya.utilities.PlatformUtils.getScrollSign(e);
+    isSliceScroll = (this.container.preferences.scrollBehavior === "Increment Slice");
+    scrollSign = papaya.utilities.PlatformUtils.getScrollSign(e, !isSliceScroll);
 
-    if (this.container.preferences.scrollBehavior === "Increment Slice") {
+    if (isSliceScroll) {
         if (scrollSign < 0) {
             if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
                 this.incrementAxial(false);

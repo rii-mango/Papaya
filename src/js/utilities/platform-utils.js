@@ -151,18 +151,28 @@ papaya.utilities.PlatformUtils.getMousePositionY = function (ev) {
 
 
 // a somewhat more consistent scroll across platforms
-papaya.utilities.PlatformUtils.getScrollSign = function (ev) {
-    var now = Date.now();
+papaya.utilities.PlatformUtils.getScrollSign = function (ev, slow) {
+    if (slow) {
+        var now = Date.now();
 
-    if ((now - papaya.utilities.PlatformUtils.lastScrollEventTimestamp) > 50) {
-        papaya.utilities.PlatformUtils.lastScrollEventTimestamp = now;
+        if ((now - papaya.utilities.PlatformUtils.lastScrollEventTimestamp) > 50) {
+            papaya.utilities.PlatformUtils.lastScrollEventTimestamp = now;
 
+            if (ev.wheelDelta) {
+                return ev.wheelDelta > 0 ? 1 : -1;
+            }
+
+            if (ev.detail) {
+                return ev.detail < 0 ? 1 : -1;
+            }
+        }
+    } else {
         if (ev.wheelDelta) {
-            return ev.wheelDelta > 0 ? 1 : -1;
+            return ev.wheelDelta;
         }
 
         if (ev.detail) {
-            return ev.detail < 0 ? 1 : -1;
+            return ev.detail * -1;
         }
     }
 
