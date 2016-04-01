@@ -612,18 +612,14 @@ papaya.viewer.Viewer.prototype.finishedLoading = function () {
 
 papaya.viewer.Viewer.prototype.addScroll = function () {
     if (!this.container.nestedViewer) {
-        if (window.addEventListener) {
-            window.addEventListener('DOMMouseScroll', this.listenerScroll, false);
-        }
-        window.onmousewheel = document.onmousewheel = this.listenerScroll;
+        window.addEventListener(papaya.utilities.PlatformUtils.getSupportedScrollEvent(), this.listenerScroll, false);
     }
 };
 
 
 
 papaya.viewer.Viewer.prototype.removeScroll = function () {
-    window.removeEventListener('DOMMouseScroll', this.listenerScroll, false);
-    window.onmousewheel = document.onmousewheel = null;
+    window.removeEventListener(papaya.utilities.PlatformUtils.getSupportedScrollEvent(), this.listenerScroll, false);
 };
 
 
@@ -2527,21 +2523,21 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
     if (isSliceScroll) {
         if (scrollSign < 0) {
             if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                this.incrementAxial(false);
+                this.incrementAxial(false, Math.abs(scrollSign));
             } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                this.incrementCoronal(false);
+                this.incrementCoronal(false, Math.abs(scrollSign));
             } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-                this.incrementSagittal(false);
+                this.incrementSagittal(false, Math.abs(scrollSign));
             }
 
             this.gotoCoordinate(this.currentCoord);
         } else if (scrollSign > 0) {
             if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-                this.incrementAxial(true);
+                this.incrementAxial(true, Math.abs(scrollSign));
             } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-                this.incrementCoronal(true);
+                this.incrementCoronal(true, Math.abs(scrollSign));
             } else if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-                this.incrementSagittal(true);
+                this.incrementSagittal(true, Math.abs(scrollSign));
             }
 
             this.gotoCoordinate(this.currentCoord);
@@ -2565,17 +2561,21 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
 
 
 
-papaya.viewer.Viewer.prototype.incrementAxial = function (increment) {
+papaya.viewer.Viewer.prototype.incrementAxial = function (increment, degree) {
     var max = this.volume.header.imageDimensions.zDim;
 
+    if (degree === undefined) {
+        degree = 1;
+    }
+
     if (increment) {
-        this.currentCoord.z += 1;
+        this.currentCoord.z += degree;
 
         if (this.currentCoord.z >= max) {
             this.currentCoord.z = max - 1;
         }
     } else {
-        this.currentCoord.z -= 1;
+        this.currentCoord.z -= degree;
 
         if (this.currentCoord.z < 0) {
             this.currentCoord.z = 0;
@@ -2587,17 +2587,21 @@ papaya.viewer.Viewer.prototype.incrementAxial = function (increment) {
 
 
 
-papaya.viewer.Viewer.prototype.incrementCoronal = function (increment) {
+papaya.viewer.Viewer.prototype.incrementCoronal = function (increment, degree) {
     var max = this.volume.header.imageDimensions.yDim;
 
+    if (degree === undefined) {
+        degree = 1;
+    }
+
     if (increment) {
-        this.currentCoord.y += 1;
+        this.currentCoord.y += degree;
 
         if (this.currentCoord.y >= max) {
             this.currentCoord.y = max - 1;
         }
     } else {
-        this.currentCoord.y -= 1;
+        this.currentCoord.y -= degree;
 
         if (this.currentCoord.y < 0) {
             this.currentCoord.y = 0;
@@ -2609,17 +2613,21 @@ papaya.viewer.Viewer.prototype.incrementCoronal = function (increment) {
 
 
 
-papaya.viewer.Viewer.prototype.incrementSagittal = function (increment) {
+papaya.viewer.Viewer.prototype.incrementSagittal = function (increment, degree) {
     var max = this.volume.header.imageDimensions.xDim;
 
+    if (degree === undefined) {
+        degree = 1;
+    }
+
     if (increment) {
-        this.currentCoord.x -= 1;
+        this.currentCoord.x -= degree;
 
         if (this.currentCoord.x < 0) {
             this.currentCoord.x = 0;
         }
     } else {
-        this.currentCoord.x += 1;
+        this.currentCoord.x += degree;
 
         if (this.currentCoord.x >= max) {
             this.currentCoord.x = max - 1;

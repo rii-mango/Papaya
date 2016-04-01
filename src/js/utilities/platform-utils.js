@@ -152,28 +152,30 @@ papaya.utilities.PlatformUtils.getMousePositionY = function (ev) {
 
 // a somewhat more consistent scroll across platforms
 papaya.utilities.PlatformUtils.getScrollSign = function (ev, slow) {
+    var wait, sign, rawValue, value;
+
     if (slow) {
-        var now = Date.now();
-
-        if ((now - papaya.utilities.PlatformUtils.lastScrollEventTimestamp) > 50) {
-            papaya.utilities.PlatformUtils.lastScrollEventTimestamp = now;
-
-            if (ev.wheelDelta) {
-                return ev.wheelDelta > 0 ? 1 : -1;
-            }
-
-            if (ev.detail) {
-                return ev.detail < 0 ? 1 : -1;
-            }
-        }
+        wait = 75;
+    } else if (papaya.utilities.PlatformUtils.browser === "Firefox") {
+        wait = 10;
+    } else if (papaya.utilities.PlatformUtils.browser === "Chrome") {
+        wait = 50;
+    } else if (papaya.utilities.PlatformUtils.browser === "Internet Explorer") {
+        wait = 0;
+    } else if (papaya.utilities.PlatformUtils.browser === "Safari") {
+        wait = 50;
     } else {
-        if (ev.wheelDelta) {
-            return ev.wheelDelta;
-        }
+        wait = 10;
+    }
 
-        if (ev.detail) {
-            return ev.detail * -1;
-        }
+    var now = Date.now();
+
+    if ((now - papaya.utilities.PlatformUtils.lastScrollEventTimestamp) > wait) {
+        papaya.utilities.PlatformUtils.lastScrollEventTimestamp = now;
+        rawValue = papaya.utilities.PlatformUtils.normalizeWheel(ev).spinY;
+        sign = (-1 * papaya.utilities.PlatformUtils.normalizeWheel(ev).spinY) > 0 ? 1 : -1;
+        value = Math.ceil(Math.abs(rawValue / 10.0)) * sign;
+        return value;
     }
 
     return 0;
@@ -225,7 +227,7 @@ papaya.utilities.PlatformUtils.isInputRangeSupported = function () {
 // adapted from: http://www.rajeshsegu.com/2012/09/browser-detect-custom-protocols/comment-page-1/
 papaya.utilities.PlatformUtils.launchCustomProtocol = function (container, url, callback) {
     var iframe, myWindow, cookie, success = false;
-console.log(url);
+
     if (papaya.utilities.PlatformUtils.browser === "Internet Explorer") {
         myWindow = window.open('', '', 'width=0,height=0');
         myWindow.document.write("<iframe src='" + url + "'></iframe>");
@@ -299,4 +301,82 @@ console.log(url);
 
         callback(success);
     }
+};
+
+
+papaya.utilities.PlatformUtils.getSupportedScrollEvent = function() {
+    var support;
+    if (papaya.utilities.PlatformUtils.browser === "Firefox") {
+        support = "DOMMouseScroll";
+    } else {
+        // https://developer.mozilla.org/en-US/docs/Web/Events/wheel
+        support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
+            document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
+                "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
+    }
+
+    return support;
+};
+
+
+
+// Reasonable defaults
+var PIXEL_STEP  = 10;
+var LINE_HEIGHT = 40;
+var PAGE_HEIGHT = 800;
+
+
+/**
+ * Copyright (c) 2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule normalizeWheel
+ * @typechecks
+ */
+// https://github.com/facebook/fixed-data-table/blob/master/src/vendor_upstream/dom/normalizeWheel.js
+// http://stackoverflow.com/questions/5527601/normalizing-mousewheel-speed-across-browsers
+papaya.utilities.PlatformUtils.normalizeWheel = function(/*object*/ event) /*object*/ {
+    var sX = 0, sY = 0,       // spinX, spinY
+        pX = 0, pY = 0;       // pixelX, pixelY
+
+    // Legacy
+    if ('detail'      in event) { sY = event.detail; }
+    if ('wheelDelta'  in event) { sY = -event.wheelDelta / 120; }
+    if ('wheelDeltaY' in event) { sY = -event.wheelDeltaY / 120; }
+    if ('wheelDeltaX' in event) { sX = -event.wheelDeltaX / 120; }
+
+    // side scrolling on FF with DOMMouseScroll
+    if ( 'axis' in event && event.axis === event.HORIZONTAL_AXIS ) {
+        sX = sY;
+        sY = 0;
+    }
+
+    pX = sX * PIXEL_STEP;
+    pY = sY * PIXEL_STEP;
+
+    if ('deltaY' in event) { pY = event.deltaY; }
+    if ('deltaX' in event) { pX = event.deltaX; }
+
+    if ((pX || pY) && event.deltaMode) {
+        if (event.deltaMode == 1) {          // delta in LINE units
+            pX *= LINE_HEIGHT;
+            pY *= LINE_HEIGHT;
+        } else {                             // delta in PAGE units
+            pX *= PAGE_HEIGHT;
+            pY *= PAGE_HEIGHT;
+        }
+    }
+
+    // Fall-back if spin cannot be determined
+    if (pX && !sX) { sX = (pX < 1) ? -1 : 1; }
+    if (pY && !sY) { sY = (pY < 1) ? -1 : 1; }
+
+    return { spinX  : sX,
+        spinY  : sY,
+        pixelX : pX,
+        pixelY : pY };
 };
