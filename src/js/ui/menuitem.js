@@ -53,6 +53,7 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
 
     if (this.viewer.container.contextManager && papaya.utilities.PlatformUtils.smallScreen) {
         thisHtml[0].style.width = (this.viewer.viewerDim - 10) + 'px';
+        thisHtml[0].style.fontSize = 18 + 'px';
     }
 
     thisHtml.click(papaya.utilities.ObjectUtils.bind(this,

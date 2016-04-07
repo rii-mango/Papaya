@@ -592,9 +592,9 @@ papaya.viewer.ScreenSurface.prototype.setStartDynamic = function (xLoc, yLoc) {
 
 
 
-papaya.viewer.ScreenSurface.prototype.updateDynamic = function (xLoc, yLoc) {
-    var rotX = (yLoc - this.dynamicStartY) * papaya.viewer.ScreenSurface.MOUSE_SENSITIVITY;
-    var rotY = (xLoc - this.dynamicStartX) * papaya.viewer.ScreenSurface.MOUSE_SENSITIVITY;
+papaya.viewer.ScreenSurface.prototype.updateDynamic = function (xLoc, yLoc, factor) {
+    var rotX = (yLoc - this.dynamicStartY) * papaya.viewer.ScreenSurface.MOUSE_SENSITIVITY * factor;
+    var rotY = (xLoc - this.dynamicStartX) * papaya.viewer.ScreenSurface.MOUSE_SENSITIVITY * factor;
 
     var theta = (rotY * Math.PI) / 180.0;
     mat4.identity(this.mouseRotDragX);

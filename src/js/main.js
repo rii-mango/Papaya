@@ -1321,7 +1321,6 @@ papaya.Container.prototype.coordinateChanged = function (viewer) {
 
     if (viewer.surfaceView) {
         viewer.surfaceView.updateActivePlanes();
-        viewer.surfaceView.draw();
     }
 
     if (this.contextManager) {
@@ -1332,13 +1331,7 @@ papaya.Container.prototype.coordinateChanged = function (viewer) {
 
 /*** Window Events ***/
 
-window.onload = papaya.Container.startPapaya;
-
-
-window.addEventListener('resize', papaya.Container.resizePapaya);
-
-
-window.onorientationchange = function () {
+papaya.Container.reorientPapaya = function () {
     var ctr;
 
     for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
@@ -1361,7 +1354,9 @@ window.onorientationchange = function () {
 };
 
 
-
+window.addEventListener('resize', papaya.Container.resizePapaya, false);
+window.addEventListener("orientationchange", papaya.Container.reorientPapaya, false);
+window.addEventListener("load", papaya.Container.startPapaya, false);
 window.addEventListener('message', function (msg) {
     if (msg.data === PAPAYA_MANGO_INSTALLED) {
         papaya.mangoinstalled = true;
