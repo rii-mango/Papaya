@@ -467,11 +467,13 @@ papaya.Container.startPapaya = function () {
 
 
 
-papaya.Container.resizePapaya = function () {
+papaya.Container.resizePapaya = function (ev, force) {
     var ctr;
 
     if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
-        papayaContainers[0].resizeViewerComponents(true);
+        if (!papaya.utilities.PlatformUtils.smallScreen || force) {
+            papayaContainers[0].resizeViewerComponents(true);
+        }
     } else {
         for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
             papayaContainers[ctr].resizeViewerComponents(true);
@@ -646,7 +648,7 @@ papaya.Container.prototype.getViewerPadding = function () {
 
 
 papaya.Container.prototype.readGlobalParams = function() {
-    this.kioskMode = (this.params.kioskMode === true);
+    this.kioskMode = (this.params.kioskMode === true) || papaya.utilities.PlatformUtils.smallScreen;
     this.combineParametric = (this.params.combineParametric === true);
 
     if (this.params.showControls !== undefined) {  // default is true
@@ -655,6 +657,10 @@ papaya.Container.prototype.readGlobalParams = function() {
 
     if (this.params.showImageButtons !== undefined) {  // default is true
         this.showImageButtons = this.params.showImageButtons;
+    }
+
+    if (papaya.utilities.PlatformUtils.smallScreen) {
+        this.showImageButtons = false;
     }
 
     if (this.params.fullScreenPadding !== undefined) {  // default is true
@@ -1351,7 +1357,7 @@ window.onorientationchange = function () {
         }
     }
 
-    papaya.Container.resizePapaya();
+    papaya.Container.resizePapaya(null, true);
 };
 
 

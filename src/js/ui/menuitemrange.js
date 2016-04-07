@@ -102,6 +102,13 @@ papaya.ui.MenuItemRange.prototype.buildHTML = function (parentId) {
     maxSliderHtml = $("#" + maxSliderId);
     sliderHtml = $("#" + sliderId);
 
+    if (papaya.utilities.PlatformUtils.ios) {
+        minHtml[0].style.width = 35 + 'px';
+        minHtml[0].style.marginRight = 4 + 'px';
+        maxHtml[0].style.width = 35 + 'px';
+        maxHtml[0].style.marginRight = 4 + 'px';
+    }
+
     minSliderHtml.bind(papaya.utilities.PlatformUtils.ios ? 'touchstart' : 'mousedown', function (ev) {
         menuItemRange.grabOffset = papaya.ui.MenuItemRange.getRelativeMousePositionX(minSliderHtml, ev);
 

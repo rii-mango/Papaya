@@ -25,7 +25,7 @@ papaya.utilities.PlatformUtils.browserVersion = bowser.version;
 papaya.utilities.PlatformUtils.ios = bowser.ios;
 papaya.utilities.PlatformUtils.mobile = bowser.mobile;
 papaya.utilities.PlatformUtils.lastScrollEventTimestamp = 0;
-
+papaya.utilities.PlatformUtils.smallScreen = window.matchMedia && window.matchMedia("only screen and (max-width: 760px)").matches;
 
 /*** Static Methods ***/
 

@@ -205,6 +205,10 @@ papaya.ui.Menu.prototype.buildMenu = function () {
     html = "<ul id='" + this.menuId + "' class='" + PAPAYA_MENU_CSS + "'></ul>";
     this.htmlParent.append(html);
 
+    if (this.viewer.container.contextManager && papaya.utilities.PlatformUtils.smallScreen) {
+        $('#' + this.menuId)[0].style.width = (this.viewer.viewerDim - 10) + 'px';
+    }
+
     for (ctr = 0; ctr < this.items.length; ctr += 1) {
         if (!this.items[ctr].hide) {
             buttonHtml = this.items[ctr].buildHTML(this.menuId);
@@ -248,12 +252,21 @@ papaya.ui.Menu.prototype.showContextMenu = function () {
                 offset = (this.viewer.contextMenuMousePositionY + mHeight) - (posV.top + dHeight + $(this.viewer.canvas).outerHeight() + PAPAYA_SPACING) - 1;
             }
 
-            menuHtml.css({
-                position: 'absolute',
-                zIndex: 100,
-                left: this.viewer.contextMenuMousePositionX + this.viewer.canvasRect.left,
-                top: this.viewer.contextMenuMousePositionY + this.viewer.canvasRect.top - offset
-            });
+            if (this.viewer.container.contextManager && papaya.utilities.PlatformUtils.smallScreen) {
+                menuHtml.css({
+                    position: 'absolute',
+                    zIndex: 100,
+                    left: this.viewer.canvasRect.left,
+                    top: this.viewer.canvasRect.top - offset
+                });
+            } else {
+                menuHtml.css({
+                    position: 'absolute',
+                    zIndex: 100,
+                    left: this.viewer.contextMenuMousePositionX + this.viewer.canvasRect.left,
+                    top: this.viewer.contextMenuMousePositionY + this.viewer.canvasRect.top - offset
+                });
+            }
 
             menuHtml.hide().fadeIn(200);
         }

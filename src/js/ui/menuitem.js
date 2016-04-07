@@ -50,6 +50,11 @@ papaya.ui.MenuItem.prototype.buildHTML = function (parentId) {
     $("#" + parentId).append(html);
 
     thisHtml = $("#" + this.id);
+
+    if (this.viewer.container.contextManager && papaya.utilities.PlatformUtils.smallScreen) {
+        thisHtml[0].style.width = (this.viewer.viewerDim - 10) + 'px';
+    }
+
     thisHtml.click(papaya.utilities.ObjectUtils.bind(this,
         function (e) {
             this.doAction(this.isContext && e.shiftKey);

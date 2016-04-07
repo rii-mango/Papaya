@@ -53,6 +53,8 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.isZoomMode = false;
     this.isContextMode = false;
     this.isPanning = false;
+    this.didLongTouch = false;
+    this.isLongTouch = false;
     this.zoomFactor = papaya.viewer.Viewer.ZOOM_FACTOR_MIN;
     this.zoomFactorPrevious = papaya.viewer.Viewer.ZOOM_FACTOR_MIN;
     this.zoomLocX = 0;
@@ -88,7 +90,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.listenerTouchEnd = papaya.utilities.ObjectUtils.bind(this, this.touchEndEvent);
     this.initialCoordinate = null;
     this.listenerScroll = papaya.utilities.ObjectUtils.bind(this, this.scrolled);
-
+    this.longTouchTimer = null;
     this.updateTimer = null;
     this.updateTimerEvent = null;
     this.drawEmptyViewer();
@@ -1705,7 +1707,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
             this.findClickedSlice(this, this.previousMousePosition.x, this.previousMousePosition.y);
 
-            if (((me.button === 2) || this.isControlKeyDown) && this.container.contextManager && (this.selectedSlice === this.mainImage) && (this.mainImage === this.surfaceView)) {
+            if (((me.button === 2) || this.isControlKeyDown || this.isLongTouch) && this.container.contextManager && (this.selectedSlice === this.mainImage) && (this.mainImage === this.surfaceView)) {
                 this.contextMenuMousePositionX = this.previousMousePosition.x - this.canvasRect.left;
                 this.contextMenuMousePositionY = this.previousMousePosition.y - this.canvasRect.top;
 
@@ -1724,7 +1726,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                 }
 
                 this.isContextMode = true;
-            } else if (((me.button === 2) || this.isControlKeyDown) && this.container.contextManager && (this.selectedSlice === this.mainImage)) {
+            } else if (((me.button === 2) || this.isControlKeyDown || this.isLongTouch) && this.container.contextManager && (this.selectedSlice === this.mainImage)) {
                 this.contextMenuMousePositionX = this.previousMousePosition.x - this.canvasRect.left;
                 this.contextMenuMousePositionY = this.previousMousePosition.y - this.canvasRect.top;
                 menuData = this.container.contextManager.getContextAtImagePosition(this.cursorPosition.x, this.cursorPosition.y, this.cursorPosition.z);
@@ -1985,18 +1987,59 @@ papaya.viewer.Viewer.prototype.mouseLeaveEvent = function () {};
 
 
 papaya.viewer.Viewer.prototype.touchMoveEvent = function (me) {
-    this.mouseMoveEvent(me);
+    if (!this.didLongTouch) {
+        if (this.longTouchTimer) {
+            clearTimeout(this.longTouchTimer);
+            this.longTouchTimer = null;
+        }
+
+        if (!this.isDragging) {
+            this.mouseDownEvent(me);
+            this.isDragging = true;
+        }
+
+        this.mouseMoveEvent(me);
+    }
 };
 
 
 
 papaya.viewer.Viewer.prototype.touchStartEvent = function (me) {
-    this.mouseDownEvent(me);
+    me.stopPropagation();
+    me.preventDefault();
+    this.longTouchTimer = setTimeout(papaya.utilities.ObjectUtils.bind(this, function() {this.doLongTouch(me); }), 500);
 };
 
 
 
 papaya.viewer.Viewer.prototype.touchEndEvent = function (me) {
+    if (!this.didLongTouch) {
+        if (this.longTouchTimer) {
+            clearTimeout(this.longTouchTimer);
+            this.longTouchTimer = null;
+        }
+
+        if (!this.isDragging) {
+            this.mouseDownEvent(me);
+        }
+
+        this.mouseUpEvent(me);
+    }
+
+    this.didLongTouch = false;
+    this.isLongTouch = false;
+};
+
+
+
+papaya.viewer.Viewer.prototype.doLongTouch = function (me) {
+    this.longTouchTimer = null;
+    this.didLongTouch = true;
+    this.isLongTouch = true;
+
+    this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
+
+    this.mouseDownEvent(me);
     this.mouseUpEvent(me);
 };
 
