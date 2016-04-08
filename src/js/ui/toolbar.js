@@ -599,7 +599,7 @@ papaya.ui.Toolbar.prototype.isShowingMenus = function () {
 
 
 papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
-    var imageIndex, colorTableName, dialog, atlasName, imageName;
+    var imageIndex, colorTableName, dialog, atlasName, imageName, folder, ctr;
 
     if (!keepopen) {
         this.closeAllMenus();
@@ -620,8 +620,17 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.container.display.drawProgress(0.1, "Loading");
             this.viewer.loadSurface(file);
         } else if (action === "OpenFolder") {
+            folder = [];
+            for (ctr = 0; ctr < file.length; ctr += 1) {
+                if (file[ctr].name.startsWith('.')) {
+                    console.log("Ignoring file " + file[ctr].name);
+                } else {
+                    folder.push(file[ctr]);
+                }
+            }
+
             this.container.display.drawProgress(0.1, "Loading");
-            this.viewer.loadImage(file);
+            this.viewer.loadImage(folder);
         } else if (action.startsWith("ColorTable")) {
             colorTableName = action.substring(action.indexOf("-") + 1, action.lastIndexOf("-"));
             imageIndex = action.substring(action.lastIndexOf("-") + 1);
