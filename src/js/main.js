@@ -1323,7 +1323,7 @@ papaya.Container.prototype.coordinateChanged = function (viewer) {
         viewer.surfaceView.updateActivePlanes();
     }
 
-    if (this.contextManager) {
+    if (this.contextManager && this.contextManager.clearContext) {
         this.contextManager.clearContext();
     }
 };

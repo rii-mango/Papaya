@@ -858,17 +858,23 @@ papaya.viewer.Viewer.prototype.convertScreenToImageCoordinateY = function (yLoc,
 
 
 papaya.viewer.Viewer.prototype.convertCurrentCoordinateToScreen = function (screenSlice) {
+    return this.convertCoordinateToScreen(this.currentCoord, screenSlice);
+};
+
+
+
+papaya.viewer.Viewer.prototype.convertCoordinateToScreen = function (coor, screenSlice) {
     var x, y, sliceDirection = screenSlice.sliceDirection;
 
     if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-        x = papayaFloorFast(screenSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) * screenSlice.finalTransform[0][0]);
-        y = papayaFloorFast(screenSlice.finalTransform[1][2] + (this.currentCoord.y + 0.5) * screenSlice.finalTransform[1][1]);
+        x = papayaFloorFast(screenSlice.finalTransform[0][2] + (coor.x + 0.5) * screenSlice.finalTransform[0][0]);
+        y = papayaFloorFast(screenSlice.finalTransform[1][2] + (coor.y + 0.5) * screenSlice.finalTransform[1][1]);
     } else if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-        x = papayaFloorFast(screenSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) * screenSlice.finalTransform[0][0]);
-        y = papayaFloorFast(screenSlice.finalTransform[1][2] + (this.currentCoord.z + 0.5) * screenSlice.finalTransform[1][1]);
+        x = papayaFloorFast(screenSlice.finalTransform[0][2] + (coor.x + 0.5) * screenSlice.finalTransform[0][0]);
+        y = papayaFloorFast(screenSlice.finalTransform[1][2] + (coor.z + 0.5) * screenSlice.finalTransform[1][1]);
     } else if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-        x = papayaFloorFast(screenSlice.finalTransform[0][2] + (this.currentCoord.y + 0.5) * screenSlice.finalTransform[0][0]);
-        y = papayaFloorFast(screenSlice.finalTransform[1][2] + (this.currentCoord.z + 0.5) * screenSlice.finalTransform[1][1]);
+        x = papayaFloorFast(screenSlice.finalTransform[0][2] + (coor.y + 0.5) * screenSlice.finalTransform[0][0]);
+        y = papayaFloorFast(screenSlice.finalTransform[1][2] + (coor.z + 0.5) * screenSlice.finalTransform[1][1]);
     }
 
     return new papaya.core.Point(x, y);
@@ -1056,7 +1062,7 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
             this.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z));
     }
 
-    if (this.container.contextManager) {
+    if (this.container.contextManager && this.container.contextManager.drawToViewer) {
         this.container.contextManager.drawToViewer(this.context);
     }
 };
@@ -1634,7 +1640,7 @@ papaya.viewer.Viewer.prototype.keyUpEvent = function (ke) {
 papaya.viewer.Viewer.prototype.rotateViews = function () {
     var temp;
 
-    if (this.container.contextManager) {
+    if (this.container.contextManager && this.container.contextManager.clearContext) {
         this.container.contextManager.clearContext();
     }
 
@@ -1740,7 +1746,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
                 if (menuData) {
                     this.isContextMode = true;
-                    menu = this.container.toolbar.buildMenu(menuData);
+                    menu = this.container.toolbar.buildMenu(menuData, null, null, null, true);
                     papaya.ui.Toolbar.applyContextState(menu);
                     draggingStarted = false;
                     menu.showMenu();
@@ -1762,7 +1768,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
                 if (menuData) {
                     this.isContextMode = true;
-                    menu = this.container.toolbar.buildMenu(menuData);
+                    menu = this.container.toolbar.buildMenu(menuData, null, null, null, true);
                     papaya.ui.Toolbar.applyContextState(menu);
                     draggingStarted = false;
                     menu.showMenu();

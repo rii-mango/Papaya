@@ -32,6 +32,10 @@ papaya.core.Coordinate.prototype.setCoordinate = function (xLoc, yLoc, zLoc, rou
 };
 
 
+papaya.core.Coordinate.prototype.toString = function () {
+    return '(' + this.x + ',' + this.y + ',' + this.z + ')';
+}
+
 
 papaya.core.Coordinate.prototype.isAllZeros = function () {
     return ((this.x === 0) && (this.y === 0) && (this.z === 0));

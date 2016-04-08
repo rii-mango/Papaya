@@ -418,8 +418,12 @@ papaya.ui.Toolbar.prototype.menuContains = function (menuItems, name) {
 
 
 
-papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, dataSource, modifier) {
+papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, dataSource, modifier, context) {
     var menu = null, items;
+
+    if (context === undefined) {
+        context = false;
+    }
 
     if (!menuData.required || ((papaya.utilities.ObjectUtils.bind(this.container, papaya.utilities.ObjectUtils.dereferenceIn(this.container, menuData.required)))() === true)) {
         menu = new papaya.ui.Menu(this.viewer, menuData, papaya.utilities.ObjectUtils.bind(this, this.doAction), this.viewer, modifier);
@@ -428,10 +432,12 @@ papaya.ui.Toolbar.prototype.buildMenu = function (menuData, topLevelButtonId, da
             this.spaceMenu = menuData;
         }
 
-        if (topLevelButtonId) {
-            menu.setMenuButton(topLevelButtonId);
-        } else {
-            topLevelButtonId = menu.buildMenuButton();
+        if (!context) {
+            if (topLevelButtonId) {
+                menu.setMenuButton(topLevelButtonId);
+            } else {
+                topLevelButtonId = menu.buildMenuButton();
+            }
         }
 
         items = menuData.items;
