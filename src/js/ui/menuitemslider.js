@@ -29,7 +29,7 @@ papaya.ui.MenuItemSlider = papaya.ui.MenuItemSlider || function (viewer, label, 
     this.dataSource = dataSource;
     this.method = method;
     this.action = action;
-    this.id = this.action.replace(/ /g, "_") + this.viewer.container.containerIndex;
+    this.id = this.action.replace(/ /g, "_") + this.viewer.container.containerIndex + "_" + this.index;
     this.callback = callback;
     this.screenVol = this.viewer.screenVolumes[this.index];
 };
