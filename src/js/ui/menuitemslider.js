@@ -12,7 +12,8 @@ papaya.ui = papaya.ui || {};
 /*** Constructor ***/
 papaya.ui.MenuItemSlider = papaya.ui.MenuItemSlider || function (viewer, label, action, callback, dataSource, method,
                                                                  modifier) {
-    if (action === "ChangeAlphaNeg") {
+    if (action === "alphaneg") {
+        action = "alpha";
         modifier = viewer.getScreenVolumeIndex(viewer.screenVolumes[parseInt(modifier)].negativeScreenVol).toString();
     }
 
@@ -27,7 +28,7 @@ papaya.ui.MenuItemSlider = papaya.ui.MenuItemSlider || function (viewer, label, 
 
     this.dataSource = dataSource;
     this.method = method;
-    this.action = action + this.modifier;
+    this.action = action;
     this.id = this.action.replace(/ /g, "_") + this.viewer.container.containerIndex;
     this.callback = callback;
     this.screenVol = this.viewer.screenVolumes[this.index];
@@ -53,8 +54,8 @@ papaya.ui.MenuItemSlider.prototype.buildHTML = function (parentId) {
     menuItem = this;
 
     $("#" + this.id + "Slider").change(function () {
-        menuItem.screenVol.alpha = 1.0 - (sliderHtml.val() / 100.0);
-        menuItem.viewer.drawViewer(false, true);
+        menuItem.screenVol[menuItem.action] = 1.0 - (sliderHtml.val() / 100.0);
+        menuItem.viewer.drawViewer(true, false);
     });
 };
 

@@ -76,6 +76,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.hasSeries = false;
     this.controlsHidden = false;
     this.loadingDTI = false;
+    this.loadingDTIModRef = null;
 
     this.listenerContextMenu = function (me) { me.preventDefault(); return false; };
     this.listenerMouseMove = papaya.utilities.ObjectUtils.bind(this, this.mouseMoveEvent);
@@ -647,7 +648,10 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
         parametric = (screenParams && screenParams.parametric);
         dti = (screenParams && screenParams.dtiMod);
 
-        if (dti) {
+        if (this.loadingDTIModRef) {
+            this.loadingDTIModRef.dtiVolumeMod = this.loadingVolume;
+            this.loadingDTIModRef = null;
+        } else if (dti) {
             screenVolV1 = this.getScreenVolumeByName(screenParams.dtiRef);
 
             if (screenVolV1) {
@@ -1976,11 +1980,13 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
         } else {
             this.resetUpdateTimer(null);
 
-            if (this.selectedSlice === this.surfaceView) {
-                this.surfaceView.updateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
-                this.drawViewer(false, true);
-            } else {
-                this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
+            if (this.selectedSlice !== null) {
+                if (this.selectedSlice === this.surfaceView) {
+                    this.surfaceView.updateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
+                    this.drawViewer(false, true);
+                } else {
+                    this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
+                }
             }
         }
     } else {

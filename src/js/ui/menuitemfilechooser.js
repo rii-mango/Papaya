@@ -10,10 +10,16 @@ papaya.ui = papaya.ui || {};
 
 
 /*** Constructor ***/
-papaya.ui.MenuItemFileChooser = papaya.ui.MenuItemFileChooser || function (viewer, label, action, callback, folder) {
+papaya.ui.MenuItemFileChooser = papaya.ui.MenuItemFileChooser || function (viewer, label, action, callback, folder, modifier) {
     this.viewer = viewer;
     this.label = label;
-    this.action = action;
+
+    this.modifier = "";
+    if ((modifier !== undefined) && (modifier !== null)) {
+        this.modifier = "-" + modifier;
+    }
+
+    this.action = action + this.modifier;
     this.id = this.action.replace(/ /g, "_") + this.viewer.container.containerIndex;
     this.fileChooserId = "fileChooser" + this.label.replace(/ /g, "_").replace(/\./g, "") + this.viewer.container.containerIndex + (folder ? "folder" : "");
     this.callback = callback;

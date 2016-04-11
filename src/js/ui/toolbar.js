@@ -145,11 +145,11 @@ papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
         {"label": "Show Image Info", "action": "ImageInfo"},
         {"type": "spacer", "required": "isParametricCombined"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
-        {"label": "Transparency", "action": "ChangeAlpha", "type": "range", "method": "getAlpha"},
+        {"label": "Transparency", "action": "alpha", "type": "range", "method": "getAlpha"},
         {"label": "Color Table", "action": "ColorTable", "items": [], "required": "isNonParametricCombined" },
         {"type": "spacer", "required": "isParametricCombined"},
         {"label": "DisplayRange", "action": "ChangeRangeNeg", "type": "displayrange", "method": "getRangeNegative", "required": "isParametricCombined"},
-        {"label": "Transparency", "action": "ChangeAlphaNeg", "type": "range", "method": "getAlpha", "required": "isParametricCombined"},
+        {"label": "Transparency", "action": "alphaneg", "type": "range", "method": "getAlpha", "required": "isParametricCombined"},
         {"type": "spacer", "required": "isParametricCombined"},
         {"label": "Hide Overlay", "action": "ToggleOverlay", "method": "getHiddenLabel" },
         {"label": "Close Overlay", "action": "CloseOverlay", "required": "isDesktopMode" },
@@ -182,7 +182,10 @@ papaya.ui.Toolbar.DTI_IMAGE_MENU_DATA = {
         {"label": "Display Colors", "action": "DTI-RGB", "type": "checkbox", "method": "isDTIRGB"},
         {"label": "Display Lines", "action": "DTI-Lines", "type": "checkbox", "method": "isDTILines"},
         {"label": "Display Lines &amp; Colors", "action": "DTI-LinesColors", "type": "checkbox", "method": "isDTILinesAndRGB"},
-        {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango"  }
+        {"label": "Transparency", "action": "alpha", "type": "range", "method": "getAlpha"},
+        {"label": "Modulate with...", "action": "DTI-Mod", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
+        {"label": "Modulation", "action": "dtiAlphaFactor", "type": "range", "method": "getDtiAlphaFactor"},
+        {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango"}
     ]
 };
 
@@ -465,14 +468,14 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
                     papaya.utilities.ObjectUtils.dereferenceIn(this.container,
                         itemData[ctrItems].required)))(parseInt(modifier)) === true))) {
                     item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label,
-                        itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), false);
+                        itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), false, modifier);
                 }
             } else if (itemData[ctrItems].type === "folder") {
                 if ((!itemData[ctrItems].hide) && (!itemData[ctrItems].required || ((papaya.utilities.ObjectUtils.bind(this.container,
                         papaya.utilities.ObjectUtils.dereferenceIn(this.container,
                             itemData[ctrItems].required)))(parseInt(modifier)) === true))) {
                     item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label,
-                        itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), true);
+                        itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), true, modifier);
                 } else {
                     item = null;
                 }
@@ -777,6 +780,11 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.viewer.screenVolumes[imageIndex].dtiColors = false;
             this.viewer.screenVolumes[imageIndex].initDTI();
             this.viewer.drawViewer(true, false);
+        } else if (action.startsWith("DTI-Mod")) {
+            imageIndex = action.substring(action.lastIndexOf("-") + 1);
+            this.container.display.drawProgress(0.1, "Loading");
+            this.viewer.loadingDTIModRef = this.viewer.screenVolumes[imageIndex];
+            this.viewer.loadImage(file);
         }
     }
 };
