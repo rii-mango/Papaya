@@ -75,6 +75,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.bgColor = null;
     this.hasSeries = false;
     this.controlsHidden = false;
+    this.loadingDTI = false;
 
     this.listenerContextMenu = function (me) { me.preventDefault(); return false; };
     this.listenerMouseMove = papaya.utilities.ObjectUtils.bind(this, this.mouseMoveEvent);
@@ -372,7 +373,9 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.screenVolumes[0] = new papaya.viewer.ScreenVolume(this.volume, this.container.params,
             papaya.viewer.ColorTable.DEFAULT_COLOR_TABLE.name, true);
 
-        if (papaya.Container.dti) {
+        if (this.loadingDTI) {
+            this.loadingDTI = false;
+
             this.screenVolumes[0].dti = true;
 
             if (this.screenVolumes[0].dti && (this.screenVolumes[0].volume.numTimepoints !== 3)) {
@@ -656,12 +659,24 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
                     screenVolV1.dtiAlphaFactor = 1.0;
                 }
             }
-        } else if (papaya.Container.dti) {
-            this.screenVolumes[0].dtiVolumeMod = this.loadingVolume;
         } else {
             overlay = new papaya.viewer.ScreenVolume(this.loadingVolume,
                 this.container.params, (parametric ? papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[0].name :
                     this.getNextColorTable()), false);
+
+            if (this.loadingDTI) {
+                this.loadingDTI = false;
+
+                overlay.dti = true;
+
+                if (overlay.dti && (overlay.volume.numTimepoints !== 3)) {
+                    overlay.error = new Error("DTI vector series must have 3 series points!");
+                }
+
+                if (overlay.dti) {
+                    overlay.initDTI();
+                }
+            }
 
             if (overlay.hasError()) {
                 this.container.display.drawError(overlay.error.message);
@@ -2541,6 +2556,12 @@ papaya.viewer.Viewer.prototype.processParams = function (params) {
             this.container.preferences.showRuler = (params.showRuler ? "Yes" : "No");
         }
     }
+};
+
+
+
+papaya.viewer.Viewer.prototype.hasLoadedDTI = function () {
+    return (this.screenVolumes.length === 1) && (this.screenVolumes[0].dti) && (this.screenVolumes[0].dtiVolumeMod === null);
 };
 
 

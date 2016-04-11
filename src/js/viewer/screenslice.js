@@ -68,7 +68,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
     var origin, voxelDims, ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha, timepoint, rgb, dti, valueA,
         dtiLines, dtiX1, dtiY1, dtiX2, dtiY2, dtiX1T, dtiY1T, dtiX2T, dtiY2T, dtiXC, dtiYC, valueR, valueG, valueB,
         angle, s, c, dtiColors, dtiLocX, dtiLocY, dtiLocZ, dtiRGB, angle2, dtiAlphaFactor, readFirstRaster = false,
-        radioFactor, dtiColorIndex = 0, interpolation, worldSpace = this.manager.isWorldMode();
+        radioFactor, dtiColorIndex = 0, interpolation, usedRaster = false, worldSpace = this.manager.isWorldMode();
 
     slice = Math.round(slice);
 
@@ -103,6 +103,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
             rgb = this.screenVolumes[ctr].rgb;
             dti = this.screenVolumes[ctr].dti;
             dtiLines = this.screenVolumes[ctr].dtiLines;
+            usedRaster |= !dtiLines;
             dtiColors = this.screenVolumes[ctr].dtiColors;
             dtiAlphaFactor = this.screenVolumes[ctr].dtiAlphaFactor;
             interpolation = ((ctr === 0) || this.screenVolumes[ctr].interpolation);
@@ -116,6 +117,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                     this.contextDTILines.strokeStyle = papaya.viewer.ScreenSlice.DTI_COLORS[dtiColorIndex];
                     dtiColorIndex += 1;
                     dtiColorIndex = dtiColorIndex % 3;
+                    this.contextDTILines.beginPath();
                 }
             }
 
@@ -212,9 +214,8 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
 
                                 value = (((valueA & 0xFF) << 24) | ((valueR & 0xFF) << 16) | ((valueG & 0xFF) << 8) | (valueB & 0xFF));
 
-                                this.contextDTILines.beginPath();
-
                                 if (dtiColors) {
+                                    this.contextDTILines.beginPath();
                                     dtiRGB = (value & 0x00FFFFFF);
                                     this.contextDTILines.strokeStyle = '#' + papaya.utilities.StringUtils.pad(dtiRGB.toString(16), 6);
                                 }
@@ -239,7 +240,10 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                                 dtiX2T = c * (dtiX2 - dtiXC) - s * (dtiY2 - dtiYC) + dtiXC;
                                 dtiY2T = s * (dtiX2 - dtiXC) + c * (dtiY2 - dtiYC) + dtiYC;
                                 this.contextDTILines.lineTo(dtiX2T, dtiY2T);
-                                this.contextDTILines.stroke();
+
+                                if (dtiColors) {
+                                    this.contextDTILines.stroke();
+                                }
                             } else {
                                 this.imageData[ctr][index] = Number.NaN;
                             }
@@ -334,12 +338,18 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                 }
             }
 
+            if (!dtiColors) {
+                this.contextDTILines.stroke();
+            }
+
             if (!dtiLines) {
                 readFirstRaster = true;
             }
         }
 
-        this.contextMain.putImageData(this.imageDataDraw, 0, 0);
+        if (usedRaster) {
+            this.contextMain.putImageData(this.imageDataDraw, 0, 0);
+        }
     }
 };
 
@@ -380,6 +390,7 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                     this.contextDTILines.strokeStyle = papaya.viewer.ScreenSlice.DTI_COLORS[dtiColorIndex];
                     dtiColorIndex += 1;
                     dtiColorIndex = dtiColorIndex % 3;
+                    this.contextDTILines.beginPath();
                 }
             }
 
@@ -418,9 +429,8 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
 
                                 angle2 = 1.0 - (angle2 / 1.5708);
 
-                                this.contextDTILines.beginPath();
-
                                 if (dtiColors) {
+                                    this.contextDTILines.beginPath();
                                     this.contextDTILines.strokeStyle = '#' + papaya.utilities.StringUtils.pad(dtiRGB.toString(16), 6);
                                 }
 
@@ -441,7 +451,10 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                                 dtiX2T = c * (dtiX2 - dtiXC) - s * (dtiY2 - dtiYC) + dtiXC;
                                 dtiY2T = s * (dtiX2 - dtiXC) + c * (dtiY2 - dtiYC) + dtiYC;
                                 this.contextDTILines.lineTo(dtiX2T, dtiY2T);
-                                this.contextDTILines.stroke();
+
+                                if (dtiColors) {
+                                    this.contextDTILines.stroke();
+                                }
                             }
                         } else {
                             value = this.imageData[ctr][index];
@@ -500,6 +513,10 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                         }
                     }
                 }
+            }
+
+            if (!dtiColors) {
+                this.contextDTILines.stroke();
             }
 
             if (!dtiLines) {

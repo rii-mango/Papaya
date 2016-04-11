@@ -25,7 +25,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.negativeScreenVol = null;
     this.dti = false;
     this.dtiLines = false;
-    this.dtiColors = false;
+    this.dtiColors = true;
     this.dtiVolumeMod = null;
     this.dtiAlphaFactor = 1.0;
     this.rgb = (this.volume.header.imageType.datatype === papaya.volume.ImageType.DATATYPE_RGB);
@@ -379,6 +379,24 @@ papaya.viewer.ScreenVolume.prototype.initDTI = function () {
     this.volume.header.imageDimensions.timepoints = 1;
     this.colorTable = new papaya.viewer.ColorTable(this.lutName, false, papaya.viewer.ColorTable.TABLE_DTI_SPECTRUM);
     this.volume.transform.voxelValue.forceABS = !this.dtiLines;
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.isDTILines = function () {
+    return this.dtiLines && !this.dtiColors;
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.isDTIRGB = function () {
+    return !this.dtiLines && this.dtiColors;
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.isDTILinesAndRGB = function () {
+    return this.dtiLines && this.dtiColors;
 };
 
 

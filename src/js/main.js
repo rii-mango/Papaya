@@ -100,7 +100,6 @@ papaya.Container.DICOM_SUPPORT = true;
 papaya.Container.syncViewers = false;
 papaya.Container.syncViewersWorld = false;
 papaya.Container.papayaLastHoveredViewer = null;
-papaya.Container.dti = false;
 
 
 /*** Static Methods ***/
@@ -1266,6 +1265,12 @@ papaya.Container.prototype.isNestedViewer = function () {
 
 papaya.Container.prototype.isDesktopMode = function () {
     return !this.kioskMode;
+};
+
+
+
+papaya.Container.prototype.hasLoadedDTI = function () {
+    return this.viewer.hasLoadedDTI();
 };
 
 

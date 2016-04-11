@@ -93,21 +93,8 @@ papaya.ui.Toolbar.FILE_MENU_DATA = {"label": "File", "icons": null,
         {"label": "Add Surface...", "action": "OpenSurface", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
         {"label": "Add DICOM Folder...", "action": "OpenFolder", "type": "folder",
             "hide": ((papaya.utilities.PlatformUtils.browser !== "Chrome") || ((typeof(daikon) === "undefined"))) },
+        {"label": "Add DTI Vector Series...", "action": "OpenDTI", "type": "file"},
         {"type": "spacer"},
-        {"label": "Close All", "action": "CloseAllImages"}
-    ]
-};
-
-papaya.ui.Toolbar.DTI_VECTOR_FILE_MENU_DATA = {"label": "File", "icons": null,
-    "items": [
-        {"label": "Add DTI Vector Series...", "action": "OpenImage", "type": "file"},
-        {"label": "Close All", "action": "CloseAllImages"}
-    ]
-};
-
-papaya.ui.Toolbar.DTI_FA_FILE_MENU_DATA = {"label": "File", "icons": null,
-    "items": [
-        {"label": "Apply FA...", "action": "OpenImage", "type": "file"},
         {"label": "Close All", "action": "CloseAllImages"}
     ]
 };
@@ -184,6 +171,17 @@ papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA = {
     "items": [
         {"label": "Show Header", "action": "ShowHeader"},
         {"label": "Show Image Info", "action": "ImageInfo"},
+        {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango"  }
+    ]
+};
+
+papaya.ui.Toolbar.DTI_IMAGE_MENU_DATA = {
+    "items": [
+        {"label": "Show Header", "action": "ShowHeader"},
+        {"label": "Show Image Info", "action": "ImageInfo"},
+        {"label": "Display Colors", "action": "DTI-RGB", "type": "checkbox", "method": "isDTIRGB"},
+        {"label": "Display Lines", "action": "DTI-Lines", "type": "checkbox", "method": "isDTILines"},
+        {"label": "Display Lines &amp; Colors", "action": "DTI-LinesColors", "type": "checkbox", "method": "isDTILinesAndRGB"},
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango"  }
     ]
 };
@@ -296,15 +294,7 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
             this.buildMenu(papaya.ui.Toolbar.MENU_DATA_KIOSK.menus[ctr], null, this.viewer, null);
         }
     } else {
-        if (papaya.Container.dti) {
-            if (this.container.viewer.screenVolumes.length === 0) {
-                papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.DTI_VECTOR_FILE_MENU_DATA;
-            } else if ((this.container.viewer.screenVolumes.length === 1) && (this.container.viewer.screenVolumes[0].dtiVolumeMod === null)) {
-                papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.DTI_FA_FILE_MENU_DATA;
-            } else {
-                papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.RGB_FILE_MENU_DATA;
-            }
-        } else if ((this.container.viewer.screenVolumes.length > 0) && this.container.viewer.screenVolumes[0].rgb) {
+        if ((this.container.viewer.screenVolumes.length > 0) && this.container.viewer.screenVolumes[0].rgb) {
             papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.RGB_FILE_MENU_DATA;
         } else {
             papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.FILE_MENU_DATA;
@@ -470,13 +460,17 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
             } else if (itemData[ctrItems].type === "checkbox") {
                 item = new papaya.ui.MenuItemCheckBox(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action,
                     papaya.utilities.ObjectUtils.bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
-            }else if (itemData[ctrItems].type === "file") {
-                if (!itemData[ctrItems].hide) {
+            } else if (itemData[ctrItems].type === "file") {
+                if ((!itemData[ctrItems].hide) && (!itemData[ctrItems].required || ((papaya.utilities.ObjectUtils.bind(this.container,
+                    papaya.utilities.ObjectUtils.dereferenceIn(this.container,
+                        itemData[ctrItems].required)))(parseInt(modifier)) === true))) {
                     item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label,
                         itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), false);
                 }
             } else if (itemData[ctrItems].type === "folder") {
-                if (!itemData[ctrItems].hide) {
+                if ((!itemData[ctrItems].hide) && (!itemData[ctrItems].required || ((papaya.utilities.ObjectUtils.bind(this.container,
+                        papaya.utilities.ObjectUtils.dereferenceIn(this.container,
+                            itemData[ctrItems].required)))(parseInt(modifier)) === true))) {
                     item = new papaya.ui.MenuItemFileChooser(this.viewer, itemData[ctrItems].label,
                         itemData[ctrItems].action, papaya.utilities.ObjectUtils.bind(this, this.doAction), true);
                 } else {
@@ -532,14 +526,16 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
             };
 
             if (ctr === 0) {
-                if (screenVol.rgb || screenVol.dti) {
+                if (screenVol.rgb) {
                     data.menus[0].items = papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA.items;
+                } else if (screenVol.dti) {
+                    data.menus[0].items = papaya.ui.Toolbar.DTI_IMAGE_MENU_DATA.items;
                 } else {
                     data.menus[0].items = papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA.items;
                 }
             } else {
                 if (screenVol.dti) {
-                    data.menus[0].items = papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA.items;
+                    data.menus[0].items = papaya.ui.Toolbar.DTI_IMAGE_MENU_DATA.items;
                 } else {
                     data.menus[0].items = papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items;
                 }
@@ -615,6 +611,10 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.viewer.loadImage(imageName);
         } else if (action === "OpenImage") {
             this.container.display.drawProgress(0.1, "Loading");
+            this.viewer.loadImage(file);
+        } else if (action === "OpenDTI") {
+            this.container.display.drawProgress(0.1, "Loading");
+            this.viewer.loadingDTI = true;
             this.viewer.loadImage(file);
         } else if (action === "OpenSurface") {
             this.container.display.drawProgress(0.1, "Loading");
@@ -759,6 +759,24 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.container.viewer.toggleOverlay(imageIndex);
         } else if (action.startsWith("Context-")) {
             this.container.contextManager.actionPerformed(action.substring(8));
+        } else if (action.startsWith("DTI-RGB")) {
+            imageIndex = action.substring(action.lastIndexOf("-") + 1);
+            this.viewer.screenVolumes[imageIndex].dtiLines = false;
+            this.viewer.screenVolumes[imageIndex].dtiColors = true;
+            this.viewer.screenVolumes[imageIndex].initDTI();
+            this.viewer.drawViewer(true, false);
+        } else if (action.startsWith("DTI-LinesColors")) {
+            imageIndex = action.substring(action.lastIndexOf("-") + 1);
+            this.viewer.screenVolumes[imageIndex].dtiLines = true;
+            this.viewer.screenVolumes[imageIndex].dtiColors = true;
+            this.viewer.screenVolumes[imageIndex].initDTI();
+            this.viewer.drawViewer(true, false);
+        } else if (action.startsWith("DTI-Lines")) {
+            imageIndex = action.substring(action.lastIndexOf("-") + 1);
+            this.viewer.screenVolumes[imageIndex].dtiLines = true;
+            this.viewer.screenVolumes[imageIndex].dtiColors = false;
+            this.viewer.screenVolumes[imageIndex].initDTI();
+            this.viewer.drawViewer(true, false);
         }
     }
 };
