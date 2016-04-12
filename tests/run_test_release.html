@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="stylesheet" type="text/css" href="../release/current/standard/papaya.css" />
+    <script type="text/javascript" src="../release/current/standard/papaya.js"></script>
+    <script type="text/javascript" src="tests.js"></script>
+
+    <script type="text/javascript">
+        var testIndex = 0;
+        var timer = setInterval(nextTest, 10000);
+
+        function nextTest() {
+            if (testIndex >= tests.length) {
+                clearInterval(timer);
+                timer = null;
+            } else {
+                papaya.Container.resetViewer(0, tests[testIndex]);
+                console.log(tests[testIndex].message);
+                testIndex++;
+            }
+        }
+
+        window.addEventListener("load", nextTest, false);
+    </script>
+
+    <title>URL Load</title>
+</head>
+
+<body>
+    <div class="papaya"></div>
+</body>
+
+</html>

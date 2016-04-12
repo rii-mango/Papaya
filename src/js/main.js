@@ -57,13 +57,14 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.surfaceLink = false;
     this.contextManager = null;
     this.allowScroll = true;
+    this.loadingComplete = null;
     this.resetComponents();
 };
 
 
 /*** Static Pseudo-constants ***/
 
-papaya.Container.LICENSE_TEXT = "THIS PRODUCT IS NOT FOR CLINICAL USE.<br /><br />" +
+papaya.Container.LICENSE_TEXT = "<p>THIS PRODUCT IS NOT FOR CLINICAL USE.<br /><br />" +
     "This software is available for use, as is, free of charge.  The software and data derived from this software " +
     "may not be used for clinical purposes.<br /><br />" +
     "The authors of this software make no representations or warranties about the suitability of the software, " +
@@ -72,7 +73,7 @@ papaya.Container.LICENSE_TEXT = "THIS PRODUCT IS NOT FOR CLINICAL USE.<br /><br 
     "shall not be liable for any damages suffered by licensee as a result of using or modifying this software or its " +
     "derivatives.<br /><br />" +
     "By using this software, you agree to be bounded by the terms of this license.  If you do not agree to the terms " +
-    "of this license, do not use this software.";
+    "of this license, do not use this software.</p>";
 
 papaya.Container.KEYBOARD_REF_TEXT = "<span style='color:#B5CBD3'>[Spacebar]</span> Cycle the main slice view in a clockwise rotation.<br /><br />" +
     "<span style='color:#B5CBD3'>[Page Up]</span> or <span style='color:#B5CBD3'>[']</span> Increment the axial slice.<br /><br />" +
@@ -222,8 +223,8 @@ papaya.Container.findParameters = function (containerHTML) {
 
 
 
-papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params) {
-    var toolbarHTML, viewerHTML, displayHTML;
+papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params, replaceIndex) {
+    var toolbarHTML, viewerHTML, displayHTML, index;
 
     if (isDefault) {
         toolbarHTML = containerHTML.find("#" + PAPAYA_DEFAULT_TOOLBAR_ID);
@@ -254,38 +255,44 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params)
         console.log("This method of adding a Papaya container is deprecated.  " +
             "Try simply <div class='papaya' data-params='params'></div> instead...");
     } else {
-        containerHTML.attr("id", PAPAYA_DEFAULT_CONTAINER_ID + papayaContainers.length);
+        if (replaceIndex !== undefined) {
+            index = replaceIndex;
+        } else {
+            index = papayaContainers.length;
+        }
+
+        containerHTML.attr("id", PAPAYA_DEFAULT_CONTAINER_ID + index);
 
         if (!params || (params.kioskMode === undefined) || !params.kioskMode) {
-            containerHTML.append("<div id='" + (PAPAYA_DEFAULT_TOOLBAR_ID + papayaContainers.length) +
+            containerHTML.append("<div id='" + (PAPAYA_DEFAULT_TOOLBAR_ID + index) +
             "' class='" + PAPAYA_TOOLBAR_CSS + "'></div>");
         }
 
-        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_VIEWER_ID + papayaContainers.length) +
+        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_VIEWER_ID + index) +
             "' class='" + PAPAYA_VIEWER_CSS + "'></div>");
-        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_DISPLAY_ID + papayaContainers.length) +
+        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_DISPLAY_ID + index) +
             "' class='" + PAPAYA_DISPLAY_CSS + "'></div>");
 
         if (params && params.showControlBar && ((params.showControls === undefined) || params.showControls)) {
             containerHTML.append(
-                "<div id='" + PAPAYA_KIOSK_CONTROLS_CSS + papayaContainers.length + "' class='" + PAPAYA_KIOSK_CONTROLS_CSS + "'>" +
-                "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "main" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_MAIN_SLIDER + "'>" +
+                "<div id='" + PAPAYA_KIOSK_CONTROLS_CSS + index + "' class='" + PAPAYA_KIOSK_CONTROLS_CSS + "'>" +
+                "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + index) + "main" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_MAIN_SLIDER + "'>" +
                 "<span>Slice: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> "  +
                 "</div>" +
 
-                "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "axial" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
+                "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + index) + "axial" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
                 "<span>Axial: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " +
                 "</div>" +
 
-                "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "coronal" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
+                "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + index) + "coronal" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
                 "<span>Coronal: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>"+ " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> "  +
                 "</div>" +
 
-                "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "sagittal" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
+                "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + index) + "sagittal" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
                 "<span>Sagittal: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>"+ " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> "  +
                 "</div>" +
 
-                "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + papayaContainers.length) + "series" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
+                "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + index) + "series" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
                 "<span>Series: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>&lt;</button>"+ " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>&gt;</button> "  +
                 "</div>" +
                 "&nbsp;&nbsp;&nbsp;" +
@@ -299,17 +306,17 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params)
             $("." + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS).prop('disabled', true);
             $("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS).prop('disabled', true);
         } else if (params && ((params.showControls === undefined ) || params.showControls)) {
-            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + papayaContainers.length) + "' class='" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + "'>+</button> ");
-            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + papayaContainers.length) + "' class='" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + "'>-</button> ");
-            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + papayaContainers.length) + "' class='" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + "'>Swap Main Slice</button> ");
-            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + papayaContainers.length) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + "'>Go To Center</button> ");
-            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + papayaContainers.length) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + "'>Go To Origin</button> ");
+            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + "'>+</button> ");
+            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + "'>-</button> ");
+            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + "'>Swap Main Slice</button> ");
+            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + "'>Go To Center</button> ");
+            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + "'>Go To Origin</button> ");
 
-            $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + papayaContainers.length).css({display: "none"});
-            $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + papayaContainers.length).css({display: "none"});
-            $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + papayaContainers.length).css({display: "none"});
-            $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + papayaContainers.length).css({display: "none"});
-            $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + papayaContainers.length).css({display: "none"});
+            $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + index).css({display: "none"});
+            $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + index).css({display: "none"});
+            $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + index).css({display: "none"});
+            $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + index).css({display: "none"});
+            $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + index).css({display: "none"});
         }
     }
 
@@ -319,7 +326,7 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params)
 
 
 papaya.Container.buildContainer = function (containerHTML, params, replaceIndex) {
-    var container, message, viewerHtml, loadUrl, imageRefs = null;
+    var container, message, viewerHtml, loadUrl, index, imageRefs = null;
 
     message = papaya.utilities.PlatformUtils.checkForBrowserCompatibility();
     viewerHtml = containerHTML.find("." + PAPAYA_VIEWER_CSS);
@@ -330,8 +337,14 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
         viewerHtml.addClass(PAPAYA_UTILS_UNSUPPORTED_MESSAGE_CSS);
         viewerHtml.html(message);
     } else {
+        if (replaceIndex !== undefined) {
+            index = replaceIndex;
+        } else {
+            index = papayaContainers.length;
+        }
+
         container = new papaya.Container(containerHTML);
-        container.containerIndex = papayaContainers.length;
+        container.containerIndex = index;
         container.preferences = new papaya.viewer.Preferences();
         papaya.Container.removeCheckForJSClasses(containerHTML, viewerHtml);
 
@@ -391,6 +404,8 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
             }
 
             container.viewer.loadImage(imageRefs, false, false);
+        } else {
+            container.viewer.finishedLoading();
         }
 
         container.resizeViewerComponents(false);
@@ -400,11 +415,9 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
             containerHTML.parent().width("100%");
         }
 
-        if (replaceIndex !== undefined) {
-            papayaContainers[replaceIndex] = container;
-        } else {
-            papayaContainers.push(container);
-        }
+        papayaContainers[index] = container;
+
+        papaya.Container.showLicense(container, params);
     }
 };
 
@@ -412,7 +425,7 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
 
 papaya.Container.prototype.rebuildContainer = function (params, index) {
     this.containerHtml.empty();
-    papaya.Container.fillContainerHTML(this.containerHtml, false, params);
+    papaya.Container.fillContainerHTML(this.containerHtml, false, params, index);
     papaya.Container.buildContainer(this.containerHtml, params, index);
 
     if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
@@ -448,8 +461,6 @@ papaya.Container.buildAllContainers = function () {
 
         papayaContainers[0].resizeViewerComponents(true);
     }
-
-    papaya.Container.showLicense(params);
 };
 
 
@@ -565,12 +576,12 @@ papaya.Container.isLicenseRead = function () {
 
 
 
-papaya.Container.showLicense = function (params) {
+papaya.Container.showLicense = function (container, params) {
     var showEula = (params && params.showEULA !== undefined) && params.showEULA;
 
     if (showEula && !papaya.Container.isLicenseRead()) {
-        var dialog = new papaya.ui.Dialog(this, "License", papaya.ui.Toolbar.LICENSE_DATA,
-            papaya.Container, null, papaya.Container.setLicenseRead);
+        var dialog = new papaya.ui.Dialog(container, "License", papaya.ui.Toolbar.LICENSE_DATA,
+            papaya.Container, null, papaya.Container.setLicenseRead, null, true);
         dialog.showDialog();
     }
 };
@@ -600,7 +611,7 @@ papaya.Container.prototype.getViewerDimensions = function () {
     parentWidth = this.containerHtml.parent().width() - (this.fullScreenPadding ? (2 * PAPAYA_PADDING) : 0);
     ratio = (this.orthogonal ? (this.hasSurface() ? 1.333 : 1.5) : 1);
 
-    if (this.orthogonalTall) {
+    if (this.orthogonalTall || !this.orthogonal) {
         height = (this.collapsable ? window.innerHeight : this.containerHtml.parent().height()) - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
             PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding && !this.nestedViewer ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
             (this.showControlBar ? papaya.ui.Toolbar.SIZE : 0);
@@ -649,6 +660,10 @@ papaya.Container.prototype.getViewerPadding = function () {
 papaya.Container.prototype.readGlobalParams = function() {
     this.kioskMode = (this.params.kioskMode === true) || papaya.utilities.PlatformUtils.smallScreen;
     this.combineParametric = (this.params.combineParametric === true);
+
+    if (this.params.loadingComplete) {
+        this.loadingComplete = this.params.loadingComplete;
+    }
 
     if (this.params.showControls !== undefined) {  // default is true
         this.showControls = this.params.showControls;

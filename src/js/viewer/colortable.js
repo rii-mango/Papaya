@@ -34,25 +34,7 @@ papaya.viewer.ColorTable = papaya.viewer.ColorTable || function (lutName, baseIm
     this.knotMax = this.lutData[this.lutData.length - 1];
     this.useGradation = (typeof lut.gradation === "undefined") || lut.gradation;
 
-    this.canvasIcon = document.createElement("canvas");
-    this.canvasIcon.width = papaya.viewer.ColorTable.ICON_SIZE;
-    this.canvasIcon.height = papaya.viewer.ColorTable.ICON_SIZE;
-    this.contextIcon = this.canvasIcon.getContext("2d");
-    this.imageDataIcon = this.contextIcon.createImageData(papaya.viewer.ColorTable.ICON_SIZE,
-        papaya.viewer.ColorTable.ICON_SIZE);
-    this.icon = null;
-
-    this.canvasBar = document.createElement("canvas");
-    this.canvasBar.width = papaya.viewer.ColorTable.COLOR_BAR_WIDTH;
-    this.canvasBar.height = papaya.viewer.ColorTable.COLOR_BAR_HEIGHT;
-    this.contextBar = this.canvasBar.getContext("2d");
-    this.imageDataBar = this.contextBar.createImageData(papaya.viewer.ColorTable.COLOR_BAR_WIDTH,
-        papaya.viewer.ColorTable.COLOR_BAR_HEIGHT);
-    this.colorBar = null;
-
     this.updateLUT(papaya.viewer.ColorTable.LUT_MIN, papaya.viewer.ColorTable.LUT_MAX);
-    this.updateIcon();
-    this.updateColorBar();
 };
 
 
@@ -244,50 +226,4 @@ papaya.viewer.ColorTable.prototype.lookupBlue = function (index) {
     }
 
     return 0;
-};
-
-
-
-papaya.viewer.ColorTable.prototype.updateIcon = function () {
-    var step, ctrY, ctrX, index, value;
-
-    step = papaya.viewer.ColorTable.LUT_MAX / papaya.viewer.ColorTable.ICON_SIZE;
-
-    for (ctrY = 0; ctrY < papaya.viewer.ColorTable.ICON_SIZE; ctrY += 1) {
-        for (ctrX = 0; ctrX < papaya.viewer.ColorTable.ICON_SIZE; ctrX += 1) {
-            index = ((ctrY * papaya.viewer.ColorTable.ICON_SIZE) + ctrX) * 4;
-            value = Math.round(ctrX * step);
-
-            this.imageDataIcon.data[index] = this.lookupRed(value);
-            this.imageDataIcon.data[index + 1] = this.lookupGreen(value);
-            this.imageDataIcon.data[index + 2] = this.lookupBlue(value);
-            this.imageDataIcon.data[index + 3] = 255;
-        }
-    }
-
-    this.contextIcon.putImageData(this.imageDataIcon, 0, 0);
-    this.icon = this.canvasIcon.toDataURL();
-};
-
-
-
-papaya.viewer.ColorTable.prototype.updateColorBar = function () {
-    var step, ctrY, ctrX, index, value;
-
-    step = papaya.viewer.ColorTable.LUT_MAX / papaya.viewer.ColorTable.COLOR_BAR_WIDTH;
-
-    for (ctrY = 0; ctrY < papaya.viewer.ColorTable.COLOR_BAR_HEIGHT; ctrY += 1) {
-        for (ctrX = 0; ctrX < papaya.viewer.ColorTable.COLOR_BAR_WIDTH; ctrX += 1) {
-            index = ((ctrY * papaya.viewer.ColorTable.COLOR_BAR_WIDTH) + ctrX) * 4;
-            value = Math.round(ctrX * step);
-
-            this.imageDataBar.data[index] = this.lookupRed(value);
-            this.imageDataBar.data[index + 1] = this.lookupGreen(value);
-            this.imageDataBar.data[index + 2] = this.lookupBlue(value);
-            this.imageDataBar.data[index + 3] = 255;
-        }
-    }
-
-    this.contextBar.putImageData(this.imageDataBar, 0, 0);
-    this.colorBar = this.canvasBar.toDataURL();
 };

@@ -98,6 +98,25 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.negative = (this.screenMax < this.screenMin);
 
     this.updateScreenRange();
+
+    this.canvasIcon = document.createElement("canvas");
+    this.canvasIcon.width = papaya.viewer.ColorTable.ICON_SIZE;
+    this.canvasIcon.height = papaya.viewer.ColorTable.ICON_SIZE;
+    this.contextIcon = this.canvasIcon.getContext("2d");
+    this.imageDataIcon = this.contextIcon.createImageData(papaya.viewer.ColorTable.ICON_SIZE,
+        papaya.viewer.ColorTable.ICON_SIZE);
+    this.icon = null;
+
+    this.canvasBar = document.createElement("canvas");
+    this.canvasBar.width = papaya.viewer.ColorTable.COLOR_BAR_WIDTH;
+    this.canvasBar.height = papaya.viewer.ColorTable.COLOR_BAR_HEIGHT;
+    this.contextBar = this.canvasBar.getContext("2d");
+    this.imageDataBar = this.contextBar.createImageData(papaya.viewer.ColorTable.COLOR_BAR_WIDTH,
+        papaya.viewer.ColorTable.COLOR_BAR_HEIGHT);
+    this.colorBar = null;
+
+    this.updateIcon();
+    this.updateColorBar();
 };
 
 
@@ -136,7 +155,6 @@ papaya.viewer.ScreenVolume.prototype.findImageRange = function () {
 
     if (!hasImageRange && !this.hasCheckedImageRange) {
         this.hasCheckedImageRange = true;
-        console.log("scanning image range of " + this.volume.fileName + "...");
         min = Number.MAX_VALUE;
         max = Number.MIN_VALUE;
 
@@ -264,6 +282,8 @@ papaya.viewer.ScreenVolume.prototype.isUsingColorTable = function (lutName) {
 papaya.viewer.ScreenVolume.prototype.changeColorTable = function (viewer, lutName) {
     this.colorTable = new papaya.viewer.ColorTable(lutName, !this.isOverlay());
     this.lutName = lutName;
+    this.updateIcon();
+    this.updateColorBar();
     viewer.drawViewer(true);
 };
 
@@ -339,11 +359,18 @@ papaya.viewer.ScreenVolume.prototype.updateLUT = function (minLUTnew, maxLUTnew)
 
 
 
+papaya.viewer.ScreenVolume.prototype.supportsDynamicColorTable = function () {
+    return ((this.colorTable.updateMinLUT !== undefined) &&
+        (this.colorTable.updateMaxLUT !== undefined) && (this.colorTable.updateLUT !== undefined));
+};
+
+
+
 papaya.viewer.ScreenVolume.prototype.resetDynamicRange = function () {
     this.colorTable.minLUT = 0;
     this.colorTable.maxLUT = papaya.viewer.ColorTable.LUT_MAX;
     this.updateLUT(this.colorTable.minLUT, this.colorTable.maxLUT);
-    this.colorTable.updateColorBar();
+    this.updateColorBar();
 };
 
 
@@ -408,3 +435,49 @@ papaya.viewer.ScreenVolume.prototype.getHiddenLabel = function () {
         return "Hide Overlay";
     }
 };
+
+
+papaya.viewer.ScreenVolume.prototype.updateIcon = function () {
+    var step, ctrY, ctrX, index, value;
+
+    step = papaya.viewer.ColorTable.LUT_MAX / papaya.viewer.ColorTable.ICON_SIZE;
+
+    for (ctrY = 0; ctrY < papaya.viewer.ColorTable.ICON_SIZE; ctrY += 1) {
+        for (ctrX = 0; ctrX < papaya.viewer.ColorTable.ICON_SIZE; ctrX += 1) {
+            index = ((ctrY * papaya.viewer.ColorTable.ICON_SIZE) + ctrX) * 4;
+            value = Math.round(ctrX * step);
+
+            this.imageDataIcon.data[index] = this.colorTable.lookupRed(value);
+            this.imageDataIcon.data[index + 1] = this.colorTable.lookupGreen(value);
+            this.imageDataIcon.data[index + 2] = this.colorTable.lookupBlue(value);
+            this.imageDataIcon.data[index + 3] = 255;
+        }
+    }
+
+    this.contextIcon.putImageData(this.imageDataIcon, 0, 0);
+    this.icon = this.canvasIcon.toDataURL();
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.updateColorBar = function () {
+    var step, ctrY, ctrX, index, value;
+
+    step = papaya.viewer.ColorTable.LUT_MAX / papaya.viewer.ColorTable.COLOR_BAR_WIDTH;
+
+    for (ctrY = 0; ctrY < papaya.viewer.ColorTable.COLOR_BAR_HEIGHT; ctrY += 1) {
+        for (ctrX = 0; ctrX < papaya.viewer.ColorTable.COLOR_BAR_WIDTH; ctrX += 1) {
+            index = ((ctrY * papaya.viewer.ColorTable.COLOR_BAR_WIDTH) + ctrX) * 4;
+            value = Math.round(ctrX * step);
+
+            this.imageDataBar.data[index] = this.colorTable.lookupRed(value);
+            this.imageDataBar.data[index + 1] = this.colorTable.lookupGreen(value);
+            this.imageDataBar.data[index + 2] = this.colorTable.lookupBlue(value);
+            this.imageDataBar.data[index + 3] = 255;
+        }
+    }
+
+    this.contextBar.putImageData(this.imageDataBar, 0, 0);
+    this.colorBar = this.canvasBar.toDataURL();
+};
+

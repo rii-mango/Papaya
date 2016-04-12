@@ -612,6 +612,11 @@ papaya.viewer.Viewer.prototype.finishedLoading = function () {
         this.updateSliceSliderControl();
         this.pageLoaded = true;
     }
+
+    if (this.container.loadingComplete) {
+        this.container.loadingComplete();
+        this.container.loadingComplete = null;
+    }
 };
 
 
@@ -780,9 +785,11 @@ papaya.viewer.Viewer.prototype.hasDefinedAtlas = function () {
 
 
 papaya.viewer.Viewer.prototype.loadAtlas = function () {
+    var viewer = this;
+
     if (this.atlas === null) {
-        this.atlas = new papaya.viewer.Atlas(papaya.data.Atlas, this.container, papaya.utilities.ObjectUtils.bind(this,
-            papaya.viewer.Viewer.prototype.atlasLoaded));
+        this.atlas = new papaya.viewer.Atlas(papaya.data.Atlas, this.container, papaya.utilities.ObjectUtils.bind(viewer,
+            viewer.atlasLoaded));
     }
 };
 
@@ -1796,7 +1803,8 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
             } else if (((me.button === 2) || this.isControlKeyDown) && !this.currentScreenVolume.rgb && !this.container.kioskMode) {
                 this.isWindowControl = true;
 
-                if (this.container.showImageButtons && (this.container.showControlBar || !this.container.kioskMode)) {
+                if (this.container.showImageButtons && (this.container.showControlBar || !this.container.kioskMode) &&
+                        this.screenVolumes[this.getCurrentScreenVolIndex()].supportsDynamicColorTable()) {
                     this.container.toolbar.showImageMenu(this.getCurrentScreenVolIndex());
                 }
             } else if (this.isAltKeyDown && this.selectedSlice) {
@@ -2147,6 +2155,10 @@ papaya.viewer.Viewer.prototype.windowLevelChanged = function (contrastChange, br
 
 
 papaya.viewer.Viewer.prototype.gotoCoordinate = function (coor, nosync) {
+    if (!this.initialized) {
+        return;
+    }
+
     var xDim = this.volume.header.imageDimensions.xDim;
     var yDim = this.volume.header.imageDimensions.yDim;
     var zDim = this.volume.header.imageDimensions.zDim;
@@ -2575,26 +2587,28 @@ papaya.viewer.Viewer.prototype.hasLoadedDTI = function () {
 papaya.viewer.Viewer.prototype.goToInitialCoordinate = function () {
     var coord = new papaya.core.Coordinate();
 
-    if (this.initialCoordinate === null) {
-        coord.setCoordinate(papayaFloorFast(this.volume.header.imageDimensions.xDim / 2),
-            papayaFloorFast(this.volume.header.imageDimensions.yDim / 2),
-            papayaFloorFast(this.volume.header.imageDimensions.zDim / 2), true);
-    } else {
-        if (this.worldSpace) {
-            this.getIndexCoordinateAtWorld(this.initialCoordinate[0], this.initialCoordinate[1],
-                this.initialCoordinate[2], coord);
+    if (this.screenVolumes.length > 0) {
+        if (this.initialCoordinate === null) {
+            coord.setCoordinate(papayaFloorFast(this.volume.header.imageDimensions.xDim / 2),
+                papayaFloorFast(this.volume.header.imageDimensions.yDim / 2),
+                papayaFloorFast(this.volume.header.imageDimensions.zDim / 2), true);
         } else {
-            coord.setCoordinate(this.initialCoordinate[0], this.initialCoordinate[1], this.initialCoordinate[2], true);
+            if (this.worldSpace) {
+                this.getIndexCoordinateAtWorld(this.initialCoordinate[0], this.initialCoordinate[1],
+                    this.initialCoordinate[2], coord);
+            } else {
+                coord.setCoordinate(this.initialCoordinate[0], this.initialCoordinate[1], this.initialCoordinate[2], true);
+            }
+
+            this.initialCoordinate = null;
         }
 
-        this.initialCoordinate = null;
-    }
+        this.gotoCoordinate(coord);
 
-    this.gotoCoordinate(coord);
-
-    if (this.container.display) {
-        this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z,
-            this.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z));
+        if (this.container.display) {
+            this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z,
+                this.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z));
+        }
     }
 };
 

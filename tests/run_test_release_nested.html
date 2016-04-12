@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
@@ -9,83 +8,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <!-- CSS debug start -->
-    <link rel="stylesheet" type="text/css" href="../src/css/base.css" />
-    <link rel="stylesheet" type="text/css" href="../src/css/ui/toolbar.css" />
-    <link rel="stylesheet" type="text/css" href="../src/css/ui/menu.css" />
-    <link rel="stylesheet" type="text/css" href="../src/css/ui/dialog.css" />
-    <link rel="stylesheet" type="text/css" href="../src/css/utilities/nojs.css" />
-    <link rel="stylesheet" type="text/css" href="../src/css/utilities/unsupported.css" />
-    <link rel="stylesheet" type="text/css" href="../src/css/viewer/viewer.css" />
-    <!-- CSS debug end -->
-
-    <!-- JS debug start -->
-    <script type="text/javascript" src="../src/js/data/sample-image.js"></script>
-    <script type="text/javascript" src="../src/js/data/talairach-atlas-image.js"></script>
-    <script type="text/javascript" src="../src/js/data/talairach-atlas.js"></script>
-
-    <script type="text/javascript" src="../lib/base64-binary.js"></script>
-    <script type="text/javascript" src="../lib/bowser.js"></script>
-    <script type="text/javascript" src="../lib/daikon.js"></script>
-    <script type="text/javascript" src="../lib/nifti-reader.js"></script>
-    <script type="text/javascript" src="../lib/jquery.js"></script>
-    <script type="text/javascript" src="../lib/numerics.js"></script>
-    <script type="text/javascript" src="../lib/pako-inflate.js"></script>
-    <script type="text/javascript" src="../lib/gl-matrix.js"></script>
-    <script type="text/javascript" src="../lib/gifti-reader.js"></script>
-
-    <script type="text/javascript" src="../src/js/constants.js"></script>
-
-    <script type="text/javascript" src="../src/js/utilities/array-utils.js"></script>
-    <script type="text/javascript" src="../src/js/utilities/math-utils.js"></script>
-    <script type="text/javascript" src="../src/js/utilities/object-utils.js"></script>
-    <script type="text/javascript" src="../src/js/utilities/platform-utils.js"></script>
-    <script type="text/javascript" src="../src/js/utilities/string-utils.js"></script>
-    <script type="text/javascript" src="../src/js/utilities/url-utils.js"></script>
-
-    <script type="text/javascript" src="../src/js/core/coordinate.js"></script>
-    <script type="text/javascript" src="../src/js/core/point.js"></script>
-
-    <script type="text/javascript" src="../src/js/volume/header.js"></script>
-    <script type="text/javascript" src="../src/js/volume/imagedata.js"></script>
-    <script type="text/javascript" src="../src/js/volume/imagedescription.js"></script>
-    <script type="text/javascript" src="../src/js/volume/imagedimensions.js"></script>
-    <script type="text/javascript" src="../src/js/volume/imagerange.js"></script>
-    <script type="text/javascript" src="../src/js/volume/imagetype.js"></script>
-    <script type="text/javascript" src="../src/js/volume/nifti/header-nifti.js"></script>
-    <script type="text/javascript" src="../src/js/volume/dicom/header-dicom.js"></script>
-    <script type="text/javascript" src="../src/js/volume/orientation.js"></script>
-    <script type="text/javascript" src="../src/js/volume/transform.js"></script>
-    <script type="text/javascript" src="../src/js/volume/volume.js"></script>
-    <script type="text/javascript" src="../src/js/volume/voxeldimensions.js"></script>
-    <script type="text/javascript" src="../src/js/volume/voxelvalue.js"></script>
-
-    <script type="text/javascript" src="../src/js/surface/surface.js"></script>
-
-    <script type="text/javascript" src="../src/js/ui/dialog.js"></script>
-    <script type="text/javascript" src="../src/js/ui/menu.js"></script>
-    <script type="text/javascript" src="../src/js/ui/menuitem.js"></script>
-    <script type="text/javascript" src="../src/js/ui/menuitemcheckbox.js"></script>
-    <script type="text/javascript" src="../src/js/ui/menuitemradiobutton.js"></script>
-    <script type="text/javascript" src="../src/js/ui/menuitemfilechooser.js"></script>
-    <script type="text/javascript" src="../src/js/ui/menuitemrange.js"></script>
-    <script type="text/javascript" src="../src/js/ui/menuitemslider.js"></script>
-    <script type="text/javascript" src="../src/js/ui/menuitemspacer.js"></script>
-    <script type="text/javascript" src="../src/js/ui/toolbar.js"></script>
-
-    <script type="text/javascript" src="../src/js/viewer/atlas.js"></script>
-    <script type="text/javascript" src="../src/js/viewer/colortable.js"></script>
-    <script type="text/javascript" src="../src/js/viewer/display.js"></script>
-    <script type="text/javascript" src="../src/js/viewer/preferences.js"></script>
-    <script type="text/javascript" src="../src/js/viewer/screenslice.js"></script>
-    <script type="text/javascript" src="../src/js/viewer/screensurface.js"></script>
-    <script type="text/javascript" src="../src/js/viewer/screenvol.js"></script>
-    <script type="text/javascript" src="../src/js/viewer/viewer.js"></script>
-
-    <script type="text/javascript" src="../src/js/main.js"></script>
-
-    <script type="text/javascript" src="../src/js/license.js"></script>
-    <!-- JS debug end -->
+    <link rel="stylesheet" type="text/css" href="../release/current/standard/papaya.css" />
+    <script type="text/javascript" src="../release/current/standard/papaya.js"></script>
+    <script type="text/javascript" src="tests_nested.js"></script>
 
     <style>
         body {
@@ -113,25 +38,34 @@
     </style>
 
     <script type="text/javascript">
-        var params1 = [];
-        params1["worldSpace"] = true;
-        params1["images"] = ["data/sample_image.nii.gz"];
-        params1["kioskMode"] = true;
-        params1["showControlBar"] = true;
+        var papayaLoadableImages = [
+            {nicename: "Atlas", name:"Talairach_labels_1mm", url: "data/Talairach_labels_1mm.nii.gz", hide:true}
+        ];
 
-        var params2 = [];
-        params2["worldSpace"] = true;
-        params2["images"] = ["data/sample_image.nii.gz"];
-        params2["expandable"] = true;
+        var testIndex = 0;
+        var timer = setInterval(nextTest, 10000);
+
+        function nextTest() {
+            if (testIndex >= tests.length) {
+                clearInterval(timer);
+                timer = null;
+            } else {
+                papaya.Container.resetViewer(0, tests[testIndex]);
+                console.log(tests[testIndex].message);
+                testIndex++;
+            }
+        }
+
+        window.addEventListener("load", nextTest, false);
     </script>
 
-    <title>Papaya Viewer</title>
+    <title>URL Load</title>
 </head>
 
 <body>
 
 <div class="smallViewer left">
-    <div class="papaya" data-params="params1"></div>
+    <div class="papaya"></div>
 </div>
 
 <p class="loremisum">
@@ -153,7 +87,7 @@
 <div style="clear:both"></div>
 
 <div class="smallViewer right">
-    <div class="papaya" data-params="params2"></div>
+    <div class="papaya"></div>
 </div>
 
 <p class="loremisum">
@@ -172,4 +106,5 @@
 </p>
 
 </body>
+
 </html>

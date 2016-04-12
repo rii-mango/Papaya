@@ -162,7 +162,7 @@ papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA = {
         {"label": "Show Header", "action": "ShowHeader"},
         {"label": "Show Image Info", "action": "ImageInfo"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
-        papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items[5],
+            papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items[5],
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango"  }
     ]
 };
@@ -480,8 +480,12 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
                     item = null;
                 }
             } else if (itemData[ctrItems].type === "displayrange") {
-                item = new papaya.ui.MenuItemRange(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action,
-                    papaya.utilities.ObjectUtils.bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+                if (this.viewer.screenVolumes[modifier].supportsDynamicColorTable()) {
+                    item = new papaya.ui.MenuItemRange(this.viewer, itemData[ctrItems].label, itemData[ctrItems].action,
+                        papaya.utilities.ObjectUtils.bind(this, this.doAction), dataSource, itemData[ctrItems].method, modifier);
+                } else {
+                    item = null;
+                }
             } else if (itemData[ctrItems].type === "range") {
                 if (papaya.utilities.PlatformUtils.isInputRangeSupported()) {
                     item = new papaya.ui.MenuItemSlider(this.viewer, itemData[ctrItems].label,
@@ -520,7 +524,7 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
     if (this.container.showImageButtons) {
         for (ctr = this.viewer.screenVolumes.length - 1; ctr >= 0; ctr -= 1) {
             screenVol = this.viewer.screenVolumes[ctr];
-            dataUrl = screenVol.colorTable.icon;
+            dataUrl = screenVol.icon;
 
             data = {
                 "menus" : [
