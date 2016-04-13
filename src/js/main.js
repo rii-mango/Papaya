@@ -1364,6 +1364,14 @@ papaya.Container.prototype.coordinateChanged = function (viewer) {
 };
 
 
+
+papaya.Container.prototype.canCurrentOverlayLoadNegatives = function () {
+    var overlay = this.viewer.currentScreenVolume;
+    return (!overlay.negative && (overlay.negativeScreenVol === null));
+};
+
+
+
 /*** Window Events ***/
 
 papaya.Container.reorientPapaya = function () {

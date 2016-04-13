@@ -746,6 +746,12 @@ papaya.viewer.Viewer.prototype.closeOverlayByRef = function (screenVol) {
 papaya.viewer.Viewer.prototype.closeOverlay = function (index) {
     var ctr;
 
+    for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
+        if (this.screenVolumes[ctr].negativeScreenVol === this.screenVolumes[index]) {
+            this.screenVolumes[ctr].negativeScreenVol = null;
+        }
+    }
+
     this.screenVolumes.splice(index, 1);
     this.setCurrentScreenVol(this.screenVolumes.length - 1);
     this.drawViewer(true);
@@ -3155,15 +3161,14 @@ papaya.viewer.Viewer.prototype.addParametric = function (imageIndex) {
     var screenVol = this.container.viewer.screenVolumes[imageIndex],
         overlayNeg;
 
-    this.screenVolumes[this.screenVolumes.length] = overlayNeg = new papaya.viewer.ScreenVolume(screenVol.volume,
-        {}, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
-    screenVol.negativeScreenVol = overlayNeg;
+    if (screenVol.negativeScreenVol === null) {
+        this.screenVolumes[this.screenVolumes.length] = overlayNeg = new papaya.viewer.ScreenVolume(screenVol.volume,
+            {}, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
+        screenVol.negativeScreenVol = overlayNeg;
 
-    this.setCurrentScreenVol(this.screenVolumes.length - 1);
-    this.drawViewer(true, false);
-    this.container.toolbar.buildToolbar();
-    this.container.toolbar.updateImageButtons();
+        this.setCurrentScreenVol(this.screenVolumes.length - 1);
+        this.drawViewer(true, false);
+        this.container.toolbar.buildToolbar();
+        this.container.toolbar.updateImageButtons();
+    }
 };
-
-
-

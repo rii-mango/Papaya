@@ -145,7 +145,7 @@ papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
         {"label": "Show Image Info", "action": "ImageInfo"},
         {"type": "spacer", "required": "isParametricCombined"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
-        {"label": "Load Negatives", "action": "LoadNegatives" },
+        {"label": "Load Negatives", "action": "LoadNegatives", "required" : "canCurrentOverlayLoadNegatives" },
         {"label": "Transparency", "action": "alpha", "type": "range", "method": "getAlpha"},
         {"label": "Color Table", "action": "ColorTable", "items": [], "required": "isNonParametricCombined" },
         {"type": "spacer", "required": "isParametricCombined"},
