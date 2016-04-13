@@ -644,8 +644,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.viewer.screenVolumes[imageIndex].changeColorTable(this.viewer, colorTableName);
             this.updateImageButtons();
         } else if (action.startsWith("CloseAllImages")) {
-            this.viewer.resetViewer();
-            this.updateImageButtons();
+            papaya.Container.resetViewer(this.container.containerIndex, {});
         } else if (action === "Preferences") {
             dialog = new papaya.ui.Dialog(this.container, "Preferences", papaya.ui.Toolbar.PREFERENCES_DATA,
                 this.container.preferences, papaya.utilities.ObjectUtils.bind(this.container.preferences,
