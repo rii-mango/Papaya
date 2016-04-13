@@ -449,6 +449,14 @@ papaya.Container.buildAllContainers = function () {
     } else {
         $("." + PAPAYA_CONTAINER_CLASS_NAME).each(function () {
             params = papaya.Container.findParameters($(this));
+
+            if (params.fullScreen === true) {
+                params.fullScreenPadding = false;
+                params.kioskMode = true;
+                params.showControlBar = false;
+                $('body').css({"background-color":"black"});
+            }
+
             papaya.Container.fillContainerHTML($(this), false, params);
             papaya.Container.buildContainer($(this), params);
         });
@@ -713,6 +721,13 @@ papaya.Container.prototype.readGlobalParams = function() {
 
     if (this.params.contextManager !== undefined) {
         this.contextManager = this.params.contextManager;
+    }
+
+    if (this.params.fullScreen === true) {
+        this.fullScreenPadding = this.params.fullScreenPadding = false;
+        this.kioskMode = this.params.kioskMode = true;
+        this.showControlBar = this.params.showControlBar = false;
+        $('body').css("background-color:'black'");
     }
 };
 
