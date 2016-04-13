@@ -183,9 +183,9 @@ papaya.ui.Toolbar.DTI_IMAGE_MENU_DATA = {
         {"label": "Display Colors", "action": "DTI-RGB", "type": "checkbox", "method": "isDTIRGB"},
         {"label": "Display Lines", "action": "DTI-Lines", "type": "checkbox", "method": "isDTILines"},
         {"label": "Display Lines &amp; Colors", "action": "DTI-LinesColors", "type": "checkbox", "method": "isDTILinesAndRGB"},
-        {"label": "Transparency", "action": "alpha", "type": "range", "method": "getAlpha"},
-        {"label": "Modulate with...", "action": "DTI-Mod", "type": "file", "hide": papaya.utilities.PlatformUtils.ios},
-        {"label": "Modulation", "action": "dtiAlphaFactor", "type": "range", "method": "getDtiAlphaFactor"},
+        {"label": "Transparency", "action": "alpha", "type": "range", "method": "getAlpha", "required": "canCurrentOverlayLoadMod"},
+        {"label": "Modulate with...", "action": "DTI-Mod", "type": "file", "hide": papaya.utilities.PlatformUtils.ios, "required": "canCurrentOverlayLoadMod"},
+        {"label": "Modulation", "action": "dtiAlphaFactor", "type": "range", "method": "getDtiAlphaFactor", "required": "canCurrentOverlayModulate"},
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango"}
     ]
 };

@@ -1372,6 +1372,19 @@ papaya.Container.prototype.canCurrentOverlayLoadNegatives = function () {
 
 
 
+papaya.Container.prototype.canCurrentOverlayLoadMod = function () {
+    var overlay = this.viewer.currentScreenVolume;
+    return (overlay.dti && (overlay.dtiVolumeMod === null));
+};
+
+
+
+papaya.Container.prototype.canCurrentOverlayModulate = function () {
+    var overlay = this.viewer.currentScreenVolume;
+    return (overlay.dti && (overlay.dtiVolumeMod !== null));
+};
+
+
 /*** Window Events ***/
 
 papaya.Container.reorientPapaya = function () {

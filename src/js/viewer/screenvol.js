@@ -406,6 +406,7 @@ papaya.viewer.ScreenVolume.prototype.initDTI = function () {
     this.volume.header.imageDimensions.timepoints = 1;
     this.colorTable = new papaya.viewer.ColorTable(this.lutName, false, papaya.viewer.ColorTable.TABLE_DTI_SPECTRUM);
     this.volume.transform.voxelValue.forceABS = !this.dtiLines;
+    this.updateIcon();
 };
 
 
