@@ -95,8 +95,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
         this.findDisplayRange(parametric, {});
     }
 
-    this.negative = (this.screenMax < this.screenMin);
-
+    this.negative = false;
     this.updateScreenRange();
 
     this.canvasIcon = document.createElement("canvas");
@@ -138,6 +137,7 @@ papaya.viewer.ScreenVolume.prototype.setScreenRangeNegatives = function (min, ma
 
 papaya.viewer.ScreenVolume.prototype.updateScreenRange = function () {
     this.screenRatio = (papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX / (this.screenMax - this.screenMin));
+    this.negative = (this.screenMax < this.screenMin);
 };
 
 
