@@ -74,7 +74,8 @@ var PAPAYA_CONTROL_INCREMENT_BUTTON_CSS = "papaya-control-increment",
     PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS = "papaya-main-decrement",
     PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS = "papaya-main-swap",
     PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS = "papaya-main-goto-center",
-    PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS = "papaya-main-goto-origin";
+    PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS = "papaya-main-goto-origin",
+    PAPAYA_CONTROL_BAR_LABELS_CSS = "papaya-controlbar-label";
 
 
 
