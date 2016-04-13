@@ -526,7 +526,7 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
 
         this.contextMain.putImageData(this.imageDataDraw, 0, 0);
     } else {
-        this.updateSlice(slice, force, worldSpace);
+        this.updateSlice(slice, true);
     }
 };
 
