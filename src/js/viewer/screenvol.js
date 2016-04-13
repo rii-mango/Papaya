@@ -441,22 +441,24 @@ papaya.viewer.ScreenVolume.prototype.getHiddenLabel = function () {
 papaya.viewer.ScreenVolume.prototype.updateIcon = function () {
     var step, ctrY, ctrX, index, value;
 
-    step = papaya.viewer.ColorTable.LUT_MAX / papaya.viewer.ColorTable.ICON_SIZE;
+    if (this.imageDataIcon) {
+        step = papaya.viewer.ColorTable.LUT_MAX / papaya.viewer.ColorTable.ICON_SIZE;
 
-    for (ctrY = 0; ctrY < papaya.viewer.ColorTable.ICON_SIZE; ctrY += 1) {
-        for (ctrX = 0; ctrX < papaya.viewer.ColorTable.ICON_SIZE; ctrX += 1) {
-            index = ((ctrY * papaya.viewer.ColorTable.ICON_SIZE) + ctrX) * 4;
-            value = Math.round(ctrX * step);
+        for (ctrY = 0; ctrY < papaya.viewer.ColorTable.ICON_SIZE; ctrY += 1) {
+            for (ctrX = 0; ctrX < papaya.viewer.ColorTable.ICON_SIZE; ctrX += 1) {
+                index = ((ctrY * papaya.viewer.ColorTable.ICON_SIZE) + ctrX) * 4;
+                value = Math.round(ctrX * step);
 
-            this.imageDataIcon.data[index] = this.colorTable.lookupRed(value);
-            this.imageDataIcon.data[index + 1] = this.colorTable.lookupGreen(value);
-            this.imageDataIcon.data[index + 2] = this.colorTable.lookupBlue(value);
-            this.imageDataIcon.data[index + 3] = 255;
+                this.imageDataIcon.data[index] = this.colorTable.lookupRed(value);
+                this.imageDataIcon.data[index + 1] = this.colorTable.lookupGreen(value);
+                this.imageDataIcon.data[index + 2] = this.colorTable.lookupBlue(value);
+                this.imageDataIcon.data[index + 3] = 255;
+            }
         }
-    }
 
-    this.contextIcon.putImageData(this.imageDataIcon, 0, 0);
-    this.icon = this.canvasIcon.toDataURL();
+        this.contextIcon.putImageData(this.imageDataIcon, 0, 0);
+        this.icon = this.canvasIcon.toDataURL();
+    }
 };
 
 
@@ -464,21 +466,23 @@ papaya.viewer.ScreenVolume.prototype.updateIcon = function () {
 papaya.viewer.ScreenVolume.prototype.updateColorBar = function () {
     var step, ctrY, ctrX, index, value;
 
-    step = papaya.viewer.ColorTable.LUT_MAX / papaya.viewer.ColorTable.COLOR_BAR_WIDTH;
+    if (this.imageDataBar) {
+        step = papaya.viewer.ColorTable.LUT_MAX / papaya.viewer.ColorTable.COLOR_BAR_WIDTH;
 
-    for (ctrY = 0; ctrY < papaya.viewer.ColorTable.COLOR_BAR_HEIGHT; ctrY += 1) {
-        for (ctrX = 0; ctrX < papaya.viewer.ColorTable.COLOR_BAR_WIDTH; ctrX += 1) {
-            index = ((ctrY * papaya.viewer.ColorTable.COLOR_BAR_WIDTH) + ctrX) * 4;
-            value = Math.round(ctrX * step);
+        for (ctrY = 0; ctrY < papaya.viewer.ColorTable.COLOR_BAR_HEIGHT; ctrY += 1) {
+            for (ctrX = 0; ctrX < papaya.viewer.ColorTable.COLOR_BAR_WIDTH; ctrX += 1) {
+                index = ((ctrY * papaya.viewer.ColorTable.COLOR_BAR_WIDTH) + ctrX) * 4;
+                value = Math.round(ctrX * step);
 
-            this.imageDataBar.data[index] = this.colorTable.lookupRed(value);
-            this.imageDataBar.data[index + 1] = this.colorTable.lookupGreen(value);
-            this.imageDataBar.data[index + 2] = this.colorTable.lookupBlue(value);
-            this.imageDataBar.data[index + 3] = 255;
+                this.imageDataBar.data[index] = this.colorTable.lookupRed(value);
+                this.imageDataBar.data[index + 1] = this.colorTable.lookupGreen(value);
+                this.imageDataBar.data[index + 2] = this.colorTable.lookupBlue(value);
+                this.imageDataBar.data[index + 3] = 255;
+            }
         }
-    }
 
-    this.contextBar.putImageData(this.imageDataBar, 0, 0);
-    this.colorBar = this.canvasBar.toDataURL();
+        this.contextBar.putImageData(this.imageDataBar, 0, 0);
+        this.colorBar = this.canvasBar.toDataURL();
+    }
 };
 

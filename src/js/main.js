@@ -451,6 +451,10 @@ papaya.Container.buildAllContainers = function () {
         $("." + PAPAYA_CONTAINER_CLASS_NAME).each(function () {
             params = papaya.Container.findParameters($(this));
 
+            if (params === null) {
+                params = [];
+            }
+
             if (params.fullScreen === true) {
                 params.fullScreenPadding = false;
                 params.kioskMode = true;
