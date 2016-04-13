@@ -116,6 +116,9 @@ papaya.ui.Toolbar.MENU_DATA = {
                 {"label": "Lower Crosshairs", "action": "ShowLowerCrosshairs", "type": "checkbox", "method": "isShowingLowerCrosshairs"}
             ]
         },
+        {"label": "Surface", "required" : "hasSurface", "icons": null, "items": [
+            {"label": "Show Active Planes", "action": "ShowActivePlanes", "type": "checkbox", "method": "isSurfaceLinked"}
+        ]},
         {"label": "Options", "icons": null,
             "items": [
                 {"label": "Preferences", "action": "Preferences"},
@@ -792,6 +795,10 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
         } else if (action.startsWith("LoadNegatives")) {
             imageIndex = action.substring(action.lastIndexOf("-") + 1);
             this.viewer.addParametric(imageIndex);
+        } else if (action.startsWith("ShowActivePlanes")) {
+            this.viewer.surfaceView.surfaceLink = !this.viewer.surfaceView.surfaceLink;
+            this.viewer.drawViewer(false, true);
+            this.closeAllMenus();
         }
     }
 };

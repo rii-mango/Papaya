@@ -616,6 +616,9 @@ papaya.viewer.Viewer.prototype.finishedLoading = function () {
         this.container.loadingComplete();
         this.container.loadingComplete = null;
     }
+
+    this.container.toolbar.buildToolbar();
+    this.container.toolbar.updateImageButtons();
 };
 
 
@@ -3109,6 +3112,12 @@ papaya.viewer.Viewer.prototype.isShowingMainCrosshairs = function () {
 
 papaya.viewer.Viewer.prototype.isShowingLowerCrosshairs = function () {
     return (this.container.preferences.showCrosshairs === "Lower") || (this.container.preferences.showCrosshairs === "All");
+};
+
+
+
+papaya.viewer.Viewer.prototype.isSurfaceLinked = function () {
+    return (this.surfaceView && this.surfaceView.surfaceLink);
 };
 
 
