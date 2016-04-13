@@ -145,6 +145,7 @@ papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
         {"label": "Show Image Info", "action": "ImageInfo"},
         {"type": "spacer", "required": "isParametricCombined"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
+        {"label": "Load Negatives", "action": "LoadNegatives" },
         {"label": "Transparency", "action": "alpha", "type": "range", "method": "getAlpha"},
         {"label": "Color Table", "action": "ColorTable", "items": [], "required": "isNonParametricCombined" },
         {"type": "spacer", "required": "isParametricCombined"},
@@ -788,6 +789,9 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.container.display.drawProgress(0.1, "Loading");
             this.viewer.loadingDTIModRef = this.viewer.screenVolumes[imageIndex];
             this.viewer.loadImage(file);
+        } else if (action.startsWith("LoadNegatives")) {
+            imageIndex = action.substring(action.lastIndexOf("-") + 1);
+            this.viewer.addParametric(imageIndex);
         }
     }
 };

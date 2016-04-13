@@ -3148,3 +3148,22 @@ papaya.viewer.Viewer.prototype.toggleOverlay = function (imageIndex) {
 
     return screenVol.hidden;
 };
+
+
+
+papaya.viewer.Viewer.prototype.addParametric = function (imageIndex) {
+    var screenVol = this.container.viewer.screenVolumes[imageIndex],
+        overlayNeg;
+
+    this.screenVolumes[this.screenVolumes.length] = overlayNeg = new papaya.viewer.ScreenVolume(screenVol.volume,
+        {}, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
+    screenVol.negativeScreenVol = overlayNeg;
+
+    this.setCurrentScreenVol(this.screenVolumes.length - 1);
+    this.drawViewer(true, false);
+    this.container.toolbar.buildToolbar();
+    this.container.toolbar.updateImageButtons();
+};
+
+
+
