@@ -11,7 +11,6 @@
 /*** Imports ***/
 var papaya = papaya || {};
 papaya.viewer = papaya.viewer || {};
-var PAPAYA_VERSION_ID = PAPAYA_VERSION_ID || "0.0";
 var PAPAYA_BUILD_NUM = PAPAYA_BUILD_NUM || "0";
 
 /*** Constructor ***/
@@ -1003,8 +1002,7 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
         this.context.font = fontSize + "px sans-serif";
         locY = this.canvas.height - 20;
 
-        text = "Papaya v" + (PAPAYA_VERSION_ID || "Dev") +
-            " (build " + (PAPAYA_BUILD_NUM !== undefined ? PAPAYA_BUILD_NUM : "Dev") + ")";
+        text = "Papaya (Build " + PAPAYA_BUILD_NUM + ")";
         metrics = this.context.measureText(text);
         textWidth = metrics.width;
         this.context.fillText(text, this.canvas.width - textWidth - 20, locY);
