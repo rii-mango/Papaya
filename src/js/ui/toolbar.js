@@ -820,6 +820,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.viewer.addParametric(imageIndex);
         } else if (action.startsWith("ShowActivePlanes")) {
             this.viewer.surfaceView.surfaceLink = !this.viewer.surfaceView.surfaceLink;
+            this.viewer.surfaceView.updateActivePlanes();
             this.viewer.drawViewer(false, true);
             this.closeAllMenus();
         }
