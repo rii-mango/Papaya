@@ -334,7 +334,7 @@ papaya.viewer.Viewer.prototype.initializeSurface = function (surface) {
         this.surfaces.push(surface);
 
         if (this.surfaceView === null) {
-            this.lowerImageBot2 = this.surfaceView = new papaya.viewer.ScreenSurface(this.volume, this.surfaces, this);
+            this.lowerImageBot2 = this.surfaceView = new papaya.viewer.ScreenSurface(this.volume, this.surfaces, this, this.container.params);
             this.container.resizeViewerComponents(true);
         } else {
             this.surfaceView.initBuffers(this.surfaceView.context, surface);
@@ -1110,7 +1110,7 @@ papaya.viewer.Viewer.prototype.hasSurface = function () {
 
 papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
     if (slice === this.surfaceView) {
-        this.context.fillStyle = this.surfaceView.getBackgroundColor();;
+        this.context.fillStyle = this.surfaceView.getBackgroundColor();
         this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
         this.context.drawImage(slice.canvas, slice.screenOffsetX, slice.screenOffsetY);
     } else {
@@ -2564,7 +2564,7 @@ papaya.viewer.Viewer.prototype.processParams = function (params) {
     }
 
 
-    if (this.container.isDesktopMode()) {
+    if (!this.container.isDesktopMode()) {
         if (params.showOrientation !== undefined) {
             this.container.preferences.showOrientation = (params.showOrientation ? "Yes" : "No");
         }

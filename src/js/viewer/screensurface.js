@@ -95,7 +95,7 @@ var shaderFrag = [
 
 /*** Constructor ***/
 
-papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolume, surfaces, viewer) {
+papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolume, surfaces, viewer, params) {
     this.shaderProgram = null;
     this.mvMatrix = mat4.create();
     this.pMatrix = mat4.create();
@@ -151,11 +151,13 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.zDim = this.volume.header.imageDimensions.zDim;
     this.zHalf = (this.zDim * this.zSize) / 2.0;
     this.surfaceLink = this.viewer.container.surfaceParams.surfaceLink;
-    this.backgroundColor = this.viewer.container.surfaceParams.surfaceBackground;
+    this.backgroundColor = papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND;
     this.pickLocX = 0;
     this.pickLocY = 0;
     this.needsPickColor = false;
     this.pickedColor = null;
+
+    this.processParams(params);
 };
 
 
@@ -268,9 +270,7 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
         console.log("This browser does not support OES_element_index_uint extension!");
     }
 
-    if (this.backgroundColor === undefined) {
-        this.backgroundColor = papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND;
-    }
+    this.updateBackgroundColor();
 };
 
 
@@ -847,4 +847,40 @@ papaya.viewer.ScreenSurface.prototype.findPickedColor = function (gl) {
 papaya.viewer.ScreenSurface.prototype.getBackgroundColor = function () {
     return ("rgba(" + (this.backgroundColor[0] * 255) + ',' + (this.backgroundColor[1] * 255) + ',' +
         (this.backgroundColor[1] * 255) + ',255)');
+};
+
+
+
+papaya.viewer.ScreenSurface.prototype.updatePreferences = function () {
+    this.updateBackgroundColor();
+};
+
+
+
+papaya.viewer.ScreenSurface.prototype.updateBackgroundColor = function () {
+    var colorName = this.viewer.container.preferences.surfaceBackgroundColor;
+
+    if (colorName === "Black") {
+        this.backgroundColor = [0, 0, 0];
+    } else if (colorName === "Dark Gray") {
+        this.backgroundColor = [0.25, 0.25, 0.25];
+    } else if (colorName === "Gray") {
+        this.backgroundColor = [0.5, 0.5, 0.5];
+    } else if (colorName === "Light Gray") {
+        this.backgroundColor = [0.75, 0.75, 0.75];
+    } else if (colorName === "White") {
+        this.backgroundColor = [1, 1, 1];
+    } else {
+        this.backgroundColor = papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND;
+    }
+};
+
+
+
+papaya.viewer.ScreenSurface.prototype.processParams = function (params) {
+    if (!this.viewer.container.isDesktopMode()) {
+        if (params.surfaceBackground !== undefined) {
+            this.viewer.container.preferences.surfaceBackgroundColor = params.surfaceBackground;
+        }
+    }
 };

@@ -19,12 +19,14 @@ papaya.viewer.Preferences = papaya.viewer.Preferences || function () {
     this.smoothDisplay = papaya.viewer.Preferences.DEFAULT_SMOOTH_DISPLAY;
     this.radiological = papaya.viewer.Preferences.DEFAULT_RADIOLOGICAL;
     this.showRuler = papaya.viewer.Preferences.DEFAULT_SHOW_RULER;
+    this.surfaceBackgroundColor = papaya.viewer.Preferences.DEFAULT_SURFACE_BACKGROUND_COLOR;
 };
 
 
 /*** Static Pseudo-constants ***/
 
-papaya.viewer.Preferences.ALL_PREFS = ["showCrosshairs", "atlasLocks", "showOrientation", "scrollBehavior", "smoothDisplay", "radiological", "showRuler"];
+papaya.viewer.Preferences.ALL_PREFS = ["showCrosshairs", "atlasLocks", "showOrientation", "scrollBehavior",
+    "smoothDisplay", "radiological", "showRuler", "surfaceBackgroundColor"];
 papaya.viewer.Preferences.COOKIE_PREFIX = "papaya-";
 papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS = 365;
 papaya.viewer.Preferences.DEFAULT_SHOW_CROSSHAIRS = "All";
@@ -34,6 +36,7 @@ papaya.viewer.Preferences.DEFAULT_SCROLL = "Increment Slice";
 papaya.viewer.Preferences.DEFAULT_SMOOTH_DISPLAY = "Yes";
 papaya.viewer.Preferences.DEFAULT_RADIOLOGICAL = "No";
 papaya.viewer.Preferences.DEFAULT_SHOW_RULER = "No";
+papaya.viewer.Preferences.DEFAULT_SURFACE_BACKGROUND_COLOR = "Gray";
 
 
 /*** Prototype Methods ***/

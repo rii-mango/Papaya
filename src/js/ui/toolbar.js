@@ -113,20 +113,24 @@ papaya.ui.Toolbar.MENU_DATA = {
                 {"label": "Orientation", "action": "ShowOrientation", "type": "checkbox", "method": "isShowingOrientation"},
                 {"label": "Ruler", "action": "ShowRuler", "type": "checkbox", "method": "isShowingRuler"},
                 {"label": "Main Crosshairs", "action": "ShowMainCrosshairs", "type": "checkbox", "method": "isShowingMainCrosshairs"},
-                {"label": "Lower Crosshairs", "action": "ShowLowerCrosshairs", "type": "checkbox", "method": "isShowingLowerCrosshairs"}
+                {"label": "Lower Crosshairs", "action": "ShowLowerCrosshairs", "type": "checkbox", "method": "isShowingLowerCrosshairs"},
+                {"type": "spacer", "required": "hasSurface"},
+                {"label": "Surface Planes", "action": "ShowActivePlanes", "type": "checkbox", "method": "isSurfaceLinked", "required" : "hasSurface"}
             ]
         },
-        {"label": "Surface", "required" : "hasSurface", "icons": null, "items": [
-            {"label": "Show Active Planes", "action": "ShowActivePlanes", "type": "checkbox", "method": "isSurfaceLinked"}
-        ]},
-        {"label": "Options", "icons": null,
+        {"label": "Settings", "icons": null,
             "items": [
-                {"label": "Preferences", "action": "Preferences"},
+                {"label": "Viewer Preferences", "action": "Preferences"},
+                {"label": "Surface Preferences", "action": "SurfacePreferences", "required" : "hasSurface"}
+            ]
+            },
+        {"label": "Help", "icons": null,
+            "items": [
                 {"label": "Show Keyboard Reference", "action": "KeyboardRef"},
                 {"label": "Show Mouse Reference", "action": "MouseRef"},
                 {"label": "Show License", "action": "License"}
             ]
-            },
+        },
         {"label": "", "icons": null, "titleBar": "true" },
         {"label": "EXPAND", "icons": [papaya.ui.Toolbar.ICON_EXPAND, papaya.ui.Toolbar.ICON_COLLAPSE], "items": [],
             "method": "isCollapsable", "required": "isExpandable" },
@@ -201,6 +205,12 @@ papaya.ui.Toolbar.PREFERENCES_DATA = {
         {"spacer": "true"},
         {"label": "Smooth display:", "field": "smoothDisplay", "options": ["Yes", "No"]},
         {"label": "Radiological display:", "field": "radiological", "options": ["Yes", "No"]}
+    ]
+};
+
+papaya.ui.Toolbar.PREFERENCES_SURFACE_DATA = {
+    "items": [
+        {"label": "Background color:", "field": "surfaceBackgroundColor", "options": ["Black", "Dark Gray", "Gray", "Light Gray", "White"]}
     ]
 };
 
@@ -650,7 +660,7 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
         } else if (action.startsWith("CloseAllImages")) {
             papaya.Container.resetViewer(this.container.containerIndex, {});
         } else if (action === "Preferences") {
-            dialog = new papaya.ui.Dialog(this.container, "Preferences", papaya.ui.Toolbar.PREFERENCES_DATA,
+            dialog = new papaya.ui.Dialog(this.container, "Viewer Preferences", papaya.ui.Toolbar.PREFERENCES_DATA,
                 this.container.preferences, papaya.utilities.ObjectUtils.bind(this.container.preferences,
                     this.container.preferences.updatePreference),
                     papaya.utilities.ObjectUtils.bind(this,
@@ -659,6 +669,19 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
                             this.viewer.drawViewer(false, true);
                         }
                     )
+            );
+            dialog.showDialog();
+        } else if (action === "SurfacePreferences") {
+            dialog = new papaya.ui.Dialog(this.container, "Surface Preferences", papaya.ui.Toolbar.PREFERENCES_SURFACE_DATA,
+                this.container.preferences, papaya.utilities.ObjectUtils.bind(this.container.preferences,
+                    this.container.preferences.updatePreference),
+                papaya.utilities.ObjectUtils.bind(this,
+                    function() {
+                        this.viewer.updateScreenSliceTransforms();
+                        this.viewer.surfaceView.updatePreferences();
+                        this.viewer.drawViewer(false, true);
+                    }
+                )
             );
             dialog.showDialog();
         } else if (action === "License") {
