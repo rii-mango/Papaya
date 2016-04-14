@@ -319,7 +319,7 @@ papaya.viewer.Viewer.prototype.loadSurface = function (ref, forceUrl) {
         surface.readURL(ref, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
     } else {
         if (this.surfaces.length === 0) {
-            this.container.surfaceLink = true;
+            this.container.surfaceParams.surfaceLink = true;
         }
 
         surface.readFile(ref[0], papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
@@ -1110,7 +1110,7 @@ papaya.viewer.Viewer.prototype.hasSurface = function () {
 
 papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
     if (slice === this.surfaceView) {
-        this.context.fillStyle = papaya.viewer.ScreenSurface.BACKGROUND_COLOR;
+        this.context.fillStyle = this.surfaceView.getBackgroundColor();;
         this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
         this.context.drawImage(slice.canvas, slice.screenOffsetX, slice.screenOffsetY);
     } else {

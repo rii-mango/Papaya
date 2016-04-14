@@ -150,7 +150,8 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.zSize = this.volume.header.voxelDimensions.zSize;
     this.zDim = this.volume.header.imageDimensions.zDim;
     this.zHalf = (this.zDim * this.zSize) / 2.0;
-    this.surfaceLink = this.viewer.container.surfaceLink;
+    this.surfaceLink = this.viewer.container.surfaceParams.surfaceLink;
+    this.backgroundColor = this.viewer.container.surfaceParams.surfaceBackground;
     this.pickLocX = 0;
     this.pickLocY = 0;
     this.needsPickColor = false;
@@ -163,7 +164,7 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
 
 papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION = [-0.015552218963737041, 0.09408106275544359, -0.9954430697501158, 0, -0.9696501263313991, 0.24152923619118966, 0.03797658948646743, 0, 0.24400145970103732, 0.965822108594413, 0.0874693978960848, 0, 0, 0, 0, 1];
 papaya.viewer.ScreenSurface.MOUSE_SENSITIVITY = 0.3;
-papaya.viewer.ScreenSurface.BACKGROUND_COLOR = "rgba(128, 128, 128, 255)";
+papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND = [0.5, 0.5, 0.5];
 
 
 
@@ -265,6 +266,10 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
     papaya.viewer.ScreenSurface.EXT_INT = this.context.getExtension('OES_element_index_uint');
     if (!papaya.viewer.ScreenSurface.EXT_INT) {
         console.log("This browser does not support OES_element_index_uint extension!");
+    }
+
+    if (this.backgroundColor === undefined) {
+        this.backgroundColor = papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND;
     }
 };
 
@@ -421,7 +426,7 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     var ctr;
 
     // initialize
-    gl.clearColor(0.5, 0.5, 0.5, 1.0);
+    gl.clearColor(this.backgroundColor[0], this.backgroundColor[1], this.backgroundColor[2], 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -832,8 +837,14 @@ papaya.viewer.ScreenSurface.prototype.pickColor = function (xLoc, yLoc) {
 
 
 
-
 papaya.viewer.ScreenSurface.prototype.findPickedColor = function (gl) {
     var index = (gl.viewportHeight - 1 - this.pickLocY) * gl.viewportWidth * 4 + this.pickLocX * 4;
     return [this.pickingBuffer[index], this.pickingBuffer[index + 1], this.pickingBuffer[index + 2]];
-}
+};
+
+
+
+papaya.viewer.ScreenSurface.prototype.getBackgroundColor = function () {
+    return ("rgba(" + (this.backgroundColor[0] * 255) + ',' + (this.backgroundColor[1] * 255) + ',' +
+        (this.backgroundColor[1] * 255) + ',255)');
+};

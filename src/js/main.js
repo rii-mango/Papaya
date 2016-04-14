@@ -54,7 +54,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.dropTimeout = null;
     this.showRuler = false;
     this.syncOverlaySeries = true;
-    this.surfaceLink = false;
+    this.surfaceParams = {};
     this.contextManager = null;
     this.allowScroll = true;
     this.loadingComplete = null;
@@ -698,7 +698,8 @@ papaya.Container.prototype.readGlobalParams = function() {
         this.orthogonal = this.params.orthogonal;
     }
 
-    this.surfaceLink = (this.params.surfaceLink === true);
+    this.surfaceParams.surfaceLink = (this.params.surfaceLink === true);
+    this.surfaceParams.surfaceBackground = this.params.surfaceBackground;
 
     this.orthogonalTall = this.orthogonal && (this.params.orthogonalTall === true);
 
