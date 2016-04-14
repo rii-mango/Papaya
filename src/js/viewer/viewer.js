@@ -340,6 +340,14 @@ papaya.viewer.Viewer.prototype.initializeSurface = function (surface) {
             this.surfaceView.initBuffers(this.surfaceView.context, surface);
         }
 
+        if (this.container.params.mainView && (this.container.params.mainView.toLowerCase() === "surface")) {
+            this.mainImage = this.surfaceView;
+            this.lowerImageTop = this.axialSlice;
+            this.lowerImageBot = this.sagittalSlice;
+            this.lowerImageBot2 = this.coronalSlice;
+            this.viewsChanged();
+        }
+
         if (this.container.hasMoreToLoad()) {
             this.container.loadNext();
         } else {
@@ -1690,6 +1698,12 @@ papaya.viewer.Viewer.prototype.rotateViews = function () {
         this.mainImage = temp;
     }
 
+    this.viewsChanged();
+};
+
+
+
+papaya.viewer.Viewer.prototype.viewsChanged = function () {
     this.calculateScreenSliceTransforms();
 
     if (this.hasSurface()) {
@@ -1708,7 +1722,8 @@ papaya.viewer.Viewer.prototype.rotateViews = function () {
             $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + this.container.containerIndex).fadeOut();
         }
 
-        $("#" + PAPAYA_DEFAULT_SLIDER_ID + this.container.containerIndex + "main").find("button").prop("disabled", (this.mainImage === this.surfaceView));
+        $("#" + PAPAYA_DEFAULT_SLIDER_ID + this.container.containerIndex + "main").find("button").prop("disabled",
+            (this.mainImage === this.surfaceView));
     }
 
     this.drawViewer(true);
