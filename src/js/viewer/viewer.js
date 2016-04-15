@@ -348,6 +348,9 @@ papaya.viewer.Viewer.prototype.initializeSurface = function (surface) {
             this.viewsChanged();
         }
 
+        this.container.toolbar.buildToolbar();
+        this.container.toolbar.updateImageButtons();
+
         if (this.container.hasMoreToLoad()) {
             this.container.loadNext();
         } else {
