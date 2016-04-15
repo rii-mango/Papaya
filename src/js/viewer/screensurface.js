@@ -262,8 +262,8 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
 
     this.initActivePlaneBuffers(this.context);
 
-    //mat4.multiply(this.centerMat, papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION, this.tempMat);
-    //mat4.multiply(this.tempMat, this.centerMatInv, this.mouseRotCurrent);
+    mat4.multiply(this.centerMat, papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION, this.tempMat);
+    mat4.multiply(this.tempMat, this.centerMatInv, this.mouseRotCurrent);
 
     papaya.viewer.ScreenSurface.EXT_INT = this.context.getExtension('OES_element_index_uint');
     if (!papaya.viewer.ScreenSurface.EXT_INT) {
