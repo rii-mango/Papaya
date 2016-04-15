@@ -10,7 +10,8 @@ papaya.viewer = papaya.viewer || {};
 
 
 /*** Constructor ***/
-papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params, lutName, baseImage, parametric) {
+papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params, lutName, baseImage, parametric,
+                                                                     currentCoord) {
     /*jslint sub: true */
     this.volume = vol;
     this.lutName = lutName;
@@ -33,6 +34,11 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.interpolation = true;
     this.error = null;
     this.hidden = false;
+    this.rotationX = 0.5;
+    this.rotationY = 0.5;
+    this.rotationZ = 0.5;
+    this.rotationAbout = "Rotate About Center";
+    this.currentCoord = currentCoord;
 
     var screenParams = params[this.volume.fileName];
     if (screenParams) {
@@ -91,6 +97,26 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
         if ((screenParams.alpha !== undefined) && !baseImage) {
             this.alpha = screenParams.alpha;
         }
+
+        if (baseImage) {
+            if ((screenParams.rotation !== undefined) && screenParams.rotation.length && (screenParams.rotation.length === 3)) {
+                this.rotationX = (Math.min(Math.max(screenParams.rotation[0], -90), 90) + 90) / 180;
+                this.rotationY = (Math.min(Math.max(screenParams.rotation[1], -90), 90) + 90) / 180;
+                this.rotationZ = (Math.min(Math.max(screenParams.rotation[2], -90), 90) + 90) / 180;
+            }
+
+            if (screenParams.rotationPoint) {
+                if (screenParams.rotationPoint.toLowerCase() === "origin") {
+                    this.rotationAbout = "Rotate About Origin";
+                } else if (screenParams.rotationPoint.toLowerCase() === "crosshairs") {
+                    this.rotationAbout = "Rotate About Crosshairs";
+                } else {
+                    this.rotationAbout = "Rotate About Center";
+                }
+            }
+
+            this.updateTransform();
+        }
     } else {
         this.findDisplayRange(parametric, {});
     }
@@ -117,6 +143,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.updateIcon();
     this.updateColorBar();
 };
+
 
 
 /*** Prototype Methods ***/
@@ -275,6 +302,12 @@ papaya.viewer.ScreenVolume.prototype.findDisplayRange = function (parametric, sc
 
 papaya.viewer.ScreenVolume.prototype.isUsingColorTable = function (lutName) {
     return (this.lutName === lutName);
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.isRotatingAbout = function (rotationAbout) {
+    return (this.rotationAbout === rotationAbout);
 };
 
 
@@ -486,3 +519,35 @@ papaya.viewer.ScreenVolume.prototype.updateColorBar = function () {
     }
 };
 
+
+
+papaya.viewer.ScreenVolume.prototype.updateTransform = function () {
+    var rotX = (this.rotationX - 0.5) * 180,
+        rotY = (this.rotationY - 0.5) * 180,
+        rotZ = (this.rotationZ - 0.5) * 180,
+        centerX, centerY, centerZ;
+
+    if (this.rotationAbout === "Rotate About Origin") {
+        centerX = this.volume.header.origin.x * this.volume.header.voxelDimensions.xSize;
+        centerY = this.volume.header.origin.y * this.volume.header.voxelDimensions.ySize;
+        centerZ = this.volume.header.origin.z * this.volume.header.voxelDimensions.zSize;
+    } else if (this.rotationAbout === "Rotate About Crosshairs") {
+        centerX = this.currentCoord.x * this.volume.header.voxelDimensions.xSize;
+        centerY = this.currentCoord.y * this.volume.header.voxelDimensions.ySize;
+        centerZ = this.currentCoord.z * this.volume.header.voxelDimensions.zSize;
+    } else {
+        centerX = (this.volume.header.imageDimensions.xDim / 2) * this.volume.header.voxelDimensions.xSize;
+        centerY = (this.volume.header.imageDimensions.yDim / 2) * this.volume.header.voxelDimensions.ySize;
+        centerZ = (this.volume.header.imageDimensions.zDim / 2) * this.volume.header.voxelDimensions.zSize;
+    }
+
+    this.volume.transform.updateImageMat(centerX, centerY, centerZ, rotX, rotY, rotZ);
+};
+
+
+
+papaya.viewer.ScreenVolume.prototype.resetTransform = function () {
+    this.rotationX = 0.5;
+    this.rotationY = 0.5;
+    this.rotationZ = 0.5;
+};

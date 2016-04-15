@@ -171,6 +171,15 @@ papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA = {
         {"label": "Show Image Info", "action": "ImageInfo"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
             papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items[6],
+        {"label": "Rotation", "action": "Rotation", "items": [
+            {"label": "About X Axis", "action": "rotationX", "type": "range", "method": "getRotationX"},
+            {"label": "About Y Axis", "action": "rotationY", "type": "range", "method": "getRotationY"},
+            {"label": "About Z Axis", "action": "rotationZ", "type": "range", "method": "getRotationZ"},
+            {"label": "Reset Transform", "action": "ResetTransform"},
+            {"label": "Rotate About Center", "action": "Rotate About Center", "type": "radiobutton", "method": "isRotatingAbout"},
+            {"label": "Rotate About Origin", "action": "Rotate About Origin", "type": "radiobutton", "method": "isRotatingAbout"},
+            {"label": "Rotate About Crosshairs", "action": "Rotate About Crosshairs", "type": "radiobutton", "method": "isRotatingAbout"}
+        ]},
         {"label": "Open in Mango", "action": "OpenInMango", "required" : "canOpenInMango"  }
     ]
 };
@@ -823,6 +832,16 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             this.viewer.surfaceView.updateActivePlanes();
             this.viewer.drawViewer(false, true);
             this.closeAllMenus();
+        } else if (action.startsWith("rotation")) {
+            this.viewer.screenVolumes[0].updateTransform();
+        } else if (action.startsWith("Rotate About")) {
+            this.viewer.screenVolumes[0].rotationAbout = action.substring(0, action.indexOf("-"));
+            this.viewer.screenVolumes[0].updateTransform();
+            this.viewer.drawViewer(true, false);
+        } else if (action.startsWith("ResetTransform")) {
+            this.viewer.screenVolumes[0].resetTransform();
+            this.viewer.screenVolumes[0].updateTransform();
+            this.viewer.drawViewer(true, false);
         }
     }
 };

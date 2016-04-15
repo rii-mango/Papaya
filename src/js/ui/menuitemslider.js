@@ -43,7 +43,7 @@ papaya.ui.MenuItemSlider.prototype.buildHTML = function (parentId) {
     sliderId = this.id + "Slider";
 
     html = "<li id='" + this.id + "'><span style='padding-right:5px;' class='" + PAPAYA_MENU_UNSELECTABLE + "'>" +
-        this.label + ":</span><input min='0' max='100' value='" + parseInt((1.0 - this.screenVol.alpha) * 100, 10) +
+        this.label + ":</span><input min='0' max='100' value='" + parseInt((1.0 - this.screenVol[this.action]) * 100, 10) +
         "' id='" + sliderId + "' class='" + PAPAYA_MENU_SLIDER + "' type='range' /></li>";
     $("#" + parentId).append(html);
 
@@ -53,8 +53,9 @@ papaya.ui.MenuItemSlider.prototype.buildHTML = function (parentId) {
 
     menuItem = this;
 
-    $("#" + this.id + "Slider").change(function () {
+    $("#" + this.id + "Slider").on("input change", function () {
         menuItem.screenVol[menuItem.action] = 1.0 - (sliderHtml.val() / 100.0);
+        menuItem.doAction();
         menuItem.viewer.drawViewer(true, false);
     });
 };
@@ -62,5 +63,5 @@ papaya.ui.MenuItemSlider.prototype.buildHTML = function (parentId) {
 
 
 papaya.ui.MenuItemSlider.prototype.doAction = function () {
-    this.callback(this.action);
+    this.callback(this.action, null, true);
 };

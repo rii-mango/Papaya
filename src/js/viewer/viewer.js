@@ -379,7 +379,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.container.display.drawError(message);
     } else {
         this.screenVolumes[0] = new papaya.viewer.ScreenVolume(this.volume, this.container.params,
-            papaya.viewer.ColorTable.DEFAULT_COLOR_TABLE.name, true);
+            papaya.viewer.ColorTable.DEFAULT_COLOR_TABLE.name, true, false, this.currentCoord);
 
         if (this.loadingDTI) {
             this.loadingDTI = false;
@@ -681,7 +681,7 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
         } else {
             overlay = new papaya.viewer.ScreenVolume(this.loadingVolume,
                 this.container.params, (parametric ? papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[0].name :
-                    this.getNextColorTable()), false);
+                    this.getNextColorTable()), false, false, this.currentCoord);
 
             if (this.loadingDTI) {
                 this.loadingDTI = false;
@@ -713,7 +713,7 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
                 this.screenVolumes[this.screenVolumes.length - 1].findImageRange();
                 if (this.screenVolumes[this.screenVolumes.length - 1].volume.header.imageRange.imageMin < 0) {
                     this.screenVolumes[this.screenVolumes.length] = overlayNeg = new papaya.viewer.ScreenVolume(this.loadingVolume,
-                        this.container.params, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
+                        this.container.params, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true, this.currentCoord);
                     overlay.negativeScreenVol = overlayNeg;
 
                     this.setCurrentScreenVol(this.screenVolumes.length - 1);
@@ -3187,7 +3187,7 @@ papaya.viewer.Viewer.prototype.addParametric = function (imageIndex) {
 
     if (screenVol.negativeScreenVol === null) {
         this.screenVolumes[this.screenVolumes.length] = overlayNeg = new papaya.viewer.ScreenVolume(screenVol.volume,
-            {}, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true);
+            {}, papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES[1].name, false, true, this.currentCoord);
         screenVol.negativeScreenVol = overlayNeg;
 
         this.setCurrentScreenVol(this.screenVolumes.length - 1);

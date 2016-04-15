@@ -37,6 +37,17 @@ params["sample_image.nii.gz"] = {lut: "Custom"};
 params["message"] = "Test: luts (custom color table knots).";
 
 params = initTest();
+params["images"] = ["data/sample_image.nii.gz"];
+params["sample_image.nii.gz"] = {rotation: [0, 0, 45]};
+params["message"] = "Test: rotation.";
+
+params = initTest();
+params["images"] = ["data/sample_image.nii.gz"];
+params["coordinate"] = [10, 20, 30];
+params["sample_image.nii.gz"] = {rotation: [0, 0, 45], rotationPoint: "crosshairs"};
+params["message"] = "Test: rotation, rotationPoint.";
+
+params = initTest();
 params["images"] = ["data/sample_image.nii.gz", "data/zstat1.nii.gz"];
 params["message"] = "Test: overlay.";
 

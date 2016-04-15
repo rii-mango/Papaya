@@ -20,6 +20,7 @@ papaya.ui.MenuItemRadioButton = papaya.ui.MenuItemRadioButton || function (viewe
         this.modifier = "-" + modifier;
     }
 
+        this.methodParam =
     this.action = action + this.modifier;
     this.method = method;
     this.id = this.action.replace(/ /g, "_").replace(/\(/g, "").replace(/\)/g, "") +
