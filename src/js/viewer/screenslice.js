@@ -317,7 +317,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                             value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX;  // screen value
                         } else {
                             value = papayaRoundFast(((value - this.screenVolumes[ctr].screenMin) *
-                                this.screenVolumes[ctr].screenRatio) + 0.5);  // screen value
+                                this.screenVolumes[ctr].screenRatio));  // screen value
                         }
 
                         if (!readFirstRaster) {
@@ -494,7 +494,7 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                             value = papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX;  // screen value
                         } else {
                             value = papayaRoundFast(((value - this.screenVolumes[ctr].screenMin) *
-                                this.screenVolumes[ctr].screenRatio) + 0.5);  // screen value
+                                this.screenVolumes[ctr].screenRatio));  // screen value
                         }
 
                         if (!readFirstRaster) {
