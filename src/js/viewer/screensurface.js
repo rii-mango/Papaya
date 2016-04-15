@@ -845,8 +845,8 @@ papaya.viewer.ScreenSurface.prototype.findPickedColor = function (gl) {
 
 
 papaya.viewer.ScreenSurface.prototype.getBackgroundColor = function () {
-    return ("rgba(" + (this.backgroundColor[0] * 255) + ',' + (this.backgroundColor[1] * 255) + ',' +
-        (this.backgroundColor[1] * 255) + ',255)');
+    return ("rgba(" + parseInt((this.backgroundColor[0] * 255) + 0.5) + ',' + parseInt((this.backgroundColor[1] * 255) + 0.5) + ',' +
+        parseInt((this.backgroundColor[2] * 255) + 0.5) + ',255)');
 };
 
 
