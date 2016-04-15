@@ -199,21 +199,25 @@ params["message"] = "Test: two series overlay, syncOverlaySeries (false).";
 // Display Parameters
 params = initTest();
 params["images"] = ["data/sample_image.nii.gz"];
+params["kioskMode"] = true;
 params["radiological"] = true;
 params["message"] = "Test: radiological.";
 
 params = initTest();
 params["images"] = ["data/sample_image.nii.gz"];
+params["kioskMode"] = true;
 params["showOrientation"] = true;
 params["message"] = "Test: showOrientation.";
 
 params = initTest();
 params["images"] = ["data/sample_image.nii.gz"];
+params["kioskMode"] = true;
 params["showRuler"] = true;
 params["message"] = "Test: showRuler.";
 
 params = initTest();
 params["images"] = ["data/sample_image.nii.gz", "data/zstat1.nii.gz"];
+params["kioskMode"] = true;
 params["worldSpace"] = true;
 params["smoothDisplay"] = false;
 params["message"] = "Test: overlay, smoothDisplay (false).";
