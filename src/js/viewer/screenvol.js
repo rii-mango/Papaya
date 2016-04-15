@@ -38,6 +38,7 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.rotationY = 0.5;
     this.rotationZ = 0.5;
     this.rotationAbout = "Rotate About Center";
+    this.isHighResSlice = this.volume.header.imageDimensions.getNumVoxelsSlice() > (512 * 512);
     this.currentCoord = currentCoord;
 
     var screenParams = params[this.volume.fileName];
