@@ -45,6 +45,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.collapsable = false;
     this.orthogonal = true;
     this.orthogonalTall = false;
+    this.orthogonalDynamic = false;
     this.kioskMode = false;
     this.showControls = true;
     this.showControlBar = false;
@@ -493,6 +494,8 @@ papaya.Container.startPapaya = function () {
 papaya.Container.resizePapaya = function (ev, force) {
     var ctr;
 
+    papaya.Container.updateOrthogonalState();
+
     if ((papayaContainers.length === 1) && !papayaContainers[0].nestedViewer) {
         if (!papaya.utilities.PlatformUtils.smallScreen || force) {
             papayaContainers[0].resizeViewerComponents(true);
@@ -600,6 +603,37 @@ papaya.Container.showLicense = function (container, params) {
 };
 
 
+
+papaya.Container.updateOrthogonalState = function () {
+    var ctr;
+
+    for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
+        if (papayaContainers[ctr].orthogonal &&
+            ((papaya.utilities.PlatformUtils.mobile || papayaContainers[ctr].orthogonalDynamic))) {
+            if ($(window).height() > $(window).width()) {
+                papayaContainers[ctr].orthogonalTall = true;
+            } else {
+                papayaContainers[ctr].orthogonalTall = false;
+            }
+        }
+    }
+};
+
+
+
+papaya.Container.reorientPapaya = function () {
+    var ctr;
+
+    for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
+        papayaContainers[ctr].toolbar.closeAllMenus();
+    }
+
+    papaya.Container.updateOrthogonalState();
+    papaya.Container.resizePapaya(null, true);
+};
+
+
+
 /*** Prototype Methods ***/
 
 papaya.Container.prototype.resetComponents = function () {
@@ -702,12 +736,13 @@ papaya.Container.prototype.readGlobalParams = function() {
     this.surfaceParams.surfaceBackground = this.params.surfaceBackground;
 
     this.orthogonalTall = this.orthogonal && (this.params.orthogonalTall === true);
+    this.orthogonalDynamic = this.orthogonal && (this.params.orthogonalDynamic === true);
 
     if (this.params.allowScroll !== undefined) {  // default is true
         this.allowScroll = this.params.allowScroll;
     }
 
-    if (papaya.utilities.PlatformUtils.mobile) {
+    if (papaya.utilities.PlatformUtils.mobile || this.orthogonalDynamic) {
         if (this.orthogonal) {
             if ($(window).height() > $(window).width()) {
                 this.orthogonalTall = true;
@@ -745,6 +780,7 @@ papaya.Container.prototype.reset = function () {
     this.collapsable = false;
     this.orthogonal = true;
     this.orthogonalTall = false;
+    this.orthogonalDynamic = false;
     this.kioskMode = false;
     this.showControls = true;
     this.showControlBar = false;
@@ -1393,29 +1429,6 @@ papaya.Container.prototype.canCurrentOverlayModulate = function () {
 
 
 /*** Window Events ***/
-
-papaya.Container.reorientPapaya = function () {
-    var ctr;
-
-    for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
-        papayaContainers[ctr].toolbar.closeAllMenus();
-    }
-
-    if (papaya.utilities.PlatformUtils.mobile) {
-        for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
-            if (papayaContainers[ctr].orthogonal) {
-                if ($(window).height() > $(window).width()) {
-                    papayaContainers[ctr].orthogonalTall = true;
-                } else {
-                    papayaContainers[ctr].orthogonalTall = false;
-                }
-            }
-        }
-    }
-
-    papaya.Container.resizePapaya(null, true);
-};
-
 
 window.addEventListener('resize', papaya.Container.resizePapaya, false);
 window.addEventListener("orientationchange", papaya.Container.reorientPapaya, false);
