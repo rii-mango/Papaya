@@ -1262,12 +1262,20 @@ papaya.Container.prototype.readyForDnD = function () {
 
 
 
-papaya.Container.prototype.findLoadableImage = function (name) {
+papaya.Container.prototype.findLoadableImage = function (name, surface) {
     var ctr;
 
     for (ctr = 0; ctr < papayaLoadableImages.length; ctr += 1) {
-        if (papayaLoadableImages[ctr].name == name) {  // needs to be ==, not ===
-            return papayaLoadableImages[ctr];
+        if (surface) {
+            if (papayaLoadableImages[ctr].surface) {
+                if (papayaLoadableImages[ctr].name == name) {  // needs to be ==, not ===
+                    return papayaLoadableImages[ctr];
+                }
+            }
+        } else {
+            if (papayaLoadableImages[ctr].name == name) {  // needs to be ==, not ===
+                return papayaLoadableImages[ctr];
+            }
         }
     }
 

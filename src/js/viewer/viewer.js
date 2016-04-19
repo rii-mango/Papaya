@@ -240,7 +240,7 @@ papaya.viewer.Viewer.prototype.showDialog = function (title, data, datasource, c
 
 
 papaya.viewer.Viewer.prototype.loadBaseImage = function (refs, forceUrl, forceEncode) {
-    var imageRefs, loadableImage = this.container.findLoadableImage(refs, forceUrl, forceEncode);
+    var imageRefs, loadableImage = this.container.findLoadableImage(refs);
     this.volume = new papaya.volume.Volume(this.container.display, this);
 
     if (forceEncode) {
@@ -308,6 +308,8 @@ papaya.viewer.Viewer.prototype.loadOverlay = function (refs, forceUrl, forceEnco
 
 
 papaya.viewer.Viewer.prototype.loadSurface = function (ref, forceUrl, forceEncode) {
+    var loadableImage = this.container.findLoadableImage(ref, true);
+
     if (this.screenVolumes.length == 0) {
         this.container.display.drawError("Load an image before loading a surface!");
         return;
@@ -317,8 +319,12 @@ papaya.viewer.Viewer.prototype.loadSurface = function (ref, forceUrl, forceEncod
 
     if (forceEncode) {
         surface.readEncodedData(ref[0], papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
+    } else if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
+        surface.readEncodedData(loadableImage.encode, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
     } else if (forceUrl) {
         surface.readURL(ref, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
+    } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
+        surface.readURL(loadableImage.url, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
     } else {
         surface.readFile(ref[0], papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
     }
