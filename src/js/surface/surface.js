@@ -37,6 +37,7 @@ papaya.surface.Surface.prototype.readURL = function (url, callback) {
 
     this.filename = url.substr(url.lastIndexOf("/") + 1, url.length);
     this.onFinishedRead = callback;
+    this.processParams(this.filename);
 
     try {
         if (typeof new XMLHttpRequest().responseType === 'string') {
@@ -82,6 +83,7 @@ papaya.surface.Surface.prototype.readFile = function (file, callback) {
 
     this.filename = file.name;
     this.onFinishedRead = callback;
+    this.processParams(this.filename);
 
     try {
         var reader = new FileReader();
@@ -107,6 +109,32 @@ papaya.surface.Surface.prototype.readFile = function (file, callback) {
 
 
 
+papaya.surface.Surface.prototype.readEncodedData = function (name, callback) {
+    this.filename = (name + ".surf.gii");
+    this.onFinishedRead = callback;
+    this.processParams(name);
+
+    try {
+        this.rawData = atob(papaya.utilities.ObjectUtils.dereference(name));
+    } catch (err) {
+        this.error = new Error("There was a problem reading that file:\n\n" + err.message);
+    }
+
+    this.finishedLoading();
+};
+
+
+
+papaya.surface.Surface.prototype.processParams = function (name) {
+    var screenParams = params[name];
+    if (screenParams) {
+        if (screenParams.color !== undefined) {
+            this.solidColor = screenParams.color;
+        }
+    }
+};
+
+
 
 papaya.surface.Surface.prototype.finishedLoading = function () {
     this.readData();
@@ -126,13 +154,6 @@ papaya.surface.Surface.prototype.readData = function () {
         console.log(this.error);
         this.onFinishedRead(this);
         return;
-    }
-
-    var screenParams = params[this.filename];
-    if (screenParams) {
-        if (screenParams.color !== undefined) {
-            this.solidColor = screenParams.color;
-        }
     }
 
     var gii = gifti.parse(this.rawData);

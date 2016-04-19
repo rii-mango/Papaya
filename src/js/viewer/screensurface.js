@@ -471,10 +471,12 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[ctr].normalsBuffer);
         gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, this.surfaces[ctr].normalsBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-        if (this.surfaces[0].colorsData) {
+        if (this.surfaces[ctr].colorsData) {
             gl.uniform1i(this.shaderProgram.hasColors, 1);
             gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[ctr].colorsBuffer);
             gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, this.surfaces[ctr].colorsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        } else {
+            gl.uniform1i(this.shaderProgram.hasColors, 0);
         }
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.surfaces[ctr].trianglesBuffer);

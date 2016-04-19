@@ -307,7 +307,7 @@ papaya.viewer.Viewer.prototype.loadOverlay = function (refs, forceUrl, forceEnco
 
 
 
-papaya.viewer.Viewer.prototype.loadSurface = function (ref, forceUrl) {
+papaya.viewer.Viewer.prototype.loadSurface = function (ref, forceUrl, forceEncode) {
     if (this.screenVolumes.length == 0) {
         this.container.display.drawError("Load an image before loading a surface!");
         return;
@@ -315,13 +315,11 @@ papaya.viewer.Viewer.prototype.loadSurface = function (ref, forceUrl) {
 
     var surface = new papaya.surface.Surface(this.container.display, this.container.params);
 
-    if (forceUrl) {
+    if (forceEncode) {
+        surface.readEncodedData(ref[0], papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
+    } else if (forceUrl) {
         surface.readURL(ref, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
     } else {
-        if (this.surfaces.length === 0) {
-            this.container.surfaceParams.surfaceLink = true;
-        }
-
         surface.readFile(ref[0], papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
     }
 };
@@ -2259,6 +2257,7 @@ papaya.viewer.Viewer.prototype.resizeViewer = function (dims) {
             swapButton.css({
                 top: offset.top + this.mainImage.screenDim - swapButton.outerHeight() - halfPadding,
                 left: offset.left + this.mainImage.screenDim - swapButton.outerWidth() - halfPadding,
+                width: swapButton.outerWidth(),
                 position:'absolute'});
 
             centerButton = $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.container.containerIndex);

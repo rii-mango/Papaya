@@ -125,6 +125,14 @@ papaya.Container.resetViewer = function (index, params) {
             params.encodedImages = params.loadedEncodedImages;
         }
 
+        if (params.loadedSurfaces) {
+            params.surfaces = params.loadedSurfaces;
+        }
+
+        if (params.loadedEncodedSurfaces) {
+            params.encodedSurfaces = params.loadedEncodedSurfaces;
+        }
+
         if (params.loadedFiles) {
             params.files = params.loadedFiles;
         }
@@ -662,7 +670,7 @@ papaya.Container.prototype.getViewerDimensions = function () {
         height = (this.collapsable ? window.innerHeight : this.containerHtml.parent().height()) - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
             PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding && !this.nestedViewer ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
             (this.showControlBar ? 2*papaya.ui.Toolbar.SIZE : 0);
-
+console.log(height);
         width = papayaRoundFast(height / ratio);
     } else {
         width = parentWidth;
@@ -776,6 +784,7 @@ papaya.Container.prototype.readGlobalParams = function() {
 
 papaya.Container.prototype.reset = function () {
     this.loadingImageIndex = 0;
+    this.loadingSurfaceIndex = 0;
     this.nestedViewer = false;
     this.collapsable = false;
     this.orthogonal = true;
@@ -1132,13 +1141,15 @@ papaya.Container.prototype.hasAtlasToLoad = function () {
 
 
 papaya.Container.prototype.hasSurfaceToLoad = function () {
-    if (this.params.surfaces) {
-        if (!papaya.utilities.PlatformUtils.isWebGLSupported()) {
-            console.log("Warning: This browser version is not able to load surfaces.");
-            return false;
-        }
+    if (!papaya.utilities.PlatformUtils.isWebGLSupported()) {
+        console.log("Warning: This browser version is not able to load surfaces.");
+        return false;
+    }
 
+    if (this.params.surfaces) {
         return (this.loadingSurfaceIndex < this.params.surfaces.length);
+    } else if (this.params.encodedSurfaces) {
+        return (this.loadingSurfaceIndex < this.params.encodedSurfaces.length);
     }
 
     return false;
@@ -1147,16 +1158,34 @@ papaya.Container.prototype.hasSurfaceToLoad = function () {
 
 
 papaya.Container.prototype.loadNextSurface = function () {
-    var loadingNext = false, imageRef;
+    var loadingNext = false, imageRefs;
 
-    if (this.loadingSurfaceIndex < this.params.surfaces.length) {
-        loadingNext = true;
-        imageRef = this.params.surfaces[this.loadingSurfaceIndex];
-        this.loadingSurfaceIndex += 1;
-        this.viewer.loadSurface(imageRef, true, false);
-    } else {
-        this.params.loadedSurfaces = this.params.surfaces;
-        this.params.surfaces = [];
+    if (this.params.surfaces) {
+        if (this.loadingSurfaceIndex < this.params.surfaces.length) {
+            loadingNext = true;
+            imageRefs = this.params.surfaces[this.loadingSurfaceIndex];
+            this.loadingSurfaceIndex += 1;
+            this.viewer.loadSurface(imageRefs, true, false);
+        } else {
+            this.params.loadedSurfaces = this.params.surfaces;
+            this.params.surfaces = [];
+        }
+    } else if (this.params.encodedSurfaces) {
+        if (this.loadingSurfaceIndex < this.params.encodedSurfaces.length) {
+            loadingNext = true;
+            imageRefs = this.params.encodedSurfaces[this.loadingSurfaceIndex];
+
+            if (!(imageRefs instanceof Array)) {
+                imageRefs = [];
+                imageRefs[0] = this.params.encodedSurfaces[this.loadingSurfaceIndex];
+            }
+
+            this.viewer.loadSurface(imageRefs, false, true);
+            this.loadingSurfaceIndex += 1;
+        } else {
+            this.params.loadedEncodedSurfaces = this.params.encodedSurfaces;
+            this.params.encodedSurfaces = [];
+        }
     }
 
     return loadingNext;
@@ -1201,7 +1230,6 @@ papaya.Container.prototype.loadNextImage = function () {
         }
     } else if (this.params.files) {
         if (this.loadingImageIndex < this.params.files.length) {
-
             loadingNext = true;
             imageRefs = this.params.files[this.loadingImageIndex];
 
@@ -1227,7 +1255,9 @@ papaya.Container.prototype.readyForDnD = function () {
     return !this.kioskMode && ((this.params.images === undefined) ||
         (this.loadingImageIndex >= this.params.images.length)) &&
         ((this.params.encodedImages === undefined) ||
-        (this.loadingImageIndex >= this.params.encodedImages.length));
+        (this.loadingImageIndex >= this.params.encodedImages.length)) &&
+        ((this.params.encodedSurfaces === undefined) ||
+        (this.loadingSurfaceIndex >= this.params.encodedSurfaces.length));
 };
 
 

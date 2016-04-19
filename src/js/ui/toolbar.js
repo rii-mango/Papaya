@@ -407,9 +407,16 @@ papaya.ui.Toolbar.prototype.buildOpenMenuItems = function (menuData) {
     if (items) {
         for (ctr = 0; ctr < papayaLoadableImages.length; ctr += 1) {
             if (!papayaLoadableImages[ctr].hide) {
-                menuItemName = "Add " + papayaLoadableImages[ctr].nicename;
-                if (!this.menuContains(items, menuItemName)) {
-                    items.splice(2, 0, {"label": menuItemName, "action": "Open-" + papayaLoadableImages[ctr].name});
+                if (papayaLoadableImages[ctr].surface) {
+                    menuItemName = "Add Surface " + papayaLoadableImages[ctr].nicename;
+                    if (!this.menuContains(items, menuItemName)) {
+                        items.splice(2, 0, {"label": menuItemName, "action": "OpenSurface-" + papayaLoadableImages[ctr].name});
+                    }
+                } else {
+                    menuItemName = "Add " + papayaLoadableImages[ctr].nicename;
+                    if (!this.menuContains(items, menuItemName)) {
+                        items.splice(2, 0, {"label": menuItemName, "action": "Open-" + papayaLoadableImages[ctr].name});
+                    }
                 }
             }
         }
@@ -636,6 +643,9 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             imageIndex = parseInt(action.substr(action.length - 2, 1), 10);
             this.viewer.setCurrentScreenVol(imageIndex);
             this.updateImageButtons();
+        } else if (action.startsWith("OpenSurface-")) {
+            imageName = action.substring(action.indexOf("-") + 1);
+            this.viewer.loadSurface(imageName);
         } else if (action.startsWith("Open-")) {
             imageName = action.substring(action.indexOf("-") + 1);
             this.viewer.loadImage(imageName);
