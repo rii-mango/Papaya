@@ -334,8 +334,13 @@ papaya.viewer.Viewer.prototype.loadSurface = function (ref, forceUrl, forceEncod
 
 
 papaya.viewer.Viewer.prototype.initializeSurface = function (surface) {
+    var currentSurface = surface;
+
     if (!surface.error) {
-        this.surfaces.push(surface);
+        while (currentSurface !== null) {
+            this.surfaces.push(currentSurface);
+            currentSurface = currentSurface.nextSurface;
+        }
 
         if (this.surfaceView === null) {
             this.lowerImageBot2 = this.surfaceView = new papaya.viewer.ScreenSurface(this.volume, this.surfaces, this, this.container.params);
@@ -2263,7 +2268,7 @@ papaya.viewer.Viewer.prototype.resizeViewer = function (dims) {
             swapButton.css({
                 top: offset.top + this.mainImage.screenDim - swapButton.outerHeight() - halfPadding,
                 left: offset.left + this.mainImage.screenDim - swapButton.outerWidth() - halfPadding,
-                width: swapButton.outerWidth(),
+                //width: swapButton.outerWidth(),
                 position:'absolute'});
 
             centerButton = $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.container.containerIndex);

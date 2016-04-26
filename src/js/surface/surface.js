@@ -27,7 +27,44 @@ papaya.surface.Surface = papaya.surface.Surface || function (progressMeter, para
     this.normalsBuffer = null;
     this.colorsBuffer = null;
     this.solidColor = null;
+    this.surfaceType = papaya.surface.Surface.SURFACE_TYPE_UNKNOWN;
+    this.fileFormat = null;
     this.params = params;
+    this.nextSurface = null;
+};
+
+/*** Static Pseudo-constants ***/
+
+papaya.surface.Surface.SURFACE_TYPE_UNKNOWN = 0;
+papaya.surface.Surface.SURFACE_TYPE_GIFTI = 1;
+papaya.surface.Surface.SURFACE_TYPE_MANGO = 2;
+
+
+
+/*** Static Methods ***/
+
+papaya.surface.Surface.findSurfaceType = function (filename) {
+    if (gifti.isThisFormat(filename)) {
+        return papaya.surface.Surface.SURFACE_TYPE_GIFTI;
+    } else if (papaya.surface.SurfaceMango.isThisFormat(filename)) {
+        return papaya.surface.Surface.SURFACE_TYPE_MANGO;
+    }
+
+    return papaya.surface.Surface.SURFACE_TYPE_UNKNOWN;
+};
+
+
+
+/*** Prototype Methods ***/
+
+papaya.surface.Surface.prototype.makeFileFormat = function (filename) {
+    this.surfaceType = papaya.surface.Surface.findSurfaceType(filename);
+
+    if (this.surfaceType === papaya.surface.Surface.SURFACE_TYPE_GIFTI) {
+        this.fileFormat = new papaya.surface.SurfaceGIFTI();
+    } else if (this.surfaceType === papaya.surface.Surface.SURFACE_TYPE_MANGO) {
+        this.fileFormat = new papaya.surface.SurfaceMango();
+    }
 };
 
 
@@ -38,11 +75,21 @@ papaya.surface.Surface.prototype.readURL = function (url, callback) {
     this.filename = url.substr(url.lastIndexOf("/") + 1, url.length);
     this.onFinishedRead = callback;
     this.processParams(this.filename);
+    this.makeFileFormat(this.filename);
+
+    if (this.surfaceType === papaya.surface.Surface.SURFACE_TYPE_UNKNOWN) {
+        this.error = new Error("This surface format is not supported!");
+        this.finishedLoading();
+        return;
+    }
 
     try {
         if (typeof new XMLHttpRequest().responseType === 'string') {
             xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
+            if (this.fileFormat.isSurfaceDataBinary()) {
+                xhr.responseType = 'arraybuffer';
+            }
 
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
@@ -84,6 +131,13 @@ papaya.surface.Surface.prototype.readFile = function (file, callback) {
     this.filename = file.name;
     this.onFinishedRead = callback;
     this.processParams(this.filename);
+    this.makeFileFormat(this.filename);
+
+    if (this.surfaceType === papaya.surface.Surface.SURFACE_TYPE_UNKNOWN) {
+        this.error = new Error("This surface format is not supported!");
+        this.finishedLoading();
+        return;
+    }
 
     try {
         var reader = new FileReader();
@@ -100,7 +154,11 @@ papaya.surface.Surface.prototype.readFile = function (file, callback) {
             surface.finishedLoading();
         };
 
-        reader.readAsText(blob);
+        if (this.fileFormat.isSurfaceDataBinary()) {
+            reader.readAsArrayBuffer(blob);
+        } else {
+            reader.readAsText(blob);
+        }
     } catch (err) {
         surface.error = new Error("There was a problem reading that file:\n\n" + err.message);
         surface.finishedLoading();
@@ -113,9 +171,20 @@ papaya.surface.Surface.prototype.readEncodedData = function (name, callback) {
     this.filename = (name + ".surf.gii");
     this.onFinishedRead = callback;
     this.processParams(name);
+    this.makeFileFormat(this.filename);
+
+    if (this.surfaceType === papaya.surface.Surface.SURFACE_TYPE_UNKNOWN) {
+        this.error = new Error("This surface format is not supported!");
+        this.finishedLoading();
+        return;
+    }
 
     try {
-        this.rawData = atob(papaya.utilities.ObjectUtils.dereference(name));
+        if (this.fileFormat.isSurfaceDataBinary()) {
+            this.rawData = Base64Binary.decodeArrayBuffer(papaya.utilities.ObjectUtils.dereference(name));
+        } else {
+            this.rawData = atob(papaya.utilities.ObjectUtils.dereference(name));
+        }
     } catch (err) {
         this.error = new Error("There was a problem reading that file:\n\n" + err.message);
     }
@@ -149,99 +218,45 @@ papaya.surface.Surface.prototype.readData = function () {
         return;
     }
 
-    if (!gifti.isThisFormat(this.filename)) {
-        this.error = new Error("This surface format is not supported!");
-        console.log(this.error);
+    var progMeter = this.progressMeter;
+    var prog = function(val) {
+        progMeter.drawProgress(val, "Loading surface...");
+    };
+
+    try {
+        this.fileFormat.readData(this.rawData, prog, papaya.utilities.ObjectUtils.bind(this, this.finishedReading));
+    } catch (err) {
+        console.log(err.stack);
+        this.error = err;
         this.onFinishedRead(this);
-        return;
-    }
-
-    var gii = gifti.parse(this.rawData);
-    this.numPoints = gii.getNumPoints();
-    this.numTriangles = gii.getNumTriangles();
-
-    this.readPoints(this, gii);
-};
-
-
-
-papaya.surface.Surface.prototype.readPoints = function (surf, gii) {
-    var progMeter = surf.progressMeter;
-    var prog = function(val) {
-        progMeter.drawProgress(val, "Loading surface points...");
-    };
-
-    var next = function(data) {
-        surf.pointData = data;
-        surf.readNormals(surf, gii);
-    };
-
-    if (gii.getPointsDataArray()) {
-        gii.getPointsDataArray().getDataAsync(prog, next);
-    } else {
-        surf.error = new Error("Surface is missing vertex information!");
-        surf.onFinishedRead(surf);
     }
 };
 
 
 
-papaya.surface.Surface.prototype.readNormals = function (surf, gii) {
-    var progMeter = surf.progressMeter;
-    var prog = function(val) {
-        progMeter.drawProgress(val, "Loading surface normals...");
-    };
+papaya.surface.Surface.prototype.finishedReading = function () {
+    var numSurfaces = this.fileFormat.getNumSurfaces(), currentSurface = this, ctr;
 
-    var next = function(data) {
-        surf.normalsData = data;
-        surf.readColors(surf, gii);
-    };
+    for (ctr = 0; ctr < numSurfaces; ctr += 1) {
+        if (ctr > 0) {
+            currentSurface.nextSurface = new papaya.surface.Surface();
+            currentSurface = currentSurface.nextSurface;
+        }
 
-    if (gii.getNormalsDataArray()) {
-        gii.getNormalsDataArray().getDataAsync(prog, next);
-    } else {
-        surf.error = new Error("Surface is missing normals information!");
-        surf.onFinishedRead(surf);
+        currentSurface.numPoints = this.fileFormat.getNumPoints(ctr);
+        currentSurface.numTriangles = this.fileFormat.getNumTriangles(ctr);
+        currentSurface.pointData = this.fileFormat.getPointData(ctr);
+        currentSurface.normalsData = this.fileFormat.getNormalsData(ctr);
+        currentSurface.triangleData = this.fileFormat.getTriangleData(ctr);
+        currentSurface.colorsData = this.fileFormat.getColorsData(ctr);
+
+        if (this.fileFormat.getSolidColor(ctr)) {
+            currentSurface.solidColor = this.fileFormat.getSolidColor(ctr);
+        }
     }
-};
 
 
+    this.progressMeter.drawProgress(1, "Loading surface...");
 
-papaya.surface.Surface.prototype.readColors = function (surf, gii) {
-    var progMeter = surf.progressMeter;
-    var prog = function(val) {
-        progMeter.drawProgress(val, "Loading surface colors...");
-    };
-
-    var next = function(data) {
-        surf.colorsData = data;
-        surf.readTriangles(surf, gii);
-    };
-
-    if (gii.getColorsDataArray() !== null) {
-        gii.getColorsDataArray().getDataAsync(prog, next);
-    } else {
-        surf.readTriangles(surf, gii);
-    }
-};
-
-
-
-papaya.surface.Surface.prototype.readTriangles = function (surf, gii) {
-    var progMeter = surf.progressMeter;
-    var prog = function(val) {
-        progMeter.drawProgress(val, "Loading surface triangles...");
-    };
-
-    var next = function(data) {
-        surf.triangleData = data;
-        surf.onFinishedRead(surf);
-    };
-
-    if (gii.getTrianglesDataArray()) {
-        gii.getTrianglesDataArray().getDataAsync(prog, next);
-    } else {
-        surf.error = new Error("Surface is missing indices information!");
-        surf.onFinishedRead(surf);
-    }
+    this.onFinishedRead(this);
 };

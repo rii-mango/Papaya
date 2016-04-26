@@ -314,6 +314,11 @@ params["message"] = "Test: surfaces.";
 
 params = initTest();
 params["images"] = ["data/sample_image.nii.gz"];
+params["surfaces"] = ["data/sample_image.surf"];
+params["message"] = "Test: mango surface.";
+
+params = initTest();
+params["images"] = ["data/sample_image.nii.gz"];
 params["surfaces"] = ["data/sample_image.surf.gii"];
 params["surfaceLink"] = true;
 params["message"] = "Test: surfaces, surfaceLink.";

@@ -164,7 +164,10 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
 
 /*** Static Pseudo-constants ***/
 
-papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION = [-0.015552218963737041, 0.09408106275544359, -0.9954430697501158, 0, -0.9696501263313991, 0.24152923619118966, 0.03797658948646743, 0, 0.24400145970103732, 0.965822108594413, 0.0874693978960848, 0, 0, 0, 0, 1];
+papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION = [ -0.015552218963737041, 0.09408106275544359, -0.9954430697501158, 0,
+                                                    -0.9696501263313991, 0.24152923619118966, 0.03797658948646743, 0,
+                                                    0.24400145970103732, 0.965822108594413, 0.0874693978960848, 0,
+                                                    0, 0, 0, 1];
 papaya.viewer.ScreenSurface.MOUSE_SENSITIVITY = 0.3;
 papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND = [0.5, 0.5, 0.5];
 
@@ -194,7 +197,7 @@ papaya.viewer.ScreenSurface.makeShader = function (gl, src, type) {
 
 
 
-papaya.viewer.ScreenSurface.initShaders = function (gl, colors) {
+papaya.viewer.ScreenSurface.initShaders = function (gl) {
     var fragmentShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderVert, gl.VERTEX_SHADER);
     var vertexShader = papaya.viewer.ScreenSurface.makeShader(gl, shaderFrag, gl.FRAGMENT_SHADER);
     var shaderProgram = gl.createProgram();
@@ -212,11 +215,7 @@ papaya.viewer.ScreenSurface.initShaders = function (gl, colors) {
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
     shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
     gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
-
-    if (colors) {
-        shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
-        gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
-    }
+    shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
 
     shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
     shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
@@ -254,10 +253,10 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
     this.zoom = this.volume.header.imageDimensions.yDim * this.volume.header.voxelDimensions.ySize * 1.5;
     this.initPerspective();
 
-    this.shaderProgram = papaya.viewer.ScreenSurface.initShaders(this.context, this.surfaces[0].colorsData);
+    this.shaderProgram = papaya.viewer.ScreenSurface.initShaders(this.context);
 
     for (ctr = 0; ctr < this.surfaces.length; ctr += 1) {
-        this.initBuffers(this.context, this.surfaces[0]);
+        this.initBuffers(this.context, this.surfaces[ctr]);
     }
 
     this.initActivePlaneBuffers(this.context);
@@ -459,6 +458,7 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
 
     for (ctr = 0; ctr < this.surfaces.length; ctr += 1) {
         gl.uniform1i(this.shaderProgram.hasSolidColor, 0);
+        gl.uniform1i(this.shaderProgram.hasColors, 0);
 
         if (this.surfaces[ctr].solidColor) {
             gl.uniform1i(this.shaderProgram.hasSolidColor, 1);
@@ -474,9 +474,10 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
         if (this.surfaces[ctr].colorsData) {
             gl.uniform1i(this.shaderProgram.hasColors, 1);
             gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaces[ctr].colorsBuffer);
+            gl.enableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
             gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, this.surfaces[ctr].colorsBuffer.itemSize, gl.FLOAT, false, 0, 0);
         } else {
-            gl.uniform1i(this.shaderProgram.hasColors, 0);
+            gl.disableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
         }
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.surfaces[ctr].trianglesBuffer);
@@ -484,6 +485,7 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     }
 
     gl.uniform1i(this.shaderProgram.hasSolidColor, 0);
+    gl.uniform1i(this.shaderProgram.hasColors, 0);
 
     if (this.needsPickColor) {
         this.needsPickColor = false;
