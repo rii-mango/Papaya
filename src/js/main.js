@@ -318,7 +318,7 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params,
         } else if (params && ((params.showControls === undefined ) || params.showControls)) {
             containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + "'>+</button> ");
             containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + "'>-</button> ");
-            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + "'>Swap Main Slice</button> ");
+            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + "'>Swap View</button> ");
             containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + "'>Go To Center</button> ");
             containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + "'>Go To Origin</button> ");
 
