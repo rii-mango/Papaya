@@ -2023,15 +2023,23 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                 this.selectedSlice.sliceDirection
             );
         } else if (this.isZoomMode) {
-            zoomFactorCurrent = ((this.previousMousePosition.y - currentMouseY) * 0.05);
-            this.setZoomFactor(this.zoomFactorPrevious - zoomFactorCurrent);
+            if (this.mainImage === this.surfaceView) {
+                zoomFactorCurrent = ((this.previousMousePosition.y - currentMouseY) * 0.5);
+                this.surfaceView.zoom += zoomFactorCurrent;
+                this.previousMousePosition.x = currentMouseX;
+                this.previousMousePosition.y = currentMouseY;
+            } else {
+                zoomFactorCurrent = ((this.previousMousePosition.y - currentMouseY) * 0.05);
+                this.setZoomFactor(this.zoomFactorPrevious - zoomFactorCurrent);
 
-            this.axialSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocY, this.panAmountX,
-                this.panAmountY, this);
-            this.coronalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocZ, this.panAmountX,
-                this.panAmountZ, this);
-            this.sagittalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocY, this.zoomLocZ, this.panAmountY,
-                this.panAmountZ, this);
+                this.axialSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocY, this.panAmountX,
+                    this.panAmountY, this);
+                this.coronalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocZ, this.panAmountX,
+                    this.panAmountZ, this);
+                this.sagittalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocY, this.zoomLocZ, this.panAmountY,
+                    this.panAmountZ, this);
+            }
+
             this.drawViewer(true);
         } else {
             this.resetUpdateTimer(null);
