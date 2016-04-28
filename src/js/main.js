@@ -1086,7 +1086,7 @@ papaya.Container.prototype.addDroppedFile = function (file) {
 
 
 papaya.Container.prototype.droppedFilesFinishedLoading = function () {
-    if (gifti.isThisFormat(papayaDroppedFiles[0].name)) {
+    if (papaya.surface.Surface.findSurfaceType(papayaDroppedFiles[0].name) !== papaya.surface.Surface.SURFACE_TYPE_UNKNOWN) {
         this.viewer.loadSurface(papayaDroppedFiles);
     } else {
         this.viewer.loadImage(papayaDroppedFiles);

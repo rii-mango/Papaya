@@ -346,7 +346,12 @@ papaya.viewer.Viewer.prototype.initializeSurface = function (surface) {
             this.lowerImageBot2 = this.surfaceView = new papaya.viewer.ScreenSurface(this.volume, this.surfaces, this, this.container.params);
             this.container.resizeViewerComponents(true);
         } else {
-            this.surfaceView.initBuffers(this.surfaceView.context, surface);
+            currentSurface = surface;
+
+            while (currentSurface !== null) {
+                this.surfaceView.initBuffers(this.surfaceView.context, currentSurface);
+                currentSurface = currentSurface.nextSurface;
+            }
         }
 
         if (this.container.params.mainView && (this.container.params.mainView.toLowerCase() === "surface")) {
