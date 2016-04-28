@@ -740,7 +740,8 @@ papaya.Container.prototype.readGlobalParams = function() {
         this.orthogonal = this.params.orthogonal;
     }
 
-    this.surfaceParams.surfaceLink = (this.params.surfaceLink === true);
+    this.surfaceParams.showSurfacePlanes = (this.params.showSurfacePlanes === true);
+    this.surfaceParams.showSurfaceCrosshairs = (this.params.showSurfaceCrosshairs === true);
     this.surfaceParams.surfaceBackground = this.params.surfaceBackground;
 
     this.orthogonalTall = this.orthogonal && (this.params.orthogonalTall === true);

@@ -141,6 +141,7 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.crosshairLineXBuffer = null;
     this.crosshairLineYBuffer = null;
     this.crosshairLineZBuffer = null;
+    this.crosshairLineZBuffer = null;
     this.xSize = this.volume.header.voxelDimensions.xSize;
     this.xDim = this.volume.header.imageDimensions.xDim;
     this.xHalf = (this.xDim * this.xSize) / 2.0;
@@ -150,7 +151,8 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.zSize = this.volume.header.voxelDimensions.zSize;
     this.zDim = this.volume.header.imageDimensions.zDim;
     this.zHalf = (this.zDim * this.zSize) / 2.0;
-    this.surfaceLink = this.viewer.container.surfaceParams.surfaceLink;
+    this.showSurfacePlanes = (viewer.container.preferences.showSurfacePlanes === "Yes");
+    this.showSurfaceCrosshairs = (viewer.container.preferences.showSurfaceCrosshairs === "Yes");
     this.backgroundColor = papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND;
     this.pickLocX = 0;
     this.pickLocY = 0;
@@ -492,98 +494,113 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
         gl.readPixels(0, 0, gl.viewportWidth, gl.viewportHeight, gl.RGBA, gl.UNSIGNED_BYTE, this.pickingBuffer);
         this.pickedColor = this.findPickedColor(gl);
         gl.uniform1i(this.shaderProgram.colorPicking, 0);
-    } else if (this.surfaceLink) {
-        // draw active planes
-        if (this.needsUpdateActivePlanes) {
-            this.needsUpdateActivePlanes = false;
+    } else {
+        if (this.showSurfacePlanes) {
+            // draw active planes
+            if (this.needsUpdateActivePlanes) {
+                this.needsUpdateActivePlanes = false;
+                this.bindActivePlanes(gl);
+            }
+
+            gl.depthMask(false);
+            gl.uniform1i(this.shaderProgram.activePlane, 1);
+            gl.enable(gl.BLEND);
+            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
             gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneAxialBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.activePlaneVertsAxial, gl.DYNAMIC_DRAW);
+            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.activePlaneAxialBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
             gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneCoronalBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.activePlaneVertsCoronal, gl.DYNAMIC_DRAW);
+            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.activePlaneCoronalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
             gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneSagittalBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.activePlaneVertsSagittal, gl.DYNAMIC_DRAW);
+            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.activePlaneSagittalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+            gl.depthMask(true);
+            gl.disable(gl.BLEND);
+            gl.uniform1i(this.shaderProgram.activePlane, 0);
+
+            // draw active plane edges
+            gl.uniform1i(this.shaderProgram.activePlaneEdge, 1);
+            gl.lineWidth(this.isMainView() ? 3.0 : 2.0);
 
             gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneAxialEdgesBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.activePlaneVertsAxialEdges, gl.DYNAMIC_DRAW);
+            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.activePlaneAxialEdgesBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.drawArrays(gl.LINES, 0, 8);
 
             gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneCoronalEdgesBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.activePlaneVertsCoronalEdges, gl.DYNAMIC_DRAW);
+            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.activePlaneCoronalEdgesBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.drawArrays(gl.LINES, 0, 8);
 
             gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneSagittalEdgesBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.activePlaneVertsSagittalEdges, gl.DYNAMIC_DRAW);
+            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.activePlaneSagittalEdgesBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.drawArrays(gl.LINES, 0, 8);
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineXBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.crosshairLineVertsX, gl.DYNAMIC_DRAW);
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineYBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.crosshairLineVertsY, gl.DYNAMIC_DRAW);
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineZBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.crosshairLineVertsZ, gl.DYNAMIC_DRAW);
+            gl.uniform1i(this.shaderProgram.activePlaneEdge, 0);
         }
 
-        gl.depthMask(false);
-        gl.uniform1i(this.shaderProgram.activePlane, 1);
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        if (this.showSurfaceCrosshairs) {
+            if (this.needsUpdateActivePlanes) {
+                this.needsUpdateActivePlanes = false;
+                this.bindActivePlanes(gl);
+            }
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneAxialBuffer);
-        gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.activePlaneAxialBuffer.itemSize, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            // draw crosshairs
+            gl.uniform1i(this.shaderProgram.crosshairs, 1);
+            gl.lineWidth(this.isMainView() ? 3.0 : 2.0);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneCoronalBuffer);
-        gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.activePlaneCoronalBuffer.itemSize, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineXBuffer);
+            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineXBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.drawArrays(gl.LINES, 0, 2);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneSagittalBuffer);
-        gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.activePlaneSagittalBuffer.itemSize, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineYBuffer);
+            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineYBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.drawArrays(gl.LINES, 0, 2);
 
-        gl.depthMask(true);
-        gl.disable(gl.BLEND);
-        gl.uniform1i(this.shaderProgram.activePlane, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineZBuffer);
+            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineZBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.drawArrays(gl.LINES, 0, 2);
 
-        // draw active plane edges
-        gl.uniform1i(this.shaderProgram.activePlaneEdge, 1);
-        gl.lineWidth(2.0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneAxialEdgesBuffer);
-        gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.activePlaneAxialEdgesBuffer.itemSize, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(gl.LINES, 0, 8);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneCoronalEdgesBuffer);
-        gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.activePlaneCoronalEdgesBuffer.itemSize, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(gl.LINES, 0, 8);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneSagittalEdgesBuffer);
-        gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.activePlaneSagittalEdgesBuffer.itemSize, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(gl.LINES, 0, 8);
-
-        gl.uniform1i(this.shaderProgram.activePlaneEdge, 0);
-
-        // draw crosshairs
-        gl.uniform1i(this.shaderProgram.crosshairs, 1);
-        gl.lineWidth(2.0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineXBuffer);
-        gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineXBuffer.itemSize, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(gl.LINES, 0, 2);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineYBuffer);
-        gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineYBuffer.itemSize, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(gl.LINES, 0, 2);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineZBuffer);
-        gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.crosshairLineZBuffer.itemSize, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(gl.LINES, 0, 2);
-
-        gl.uniform1i(this.shaderProgram.crosshairs, 0);
+            gl.uniform1i(this.shaderProgram.crosshairs, 0);
+        }
     }
 
     // clean up
     gl.disable(gl.DEPTH_TEST);
+};
+
+
+
+papaya.viewer.ScreenSurface.prototype.bindActivePlanes = function (gl) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneAxialBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.activePlaneVertsAxial, gl.DYNAMIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneCoronalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.activePlaneVertsCoronal, gl.DYNAMIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneSagittalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.activePlaneVertsSagittal, gl.DYNAMIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneAxialEdgesBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.activePlaneVertsAxialEdges, gl.DYNAMIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneCoronalEdgesBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.activePlaneVertsCoronalEdges, gl.DYNAMIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.activePlaneSagittalEdgesBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.activePlaneVertsSagittalEdges, gl.DYNAMIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineXBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.crosshairLineVertsX, gl.DYNAMIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineYBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.crosshairLineVertsY, gl.DYNAMIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.crosshairLineZBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.crosshairLineVertsZ, gl.DYNAMIC_DRAW);
 };
 
 
@@ -640,7 +657,7 @@ papaya.viewer.ScreenSurface.prototype.clearTransform = function (xform) {
 papaya.viewer.ScreenSurface.prototype.updateActivePlanes = function () {
     var xSlice, ySlice, zSlice;
 
-    if (!this.surfaceLink) {
+    if (!this.showSurfacePlanes && !this.showSurfaceCrosshairs) {
         return;
     }
 
@@ -877,6 +894,12 @@ papaya.viewer.ScreenSurface.prototype.updateBackgroundColor = function () {
     } else {
         this.backgroundColor = papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND;
     }
+};
+
+
+
+papaya.viewer.ScreenSurface.prototype.isMainView = function () {
+    return (this.viewer.mainImage === this.viewer.surfaceView);
 };
 
 

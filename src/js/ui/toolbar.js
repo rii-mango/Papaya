@@ -115,7 +115,8 @@ papaya.ui.Toolbar.MENU_DATA = {
                 {"label": "Main Crosshairs", "action": "ShowMainCrosshairs", "type": "checkbox", "method": "isShowingMainCrosshairs"},
                 {"label": "Lower Crosshairs", "action": "ShowLowerCrosshairs", "type": "checkbox", "method": "isShowingLowerCrosshairs"},
                 {"type": "spacer", "required": "hasSurface"},
-                {"label": "Surface Planes", "action": "ShowActivePlanes", "type": "checkbox", "method": "isSurfaceLinked", "required" : "hasSurface"}
+                {"label": "Surface Crosshairs", "action": "ShowSurfaceCrosshairs", "type": "checkbox", "method": "isShowingSurfaceCrosshairs", "required" : "hasSurface"},
+                {"label": "Surface Planes", "action": "ShowSurfacePlanes", "type": "checkbox", "method": "isShowingSurfacePlanes", "required" : "hasSurface"}
             ]
         },
         {"label": "Settings", "icons": null,
@@ -123,7 +124,7 @@ papaya.ui.Toolbar.MENU_DATA = {
                 {"label": "Viewer Preferences", "action": "Preferences"},
                 {"label": "Surface Preferences", "action": "SurfacePreferences", "required" : "hasSurface"}
             ]
-            },
+        },
         {"label": "Help", "icons": null,
             "items": [
                 {"label": "Show Keyboard Reference", "action": "KeyboardRef"},
@@ -837,9 +838,26 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
         } else if (action.startsWith("LoadNegatives")) {
             imageIndex = action.substring(action.lastIndexOf("-") + 1);
             this.viewer.addParametric(imageIndex);
-        } else if (action.startsWith("ShowActivePlanes")) {
-            this.viewer.surfaceView.surfaceLink = !this.viewer.surfaceView.surfaceLink;
+        } else if (action.startsWith("ShowSurfacePlanes")) {
+            this.viewer.surfaceView.showSurfacePlanes = !this.viewer.surfaceView.showSurfacePlanes;
             this.viewer.surfaceView.updateActivePlanes();
+
+            if (this.container.preferences.showSurfacePlanes === "Yes") {
+                this.container.preferences.updatePreference("showSurfacePlanes", "No");
+            } else {
+                this.container.preferences.updatePreference("showSurfacePlanes", "Yes");
+            }
+            this.viewer.drawViewer(false, true);
+            this.closeAllMenus();
+        } else if (action.startsWith("ShowSurfaceCrosshairs")) {
+            this.viewer.surfaceView.showSurfaceCrosshairs = !this.viewer.surfaceView.showSurfaceCrosshairs;
+            this.viewer.surfaceView.updateActivePlanes();
+
+            if (this.container.preferences.showSurfaceCrosshairs === "Yes") {
+                this.container.preferences.updatePreference("showSurfaceCrosshairs", "No");
+            } else {
+                this.container.preferences.updatePreference("showSurfaceCrosshairs", "Yes");
+            }
             this.viewer.drawViewer(false, true);
             this.closeAllMenus();
         } else if (action.startsWith("rotation")) {

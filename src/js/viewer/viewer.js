@@ -2613,6 +2613,14 @@ papaya.viewer.Viewer.prototype.processParams = function (params) {
         if (params.showRuler !== undefined) {
             this.container.preferences.showRuler = (params.showRuler ? "Yes" : "No");
         }
+
+        if (params.showSurfacePlanes !== undefined) {
+            this.container.preferences.showSurfacePlanes = (params.showSurfacePlanes ? "Yes" : "No");
+        }
+
+        if (params.showSurfaceCrosshairs !== undefined) {
+            this.container.preferences.showSurfaceCrosshairs = (params.showSurfaceCrosshairs ? "Yes" : "No");
+        }
     }
 };
 
@@ -3149,8 +3157,14 @@ papaya.viewer.Viewer.prototype.isShowingLowerCrosshairs = function () {
 
 
 
-papaya.viewer.Viewer.prototype.isSurfaceLinked = function () {
-    return (this.surfaceView && this.surfaceView.surfaceLink);
+papaya.viewer.Viewer.prototype.isShowingSurfacePlanes = function () {
+    return (this.surfaceView && this.surfaceView.showSurfacePlanes);
+};
+
+
+
+papaya.viewer.Viewer.prototype.isShowingSurfaceCrosshairs = function () {
+    return (this.surfaceView && this.surfaceView.showSurfaceCrosshairs);
 };
 
 
