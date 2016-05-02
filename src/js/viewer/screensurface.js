@@ -86,7 +86,7 @@ var shaderFrag = [
     "    } else if (uColorPicking) {",
     "       gl_FragColor = vec4(fragmentColor.r, fragmentColor.g, fragmentColor.b, 1);",
     "    } else {",
-    "       gl_FragColor = vec4(fragmentColor.rgb * vLightWeighting, fragmentColor.a);",
+    "       gl_FragColor = vec4(fragmentColor.rgb * vLightWeighting, 1);",
     "    }",
     "}"
 ].join("\n");
@@ -130,8 +130,11 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.mouseRotDragX = this.clearTransform([]);
     this.mouseRotDragY = this.clearTransform([]);
     this.mouseRotDrag = this.clearTransform([]);
+    this.mouseTransDrag = this.clearTransform([]);
     this.mouseRotCurrent = this.clearTransform([]);
+    this.mouseTransCurrent = this.clearTransform([]);
     this.mouseRotTemp = this.clearTransform([]);
+    this.mouseTransTemp = this.clearTransform([]);
     this.activePlaneAxialBuffer = null;
     this.activePlaneCoronalBuffer = null;
     this.activePlaneSagittalBuffer = null;
@@ -433,7 +436,9 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     mat4.identity(this.mvMatrix);
     mat4.multiply(this.mouseRotDrag, this.mouseRotCurrent, this.mouseRotTemp);
-    mat4.set(this.mouseRotTemp, this.mvMatrix);
+    mat4.multiply(this.mouseTransDrag, this.mouseTransCurrent, this.mouseTransTemp);
+    mat4.multiply(this.mouseTransTemp, this.mouseRotTemp, this.tempMat);
+    mat4.set(this.tempMat, this.mvMatrix);
     this.updatePerspective();
     this.applyMatrixUniforms(gl);
 
@@ -637,9 +642,23 @@ papaya.viewer.ScreenSurface.prototype.updateDynamic = function (xLoc, yLoc, fact
 
 
 
+papaya.viewer.ScreenSurface.prototype.updateTranslateDynamic = function (xLoc, yLoc, factor) {
+    var transX = (xLoc - this.dynamicStartX) * papaya.viewer.ScreenSurface.MOUSE_SENSITIVITY * factor;
+    var transY = (yLoc - this.dynamicStartY) * papaya.viewer.ScreenSurface.MOUSE_SENSITIVITY * factor * -1;
+    mat4.identity(this.mouseTransDrag);
+    mat4.translate(this.mouseTransDrag, [transX, transY, 0]);
+};
+
+
+
 papaya.viewer.ScreenSurface.prototype.updateCurrent = function () {
     var temp = mat4.multiply(this.mouseRotDrag, this.mouseRotCurrent);
     mat4.set(temp, this.mouseRotCurrent);
+
+    temp = mat4.multiply(this.mouseTransDrag, this.mouseTransCurrent);
+    mat4.set(temp, this.mouseTransCurrent);
+
+    mat4.identity(this.mouseTransDrag);
     mat4.identity(this.mouseRotDragX);
     mat4.identity(this.mouseRotDragY);
     mat4.identity(this.mouseRotDrag);
