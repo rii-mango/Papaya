@@ -2020,7 +2020,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             this.previousMousePosition.x = currentMouseX;
             this.previousMousePosition.y = currentMouseY;
         } else if (this.isPanning) {
-            if (this.mainImage === this.surfaceView) {
+            if (this.selectedSlice === this.surfaceView) {
                 this.surfaceView.updateTranslateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
                 this.drawViewer(false, true);
             } else {
@@ -2031,7 +2031,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                 );
             }
         } else if (this.isZoomMode) {
-            if (this.mainImage === this.surfaceView) {
+            if (this.selectedSlice === this.surfaceView) {
                 zoomFactorCurrent = ((this.previousMousePosition.y - currentMouseY) * 0.5);
                 this.surfaceView.zoom += zoomFactorCurrent;
                 this.previousMousePosition.x = currentMouseX;
