@@ -31,6 +31,7 @@ var shaderVert = [
     "uniform bool uCrosshairs;",
     "uniform bool uColors;",
     "uniform bool uColorPicking;",
+    "uniform bool uTrianglePicking;",
     "uniform bool uColorSolid;",
     "uniform vec4 uSolidColor;",
 
@@ -62,11 +63,20 @@ var shaderFrag = [
     "uniform bool uCrosshairs;",
     "uniform bool uColors;",
     "uniform bool uColorPicking;",
+    "uniform bool uTrianglePicking;",
     "uniform bool uColorSolid;",
     "uniform vec4 uSolidColor;",
 
     "varying vec3 vLightWeighting;",
     "varying lowp vec4 vColor;",
+
+    "vec4 packFloatToVec4i(const float value) {",
+    "   const vec4 bitSh = vec4(256.0*256.0*256.0, 256.0*256.0, 256.0, 1.0);",
+    "   const vec4 bitMsk = vec4(0.0, 1.0/256.0, 1.0/256.0, 1.0/256.0);",
+    "   vec4 res = fract(value * bitSh);",
+    "   res -= res.xxyz * bitMsk;",
+    "   return res;",
+    "}",
 
     "void main(void) {",
     "    vec4 fragmentColor = vec4(1.0, 1.0, 1.0, 1.0);",
@@ -85,6 +95,8 @@ var shaderFrag = [
     "       gl_FragColor = vec4(0.10980392156863, 0.52549019607843, 0.93333333333333, 1.0);",
     "    } else if (uColorPicking) {",
     "       gl_FragColor = vec4(fragmentColor.r, fragmentColor.g, fragmentColor.b, 1);",
+    "    } else if (uTrianglePicking) {",
+    "       gl_FragColor = packFloatToVec4i(gl_FragCoord.z);",
     "    } else {",
     "       gl_FragColor = vec4(fragmentColor.rgb * vLightWeighting, 1);",
     "    }",
@@ -161,6 +173,8 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.pickLocY = 0;
     this.needsPickColor = false;
     this.pickedColor = null;
+    this.needsPick = false;
+    this.pickedCoordinate = null;
 
     this.processParams(params);
 };
@@ -231,6 +245,7 @@ papaya.viewer.ScreenSurface.initShaders = function (gl) {
     shaderProgram.activePlane = gl.getUniformLocation(shaderProgram, "uActivePlane");
     shaderProgram.activePlaneEdge = gl.getUniformLocation(shaderProgram, "uActivePlaneEdge");
     shaderProgram.colorPicking = gl.getUniformLocation(shaderProgram, "uColorPicking");
+    shaderProgram.trianglePicking = gl.getUniformLocation(shaderProgram, "uTrianglePicking");
     shaderProgram.crosshairs = gl.getUniformLocation(shaderProgram, "uCrosshairs");
     shaderProgram.hasColors = gl.getUniformLocation(shaderProgram, "uColors");
     shaderProgram.hasSolidColor = gl.getUniformLocation(shaderProgram, "uColorSolid");
@@ -272,6 +287,11 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
     papaya.viewer.ScreenSurface.EXT_INT = this.context.getExtension('OES_element_index_uint');
     if (!papaya.viewer.ScreenSurface.EXT_INT) {
         console.log("This browser does not support OES_element_index_uint extension!");
+    }
+
+    var depthTextureExtension = this.context.getExtension("WEBGL_depth_texture");
+    if (!depthTextureExtension) {
+        console.log("depth textures not supported");
     }
 
     this.updateBackgroundColor();
@@ -426,6 +446,13 @@ papaya.viewer.ScreenSurface.prototype.updatePerspective = function () {
 
 
 
+papaya.viewer.ScreenSurface.prototype.unpackFloatFromVec4i = function (val) {
+    var bitSh = [1.0/(256.0*256.0*256.0), 1.0/(256.0*256.0), 1.0/256.0, 1.0];
+    return ((val[0] * bitSh[0]) + (val[1] * bitSh[1]) + (val[2] * bitSh[2]) + (val[3] * bitSh[3]));
+};
+
+
+
 papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     var ctr;
 
@@ -451,8 +478,15 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     gl.uniform1i(this.shaderProgram.crosshairs, 0);
     gl.uniform1i(this.shaderProgram.hasColors, 0);
     gl.uniform1i(this.shaderProgram.colorPicking, 0);
+    gl.uniform1i(this.shaderProgram.trianglePicking, 0);
 
-    if (this.needsPickColor) {
+    if (this.needsPick) {
+        gl.uniform1i(this.shaderProgram.trianglePicking, 1);
+
+        if ((this.pickingBuffer === null) || (this.pickingBuffer.length !== (gl.viewportWidth * gl.viewportHeight * 4))) {
+            this.pickingBuffer = new Uint8Array(gl.viewportWidth * gl.viewportHeight * 4);
+        }
+    } else if (this.needsPickColor) {
         gl.uniform1i(this.shaderProgram.colorPicking, 1);
 
         if ((this.pickingBuffer === null) || (this.pickingBuffer.length !== (gl.viewportWidth * gl.viewportHeight * 4))) {
@@ -494,9 +528,12 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     gl.uniform1i(this.shaderProgram.hasSolidColor, 0);
     gl.uniform1i(this.shaderProgram.hasColors, 0);
 
-    if (this.needsPickColor) {
+    if (this.needsPick) {
+        this.needsPick = false;
+        this.pickedCoordinate = this.findPickedCoordinate(gl);
+        gl.uniform1i(this.shaderProgram.trianglePicking, 0);
+    } else if (this.needsPickColor) {
         this.needsPickColor = false;
-        gl.readPixels(0, 0, gl.viewportWidth, gl.viewportHeight, gl.RGBA, gl.UNSIGNED_BYTE, this.pickingBuffer);
         this.pickedColor = this.findPickedColor(gl);
         gl.uniform1i(this.shaderProgram.colorPicking, 0);
     } else {
@@ -576,6 +613,7 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     // clean up
     gl.disable(gl.DEPTH_TEST);
 };
+
 
 
 
@@ -866,6 +904,17 @@ papaya.viewer.ScreenSurface.prototype.updateActivePlanes = function () {
 
 
 
+papaya.viewer.ScreenSurface.prototype.pick = function (xLoc, yLoc) {
+    this.needsPick = true;
+    this.pickLocX = xLoc;
+    this.pickLocY = yLoc;
+    this.draw(); // do picking
+    this.draw(); // redraw scene
+    return this.pickedCoordinate;
+};
+
+
+
 papaya.viewer.ScreenSurface.prototype.pickColor = function (xLoc, yLoc) {
     this.needsPickColor = true;
     this.pickLocX = xLoc;
@@ -877,8 +926,38 @@ papaya.viewer.ScreenSurface.prototype.pickColor = function (xLoc, yLoc) {
 
 
 
+papaya.viewer.ScreenSurface.prototype.findPickedCoordinate = function (gl) {
+    var winX = this.pickLocX,
+        winY = (gl.viewportHeight - 1 - this.pickLocY),
+        winZ, viewportArray, success, modelPointArrayResults = [];
+
+    gl.readPixels(winX, winY, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this.pickingBuffer);
+    winZ = (this.unpackFloatFromVec4i(this.pickingBuffer) / 255.0);
+
+    if (winZ >= 1) {
+        return null;
+    }
+
+    viewportArray = [0, 0, gl.viewportWidth, gl.viewportHeight];
+
+    success = GLU.unProject(
+        winX, winY, winZ,
+        this.mvMatrix, this.pMatrix,
+        viewportArray, modelPointArrayResults);
+
+    if (success) {
+        return modelPointArrayResults;
+    }
+
+    return null;
+};
+
+
+
 papaya.viewer.ScreenSurface.prototype.findPickedColor = function (gl) {
-    var index = (gl.viewportHeight - 1 - this.pickLocY) * gl.viewportWidth * 4 + this.pickLocX * 4;
+    var index;
+    gl.readPixels(0, 0, gl.viewportWidth, gl.viewportHeight, gl.RGBA, gl.UNSIGNED_BYTE, this.pickingBuffer);
+    index = (gl.viewportHeight - 1 - this.pickLocY) * gl.viewportWidth * 4 + this.pickLocX * 4;
     return [this.pickingBuffer[index], this.pickingBuffer[index + 1], this.pickingBuffer[index + 2]];
 };
 

@@ -76,6 +76,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.controlsHidden = false;
     this.loadingDTI = false;
     this.loadingDTIModRef = null;
+    this.tempCoor = new papaya.core.Coordinate();
 
     this.listenerContextMenu = function (me) { me.preventDefault(); return false; };
     this.listenerMouseMove = papaya.utilities.ObjectUtils.bind(this, this.mouseMoveEvent);
@@ -847,7 +848,7 @@ papaya.viewer.Viewer.prototype.isInsideMainSlice = function (xLoc, yLoc) {
 
 
 papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, crosshairsOnly) {
-    var xImageLoc, yImageLoc, temp, originalX, originalY;
+    var xImageLoc, yImageLoc, temp, originalX, originalY, surfaceCoord;
 
     viewer.updateOffsetRect();
     originalX = xLoc;
@@ -942,7 +943,7 @@ papaya.viewer.Viewer.prototype.convertCoordinateToScreen = function (coor, scree
 
 
 papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yLoc) {
-    var xImageLoc, yImageLoc, zImageLoc, found;
+    var xImageLoc, yImageLoc, zImageLoc, surfaceCoord = null, found;
 
     if (this.container.display) {
         xLoc = xLoc - this.canvasRect.left;
@@ -963,13 +964,25 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yL
             zImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.sagittalSlice);
             xImageLoc = viewer.sagittalSlice.currentSlice;
             found = true;
+        } else if (this.insideScreenSlice(viewer.surfaceView, xLoc, yLoc)) {
+            xLoc -= viewer.surfaceView.screenOffsetX;
+            yLoc -= viewer.surfaceView.screenOffsetY;
+
+            surfaceCoord = this.surfaceView.pick(xLoc, yLoc);
+
+            if (surfaceCoord) {
+                this.getIndexCoordinateAtWorld(surfaceCoord[0], surfaceCoord[1], surfaceCoord[2], this.tempCoor);
+                xImageLoc = this.tempCoor.x;
+                yImageLoc = this.tempCoor.y;
+                zImageLoc = this.tempCoor.z;
+                found = true;
+            }
         }
 
         if (found) {
             this.cursorPosition.x = xImageLoc;
             this.cursorPosition.y = yImageLoc;
             this.cursorPosition.z = zImageLoc;
-
             this.container.display.drawDisplay(xImageLoc, yImageLoc, zImageLoc);
         } else {
             this.container.display.drawEmptyDisplay();
@@ -1867,13 +1880,14 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                 if (this.selectedSlice && (this.selectedSlice !== this.surfaceView)) {
                     this.grabbedHandle = this.selectedSlice.findProximalRulerHandle(this.convertScreenToImageCoordinateX(this.previousMousePosition.x - this.canvasRect.left, this.selectedSlice),
                         this.convertScreenToImageCoordinateY(this.previousMousePosition.y - this.canvasRect.top, this.selectedSlice));
+
+                    if (this.grabbedHandle === null) {
+                        this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), false);
+                        this.resetUpdateTimer(me);
+                    }
                 } else if (this.selectedSlice && (this.selectedSlice === this.surfaceView)) {
                     this.surfaceView.setStartDynamic(this.previousMousePosition.x, this.previousMousePosition.y);
-                }
-
-                if (this.grabbedHandle === null) {
-                    this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), false);
-                    this.resetUpdateTimer(me);
+                    this.container.display.drawEmptyDisplay();
                 }
             }
 
@@ -1903,6 +1917,10 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
         if (me.handled !== true) {
             if (!this.isWindowControl && !this.isZoomMode && !this.isContextMode && (this.grabbedHandle === null)) {
                 this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
+            }
+
+            if (this.selectedSlice === this.surfaceView) {
+                this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
             }
 
             this.zoomFactorPrevious = this.zoomFactor;
@@ -2056,6 +2074,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                 if (this.selectedSlice === this.surfaceView) {
                     this.surfaceView.updateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
                     this.drawViewer(false, true);
+                    this.container.display.drawEmptyDisplay();
                 } else {
                     this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
                 }
