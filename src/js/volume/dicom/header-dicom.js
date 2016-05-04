@@ -314,7 +314,7 @@ papaya.volume.dicom.HeaderDICOM.prototype.getVoxelDimensions = function () {
             sliceDis = Math.abs(this.series.images[0].getSliceLocation() - this.series.images[1].getSliceLocation());
 
             if (sliceDis === 0) {
-                sliceDis = this.series.images[0].getSliceThickness();
+                sliceDis = Math.max(this.series.images[0].getSliceGap(), this.series.images[0].getSliceThickness());
             }
 
             voxelDimensions = new papaya.volume.VoxelDimensions(pixelSpacing[1], pixelSpacing[0], sliceDis,
