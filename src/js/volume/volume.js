@@ -120,62 +120,6 @@ papaya.volume.Volume.prototype.readURLs = function (urls, callback) {
 
 
 
-papaya.volume.Volume.prototype.readNextURL = function (vol, index) {
-    var supported, xhr, progPerc;
-
-    if (index < vol.urls.length) {
-        try {
-
-            progPerc = parseInt(100 * (index + 1) / vol.urls.length, 10);
-
-            vol.progressMeter.drawProgress(index / vol.urls.length, papaya.volume.Volume.PROGRESS_LABEL_LOADING + ' image ' + (index + 1) + ' of ' + vol.urls.length + ' (' + progPerc + '%)');
-
-            supported = typeof new XMLHttpRequest().responseType === 'string';
-            if (supported) {
-                xhr = new XMLHttpRequest();
-                xhr.open('GET', vol.urls[index], true);
-                xhr.responseType = 'arraybuffer';
-
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            vol.rawData[index] = xhr.response;
-                            vol.fileLength = vol.rawData.byteLength;
-                            vol.readNextURL(vol, index + 1);
-                        } else {
-                            vol.error = new Error("There was a problem reading that file (" +
-                                vol.fileName + "):\n\nResponse status = " + xhr.status);
-                            vol.finishedLoad();
-                        }
-                    }
-                };
-
-                xhr.onprogress = function (evt) {
-                    if(evt.lengthComputable) {
-                        vol.progressMeter.drawProgress(evt.loaded / evt.total, papaya.volume.Volume.PROGRESS_LABEL_LOADING);
-                    }
-                };
-
-                xhr.send(null);
-            } else {
-                vol.error = new Error("There was a problem reading that file (" + vol.fileName +
-                    "):\n\nResponse type is not supported.");
-                vol.finishedLoad();
-            }
-        } catch (err) {
-            if (vol !== null) {
-                vol.error = new Error("There was a problem reading that file (" +
-                    vol.fileName + "):\n\n" + err.message);
-                vol.finishedLoad();
-            }
-        }
-    } else {
-        setTimeout(function () {vol.decompress(vol); }, 0);
-    }
-};
-
-
-
 papaya.volume.Volume.prototype.readEncodedData = function (names, callback) {
     var vol = null;
 
