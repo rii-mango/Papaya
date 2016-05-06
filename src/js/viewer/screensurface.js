@@ -187,7 +187,6 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.zDim = this.volume.header.imageDimensions.zDim;
     this.zHalf = (this.zDim * this.zSize) / 2.0;
     this.showSurfacePlanes = (viewer.container.preferences.showSurfacePlanes === "Yes");
-    this.showSurfaceCrosshairs = (viewer.container.preferences.showSurfaceCrosshairs === "Yes");
     this.backgroundColor = papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND;
     this.pickLocX = 0;
     this.pickLocY = 0;
@@ -655,7 +654,7 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
             gl.uniform1i(this.shaderProgram.activePlaneEdge, 0);
         }
 
-        if (this.showSurfaceCrosshairs) {
+        if (this.viewer.isShowingCrosshairs() && ((this.viewer.mainImage !== this) || this.viewer.toggleMainCrosshairs)) {
             if (this.needsUpdateActivePlanes) {
                 this.needsUpdateActivePlanes = false;
                 this.bindActivePlanes(gl);
@@ -922,7 +921,7 @@ papaya.viewer.ScreenSurface.prototype.makeOrientationSquare = function () {
 papaya.viewer.ScreenSurface.prototype.updateActivePlanes = function () {
     var xSlice, ySlice, zSlice;
 
-    if (!this.showSurfacePlanes && !this.showSurfaceCrosshairs) {
+    if (!this.showSurfacePlanes && !this.viewer.isShowingCrosshairs()) {
         return;
     }
 

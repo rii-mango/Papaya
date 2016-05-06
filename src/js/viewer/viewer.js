@@ -1120,7 +1120,7 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
         this.drawOrientation();
     }
 
-    if (this.container.preferences.showCrosshairs !== "None") {
+    if (this.container.preferences.showCrosshairs === "Yes") {
         this.drawCrosshairs();
     }
 
@@ -1353,9 +1353,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
     this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR;
     this.context.lineWidth = 1.0;
 
-    if ((((this.mainImage !== this.axialSlice) && (this.container.preferences.showCrosshairs !== 'Main')) ||
-        ((this.mainImage === this.axialSlice) && (this.container.preferences.showCrosshairs !== 'Lower') &&
-        this.toggleMainCrosshairs)) && (this.container.orthogonal || (this.axialSlice === this.mainImage))) {
+    if ((this.mainImage !== this.axialSlice) || this.toggleMainCrosshairs) {
         // draw axial crosshairs
         this.context.save();
         this.context.beginPath();
@@ -1386,9 +1384,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
     }
 
 
-    if ((((this.mainImage !== this.coronalSlice) && (this.container.preferences.showCrosshairs !== 'Main')) ||
-        ((this.mainImage === this.coronalSlice) && (this.container.preferences.showCrosshairs !== 'Lower') &&
-        this.toggleMainCrosshairs)) && (this.container.orthogonal || (this.coronalSlice === this.mainImage))) {
+    if ((this.mainImage !== this.coronalSlice) || this.toggleMainCrosshairs) {
         // draw coronal crosshairs
         this.context.save();
         this.context.beginPath();
@@ -1420,9 +1416,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.context.restore();
     }
 
-    if ((((this.mainImage !== this.sagittalSlice) && (this.container.preferences.showCrosshairs !== 'Main')) ||
-        ((this.mainImage === this.sagittalSlice) && (this.container.preferences.showCrosshairs !== 'Lower') &&
-        this.toggleMainCrosshairs)) && (this.container.orthogonal || (this.sagittalSlice === this.mainImage))) {
+    if ((this.mainImage !== this.sagittalSlice) || this.toggleMainCrosshairs) {
         // draw sagittal crosshairs
         this.context.save();
         this.context.beginPath();
@@ -1664,8 +1658,7 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
             this.incrementSagittal(false);
         }
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_TOGGLE_CROSSHAIRS) {
-        if ((this.container.preferences.showCrosshairs === "All") ||
-            (this.container.preferences.showCrosshairs === "Main")) {
+        if (this.container.preferences.showCrosshairs === "Yes") {
             this.toggleMainCrosshairs = !this.toggleMainCrosshairs;
             this.drawViewer(true);
         }
@@ -3187,14 +3180,8 @@ papaya.viewer.Viewer.prototype.isShowingOrientation = function () {
 
 
 
-papaya.viewer.Viewer.prototype.isShowingMainCrosshairs = function () {
-    return (this.container.preferences.showCrosshairs === "Main") || (this.container.preferences.showCrosshairs === "All");
-};
-
-
-
-papaya.viewer.Viewer.prototype.isShowingLowerCrosshairs = function () {
-    return (this.container.preferences.showCrosshairs === "Lower") || (this.container.preferences.showCrosshairs === "All");
+papaya.viewer.Viewer.prototype.isShowingCrosshairs = function () {
+    return (this.container.preferences.showCrosshairs === "Yes");
 };
 
 
