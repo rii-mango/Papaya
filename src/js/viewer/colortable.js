@@ -62,6 +62,10 @@ papaya.viewer.ColorTable.TABLE_BLUE2WHITE = {"name": "Blue Overlay", "data": [[0
     [0.95, 0, 1, 1], [1, 1, 1, 1]], "gradation": true};
 papaya.viewer.ColorTable.TABLE_DTI_SPECTRUM = {"name": "Spectrum", "data": [[0, 1, 0, 0], [0.5, 0, 1, 0], [1, 0, 0, 1]],
     "gradation": true};
+papaya.viewer.ColorTable.TABLE_FIRE = {"name": "Fire", "data": [[0, 0, 0, 0], [0.06, 0, 0, 0.36], [0.16, 0.29, 0, 0.75],
+    [0.22, 0.48, 0, 0.89], [0.31, 0.68, 0, 0.6], [0.37, 0.76, 0, 0.36], [0.5, 0.94, 0.31, 0], [0.56, 1, 0.45, 0],
+    [0.81, 1, 0.91, 0], [0.88, 1, 1, 0.38], [1,1,1,1]], "gradation": true};
+    
 
 papaya.viewer.ColorTable.ARROW_ICON = "data:image/gif;base64,R0lGODlhCwARAPfGMf//////zP//mf//Zv//M///AP/M///MzP/Mmf/M" +
     "Zv/MM//MAP+Z//+ZzP+Zmf+ZZv+ZM/+ZAP9m//9mzP9mmf9mZv9mM/9mAP8z//8zzP8zmf8zZv8zM/8zAP8A//8AzP8Amf8AZv8AM/8AAMz//8z/" +
@@ -82,6 +86,7 @@ papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES = [papaya.viewer.ColorTable.TAB
     papaya.viewer.ColorTable.TABLE_BLUE2GREEN];
 
 papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES = [
+    papaya.viewer.ColorTable.TABLE_FIRE,
     papaya.viewer.ColorTable.TABLE_RED2WHITE,
     papaya.viewer.ColorTable.TABLE_GREEN2WHITE,
     papaya.viewer.ColorTable.TABLE_BLUE2WHITE
@@ -96,7 +101,8 @@ papaya.viewer.ColorTable.TABLE_ALL = [
     papaya.viewer.ColorTable.TABLE_GOLD,
     papaya.viewer.ColorTable.TABLE_RED2WHITE,
     papaya.viewer.ColorTable.TABLE_GREEN2WHITE,
-    papaya.viewer.ColorTable.TABLE_BLUE2WHITE
+    papaya.viewer.ColorTable.TABLE_BLUE2WHITE,
+    papaya.viewer.ColorTable.TABLE_FIRE
 ];
 
 papaya.viewer.ColorTable.LUT_MIN = 0;
