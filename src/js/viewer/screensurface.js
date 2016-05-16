@@ -690,6 +690,7 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
 
             this.bindOrientation(gl);
             gl.enableVertexAttribArray(this.shaderProgram.textureCoordAttribute);
+            gl.uniform1i(this.shaderProgram.orientationText, 1);
 
             this.drawOrientationText(gl, "S", [(xSlice * this.xSize) - this.xHalf, (ySlice * this.ySize) - this.yHalf,
                 this.zHalf + papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.zDim / 2) -
@@ -736,7 +737,6 @@ papaya.viewer.ScreenSurface.prototype.drawOrientationText = function (gl, str, c
     this.orientationContext.fillStyle = "#FFFFFF";
     this.orientationContext.fillText(str, this.orientationCanvas.width/2, this.orientationCanvas.height/2);
 
-    gl.uniform1i(this.shaderProgram.orientationText, 1);
     mat4.set(this.mvMatrix, this.tempMat);
     mat4.multiplyVec3(this.mvMatrix, coord);
     mat4.identity(this.mvMatrix);
