@@ -35,7 +35,7 @@ var shaderVert = [
     "uniform bool uTrianglePicking;",
     "uniform bool uColorSolid;",
     "uniform vec4 uSolidColor;",
-    "uniform bool uOrientation;",
+    "uniform bool uOrientationText;",
 
     "varying vec3 vLightWeighting;",
     "varying lowp vec4 vColor;",
@@ -44,7 +44,7 @@ var shaderVert = [
     "void main(void) {",
     "    vec4 mvPosition = uMVMatrix * vec4(aVertexPosition, 1.0);",
     "    gl_Position = uPMatrix * mvPosition;",
-    "    if (!uActivePlane && !uActivePlaneEdge && !uCrosshairs && !uOrientation) {",
+    "    if (!uActivePlane && !uActivePlaneEdge && !uCrosshairs && !uOrientationText) {",
     "       vec3 lightDirection = normalize(uPointLightingLocation - mvPosition.xyz);",
     "       vec3 transformedNormal = uNMatrix * aVertexNormal;",
     "       float directionalLightWeighting = max(dot(transformedNormal, lightDirection), 0.0);",
@@ -56,7 +56,7 @@ var shaderVert = [
     "       }",
     "    }",
 
-    "   if (uOrientation) {",
+    "   if (uOrientationText) {",
     "       vTextureCoord = aTextureCoord;",
     "   }",
     "}"
@@ -73,7 +73,7 @@ var shaderFrag = [
     "uniform bool uTrianglePicking;",
     "uniform bool uColorSolid;",
     "uniform vec4 uSolidColor;",
-    "uniform bool uOrientation;",
+    "uniform bool uOrientationText;",
     "uniform sampler2D uSampler;",
 
     "varying vec3 vLightWeighting;",
@@ -101,7 +101,7 @@ var shaderFrag = [
     "       gl_FragColor = vec4(0.10980392156863, 0.52549019607843, 0.93333333333333, 0.5);",
     "    } else if (uActivePlaneEdge) {",
     "       gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);",
-    "    } else if (uOrientation) {",
+    "    } else if (uOrientationText) {",
     "        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));",
     "        if (textureColor.a > 0.0) {",
     "           gl_FragColor = vec4(textureColor.rgb, textureColor.a);",
@@ -275,7 +275,7 @@ papaya.viewer.ScreenSurface.initShaders = function (gl) {
     shaderProgram.hasColors = gl.getUniformLocation(shaderProgram, "uColors");
     shaderProgram.hasSolidColor = gl.getUniformLocation(shaderProgram, "uColorSolid");
     shaderProgram.solidColor = gl.getUniformLocation(shaderProgram, "uSolidColor");
-    shaderProgram.orientationText = gl.getUniformLocation(shaderProgram, "uOrientation");
+    shaderProgram.orientationText = gl.getUniformLocation(shaderProgram, "uOrientationText");
     shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
 
     return shaderProgram;
@@ -535,6 +535,7 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     gl.uniform3f(this.shaderProgram.pointLightingLocationUniform, 0, 0, 300);
     gl.uniform3f(this.shaderProgram.pointLightingColorUniform, 0.8, 0.8, 0.8);
 
+    gl.uniform1i(this.shaderProgram.orientationText, 0);
     gl.uniform1i(this.shaderProgram.activePlane, 0);
     gl.uniform1i(this.shaderProgram.activePlaneEdge, 0);
     gl.uniform1i(this.shaderProgram.crosshairs, 0);
@@ -679,6 +680,17 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
             ySlice = this.yDim - this.currentCoord.y - ((this.yDim / 2) - this.volume.header.origin.y);
             zSlice = this.zDim - this.currentCoord.z - ((this.zDim / 2) - this.volume.header.origin.z);
 
+            if (this.orientationCanvas === null) {
+                this.initOrientationBuffers(this.context);
+            }
+
+            if (this.orientationTexture === null) {
+                this.orientationTexture = gl.createTexture();
+            }
+
+            this.bindOrientation(gl);
+            gl.enableVertexAttribArray(this.shaderProgram.textureCoordAttribute);
+
             this.drawOrientationText(gl, "S", [(xSlice * this.xSize) - this.xHalf, (ySlice * this.ySize) - this.yHalf,
                 this.zHalf + papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.zDim / 2) -
                 this.volume.header.origin.z) * this.zSize]);
@@ -697,6 +709,9 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
             this.drawOrientationText(gl, "R", [this.xHalf + papaya.viewer.ScreenSurface.ORIENTATION_SIZE *
                 this.scaleFactor + ((this.xDim / 2) - this.volume.header.origin.x) * this.xSize,
                 (ySlice * this.ySize) - this.yHalf, (zSlice * this.zSize) - this.zHalf]);
+
+            gl.uniform1i(this.shaderProgram.orientationText, 0);
+            gl.disableVertexAttribArray(this.shaderProgram.textureCoordAttribute);
         }
     }
 
@@ -707,14 +722,6 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
 
 
 papaya.viewer.ScreenSurface.prototype.drawOrientationText = function (gl, str, coord) {
-    if (this.orientationCanvas === null) {
-        this.initOrientationBuffers(this.context);
-    }
-
-    if (this.orientationTexture === null) {
-        this.orientationTexture = gl.createTexture();
-    }
-
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
@@ -729,8 +736,6 @@ papaya.viewer.ScreenSurface.prototype.drawOrientationText = function (gl, str, c
     this.orientationContext.fillStyle = "#FFFFFF";
     this.orientationContext.fillText(str, this.orientationCanvas.width/2, this.orientationCanvas.height/2);
 
-    this.bindOrientation(gl);
-
     gl.uniform1i(this.shaderProgram.orientationText, 1);
     mat4.set(this.mvMatrix, this.tempMat);
     mat4.multiplyVec3(this.mvMatrix, coord);
@@ -739,7 +744,6 @@ papaya.viewer.ScreenSurface.prototype.drawOrientationText = function (gl, str, c
     gl.bindBuffer(gl.ARRAY_BUFFER, this.orientationBuffer);
     gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.orientationBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    gl.enableVertexAttribArray(this.shaderProgram.textureCoordAttribute);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
     gl.bindTexture(gl.TEXTURE_2D, this.orientationTexture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -761,8 +765,6 @@ papaya.viewer.ScreenSurface.prototype.drawOrientationText = function (gl, str, c
     mat4.set(this.tempMat, this.mvMatrix);
     this.applyMatrixUniforms(gl);
 
-    gl.uniform1i(this.shaderProgram.orientationText, 0);
-    gl.disableVertexAttribArray(this.shaderProgram.textureCoordAttribute);
     gl.disable(gl.BLEND);
 };
 
