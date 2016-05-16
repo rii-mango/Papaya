@@ -102,13 +102,12 @@ var shaderFrag = [
     "    } else if (uActivePlaneEdge) {",
     "       gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);",
     "    } else if (uOrientation) {",
-    "       vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));",
-    "if (textureColor.a > 0.0) {",
-    "       gl_FragColor = vec4(textureColor.rgb, textureColor.a);",
-    "} else {",
-    "       gl_FragColor = vec4(textureColor.rgb, 0);",
-    "}",
-
+    "        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));",
+    "        if (textureColor.a > 0.0) {",
+    "           gl_FragColor = vec4(textureColor.rgb, textureColor.a);",
+    "        } else {",
+    "           gl_FragColor = vec4(textureColor.rgb, 0);",
+    "        }",
     "    } else if (uCrosshairs) {",
     "       gl_FragColor = vec4(0.10980392156863, 0.52549019607843, 0.93333333333333, 1.0);",
     "    } else if (uColorPicking) {",
@@ -309,7 +308,6 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
 
     this.calculateScaleFactor();
     this.initActivePlaneBuffers(this.context);
-    this.initOrientationBuffers(this.context);
 
     mat4.multiply(this.centerMat, papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION, this.tempMat);
     mat4.multiply(this.tempMat, this.centerMatInv, this.mouseRotCurrent);
@@ -317,11 +315,6 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
     papaya.viewer.ScreenSurface.EXT_INT = this.context.getExtension('OES_element_index_uint');
     if (!papaya.viewer.ScreenSurface.EXT_INT) {
         console.log("This browser does not support OES_element_index_uint extension!");
-    }
-
-    var depthTextureExtension = this.context.getExtension("WEBGL_depth_texture");
-    if (!depthTextureExtension) {
-        console.log("depth textures not supported");
     }
 
     this.updateBackgroundColor();
@@ -714,6 +707,10 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
 
 
 papaya.viewer.ScreenSurface.prototype.drawOrientationText = function (gl, str, coord) {
+    if (this.orientationCanvas === null) {
+        this.initOrientationBuffers(this.context);
+    }
+
     if (this.orientationTexture === null) {
         this.orientationTexture = gl.createTexture();
     }
@@ -900,7 +897,7 @@ papaya.viewer.ScreenSurface.prototype.makeOrientationSquare = function () {
     this.orientationVerts[10] = -half;
     this.orientationVerts[11] = 0;
 
-    this.orientationCanvas  = document.createElement("canvas");
+    this.orientationCanvas = document.createElement("canvas");
     this.orientationContext = this.orientationCanvas.getContext('2d');
 
     this.orientationContext.imageSmoothingEnabled = true;
