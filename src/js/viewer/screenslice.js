@@ -68,7 +68,8 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
     var origin, voxelDims, ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha, timepoint, rgb, dti, valueA,
         dtiLines, dtiX1, dtiY1, dtiX2, dtiY2, dtiX1T, dtiY1T, dtiX2T, dtiY2T, dtiXC, dtiYC, valueR, valueG, valueB,
         angle, s, c, dtiColors, dtiLocX, dtiLocY, dtiLocZ, dtiRGB, angle2, dtiAlphaFactor, readFirstRaster = false,
-        radioFactor, dtiColorIndex = 0, interpolation, usedRaster = false, worldSpace = this.manager.isWorldMode();
+        radioFactor, dtiColorIndex = 0, interpolation, usedRaster = false, worldSpace = this.manager.isWorldMode(),
+        originalVal;
 
     slice = Math.round(slice);
 
@@ -305,6 +306,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                         }
 
                         index = ((ctrY * this.xDim) + ctrX) * 4;
+                        originalVal = value;
                         this.imageData[ctr][index] = value;
 
                         if ((!this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMin)) ||
@@ -321,17 +323,17 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                         }
 
                         if (!readFirstRaster) {
-                            this.imageDataDraw.data[index] = this.screenVolumes[ctr].colorTable.lookupRed(value) * layerAlpha;
-                            this.imageDataDraw.data[index + 1] = this.screenVolumes[ctr].colorTable.lookupGreen(value) * layerAlpha;
-                            this.imageDataDraw.data[index + 2] = this.screenVolumes[ctr].colorTable.lookupBlue(value) * layerAlpha;
+                            this.imageDataDraw.data[index] = this.screenVolumes[ctr].colorTable.lookupRed(value, originalVal) * layerAlpha;
+                            this.imageDataDraw.data[index + 1] = this.screenVolumes[ctr].colorTable.lookupGreen(value, originalVal) * layerAlpha;
+                            this.imageDataDraw.data[index + 2] = this.screenVolumes[ctr].colorTable.lookupBlue(value, originalVal) * layerAlpha;
                             this.imageDataDraw.data[index + 3] = thresholdAlpha;
                         } else if (thresholdAlpha > 0) {
                             this.imageDataDraw.data[index] = (this.imageDataDraw.data[index] * (1 - layerAlpha) +
-                                this.screenVolumes[ctr].colorTable.lookupRed(value) * layerAlpha);
+                                this.screenVolumes[ctr].colorTable.lookupRed(value, originalVal) * layerAlpha);
                             this.imageDataDraw.data[index + 1] = (this.imageDataDraw.data[index + 1] * (1 - layerAlpha) +
-                                this.screenVolumes[ctr].colorTable.lookupGreen(value) * layerAlpha);
+                                this.screenVolumes[ctr].colorTable.lookupGreen(value, originalVal) * layerAlpha);
                             this.imageDataDraw.data[index + 2] = (this.imageDataDraw.data[index + 2] * (1 - layerAlpha) +
-                                this.screenVolumes[ctr].colorTable.lookupBlue(value) * layerAlpha);
+                                this.screenVolumes[ctr].colorTable.lookupBlue(value, originalVal) * layerAlpha);
                             this.imageDataDraw.data[index + 3] = thresholdAlpha;
                         }
                     }
@@ -360,7 +362,7 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
 
     var ctr, ctrY, ctrX, value, thresholdAlpha, index = 0, layerAlpha, rgb, dti, dtiLines, dtiRGB, angle2,
         dtiXC, dtiYC, dtiX1, dtiX2, dtiY1, dtiY2, dtiX1T, dtiX2T, dtiY1T, dtiY2T, angle, s, c, dtiColors,
-        valueR, valueG, valueB, dtiColorIndex = 0, readFirstRaster = false;
+        valueR, valueG, valueB, dtiColorIndex = 0, readFirstRaster = false, originalVal;
 
     slice = Math.round(slice);
 
@@ -483,6 +485,7 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                         }
                     } else {
                         value = this.imageData[ctr][index];
+                        originalVal = value;
 
                         if ((!this.screenVolumes[ctr].negative && (value <= this.screenVolumes[ctr].screenMin)) ||
                                 (this.screenVolumes[ctr].negative && (value >= this.screenVolumes[ctr].screenMin)) ||
@@ -498,17 +501,17 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                         }
 
                         if (!readFirstRaster) {
-                            this.imageDataDraw.data[index] = this.screenVolumes[ctr].colorTable.lookupRed(value) * layerAlpha;
-                            this.imageDataDraw.data[index + 1] = this.screenVolumes[ctr].colorTable.lookupGreen(value) * layerAlpha;
-                            this.imageDataDraw.data[index + 2] = this.screenVolumes[ctr].colorTable.lookupBlue(value) * layerAlpha;
+                            this.imageDataDraw.data[index] = this.screenVolumes[ctr].colorTable.lookupRed(value, originalVal) * layerAlpha;
+                            this.imageDataDraw.data[index + 1] = this.screenVolumes[ctr].colorTable.lookupGreen(value, originalVal) * layerAlpha;
+                            this.imageDataDraw.data[index + 2] = this.screenVolumes[ctr].colorTable.lookupBlue(value, originalVal) * layerAlpha;
                             this.imageDataDraw.data[index + 3] = thresholdAlpha;
                         } else if (thresholdAlpha > 0) {
                             this.imageDataDraw.data[index] = (this.imageDataDraw.data[index] * (1 - layerAlpha) +
-                                this.screenVolumes[ctr].colorTable.lookupRed(value) * layerAlpha);
+                                this.screenVolumes[ctr].colorTable.lookupRed(value, originalVal) * layerAlpha);
                             this.imageDataDraw.data[index + 1] = (this.imageDataDraw.data[index + 1] * (1 - layerAlpha) +
-                                this.screenVolumes[ctr].colorTable.lookupGreen(value) * layerAlpha);
+                                this.screenVolumes[ctr].colorTable.lookupGreen(value, originalVal) * layerAlpha);
                             this.imageDataDraw.data[index + 2] = (this.imageDataDraw.data[index + 2] * (1 - layerAlpha) +
-                                this.screenVolumes[ctr].colorTable.lookupBlue(value) * layerAlpha);
+                                this.screenVolumes[ctr].colorTable.lookupBlue(value, originalVal) * layerAlpha);
                             this.imageDataDraw.data[index + 3] = thresholdAlpha;
                         }
                     }
