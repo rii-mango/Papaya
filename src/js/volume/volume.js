@@ -111,67 +111,101 @@ papaya.volume.Volume.prototype.readNextFile = function (vol, index) {
 
 
 papaya.volume.Volume.prototype.readURLs = function (urls, callback) {
+    var self = this;
     this.urls = urls;
     this.fileName = urls[0].substr(urls[0].lastIndexOf("/") + 1, urls[0].length);
     this.onFinishedRead = callback;
     this.compressed = this.fileIsCompressed(this.fileName);
-    this.readNextURL(this, 0);
+
+    this.rawData = [];
+    this.loadedFileCount = 0;
+    this.readEachURL(this)
+        .done(function () {
+            // recieves `arguments` which are results off xhr requests
+            setTimeout(function () {self.decompress(self); }, 0);
+        })
+        .fail(function (vol, err, xhr) {
+
+            var message = err.message || '';
+            // if error came from ajax request
+            if ( typeof xhr !== "undefined" ) {
+                message = "Response status = " + xhr.status;
+            }
+
+            vol.error = new Error("There was a problem reading that file (" +
+                vol.fileName + "):\n\n" + message);
+            vol.finishedLoad();
+        });
+
 };
 
 
 
-papaya.volume.Volume.prototype.readNextURL = function (vol, index) {
-    var supported, xhr, progPerc;
+papaya.volume.Volume.prototype.loadURL = function (url, vol) {
+    var supported, deferredLoading, xhr, progPerc, progressText;
 
-    if (index < vol.urls.length) {
-        try {
+    deferredLoading = jQuery.Deferred();
 
-            progPerc = parseInt(100 * (index + 1) / vol.urls.length, 10);
+    supported = typeof new XMLHttpRequest().responseType === 'string';
+    if (supported) {
+        xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'arraybuffer';
 
-            vol.progressMeter.drawProgress(index / vol.urls.length, papaya.volume.Volume.PROGRESS_LABEL_LOADING + ' image ' + (index + 1) + ' of ' + vol.urls.length + ' (' + progPerc + '%)');
-
-            supported = typeof new XMLHttpRequest().responseType === 'string';
-            if (supported) {
-                xhr = new XMLHttpRequest();
-                xhr.open('GET', vol.urls[index], true);
-                xhr.responseType = 'arraybuffer';
-
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            vol.rawData[index] = xhr.response;
-                            vol.fileLength = vol.rawData.byteLength;
-                            vol.readNextURL(vol, index + 1);
-                        } else {
-                            vol.error = new Error("There was a problem reading that file (" +
-                                vol.fileName + "):\n\nResponse status = " + xhr.status);
-                            vol.finishedLoad();
-                        }
-                    }
-                };
-
-                xhr.onprogress = function (evt) {
-                    if(evt.lengthComputable) {
-                        vol.progressMeter.drawProgress(evt.loaded / evt.total, papaya.volume.Volume.PROGRESS_LABEL_LOADING);
-                    }
-                };
-
-                xhr.send(null);
-            } else {
-                vol.error = new Error("There was a problem reading that file (" + vol.fileName +
-                    "):\n\nResponse type is not supported.");
-                vol.finishedLoad();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    vol.fileLength = vol.rawData.byteLength;
+                    deferredLoading.resolve( xhr.response );
+                } else {
+                    deferredLoading.reject(vol,false,xhr);
+                }
             }
-        } catch (err) {
-            if (vol !== null) {
-                vol.error = new Error("There was a problem reading that file (" +
-                    vol.fileName + "):\n\n" + err.message);
-                vol.finishedLoad();
+        };
+
+        xhr.onprogress = function (evt) {
+            if(evt.lengthComputable) {
+                deferredLoading.notify(evt.loaded, evt.total);
             }
-        }
+        };
+
+        xhr.send(null);
     } else {
-        setTimeout(function () {vol.decompress(vol); }, 0);
+        vol.error = new Error("There was a problem reading that file (" + vol.fileName +
+            "):\n\nResponse type is not supported.");
+        vol.finishedLoad();
     }
+
+    var promise = deferredLoading
+        .promise()
+        .done(function (file) {
+            vol.loadedFileCount++;
+            vol.rawData.push(file);
+        })
+        .fail(function (vol, err, xhr) {
+            console.error(vol, err, xhr);
+        })
+        .progress(function (loaded,total) {
+            progPerc = parseInt(100 * (vol.loadedFileCount) / vol.urls.length, 10);
+            progressText = papaya.volume.Volume.PROGRESS_LABEL_LOADING + 
+                ' image ' + (vol.loadedFileCount + 1) + ' of ' + vol.urls.length + ' (' + progPerc + '%)';
+            vol.progressMeter.drawProgress(loaded / total, progressText);
+        });
+
+    return promise;
+};
+
+
+
+papaya.volume.Volume.prototype.readEachURL = function (vol, index) {
+    var deferredLoads = [];
+    for (var i = 0; i < vol.urls.length; i++) {
+        var getFileDeferred = vol.loadURL( vol.urls[i], vol );
+        deferredLoads.push(
+            getFileDeferred
+        );
+    }
+    return $.when.apply($, deferredLoads); 
 };
 
 
