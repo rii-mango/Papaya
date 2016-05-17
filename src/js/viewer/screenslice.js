@@ -30,7 +30,7 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
     this.screenTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
     this.zoomTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
     this.finalTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
-    this.radiologicalTransform = [[-1, 0, this.xDim], [0, 1, 0], [0, 0, 1]];
+    this.radiologicalTransform = [[1, 0, 0], [0, -1, this.yDim], [0, 0, 1]];
     this.tempTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
     this.tempTransform2 = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
     this.screenTransform2 = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
@@ -712,8 +712,7 @@ papaya.viewer.ScreenSlice.prototype.updateFinalTransform = function () {
 
 
 papaya.viewer.ScreenSlice.prototype.isRadiologicalSensitive = function () {
-    return ((this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) ||
-        (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL));
+    return (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL);
 };
 
 
