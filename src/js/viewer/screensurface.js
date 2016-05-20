@@ -1325,7 +1325,7 @@ papaya.viewer.ScreenSurface.prototype.findPickedCoordinate = function (gl, xLoc,
 papaya.viewer.ScreenSurface.prototype.findInitialRulerPoints = function (gl) {
     var xDim = gl.viewportWidth,
         yDim = gl.viewportHeight,
-        coord, points = [], final = [], xLoc, yLoc, ctr, index;
+        coord, points = [], finalPoints = [], xLoc, yLoc, ctr, index;
 
     for (ctr = 1; ctr < 5; ctr += 1) {
         xLoc = parseInt(xDim * .1 * ctr, 10);
@@ -1368,7 +1368,7 @@ papaya.viewer.ScreenSurface.prototype.findInitialRulerPoints = function (gl) {
         }
     }
 
-    final.push(points[index].coordinate);
+    finalPoints.push(points[index].coordinate);
     points.splice(index, 1);
 
     index = 0;
@@ -1378,14 +1378,14 @@ papaya.viewer.ScreenSurface.prototype.findInitialRulerPoints = function (gl) {
         }
     }
 
-    final.push(points[index].coordinate);
+    finalPoints.push(points[index].coordinate);
 
-    this.rulerPoints[0] = final[0][0];
-    this.rulerPoints[1] = final[0][1];
-    this.rulerPoints[2] = final[0][2];
-    this.rulerPoints[3] = final[1][0];
-    this.rulerPoints[4] = final[1][1];
-    this.rulerPoints[5] = final[1][2];
+    this.rulerPoints[0] = finalPoints[0][0];
+    this.rulerPoints[1] = finalPoints[0][1];
+    this.rulerPoints[2] = finalPoints[0][2];
+    this.rulerPoints[3] = finalPoints[1][0];
+    this.rulerPoints[4] = finalPoints[1][1];
+    this.rulerPoints[5] = finalPoints[1][2];
 
     return true;
 };
