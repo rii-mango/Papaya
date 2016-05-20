@@ -1001,7 +1001,7 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yL
             surfaceCoord = this.surfaceView.pick(xLoc, yLoc);
 
             if (surfaceCoord) {
-                this.getIndexCoordinateAtWorld(surfaceCoord[0], surfaceCoord[1], surfaceCoord[2], this.tempCoor);
+                this.getIndexCoordinateAtWorld(surfaceCoord.coordinate[0], surfaceCoord.coordinate[1], surfaceCoord.coordinate[2], this.tempCoor);
                 xImageLoc = this.tempCoor.x;
                 yImageLoc = this.tempCoor.y;
                 zImageLoc = this.tempCoor.z;

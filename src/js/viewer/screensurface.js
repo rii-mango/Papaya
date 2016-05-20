@@ -36,6 +36,7 @@ var shaderVert = [
     "uniform bool uColorSolid;",
     "uniform vec4 uSolidColor;",
     "uniform bool uOrientationText;",
+    "uniform bool uRuler;",
 
     "varying vec3 vLightWeighting;",
     "varying lowp vec4 vColor;",
@@ -44,7 +45,7 @@ var shaderVert = [
     "void main(void) {",
     "    vec4 mvPosition = uMVMatrix * vec4(aVertexPosition, 1.0);",
     "    gl_Position = uPMatrix * mvPosition;",
-    "    if (!uActivePlane && !uActivePlaneEdge && !uCrosshairs && !uOrientationText && !uColorSolid) {",
+    "    if (!uActivePlane && !uActivePlaneEdge && !uCrosshairs && !uOrientationText && !uRuler) {",
     "       vec3 lightDirection = normalize(uPointLightingLocation - mvPosition.xyz);",
     "       vec3 transformedNormal = uNMatrix * aVertexNormal;",
     "       float directionalLightWeighting = max(dot(transformedNormal, lightDirection), 0.0);",
@@ -76,6 +77,7 @@ var shaderFrag = [
     "uniform bool uColorSolid;",
     "uniform vec4 uSolidColor;",
     "uniform bool uOrientationText;",
+    "uniform bool uRuler;",
     "uniform sampler2D uSampler;",
 
     "varying vec3 vLightWeighting;",
@@ -103,6 +105,8 @@ var shaderFrag = [
     "       gl_FragColor = vec4(0.10980392156863, 0.52549019607843, 0.93333333333333, 0.5);",
     "    } else if (uActivePlaneEdge) {",
     "       gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);",
+    "    } else if (uRuler) {",
+    "       gl_FragColor = vec4(1.0, 0.078, 0.576, 1.0);",
     "    } else if (uOrientationText) {",
     "        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));",
     "        if (textureColor.a > 0.0) {",
@@ -116,8 +120,6 @@ var shaderFrag = [
     "       gl_FragColor = vec4(fragmentColor.r, fragmentColor.g, fragmentColor.b, 1);",
     "    } else if (uTrianglePicking) {",
     "       gl_FragColor = packFloatToVec4i(gl_FragCoord.z);",
-    "    } else if (uColorSolid) {",
-    "       gl_FragColor = fragmentColor;",
     "    } else {",
     "       gl_FragColor = vec4(fragmentColor.rgb * vLightWeighting, 1);",
     "    }",
@@ -287,6 +289,7 @@ papaya.viewer.ScreenSurface.initShaders = function (gl) {
     shaderProgram.solidColor = gl.getUniformLocation(shaderProgram, "uSolidColor");
     shaderProgram.orientationText = gl.getUniformLocation(shaderProgram, "uOrientationText");
     shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+    shaderProgram.ruler = gl.getUniformLocation(shaderProgram, "uRuler");
 
     return shaderProgram;
 };
@@ -736,6 +739,8 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
 
         if (this.viewer.container.preferences.showRuler === "Yes") {
             this.drawRuler(gl);
+        } else {
+            this.rulerPoints = null;
         }
     }
 
@@ -754,15 +759,13 @@ papaya.viewer.ScreenSurface.prototype.drawRuler = function (gl) {
     }
 
     if (found) {
+        gl.uniform1i(this.shaderProgram.ruler, 1);
+
         // draw endpoints
         this.drawRulerPoint(gl, this.rulerPoints[0], this.rulerPoints[1], this.rulerPoints[2]);
         this.drawRulerPoint(gl, this.rulerPoints[3], this.rulerPoints[4], this.rulerPoints[5]);
 
         // draw line
-        gl.uniform1i(this.shaderProgram.hasSolidColor, 1);
-        gl.uniform4f(this.shaderProgram.solidColor, papaya.viewer.ScreenSurface.RULER_COLOR[0],
-            papaya.viewer.ScreenSurface.RULER_COLOR[1], papaya.viewer.ScreenSurface.RULER_COLOR[2], 1.0);
-
         gl.bindBuffer(gl.ARRAY_BUFFER, this.rulerLineBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, this.rulerPoints, gl.DYNAMIC_DRAW);
 
@@ -770,7 +773,7 @@ papaya.viewer.ScreenSurface.prototype.drawRuler = function (gl) {
         gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.rulerLineBuffer.itemSize, gl.FLOAT,
             false, 0, 0);
         gl.drawArrays(gl.LINES, 0, 2);
-        gl.uniform1i(this.shaderProgram.hasSolidColor, 0);
+        gl.uniform1i(this.shaderProgram.ruler, 0);
     }
 };
 
@@ -808,8 +811,6 @@ papaya.viewer.ScreenSurface.prototype.drawRulerPoint = function (gl, xLoc, yLoc,
     gl.drawElements(gl.TRIANGLES, this.sphereVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
     mat4.set(this.tempMat, this.mvMatrix);
     this.applyMatrixUniforms(gl);
-
-    gl.uniform1i(this.shaderProgram.hasSolidColor, 0);
 };
 
 
@@ -929,11 +930,11 @@ papaya.viewer.ScreenSurface.prototype.findProximalRulerHandle = function (xLoc, 
 
     if (this.pickedCoordinate && this.rulerPoints) {
         if (papaya.utilities.MathUtils.lineDistance3d(this.rulerPoints[0], this.rulerPoints[1],
-                this.rulerPoints[2], this.pickedCoordinate[0], this.pickedCoordinate[1], this.pickedCoordinate[2]) <
+                this.rulerPoints[2], this.pickedCoordinate.coordinate[0], this.pickedCoordinate.coordinate[1], this.pickedCoordinate.coordinate[2]) <
                 papaya.viewer.ScreenSlice.GRAB_RADIUS) {
             this.grabbedRulerPoint = 0;
         } else if (papaya.utilities.MathUtils.lineDistance3d(this.rulerPoints[3], this.rulerPoints[4],
-                this.rulerPoints[5], this.pickedCoordinate[0], this.pickedCoordinate[1], this.pickedCoordinate[2]) <
+                this.rulerPoints[5], this.pickedCoordinate.coordinate[0], this.pickedCoordinate.coordinate[1], this.pickedCoordinate.coordinate[2]) <
                 papaya.viewer.ScreenSlice.GRAB_RADIUS) {
             this.grabbedRulerPoint = 1;
         }
@@ -1270,9 +1271,9 @@ papaya.viewer.ScreenSurface.prototype.pickRuler = function (xLoc, yLoc) {
     this.draw(); // do picking
 
     if (this.pickedCoordinate) {
-        this.rulerPoints[(this.grabbedRulerPoint * 3) + 0] = this.pickedCoordinate[0];
-        this.rulerPoints[(this.grabbedRulerPoint * 3) + 1] = this.pickedCoordinate[1];
-        this.rulerPoints[(this.grabbedRulerPoint * 3) + 2] = this.pickedCoordinate[2];
+        this.rulerPoints[(this.grabbedRulerPoint * 3) + 0] = this.pickedCoordinate.coordinate[0];
+        this.rulerPoints[(this.grabbedRulerPoint * 3) + 1] = this.pickedCoordinate.coordinate[1];
+        this.rulerPoints[(this.grabbedRulerPoint * 3) + 2] = this.pickedCoordinate.coordinate[2];
 
         this.draw(); // redraw scene
     }
@@ -1313,7 +1314,7 @@ papaya.viewer.ScreenSurface.prototype.findPickedCoordinate = function (gl, xLoc,
         viewportArray, modelPointArrayResults);
 
     if (success) {
-        return modelPointArrayResults;
+        return {coordinate: modelPointArrayResults, depth: winZ};
     }
 
     return null;
@@ -1324,55 +1325,69 @@ papaya.viewer.ScreenSurface.prototype.findPickedCoordinate = function (gl, xLoc,
 papaya.viewer.ScreenSurface.prototype.findInitialRulerPoints = function (gl) {
     var xDim = gl.viewportWidth,
         yDim = gl.viewportHeight,
-        coord, xLoc, yLoc, ctr, index = 0;
+        coord, points = [], final = [], xLoc, yLoc, ctr, index;
 
-    for (ctr = 1; (ctr < 5) && (index < 2); ctr += 1) {
+    for (ctr = 1; ctr < 5; ctr += 1) {
         xLoc = parseInt(xDim * .1 * ctr, 10);
         yLoc = parseInt(yDim * .1 * ctr, 10);
         coord = this.pick(xLoc, yLoc, true);
         if (coord) {
-            this.rulerPoints[(index * 3) + 0] = coord[0];
-            this.rulerPoints[(index * 3) + 1] = coord[1];
-            this.rulerPoints[(index * 3) + 2] = coord[2];
-            index++;
+            points.push(coord);
         }
 
         xLoc = parseInt(xDim - (xDim * .1) * ctr, 10);
         yLoc = parseInt(yDim * .1 * ctr, 10);
         coord = this.pick(xLoc, yLoc, true);
         if (coord) {
-            this.rulerPoints[(index * 3) + 0] = coord[0];
-            this.rulerPoints[(index * 3) + 1] = coord[1];
-            this.rulerPoints[(index * 3) + 2] = coord[2];
-            index++;
+            points.push(coord);
         }
 
-        if (index < 2) {
-            xLoc = parseInt(xDim - (xDim * .1) * ctr, 10);
-            yLoc = parseInt(yDim - (yDim * .1) * ctr, 10);
-            coord = this.pick(xLoc, yLoc, true);
-            if (coord) {
-                this.rulerPoints[(index * 3) + 0] = coord[0];
-                this.rulerPoints[(index * 3) + 1] = coord[1];
-                this.rulerPoints[(index * 3) + 2] = coord[2];
-                index++;
-            }
+        xLoc = parseInt(xDim - (xDim * .1) * ctr, 10);
+        yLoc = parseInt(yDim - (yDim * .1) * ctr, 10);
+        coord = this.pick(xLoc, yLoc, true);
+        if (coord) {
+            points.push(coord);
         }
 
-        if (index < 2) {
-            xLoc = parseInt(xDim * .1 * ctr, 10);
-            yLoc = parseInt(yDim - (yDim * .1) * ctr, 10);
-            coord = this.pick(xLoc, yLoc, true);
-            if (coord) {
-                this.rulerPoints[(index * 3) + 0] = coord[0];
-                this.rulerPoints[(index * 3) + 1] = coord[1];
-                this.rulerPoints[(index * 3) + 2] = coord[2];
-                index++;
-            }
+        xLoc = parseInt(xDim * .1 * ctr, 10);
+        yLoc = parseInt(yDim - (yDim * .1) * ctr, 10);
+        coord = this.pick(xLoc, yLoc, true);
+        if (coord) {
+            points.push(coord);
         }
     }
 
-    return (index >= 2);
+    if (points < 2) {
+        return false;
+    }
+
+    index = 0;
+    for (ctr = 0; ctr < points.length; ctr += 1) {
+        if (points[ctr].depth < points[index].depth) {
+            index = ctr;
+        }
+    }
+
+    final.push(points[index].coordinate);
+    points.splice(index, 1);
+
+    index = 0;
+    for (ctr = 0; ctr < points.length; ctr += 1) {
+        if (points[ctr].depth < points[index].depth) {
+            index = ctr;
+        }
+    }
+
+    final.push(points[index].coordinate);
+
+    this.rulerPoints[0] = final[0][0];
+    this.rulerPoints[1] = final[0][1];
+    this.rulerPoints[2] = final[0][2];
+    this.rulerPoints[3] = final[1][0];
+    this.rulerPoints[4] = final[1][1];
+    this.rulerPoints[5] = final[1][2];
+
+    return true;
 };
 
 
@@ -1483,6 +1498,7 @@ papaya.viewer.ScreenSurface.prototype.makeSphere = function (latitudeBands, long
 
     return {vertices:vertexPositionData, normals:normalData, indices:indexData};
 };
+
 
 
 papaya.viewer.ScreenSurface.prototype.getRulerLength = function () {
