@@ -212,6 +212,36 @@ papaya.viewer.Viewer.getOffsetRect = function (elem) {
 };
 
 
+
+// http://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
+papaya.viewer.Viewer.drawRoundRect = function (ctx, x, y, width, height, radius, fill, stroke) {
+    if (typeof stroke === "undefined" ) {
+        stroke = true;
+    }
+    if (typeof radius === "undefined") {
+        radius = 5;
+    }
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+    if (stroke) {
+        ctx.stroke();
+    }
+    if (fill) {
+        ctx.fill();
+    }
+};
+
+
+
 /*** Prototype Methods ***/
 
 papaya.viewer.Viewer.prototype.loadImage = function (refs, forceUrl, forceEncode) {
@@ -1147,10 +1177,26 @@ papaya.viewer.Viewer.prototype.hasSurface = function () {
 
 
 papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
+    var textWidth, textWidthExample, offset, padding = 5;
+
     if (slice === this.surfaceView) {
         this.context.fillStyle = this.surfaceView.getBackgroundColor();
         this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
         this.context.drawImage(slice.canvas, slice.screenOffsetX, slice.screenOffsetY);
+
+        if (this.container.preferences.showRuler === "Yes") {
+            if (this.surfaceView === this.mainImage) {
+                this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
+                textWidth = this.context.measureText("Ruler Length: ").width;
+                textWidthExample = this.context.measureText("Ruler Length: 000.00").width;
+                offset = (textWidthExample / 2);
+
+                this.context.fillStyle = "#ffb3db";
+                this.context.fillText("Ruler Length:  ", slice.screenDim / 2 - (offset / 2), papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + padding);
+                this.context.fillStyle = "#FFFFFF";
+                this.context.fillText(this.surfaceView.getRulerLength().toFixed(2), (slice.screenDim / 2) + textWidth - (offset / 2), papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + padding);
+            }
+        }
     } else {
         this.context.fillStyle = papaya.viewer.Viewer.BACKGROUND_COLOR;
         this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -1240,34 +1286,6 @@ papaya.viewer.Viewer.prototype.drawOrientation = function () {
 };
 
 
-// http://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
-papaya.viewer.Viewer.prototype.drawRoundRect = function (ctx, x, y, width, height, radius, fill, stroke) {
-    if (typeof stroke === "undefined" ) {
-        stroke = true;
-    }
-    if (typeof radius === "undefined") {
-        radius = 5;
-    }
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    ctx.lineTo(x + width, y + height - radius);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    ctx.lineTo(x + radius, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-    ctx.closePath();
-    if (stroke) {
-        ctx.stroke();
-    }
-    if (fill) {
-        ctx.fill();
-    }
-};
-
-
 
 papaya.viewer.Viewer.prototype.drawRuler = function () {
     var ruler1x, ruler1y, ruler2x, ruler2y, text, metrics, textWidth, textHeight, padding, xText, yText;
@@ -1335,7 +1353,7 @@ papaya.viewer.Viewer.prototype.drawRuler = function () {
     yText = parseInt((ruler1y + ruler2y) / 2) + (textHeight / 2);
 
     this.context.fillStyle = "#FFFFFF";
-    this.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight+ (padding * 2), 5, true, false);
+    papaya.viewer.Viewer.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight+ (padding * 2), 5, true, false);
 
     this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
     this.context.strokeStyle = "#FF1493";
@@ -1879,7 +1897,14 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                         this.resetUpdateTimer(me);
                     }
                 } else if (this.selectedSlice && (this.selectedSlice === this.surfaceView)) {
-                    this.surfaceView.setStartDynamic(this.previousMousePosition.x, this.previousMousePosition.y);
+                    if (this.surfaceView.findProximalRulerHandle(this.previousMousePosition.x - this.canvasRect.left,
+                            this.previousMousePosition.y - this.canvasRect.top)) {
+
+                    } else {
+                        this.isPanning = this.isShiftKeyDown;
+                        this.surfaceView.setStartDynamic(this.previousMousePosition.x, this.previousMousePosition.y);
+                    }
+
                     this.container.display.drawEmptyDisplay();
                 }
             }
@@ -1908,7 +1933,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
 
     if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
         if (me.handled !== true) {
-            if (!this.isWindowControl && !this.isZoomMode && !this.isContextMode && (this.grabbedHandle === null)) {
+            if (!this.isWindowControl && !this.isZoomMode && !this.isContextMode && (this.grabbedHandle === null) && (!this.surfaceView || (this.surfaceView.grabbedRulerPoint === -1))) {
                 this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
             }
 
@@ -1936,7 +1961,11 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
     this.container.toolbar.closeAllMenus(true);
 
     if (this.hasSurface()) {
-        this.surfaceView.updateCurrent();
+        if (this.surfaceView.grabbedRulerPoint === -1) {
+            this.surfaceView.updateCurrent();
+        } else {
+            this.surfaceView.grabbedRulerPoint = -1;
+        }
 
         if (papaya.utilities.PlatformUtils.smallScreen) {
             this.drawViewer(true, false);
@@ -2065,9 +2094,15 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
 
             if (this.selectedSlice !== null) {
                 if (this.selectedSlice === this.surfaceView) {
-                    this.surfaceView.updateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
-                    this.drawViewer(false, true);
-                    this.container.display.drawEmptyDisplay();
+                    if (this.surfaceView.grabbedRulerPoint !== -1) {
+                        this.surfaceView.pickRuler(currentMouseX - this.canvasRect.left,
+                            currentMouseY - this.canvasRect.top);
+                        this.drawViewer(false, true);
+                    } else {
+                        this.surfaceView.updateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
+                        this.drawViewer(false, true);
+                        this.container.display.drawEmptyDisplay();
+                    }
                 } else {
                     this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
                 }

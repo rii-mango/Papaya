@@ -44,17 +44,19 @@ var shaderVert = [
     "void main(void) {",
     "    vec4 mvPosition = uMVMatrix * vec4(aVertexPosition, 1.0);",
     "    gl_Position = uPMatrix * mvPosition;",
-    "    if (!uActivePlane && !uActivePlaneEdge && !uCrosshairs && !uOrientationText) {",
+    "    if (!uActivePlane && !uActivePlaneEdge && !uCrosshairs && !uOrientationText && !uColorSolid) {",
     "       vec3 lightDirection = normalize(uPointLightingLocation - mvPosition.xyz);",
     "       vec3 transformedNormal = uNMatrix * aVertexNormal;",
     "       float directionalLightWeighting = max(dot(transformedNormal, lightDirection), 0.0);",
     "       vLightWeighting = uAmbientColor + uPointLightingColor * directionalLightWeighting;",
     "       if (uColors) {",
     "           vColor = aVertexColor;",
-    "       } else if (uColorSolid) {",
-    "           vColor = uSolidColor;",
     "       }",
-    "    }",
+    "   }",
+
+    "   if (uColorSolid) {",
+    "       vColor = uSolidColor;",
+    "   }",
 
     "   if (uOrientationText) {",
     "       vTextureCoord = aTextureCoord;",
@@ -114,6 +116,8 @@ var shaderFrag = [
     "       gl_FragColor = vec4(fragmentColor.r, fragmentColor.g, fragmentColor.b, 1);",
     "    } else if (uTrianglePicking) {",
     "       gl_FragColor = packFloatToVec4i(gl_FragCoord.z);",
+    "    } else if (uColorSolid) {",
+    "       gl_FragColor = fragmentColor;",
     "    } else {",
     "       gl_FragColor = vec4(fragmentColor.rgb * vLightWeighting, 1);",
     "    }",
@@ -199,6 +203,8 @@ papaya.viewer.ScreenSurface = papaya.viewer.ScreenSurface || function (baseVolum
     this.orientationTextureCoordBuffer = null;
     this.orientationCanvas = null;
     this.orientationContext = null;
+    this.rulerPoints = null;
+    this.grabbedRulerPoint = -1;
 
     this.processParams(params);
 };
@@ -215,6 +221,10 @@ papaya.viewer.ScreenSurface.MOUSE_SENSITIVITY = 0.3;
 papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND = [0.5, 0.5, 0.5];
 papaya.viewer.ScreenSurface.TEXT_SIZE = 50;
 papaya.viewer.ScreenSurface.ORIENTATION_SIZE = 10;
+papaya.viewer.ScreenSurface.RULER_COLOR = [1, 0.078, 0.576];
+papaya.viewer.ScreenSurface.RULER_NUM_LINES = 25;
+papaya.viewer.ScreenSurface.RULER_RADIUS = 1;
+
 
 /*** Static Variables ***/
 
@@ -308,6 +318,7 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
 
     this.calculateScaleFactor();
     this.initActivePlaneBuffers(this.context);
+    this.initRulerBuffers(this.context);
 
     mat4.multiply(this.centerMat, papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION, this.tempMat);
     mat4.multiply(this.tempMat, this.centerMatInv, this.mouseRotCurrent);
@@ -408,7 +419,7 @@ papaya.viewer.ScreenSurface.prototype.initBuffers = function (gl, surface) {
 
 
 papaya.viewer.ScreenSurface.prototype.initOrientationBuffers = function (gl) {
-    this.makeOrientationSquare();
+    this.makeOrientedTextSquare();
     this.orientationBuffer = gl.createBuffer();
     this.orientationBuffer.itemSize = 3;
     this.orientationBuffer.numItems = 4;
@@ -466,6 +477,29 @@ papaya.viewer.ScreenSurface.prototype.initActivePlaneBuffers = function (gl) {
     this.crosshairLineZBuffer = gl.createBuffer();
     this.crosshairLineZBuffer.itemSize = 3;
     this.crosshairLineZBuffer.numItems = 2;
+};
+
+
+
+papaya.viewer.ScreenSurface.prototype.initRulerBuffers = function (gl) {
+    this.rulerPointData = this.makeSphere(papaya.viewer.ScreenSurface.RULER_NUM_LINES,
+        papaya.viewer.ScreenSurface.RULER_NUM_LINES, papaya.viewer.ScreenSurface.RULER_RADIUS);
+
+    this.sphereVertexPositionBuffer = gl.createBuffer();
+    this.sphereVertexPositionBuffer.itemSize = 3;
+    this.sphereVertexPositionBuffer.numItems = this.rulerPointData.vertices.length / 3;
+
+    this.sphereNormalsPositionBuffer = gl.createBuffer();
+    this.sphereNormalsPositionBuffer.itemSize = 3;
+    this.sphereNormalsPositionBuffer.numItems = this.rulerPointData.normals.length / 3;
+
+    this.sphereVertexIndexBuffer = gl.createBuffer();
+    this.sphereVertexIndexBuffer.itemSize = 1;
+    this.sphereVertexIndexBuffer.numItems = this.rulerPointData.indices.length;
+
+    this.rulerLineBuffer = gl.createBuffer();
+    this.rulerLineBuffer.itemSize = 3;
+    this.rulerLineBuffer.numItems = 2;
 };
 
 
@@ -594,7 +628,7 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     // do picking if necessary
     if (this.needsPick) {
         this.needsPick = false;
-        this.pickedCoordinate = this.findPickedCoordinate(gl);
+        this.pickedCoordinate = this.findPickedCoordinate(gl, this.pickLocX, this.pickLocY);
         gl.uniform1i(this.shaderProgram.trianglePicking, 0);
     } else if (this.needsPickColor) {
         this.needsPickColor = false;
@@ -675,44 +709,33 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
 
         // draw orientation
         if ((this.viewer.mainImage === this.viewer.surfaceView) &&
-                (this.viewer.container.preferences.showOrientation === "Yes")) {
+            (this.viewer.container.preferences.showOrientation === "Yes")) {
             xSlice = this.currentCoord.x + ((this.xDim / 2) - this.volume.header.origin.x);
             ySlice = this.yDim - this.currentCoord.y - ((this.yDim / 2) - this.volume.header.origin.y);
             zSlice = this.zDim - this.currentCoord.z - ((this.zDim / 2) - this.volume.header.origin.z);
 
-            if (this.orientationCanvas === null) {
-                this.initOrientationBuffers(this.context);
-            }
-
-            if (this.orientationTexture === null) {
-                this.orientationTexture = gl.createTexture();
-            }
-
-            this.bindOrientation(gl);
-            gl.enableVertexAttribArray(this.shaderProgram.textureCoordAttribute);
-            gl.uniform1i(this.shaderProgram.orientationText, 1);
-
-            this.drawOrientationText(gl, "S", [(xSlice * this.xSize) - this.xHalf, (ySlice * this.ySize) - this.yHalf,
+            this.drawOrientedText(gl, "S", papaya.viewer.ScreenSurface.TEXT_SIZE, [(xSlice * this.xSize) - this.xHalf, (ySlice * this.ySize) - this.yHalf,
                 this.zHalf + papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.zDim / 2) -
                 this.volume.header.origin.z) * this.zSize]);
-            this.drawOrientationText(gl, "I", [(xSlice * this.xSize) - this.xHalf, (ySlice * this.ySize) - this.yHalf,
+            this.drawOrientedText(gl, "I", papaya.viewer.ScreenSurface.TEXT_SIZE,[(xSlice * this.xSize) - this.xHalf, (ySlice * this.ySize) - this.yHalf,
                 -this.zHalf - papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.zDim / 2) -
                 this.volume.header.origin.z) * this.zSize]);
-            this.drawOrientationText(gl, "P", [(xSlice * this.xSize) - this.xHalf, -this.yHalf -
-                papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.yDim / 2) -
-                this.volume.header.origin.y) * this.ySize, (zSlice * this.zSize) - this.zHalf]);
-            this.drawOrientationText(gl, "A", [(xSlice * this.xSize) - this.xHalf, this.yHalf +
-                papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.yDim / 2) -
-                this.volume.header.origin.y) * this.ySize, (zSlice * this.zSize) - this.zHalf]);
-            this.drawOrientationText(gl, "L", [-this.xHalf - papaya.viewer.ScreenSurface.ORIENTATION_SIZE *
-                this.scaleFactor + ((this.xDim / 2) - this.volume.header.origin.x) * this.xSize,
+            this.drawOrientedText(gl, "P", papaya.viewer.ScreenSurface.TEXT_SIZE, [(xSlice * this.xSize) - this.xHalf, -this.yHalf -
+            papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.yDim / 2) -
+            this.volume.header.origin.y) * this.ySize, (zSlice * this.zSize) - this.zHalf]);
+            this.drawOrientedText(gl, "A", papaya.viewer.ScreenSurface.TEXT_SIZE, [(xSlice * this.xSize) - this.xHalf, this.yHalf +
+            papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor - ((this.yDim / 2) -
+            this.volume.header.origin.y) * this.ySize, (zSlice * this.zSize) - this.zHalf]);
+            this.drawOrientedText(gl, "L", papaya.viewer.ScreenSurface.TEXT_SIZE, [-this.xHalf - papaya.viewer.ScreenSurface.ORIENTATION_SIZE *
+            this.scaleFactor + ((this.xDim / 2) - this.volume.header.origin.x) * this.xSize,
                 (ySlice * this.ySize) - this.yHalf, (zSlice * this.zSize) - this.zHalf]);
-            this.drawOrientationText(gl, "R", [this.xHalf + papaya.viewer.ScreenSurface.ORIENTATION_SIZE *
-                this.scaleFactor + ((this.xDim / 2) - this.volume.header.origin.x) * this.xSize,
+            this.drawOrientedText(gl, "R", papaya.viewer.ScreenSurface.TEXT_SIZE, [this.xHalf + papaya.viewer.ScreenSurface.ORIENTATION_SIZE *
+            this.scaleFactor + ((this.xDim / 2) - this.volume.header.origin.x) * this.xSize,
                 (ySlice * this.ySize) - this.yHalf, (zSlice * this.zSize) - this.zHalf]);
+        }
 
-            gl.uniform1i(this.shaderProgram.orientationText, 0);
-            gl.disableVertexAttribArray(this.shaderProgram.textureCoordAttribute);
+        if (this.viewer.container.preferences.showRuler === "Yes") {
+            this.drawRuler(gl);
         }
     }
 
@@ -722,7 +745,90 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
 
 
 
-papaya.viewer.ScreenSurface.prototype.drawOrientationText = function (gl, str, coord) {
+papaya.viewer.ScreenSurface.prototype.drawRuler = function (gl) {
+    var found = true;
+
+    if (this.rulerPoints === null) {
+        this.rulerPoints = new Float32Array(6);
+        found = this.findInitialRulerPoints(gl);
+    }
+
+    if (found) {
+        // draw endpoints
+        this.drawRulerPoint(gl, this.rulerPoints[0], this.rulerPoints[1], this.rulerPoints[2]);
+        this.drawRulerPoint(gl, this.rulerPoints[3], this.rulerPoints[4], this.rulerPoints[5]);
+
+        // draw line
+        gl.uniform1i(this.shaderProgram.hasSolidColor, 1);
+        gl.uniform4f(this.shaderProgram.solidColor, papaya.viewer.ScreenSurface.RULER_COLOR[0],
+            papaya.viewer.ScreenSurface.RULER_COLOR[1], papaya.viewer.ScreenSurface.RULER_COLOR[2], 1.0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.rulerLineBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.rulerPoints, gl.DYNAMIC_DRAW);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.rulerLineBuffer);
+        gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.rulerLineBuffer.itemSize, gl.FLOAT,
+            false, 0, 0);
+        gl.drawArrays(gl.LINES, 0, 2);
+        gl.uniform1i(this.shaderProgram.hasSolidColor, 0);
+    }
+};
+
+
+
+papaya.viewer.ScreenSurface.prototype.drawRulerPoint = function (gl, xLoc, yLoc, zLoc) {
+    this.sphereVertexPositionBuffer.numItems = this.rulerPointData.vertices.length / 3;
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.sphereVertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.rulerPointData.vertices), gl.STATIC_DRAW);
+
+    this.sphereNormalsPositionBuffer.numItems = this.rulerPointData.normals.length / 3;
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.sphereNormalsPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.rulerPointData.normals), gl.STATIC_DRAW);
+
+    this.sphereVertexIndexBuffer.numItems = this.rulerPointData.indices.length;
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.sphereVertexIndexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.rulerPointData.indices), gl.STATIC_DRAW);
+
+    gl.uniform1i(this.shaderProgram.hasSolidColor, 1);
+    gl.uniform4f(this.shaderProgram.solidColor, papaya.viewer.ScreenSurface.RULER_COLOR[0],
+        papaya.viewer.ScreenSurface.RULER_COLOR[1], papaya.viewer.ScreenSurface.RULER_COLOR[2], 1.0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.sphereVertexPositionBuffer);
+    gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.sphereVertexPositionBuffer.itemSize,
+        gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.sphereNormalsPositionBuffer);
+    gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, this.sphereNormalsPositionBuffer.itemSize,
+        gl.FLOAT, false, 0, 0);
+
+    mat4.set(this.mvMatrix, this.tempMat);
+    mat4.translate(this.mvMatrix, [xLoc, yLoc, zLoc]);
+    this.applyMatrixUniforms(gl);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.sphereVertexIndexBuffer);
+    gl.drawElements(gl.TRIANGLES, this.sphereVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+    mat4.set(this.tempMat, this.mvMatrix);
+    this.applyMatrixUniforms(gl);
+
+    gl.uniform1i(this.shaderProgram.hasSolidColor, 0);
+};
+
+
+
+papaya.viewer.ScreenSurface.prototype.drawOrientedText = function (gl, str, fontSize, coord) {
+    if (this.orientationCanvas === null) {
+        this.initOrientationBuffers(this.context);
+    }
+
+    this.updateOrientedTextSquare(fontSize, str);
+
+    if (this.orientationTexture === null) {
+        this.orientationTexture = gl.createTexture();
+    }
+
+    this.bindOrientation(gl);
+    gl.enableVertexAttribArray(this.shaderProgram.textureCoordAttribute);
+    gl.uniform1i(this.shaderProgram.orientationText, 1);
+
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
@@ -732,7 +838,7 @@ papaya.viewer.ScreenSurface.prototype.drawOrientationText = function (gl, str, c
     this.orientationContext.msImageSmoothingEnabled = true;
     this.orientationContext.textAlign = "center";
     this.orientationContext.textBaseline = "middle";
-    this.orientationContext.font = papaya.viewer.ScreenSurface.TEXT_SIZE + "px sans-serif";
+    this.orientationContext.font = fontSize + "px sans-serif";
     this.orientationContext.clearRect(0, 0, this.orientationCanvas.width, this.orientationCanvas.height);
     this.orientationContext.fillStyle = "#FFFFFF";
     this.orientationContext.fillText(str, this.orientationCanvas.width/2, this.orientationCanvas.height/2);
@@ -766,6 +872,9 @@ papaya.viewer.ScreenSurface.prototype.drawOrientationText = function (gl, str, c
     this.applyMatrixUniforms(gl);
 
     gl.disable(gl.BLEND);
+
+    gl.uniform1i(this.shaderProgram.orientationText, 0);
+    gl.disableVertexAttribArray(this.shaderProgram.textureCoordAttribute);
 };
 
 
@@ -810,6 +919,27 @@ papaya.viewer.ScreenSurface.prototype.bindActivePlanes = function (gl) {
 
 papaya.viewer.ScreenSurface.prototype.clearDTILinesImage = function () {
     // just here to satisfy interface
+};
+
+
+
+papaya.viewer.ScreenSurface.prototype.findProximalRulerHandle = function (xLoc, yLoc) {
+    this.pick(xLoc, yLoc, true);
+    this.grabbedRulerPoint = -1;
+
+    if (this.pickedCoordinate && this.rulerPoints) {
+        if (papaya.utilities.MathUtils.lineDistance3d(this.rulerPoints[0], this.rulerPoints[1],
+                this.rulerPoints[2], this.pickedCoordinate[0], this.pickedCoordinate[1], this.pickedCoordinate[2]) <
+                papaya.viewer.ScreenSlice.GRAB_RADIUS) {
+            this.grabbedRulerPoint = 0;
+        } else if (papaya.utilities.MathUtils.lineDistance3d(this.rulerPoints[3], this.rulerPoints[4],
+                this.rulerPoints[5], this.pickedCoordinate[0], this.pickedCoordinate[1], this.pickedCoordinate[2]) <
+                papaya.viewer.ScreenSlice.GRAB_RADIUS) {
+            this.grabbedRulerPoint = 1;
+        }
+    }
+
+    return (this.grabbedRulerPoint !== -1);
 };
 
 
@@ -870,18 +1000,9 @@ papaya.viewer.ScreenSurface.prototype.clearTransform = function (xform) {
 };
 
 
-function getPowerOfTwo(value, pow) {
-    var pow = pow || 1;
-    while(pow<value) {
-        pow *= 2;
-    }
-    return pow;
-}
 
-
-papaya.viewer.ScreenSurface.prototype.makeOrientationSquare = function () {
+papaya.viewer.ScreenSurface.prototype.makeOrientedTextSquare = function () {
     var half = papaya.viewer.ScreenSurface.ORIENTATION_SIZE * this.scaleFactor;
-    var textSize = papaya.viewer.ScreenSurface.TEXT_SIZE;
 
     this.orientationVerts[0] = -half;
     this.orientationVerts[1] = half;
@@ -901,6 +1022,19 @@ papaya.viewer.ScreenSurface.prototype.makeOrientationSquare = function () {
 
     this.orientationCanvas = document.createElement("canvas");
     this.orientationContext = this.orientationCanvas.getContext('2d');
+    this.orientationContext.imageSmoothingEnabled = true;
+    this.orientationContext.webkitImageSmoothingEnabled = true;
+    this.orientationContext.mozImageSmoothingEnabled = true;
+    this.orientationContext.msImageSmoothingEnabled = true;
+    this.orientationContext.fillStyle = "#FFFFFF";
+    this.orientationContext.textAlign = "center";
+    this.orientationContext.textBaseline = "middle";
+};
+
+
+
+papaya.viewer.ScreenSurface.prototype.updateOrientedTextSquare = function (fontSize, text, test) {
+    var textWidth, textHeight, textSize;
 
     this.orientationContext.imageSmoothingEnabled = true;
     this.orientationContext.webkitImageSmoothingEnabled = true;
@@ -909,10 +1043,13 @@ papaya.viewer.ScreenSurface.prototype.makeOrientationSquare = function () {
     this.orientationContext.fillStyle = "#FFFFFF";
     this.orientationContext.textAlign = "center";
     this.orientationContext.textBaseline = "middle";
-    this.orientationContext.font = textSize + "px sans-serif";
+    this.orientationContext.font = fontSize + "px sans-serif";
+    textWidth = this.orientationContext.measureText(text).width;
+    textHeight = fontSize;
+    textSize = Math.max(textWidth, textHeight);
 
-    this.orientationCanvas.width = getPowerOfTwo(textSize);
-    this.orientationCanvas.height = getPowerOfTwo(textSize);
+    this.orientationCanvas.width = papaya.utilities.MathUtils.getPowerOfTwo(textSize);
+    this.orientationCanvas.height = papaya.utilities.MathUtils.getPowerOfTwo(textSize);
 };
 
 
@@ -1110,12 +1247,36 @@ papaya.viewer.ScreenSurface.prototype.updateActivePlanes = function () {
 
 
 
-papaya.viewer.ScreenSurface.prototype.pick = function (xLoc, yLoc) {
+papaya.viewer.ScreenSurface.prototype.pick = function (xLoc, yLoc, skipRedraw) {
     this.needsPick = true;
     this.pickLocX = xLoc;
     this.pickLocY = yLoc;
     this.draw(); // do picking
+
+    if (skipRedraw) {
+        return this.pickedCoordinate;
+    }
+
     this.draw(); // redraw scene
+    return this.pickedCoordinate;
+};
+
+
+
+papaya.viewer.ScreenSurface.prototype.pickRuler = function (xLoc, yLoc) {
+    this.needsPick = true;
+    this.pickLocX = xLoc;
+    this.pickLocY = yLoc;
+    this.draw(); // do picking
+
+    if (this.pickedCoordinate) {
+        this.rulerPoints[(this.grabbedRulerPoint * 3) + 0] = this.pickedCoordinate[0];
+        this.rulerPoints[(this.grabbedRulerPoint * 3) + 1] = this.pickedCoordinate[1];
+        this.rulerPoints[(this.grabbedRulerPoint * 3) + 2] = this.pickedCoordinate[2];
+
+        this.draw(); // redraw scene
+    }
+
     return this.pickedCoordinate;
 };
 
@@ -1132,9 +1293,9 @@ papaya.viewer.ScreenSurface.prototype.pickColor = function (xLoc, yLoc) {
 
 
 
-papaya.viewer.ScreenSurface.prototype.findPickedCoordinate = function (gl) {
-    var winX = this.pickLocX,
-        winY = (gl.viewportHeight - 1 - this.pickLocY),
+papaya.viewer.ScreenSurface.prototype.findPickedCoordinate = function (gl, xLoc, yLoc) {
+    var winX = xLoc,
+        winY = (gl.viewportHeight - 1 - yLoc),
         winZ, viewportArray, success, modelPointArrayResults = [];
 
     gl.readPixels(winX, winY, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this.pickingBuffer);
@@ -1160,6 +1321,62 @@ papaya.viewer.ScreenSurface.prototype.findPickedCoordinate = function (gl) {
 
 
 
+papaya.viewer.ScreenSurface.prototype.findInitialRulerPoints = function (gl) {
+    var xDim = gl.viewportWidth,
+        yDim = gl.viewportHeight,
+        coord, xLoc, yLoc, ctr, index = 0;
+
+    for (ctr = 1; (ctr < 5) && (index < 2); ctr += 1) {
+        xLoc = parseInt(xDim * .1 * ctr, 10);
+        yLoc = parseInt(yDim * .1 * ctr, 10);
+        coord = this.pick(xLoc, yLoc, true);
+        if (coord) {
+            this.rulerPoints[(index * 3) + 0] = coord[0];
+            this.rulerPoints[(index * 3) + 1] = coord[1];
+            this.rulerPoints[(index * 3) + 2] = coord[2];
+            index++;
+        }
+
+        xLoc = parseInt(xDim - (xDim * .1) * ctr, 10);
+        yLoc = parseInt(yDim * .1 * ctr, 10);
+        coord = this.pick(xLoc, yLoc, true);
+        if (coord) {
+            this.rulerPoints[(index * 3) + 0] = coord[0];
+            this.rulerPoints[(index * 3) + 1] = coord[1];
+            this.rulerPoints[(index * 3) + 2] = coord[2];
+            index++;
+        }
+
+        if (index < 2) {
+            xLoc = parseInt(xDim - (xDim * .1) * ctr, 10);
+            yLoc = parseInt(yDim - (yDim * .1) * ctr, 10);
+            coord = this.pick(xLoc, yLoc, true);
+            if (coord) {
+                this.rulerPoints[(index * 3) + 0] = coord[0];
+                this.rulerPoints[(index * 3) + 1] = coord[1];
+                this.rulerPoints[(index * 3) + 2] = coord[2];
+                index++;
+            }
+        }
+
+        if (index < 2) {
+            xLoc = parseInt(xDim * .1 * ctr, 10);
+            yLoc = parseInt(yDim - (yDim * .1) * ctr, 10);
+            coord = this.pick(xLoc, yLoc, true);
+            if (coord) {
+                this.rulerPoints[(index * 3) + 0] = coord[0];
+                this.rulerPoints[(index * 3) + 1] = coord[1];
+                this.rulerPoints[(index * 3) + 2] = coord[2];
+                index++;
+            }
+        }
+    }
+
+    return (index >= 2);
+};
+
+
+
 papaya.viewer.ScreenSurface.prototype.findPickedColor = function (gl) {
     var index;
     gl.readPixels(0, 0, gl.viewportWidth, gl.viewportHeight, gl.RGBA, gl.UNSIGNED_BYTE, this.pickingBuffer);
@@ -1170,7 +1387,8 @@ papaya.viewer.ScreenSurface.prototype.findPickedColor = function (gl) {
 
 
 papaya.viewer.ScreenSurface.prototype.getBackgroundColor = function () {
-    return ("rgba(" + parseInt((this.backgroundColor[0] * 255) + 0.5) + ',' + parseInt((this.backgroundColor[1] * 255) + 0.5) + ',' +
+    return ("rgba(" + parseInt((this.backgroundColor[0] * 255) + 0.5) + ',' +
+        parseInt((this.backgroundColor[1] * 255) + 0.5) + ',' +
         parseInt((this.backgroundColor[2] * 255) + 0.5) + ',255)');
 };
 
@@ -1214,4 +1432,60 @@ papaya.viewer.ScreenSurface.prototype.processParams = function (params) {
             this.viewer.container.preferences.surfaceBackgroundColor = params.surfaceBackground;
         }
     }
+};
+
+
+
+// adapted from: http://learningwebgl.com/blog/?p=1253
+papaya.viewer.ScreenSurface.prototype.makeSphere = function (latitudeBands, longitudeBands, radius) {
+    var vertexPositionData = [];
+    var normalData = [];
+
+    for (var latNumber = 0; latNumber <= latitudeBands; latNumber++) {
+        var theta = latNumber * Math.PI / latitudeBands;
+        var sinTheta = Math.sin(theta);
+        var cosTheta = Math.cos(theta);
+
+        for (var longNumber = 0; longNumber <= longitudeBands; longNumber++) {
+            var phi = longNumber * 2 * Math.PI / longitudeBands;
+            var sinPhi = Math.sin(phi);
+            var cosPhi = Math.cos(phi);
+
+            var x = cosPhi * sinTheta;
+            var y = cosTheta;
+            var z = sinPhi * sinTheta;
+            var u = 1 - (longNumber / longitudeBands);
+            var v = 1 - (latNumber / latitudeBands);
+
+            normalData.push(x);
+            normalData.push(y);
+            normalData.push(z);
+            vertexPositionData.push(radius * x);
+            vertexPositionData.push(radius * y);
+            vertexPositionData.push(radius * z);
+        }
+    }
+
+    var indexData = [];
+    for (var latNumber = 0; latNumber < latitudeBands; latNumber++) {
+        for (var longNumber = 0; longNumber < longitudeBands; longNumber++) {
+            var first = (latNumber * (longitudeBands + 1)) + longNumber;
+            var second = first + longitudeBands + 1;
+            indexData.push(first);
+            indexData.push(second);
+            indexData.push(first + 1);
+
+            indexData.push(second);
+            indexData.push(second + 1);
+            indexData.push(first + 1);
+        }
+    }
+
+    return {vertices:vertexPositionData, normals:normalData, indices:indexData};
+};
+
+
+papaya.viewer.ScreenSurface.prototype.getRulerLength = function () {
+    return papaya.utilities.MathUtils.lineDistance3d(this.rulerPoints[0], this.rulerPoints[1],
+        this.rulerPoints[2], this.rulerPoints[3], this.rulerPoints[4], this.rulerPoints[5]);
 };
