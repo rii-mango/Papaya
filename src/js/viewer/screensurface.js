@@ -738,7 +738,9 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
         }
 
         if (this.viewer.container.preferences.showRuler === "Yes") {
-            this.drawRuler(gl);
+            if (this.isMainView()) {
+                this.drawRuler(gl);
+            }
         } else {
             this.rulerPoints = null;
         }
