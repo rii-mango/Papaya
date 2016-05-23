@@ -758,6 +758,7 @@ papaya.viewer.ScreenSurface.prototype.drawRuler = function (gl) {
     if (this.rulerPoints === null) {
         this.rulerPoints = new Float32Array(6);
         found = this.findInitialRulerPoints(gl);
+        this.drawScene(gl);  // need to redraw since pick
     }
 
     if (found) {
