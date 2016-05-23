@@ -335,6 +335,7 @@ papaya.viewer.ScreenSurface.prototype.initialize = function () {
 };
 
 
+
 papaya.viewer.ScreenSurface.prototype.calculateScaleFactor = function () {
     var xRange = (this.xSize * this.xDim),
         yRange = (this.ySize * this.yDim),
@@ -486,7 +487,7 @@ papaya.viewer.ScreenSurface.prototype.initActivePlaneBuffers = function (gl) {
 
 papaya.viewer.ScreenSurface.prototype.initRulerBuffers = function (gl) {
     this.rulerPointData = this.makeSphere(papaya.viewer.ScreenSurface.RULER_NUM_LINES,
-        papaya.viewer.ScreenSurface.RULER_NUM_LINES, papaya.viewer.ScreenSurface.RULER_RADIUS);
+        papaya.viewer.ScreenSurface.RULER_NUM_LINES, papaya.viewer.ScreenSurface.RULER_RADIUS * this.scaleFactor);
 
     this.sphereVertexPositionBuffer = gl.createBuffer();
     this.sphereVertexPositionBuffer.itemSize = 3;
@@ -569,7 +570,7 @@ papaya.viewer.ScreenSurface.prototype.drawScene = function (gl) {
     this.applyMatrixUniforms(gl);
 
     gl.uniform3f(this.shaderProgram.ambientColorUniform, 0.2, 0.2, 0.2);
-    gl.uniform3f(this.shaderProgram.pointLightingLocationUniform, 0, 0, 300);
+    gl.uniform3f(this.shaderProgram.pointLightingLocationUniform, 0, 0, 300 * this.scaleFactor);
     gl.uniform3f(this.shaderProgram.pointLightingColorUniform, 0.8, 0.8, 0.8);
 
     gl.uniform1i(this.shaderProgram.orientationText, 0);
@@ -934,11 +935,11 @@ papaya.viewer.ScreenSurface.prototype.findProximalRulerHandle = function (xLoc, 
     if (this.pickedCoordinate && this.rulerPoints) {
         if (papaya.utilities.MathUtils.lineDistance3d(this.rulerPoints[0], this.rulerPoints[1],
                 this.rulerPoints[2], this.pickedCoordinate.coordinate[0], this.pickedCoordinate.coordinate[1], this.pickedCoordinate.coordinate[2]) <
-                papaya.viewer.ScreenSlice.GRAB_RADIUS) {
+                (papaya.viewer.ScreenSlice.GRAB_RADIUS * this.scaleFactor)) {
             this.grabbedRulerPoint = 0;
         } else if (papaya.utilities.MathUtils.lineDistance3d(this.rulerPoints[3], this.rulerPoints[4],
                 this.rulerPoints[5], this.pickedCoordinate.coordinate[0], this.pickedCoordinate.coordinate[1], this.pickedCoordinate.coordinate[2]) <
-                papaya.viewer.ScreenSlice.GRAB_RADIUS) {
+                (papaya.viewer.ScreenSlice.GRAB_RADIUS * this.scaleFactor)) {
             this.grabbedRulerPoint = 1;
         }
     }

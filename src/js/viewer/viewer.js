@@ -2061,7 +2061,8 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             this.previousMousePosition.y = currentMouseY;
         } else if (this.isPanning) {
             if (this.selectedSlice === this.surfaceView) {
-                this.surfaceView.updateTranslateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
+                this.surfaceView.updateTranslateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me),
+                    papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
                 this.drawViewer(false, true);
             } else {
                 this.setCurrentPanLocation(
@@ -2072,7 +2073,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             }
         } else if (this.isZoomMode) {
             if (this.selectedSlice === this.surfaceView) {
-                zoomFactorCurrent = ((this.previousMousePosition.y - currentMouseY) * 0.5);
+                zoomFactorCurrent = ((this.previousMousePosition.y - currentMouseY) * 0.5) * this.surfaceView.scaleFactor;
                 this.surfaceView.zoom += zoomFactorCurrent;
                 this.previousMousePosition.x = currentMouseX;
                 this.previousMousePosition.y = currentMouseY;
@@ -2099,17 +2100,20 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                             currentMouseY - this.canvasRect.top);
                         this.drawViewer(false, true);
                     } else {
-                        this.surfaceView.updateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
+                        this.surfaceView.updateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me),
+                            papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
                         this.drawViewer(false, true);
                         this.container.display.drawEmptyDisplay();
                     }
                 } else {
-                    this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
+                    this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me),
+                        papaya.utilities.PlatformUtils.getMousePositionY(me));
                 }
             }
         }
     } else {
-        this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
+        this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me),
+            papaya.utilities.PlatformUtils.getMousePositionY(me));
         this.isZoomMode = false;
     }
 
@@ -2791,7 +2795,7 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
             this.isZoomMode = true;
 
             if (this.mainImage === this.surfaceView) {
-                this.surfaceView.zoom += (scrollSign * -5);
+                this.surfaceView.zoom += ((scrollSign * -5) * this.surfaceView.scaleFactor);
                 this.drawViewer(false, true);
             } else {
                 if (this.mainImage.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
