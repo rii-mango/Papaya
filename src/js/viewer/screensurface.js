@@ -1037,7 +1037,7 @@ papaya.viewer.ScreenSurface.prototype.makeOrientedTextSquare = function () {
 
 
 
-papaya.viewer.ScreenSurface.prototype.updateOrientedTextSquare = function (fontSize, text, test) {
+papaya.viewer.ScreenSurface.prototype.updateOrientedTextSquare = function (fontSize, text) {
     var textWidth, textHeight, textSize;
 
     this.orientationContext.imageSmoothingEnabled = true;
@@ -1274,7 +1274,7 @@ papaya.viewer.ScreenSurface.prototype.pickRuler = function (xLoc, yLoc) {
     this.draw(); // do picking
 
     if (this.pickedCoordinate) {
-        this.rulerPoints[(this.grabbedRulerPoint * 3) + 0] = this.pickedCoordinate.coordinate[0];
+        this.rulerPoints[(this.grabbedRulerPoint * 3)] = this.pickedCoordinate.coordinate[0];
         this.rulerPoints[(this.grabbedRulerPoint * 3) + 1] = this.pickedCoordinate.coordinate[1];
         this.rulerPoints[(this.grabbedRulerPoint * 3) + 2] = this.pickedCoordinate.coordinate[2];
 
@@ -1456,15 +1456,16 @@ papaya.viewer.ScreenSurface.prototype.processParams = function (params) {
 
 // adapted from: http://learningwebgl.com/blog/?p=1253
 papaya.viewer.ScreenSurface.prototype.makeSphere = function (latitudeBands, longitudeBands, radius) {
+    var latNumber, longNumber;
     var vertexPositionData = [];
     var normalData = [];
 
-    for (var latNumber = 0; latNumber <= latitudeBands; latNumber++) {
+    for (latNumber = 0; latNumber <= latitudeBands; latNumber++) {
         var theta = latNumber * Math.PI / latitudeBands;
         var sinTheta = Math.sin(theta);
         var cosTheta = Math.cos(theta);
 
-        for (var longNumber = 0; longNumber <= longitudeBands; longNumber++) {
+        for (longNumber = 0; longNumber <= longitudeBands; longNumber++) {
             var phi = longNumber * 2 * Math.PI / longitudeBands;
             var sinPhi = Math.sin(phi);
             var cosPhi = Math.cos(phi);
@@ -1472,8 +1473,8 @@ papaya.viewer.ScreenSurface.prototype.makeSphere = function (latitudeBands, long
             var x = cosPhi * sinTheta;
             var y = cosTheta;
             var z = sinPhi * sinTheta;
-            var u = 1 - (longNumber / longitudeBands);
-            var v = 1 - (latNumber / latitudeBands);
+            //var u = 1 - (longNumber / longitudeBands);
+            //var v = 1 - (latNumber / latitudeBands);
 
             normalData.push(x);
             normalData.push(y);
@@ -1485,8 +1486,8 @@ papaya.viewer.ScreenSurface.prototype.makeSphere = function (latitudeBands, long
     }
 
     var indexData = [];
-    for (var latNumber = 0; latNumber < latitudeBands; latNumber++) {
-        for (var longNumber = 0; longNumber < longitudeBands; longNumber++) {
+    for (latNumber = 0; latNumber < latitudeBands; latNumber++) {
+        for (longNumber = 0; longNumber < longitudeBands; longNumber++) {
             var first = (latNumber * (longitudeBands + 1)) + longNumber;
             var second = first + longitudeBands + 1;
             indexData.push(first);
