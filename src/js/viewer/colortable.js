@@ -86,7 +86,6 @@ papaya.viewer.ColorTable.PARAMETRIC_COLOR_TABLES = [papaya.viewer.ColorTable.TAB
     papaya.viewer.ColorTable.TABLE_BLUE2GREEN];
 
 papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES = [
-    papaya.viewer.ColorTable.TABLE_FIRE,
     papaya.viewer.ColorTable.TABLE_RED2WHITE,
     papaya.viewer.ColorTable.TABLE_GREEN2WHITE,
     papaya.viewer.ColorTable.TABLE_BLUE2WHITE
@@ -95,14 +94,14 @@ papaya.viewer.ColorTable.OVERLAY_COLOR_TABLES = [
 papaya.viewer.ColorTable.TABLE_ALL = [
     papaya.viewer.ColorTable.TABLE_GRAYSCALE,
     papaya.viewer.ColorTable.TABLE_SPECTRUM,
-    papaya.viewer.ColorTable.TABLE_RED2YELLOW,
-    papaya.viewer.ColorTable.TABLE_BLUE2GREEN,
+    papaya.viewer.ColorTable.TABLE_FIRE,
     papaya.viewer.ColorTable.TABLE_HOTANDCOLD,
     papaya.viewer.ColorTable.TABLE_GOLD,
+    papaya.viewer.ColorTable.TABLE_RED2YELLOW,
+    papaya.viewer.ColorTable.TABLE_BLUE2GREEN,
     papaya.viewer.ColorTable.TABLE_RED2WHITE,
     papaya.viewer.ColorTable.TABLE_GREEN2WHITE,
-    papaya.viewer.ColorTable.TABLE_BLUE2WHITE,
-    papaya.viewer.ColorTable.TABLE_FIRE
+    papaya.viewer.ColorTable.TABLE_BLUE2WHITE
 ];
 
 papaya.viewer.ColorTable.LUT_MIN = 0;
