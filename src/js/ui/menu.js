@@ -36,6 +36,7 @@ papaya.ui.Menu = papaya.ui.Menu || function (viewer, menuData, callback, dataSou
     this.menuId = (this.label + "Menu").replace(/ /g, "_").replace("...", "_") + (this.modifier || "");
     this.isRight = (menuData.icons !== null);
     this.isImageButton = menuData.imageButton;
+    this.isSurfaceButton = menuData.surfaceButton;
     this.htmlParent = ((this.viewer.container.showControlBar && this.viewer.container.kioskMode && this.viewer.container.showImageButtons) ?
         this.viewer.container.sliderControlHtml : this.viewer.container.toolbarHtml);
 };
@@ -117,7 +118,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
             "' style='width:" + papaya.viewer.ColorTable.ICON_SIZE + "px; height:" +
             papaya.viewer.ColorTable.ICON_SIZE + "px; vertical-align:bottom; ";
 
-        if (this.dataSource.isSelected(parseInt(this.imageIndex, 10))) {
+        if (!this.isSurfaceButton && this.dataSource.isSelected(parseInt(this.imageIndex, 10))) {
             html += "border:2px solid #FF5A3D;background-color:#eeeeee;padding:1px;";
         } else {
             html += "border:2px outset lightgray;background-color:#eeeeee;padding:1px;";

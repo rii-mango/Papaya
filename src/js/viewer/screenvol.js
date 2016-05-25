@@ -146,6 +146,19 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
 };
 
 
+/*** Static Methods ***/
+
+papaya.viewer.ScreenVolume.makeSolidIcon = function (r, g, b) {
+    var canvasIcon = document.createElement("canvas");
+    canvasIcon.width = papaya.viewer.ColorTable.ICON_SIZE;
+    canvasIcon.height = papaya.viewer.ColorTable.ICON_SIZE;
+    var ctx = canvasIcon.getContext("2d");
+    ctx.fillStyle = "rgb(" + parseInt(r * 255, 10) + "," + parseInt(g * 255, 10) + "," + parseInt(b * 255, 10) + ")";
+    ctx.fillRect(0, 0, papaya.viewer.ColorTable.ICON_SIZE, papaya.viewer.ColorTable.ICON_SIZE);
+    return canvasIcon.toDataURL();
+};
+
+
 
 /*** Prototype Methods ***/
 
@@ -470,6 +483,7 @@ papaya.viewer.ScreenVolume.prototype.getHiddenLabel = function () {
         return "Hide Overlay";
     }
 };
+
 
 
 papaya.viewer.ScreenVolume.prototype.updateIcon = function () {

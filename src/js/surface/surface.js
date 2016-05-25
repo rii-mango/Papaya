@@ -31,6 +31,7 @@ papaya.surface.Surface = papaya.surface.Surface || function (progressMeter, para
     this.fileFormat = null;
     this.params = params;
     this.nextSurface = null;
+    this.alpha = 1;
 };
 
 /*** Static Pseudo-constants ***/
@@ -199,6 +200,10 @@ papaya.surface.Surface.prototype.processParams = function (name) {
     if (screenParams) {
         if (screenParams.color !== undefined) {
             this.solidColor = screenParams.color;
+        }
+
+        if (screenParams.alpha !== undefined) {
+            this.alpha = screenParams.alpha;
         }
     }
 };

@@ -14,6 +14,7 @@ papaya.ui.Toolbar = papaya.ui.Toolbar || function (container) {
     this.container = container;
     this.viewer = container.viewer;
     this.imageMenus = null;
+    this.surfaceMenus = null;
     this.spaceMenu = null;
 };
 
@@ -191,6 +192,13 @@ papaya.ui.Toolbar.RGB_IMAGE_MENU_DATA = {
     ]
 };
 
+papaya.ui.Toolbar.SURFACE_MENU_DATA = {
+    "items": [
+        {"label": "Show Surface Info", "action": "SurfaceInfo"},
+        {"label": "Transparency", "action": "alpha", "type": "range", "method": "getAlpha"}
+    ]
+};
+
 papaya.ui.Toolbar.DTI_IMAGE_MENU_DATA = {
     "items": [
         {"label": "Show Header", "action": "ShowHeader"},
@@ -257,6 +265,15 @@ papaya.ui.Toolbar.SERIES_INFO_DATA = {
     ]
 };
 
+papaya.ui.Toolbar.SURFACE_INFO_DATA = {
+    "items": [
+        {"label": "Filename:", "field": "getSurfaceFilename", "readonly": "true"},
+        {"spacer": "true"},
+        {"label": "Points:", "field": "getSurfaceNumPoints", "readonly": "true"},
+        {"label": "Triangles:", "field": "getSurfaceNumTriangles", "readonly": "true"}
+    ]
+};
+
 papaya.ui.Toolbar.HEADER_DATA = {
     "items": [
         {"label": "", "field": "getHeaderDescription", "readonly": "true"}
@@ -308,6 +325,7 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
     var ctr;
 
     this.imageMenus = null;
+    this.surfaceMenus = null;
     this.spaceMenu = null;
 
     this.container.toolbarHtml.find("." + PAPAYA_MENU_ICON_CSS).remove();
@@ -544,9 +562,15 @@ papaya.ui.Toolbar.prototype.buildMenuItems = function (menu, itemData, topLevelB
 
 
 papaya.ui.Toolbar.prototype.updateImageButtons = function () {
-    var ctr, screenVol, dataUrl, data;
-
     this.container.toolbarHtml.find("." + PAPAYA_MENU_BUTTON_CSS).remove();
+    this.doUpdateImageButtons();
+    this.updateSurfaceButtons();
+};
+
+
+
+papaya.ui.Toolbar.prototype.doUpdateImageButtons = function () {
+    var ctr, screenVol, dataUrl, data;
 
     this.imageMenus = [];
 
@@ -580,6 +604,34 @@ papaya.ui.Toolbar.prototype.updateImageButtons = function () {
             if (!this.container.combineParametric || !screenVol.parametric) {
                 this.imageMenus.push((this.buildMenu(data.menus[0], null, screenVol, ctr.toString())));
             }
+        }
+    }
+};
+
+
+
+papaya.ui.Toolbar.prototype.updateSurfaceButtons = function () {
+    var ctr, dataUrl, data, solidColor;
+
+    this.surfaceMenus = [];
+
+    if (this.container.showImageButtons) {
+        for (ctr = this.viewer.surfaces.length - 1; ctr >= 0; ctr -= 1) {
+            solidColor = this.viewer.surfaces[ctr].solidColor;
+
+            if (solidColor === null) {
+                solidColor = [.5,.5,.5];
+            }
+
+            dataUrl = papaya.viewer.ScreenVolume.makeSolidIcon(solidColor[0], solidColor[1], solidColor[2]);
+
+            data = {
+                "menus" : [
+                    {"label": "SurfaceButton", "icons": [dataUrl], "items": papaya.ui.Toolbar.SURFACE_MENU_DATA.items, "imageButton": true, "surfaceButton": true}
+                ]
+            };
+
+            this.surfaceMenus.push((this.buildMenu(data.menus[0], null, this.viewer.surfaces[ctr], ctr.toString())));
         }
     }
 };
@@ -725,6 +777,12 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
                     this.viewer, null, null, imageIndex.toString());
             }
 
+            dialog.showDialog();
+        } else if (action.startsWith("SurfaceInfo")) {
+            imageIndex = action.substring(action.lastIndexOf("-") + 1);
+
+            dialog = new papaya.ui.Dialog(this.container, "Surface Info", papaya.ui.Toolbar.SURFACE_INFO_DATA,
+                this.viewer, null, null, imageIndex.toString());
             dialog.showDialog();
         } else if (action.startsWith("ShowHeader")) {
             imageIndex = action.substring(action.lastIndexOf("-") + 1);

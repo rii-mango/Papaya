@@ -2536,6 +2536,24 @@ papaya.viewer.Viewer.prototype.getFilename = function (index) {
 
 
 
+papaya.viewer.Viewer.prototype.getSurfaceFilename = function (index) {
+    return papaya.utilities.StringUtils.wordwrap(this.surfaces[index].filename, 25, "<br />", true);
+};
+
+
+
+papaya.viewer.Viewer.prototype.getSurfaceNumPoints = function (index) {
+    return this.surfaces[index].numPoints;
+};
+
+
+
+papaya.viewer.Viewer.prototype.getSurfaceNumTriangles = function (index) {
+    return this.surfaces[index].numTriangles;
+};
+
+
+
 papaya.viewer.Viewer.prototype.getNiceFilename = function (index) {
     var truncateText, filename;
 

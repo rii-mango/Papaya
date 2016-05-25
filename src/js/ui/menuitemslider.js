@@ -32,7 +32,7 @@ papaya.ui.MenuItemSlider = papaya.ui.MenuItemSlider || function (viewer, label, 
         "change" : "input change";
     this.id = this.action.replace(/ /g, "_") + this.viewer.container.containerIndex + "_" + this.index;
     this.callback = callback;
-    this.screenVol = this.viewer.screenVolumes[this.index];
+    this.screenVol = dataSource;//this.viewer.screenVolumes[this.index];
 };
 
 
