@@ -305,6 +305,11 @@ params["images"] = ["data/sample_image.nii.gz"];
 params["showEULA"] = true;
 params["message"] = "Test: showEULA (should not appear).";
 
+params = initTest();
+params["images"] = ["data/sample_image.nii.gz"];
+params["padAllImages"] = true;
+params["message"] = "Test: padAllImages.";
+
 
 // Surfaces
 params = initTest();
