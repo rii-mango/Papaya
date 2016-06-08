@@ -10,8 +10,9 @@ papaya.volume = papaya.volume || {};
 
 
 /*** Constructor ***/
-papaya.volume.ImageData = papaya.volume.ImageData || function () {
+papaya.volume.ImageData = papaya.volume.ImageData || function (pad) {
     this.data = null;
+    this.pad = pad;
 };
 
 
@@ -19,6 +20,10 @@ papaya.volume.ImageData = papaya.volume.ImageData || function () {
 
 papaya.volume.ImageData.prototype.readFileData = function (header, buffer, onReadFinish) {
     var numVoxels, dv, ctr, numVoxels2, rgbBySample;
+
+    if (this.pad) {
+        buffer = this.padIsometric(header, buffer);
+    }
 
     // create typed array
     if (header.imageType.datatype === papaya.volume.ImageType.DATATYPE_RGB) {
@@ -92,4 +97,54 @@ papaya.volume.ImageData.prototype.readFileData = function (header, buffer, onRea
     }
 
     onReadFinish();
+};
+
+
+
+papaya.volume.ImageData.prototype.padIsometric = function (header, data) {
+    var id = header.imageDimensions,
+        vd = header.voxelDimensions,
+        numBytes = header.imageType.numBytes,
+        buf = new Uint8Array(data, 0, data.byteLength),
+        cols = id.colsOrig,
+        rows = id.rowsOrig,
+        slices = id.slicesOrig,
+        colExt = (cols * vd.colSize),
+        rowExt = (rows * vd.rowSize),
+        sliceExt = (slices * vd.sliceSize),
+        largestDim = Math.max(Math.max(colExt, rowExt), sliceExt),
+        colDiff = parseInt((largestDim - colExt) / vd.colSize / 2, 10),
+        rowDiff = parseInt((largestDim - rowExt) / vd.rowSize / 2, 10),
+        sliceDiff = parseInt((largestDim - sliceExt) / vd.sliceSize / 2, 10),
+        colsNew = (cols+2*colDiff),
+        rowsNew = (rows+2*rowDiff),
+        slicesNew = (slices+2*sliceDiff),
+        colsBytes = cols * numBytes,
+        colDiffBytes = colDiff * numBytes,
+        rowDiffBytes = rowDiff * colsNew * numBytes,
+        sliceDiffBytes = sliceDiff * (colsNew * rowsNew) * numBytes,
+        indexPadded = 0,
+        index = 0;
+
+    var dataPaddedBuffer = new ArrayBuffer(colsNew * rowsNew * slicesNew * numBytes);
+    var dataPadded = new Uint8Array(dataPaddedBuffer, 0, dataPaddedBuffer.byteLength);
+
+    indexPadded += sliceDiffBytes;
+    for (var ctrS = 0; ctrS < slices; ctrS += 1) {
+        indexPadded += rowDiffBytes;
+
+        for (var ctrR = 0; ctrR < rows; ctrR += 1) {
+            indexPadded += colDiffBytes;
+
+            for (var ctrC = 0; ctrC < colsBytes; ctrC += 1, index++, indexPadded++) {
+                dataPadded[indexPadded] = buf[index];
+            }
+
+            indexPadded += colDiffBytes;
+        }
+
+        indexPadded += rowDiffBytes;
+    }
+
+    return dataPaddedBuffer;
 };

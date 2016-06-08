@@ -272,7 +272,7 @@ papaya.viewer.Viewer.prototype.showDialog = function (title, data, datasource, c
 
 papaya.viewer.Viewer.prototype.loadBaseImage = function (refs, forceUrl, forceEncode) {
     var imageRefs, loadableImage = this.container.findLoadableImage(refs);
-    this.volume = new papaya.volume.Volume(this.container.display, this);
+    this.volume = new papaya.volume.Volume(this.container.display, this, this.container.params);
 
     if (forceEncode) {
         imageRefs = loadableImage.encode;
@@ -303,7 +303,7 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function (refs, forceUrl, forceEn
 
 papaya.viewer.Viewer.prototype.loadOverlay = function (refs, forceUrl, forceEncode) {
     var imageRefs, loadableImage = this.container.findLoadableImage(refs);
-    this.loadingVolume = new papaya.volume.Volume(this.container.display, this);
+    this.loadingVolume = new papaya.volume.Volume(this.container.display, this, this.container.params);
 
     if (this.screenVolumes.length > papaya.viewer.Viewer.MAX_OVERLAYS) {
         this.loadingVolume.error = new Error("Maximum number of overlays (" + papaya.viewer.Viewer.MAX_OVERLAYS +

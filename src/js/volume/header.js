@@ -10,7 +10,7 @@ papaya.volume = papaya.volume || {};
 
 
 /*** Constructor ***/
-papaya.volume.Header = papaya.volume.Header || function () {
+papaya.volume.Header = papaya.volume.Header || function (pad) {
     this.fileFormat = null;
     this.imageDimensions = null;
     this.voxelDimensions = null;
@@ -20,6 +20,7 @@ papaya.volume.Header = papaya.volume.Header || function () {
     this.imageRange = null;
     this.error = null;
     this.origin = null;
+    this.pad = pad;
     this.orientationCertainty = papaya.volume.Header.ORIENTATION_CERTAINTY_UNKNOWN;
     this.onFinishedFileFormatRead = null;
 };
@@ -88,9 +89,14 @@ papaya.volume.Header.prototype.onFinishedHeaderRead = function () {
             this.error = new Error(papaya.volume.Header.INVALID_IMAGE_DIMENSIONS);
         }
 
+
         this.voxelDimensions = this.fileFormat.getVoxelDimensions();
         if (!this.voxelDimensions.isValid()) {
             this.error = new Error(papaya.volume.Header.INVALID_VOXEL_DIMENSIONS);
+        }
+
+        if (this.pad) {
+            this.imageDimensions.padIsometric(this.voxelDimensions);
         }
 
         this.orientation = this.fileFormat.getOrientation();

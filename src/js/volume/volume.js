@@ -10,7 +10,7 @@ papaya.volume = papaya.volume || {};
 
 
 /*** Constructor ***/
-papaya.volume.Volume = papaya.volume.Volume || function (progressMeter, dialogHandler) {
+papaya.volume.Volume = papaya.volume.Volume || function (progressMeter, dialogHandler, params) {
     this.progressMeter = progressMeter;
     this.dialogHandler = dialogHandler;
     this.files = [];
@@ -19,8 +19,6 @@ papaya.volume.Volume = papaya.volume.Volume || function (progressMeter, dialogHa
     this.urls = null;
     this.fileName = null;
     this.compressed = false;
-    this.header = new papaya.volume.Header();
-    this.imageData = new papaya.volume.ImageData();
     this.transform = null;
     this.numTimepoints = 0;
     this.onFinishedRead = null;
@@ -29,6 +27,10 @@ papaya.volume.Volume = papaya.volume.Volume || function (progressMeter, dialogHa
     this.isLoaded = false;
     this.numTimepoints = 1;
     this.loaded = false;
+    this.params = params;
+
+    this.header = new papaya.volume.Header((this.params !== undefined) && this.params.padAllImages);
+    this.imageData = new papaya.volume.ImageData((this.params !== undefined) && this.params.padAllImages);
 };
 
 
