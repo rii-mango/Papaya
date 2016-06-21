@@ -56,6 +56,7 @@ papaya.surface.Surface.findSurfaceType = function (filename) {
 
 
 
+
 /*** Prototype Methods ***/
 
 papaya.surface.Surface.prototype.makeFileFormat = function (filename) {
@@ -242,26 +243,96 @@ papaya.surface.Surface.prototype.readData = function () {
 papaya.surface.Surface.prototype.finishedReading = function () {
     var numSurfaces = this.fileFormat.getNumSurfaces(), currentSurface = this, ctr;
 
-    for (ctr = 0; ctr < numSurfaces; ctr += 1) {
-        if (ctr > 0) {
-            currentSurface.nextSurface = new papaya.surface.Surface();
-            currentSurface = currentSurface.nextSurface;
-        }
+    if (this.fileFormat.error) {
+        this.error = this.fileFormat.error;
+    } else {
+        for (ctr = 0; ctr < numSurfaces; ctr += 1) {
+            if (ctr > 0) {
+                currentSurface.nextSurface = new papaya.surface.Surface();
+                currentSurface = currentSurface.nextSurface;
+            }
 
-        currentSurface.numPoints = this.fileFormat.getNumPoints(ctr);
-        currentSurface.numTriangles = this.fileFormat.getNumTriangles(ctr);
-        currentSurface.pointData = this.fileFormat.getPointData(ctr);
-        currentSurface.normalsData = this.fileFormat.getNormalsData(ctr);
-        currentSurface.triangleData = this.fileFormat.getTriangleData(ctr);
-        currentSurface.colorsData = this.fileFormat.getColorsData(ctr);
+            currentSurface.numPoints = this.fileFormat.getNumPoints(ctr);
+            currentSurface.numTriangles = this.fileFormat.getNumTriangles(ctr);
+            currentSurface.pointData = this.fileFormat.getPointData(ctr);
+            currentSurface.normalsData = this.fileFormat.getNormalsData(ctr);
+            currentSurface.triangleData = this.fileFormat.getTriangleData(ctr);
+            currentSurface.colorsData = this.fileFormat.getColorsData(ctr);
 
-        if (this.fileFormat.getSolidColor(ctr)) {
-            currentSurface.solidColor = this.fileFormat.getSolidColor(ctr);
+            if (currentSurface.normalsData === null) {
+                this.generateNormals();
+            }
+
+            if (this.fileFormat.getSolidColor(ctr)) {
+                currentSurface.solidColor = this.fileFormat.getSolidColor(ctr);
+            }
         }
     }
 
-
     this.progressMeter.drawProgress(1, "Loading surface...");
-
     this.onFinishedRead(this);
+};
+
+
+
+papaya.surface.Surface.prototype.generateNormals = function () {
+    var p1 = [], p2 = [], p3 = [], normal = [], nn = [], ctr,
+        normalsDataLength = this.pointData.length, numIndices,
+        qx, qy, qz, px, py, pz, index1, index2, index3;
+
+    this.normalsData = new Float32Array(normalsDataLength);
+
+    numIndices = this.numTriangles * 3;
+    for (ctr = 0; ctr < numIndices; ctr += 3) {
+        index1 = this.triangleData[ctr] * 3;
+        index2 = this.triangleData[ctr + 1] * 3;
+        index3 = this.triangleData[ctr + 2] * 3;
+
+        p1.x = this.pointData[index1];
+        p1.y = this.pointData[index1 + 1];
+        p1.z = this.pointData[index1 + 2];
+
+        p2.x = this.pointData[index2];
+        p2.y = this.pointData[index2 + 1];
+        p2.z = this.pointData[index2 + 2];
+
+        p3.x = this.pointData[index3];
+        p3.y = this.pointData[index3 + 1];
+        p3.z = this.pointData[index3 + 2];
+
+        qx = p2.x - p1.x;
+        qy = p2.y - p1.y;
+        qz = p2.z - p1.z;
+        px = p3.x - p1.x;
+        py = p3.y - p1.y;
+        pz = p3.z - p1.z;
+
+        normal[0] = (py * qz) - (pz * qy);
+        normal[1] = (pz * qx) - (px * qz);
+        normal[2] = (px * qy) - (py * qx);
+
+        this.normalsData[index1] += normal[0];
+        this.normalsData[index1 + 1] += normal[1];
+        this.normalsData[index1 + 2] += normal[2];
+
+        this.normalsData[index2] += normal[0];
+        this.normalsData[index2 + 1] += normal[1];
+        this.normalsData[index2 + 2] += normal[2];
+
+        this.normalsData[index3] += normal[0];
+        this.normalsData[index3 + 1] += normal[1];
+        this.normalsData[index3 + 2] += normal[2];
+    }
+
+    for (ctr = 0; ctr < normalsDataLength; ctr += 3) {
+        normal[0] = -1 * this.normalsData[ctr];
+        normal[1] = -1 * this.normalsData[ctr + 1];
+        normal[2] = -1 * this.normalsData[ctr + 2];
+
+        vec3.normalize(normal, nn);
+
+        this.normalsData[ctr] = nn[0];
+        this.normalsData[ctr + 1] = nn[1];
+        this.normalsData[ctr + 2] = nn[2];
+    }
 };

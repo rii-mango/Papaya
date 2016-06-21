@@ -60,8 +60,6 @@ papaya.surface.SurfaceGIFTI.prototype.readDataNormals = function (surf, progress
 
     if (surf.gii.getNormalsDataArray() != null) {
         surf.normalsData = surf.gii.getNormalsDataArray().getData();
-    } else {
-        throw new Error("Surface is missing normals information!");
     }
 
     setTimeout(function() { surf.readDataTriangles(surf, progress); }, 0);
@@ -75,7 +73,7 @@ papaya.surface.SurfaceGIFTI.prototype.readDataTriangles = function (surf, progre
     if (surf.gii.getTrianglesDataArray() != null) {
         surf.triangleData = surf.gii.getTrianglesDataArray().getData();
     } else {
-        throw new Error("Surface is missing triangle information!");
+        surf.error = Error("Surface is missing triangle information!");
     }
 
     setTimeout(function() { surf.readDataColors(surf, progress); }, 0);
