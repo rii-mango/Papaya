@@ -947,14 +947,62 @@ papaya.viewer.Viewer.prototype.convertScreenToImageCoordinateY = function (yLoc,
 
 
 
+papaya.viewer.Viewer.prototype.convertScreenToImageCoordinate = function (xLoc, yLoc, screenSlice) {
+    var xImageLoc, yImageLoc, zImageLoc;
+
+    if (screenSlice === undefined) {
+        screenSlice = this.mainImage;
+    }
+
+    if (screenSlice.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+        xImageLoc = this.convertScreenToImageCoordinateX(xLoc, screenSlice);
+        yImageLoc = this.convertScreenToImageCoordinateY(yLoc, screenSlice);
+        zImageLoc = this.axialSlice.currentSlice;
+    } else if (screenSlice.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+        xImageLoc = this.convertScreenToImageCoordinateX(xLoc, screenSlice);
+        zImageLoc = this.convertScreenToImageCoordinateY(yLoc, screenSlice);
+        yImageLoc = this.coronalSlice.currentSlice;
+    } else if (screenSlice.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+        yImageLoc = this.convertScreenToImageCoordinateX(xLoc, screenSlice);
+        zImageLoc = this.convertScreenToImageCoordinateY(yLoc, screenSlice);
+        xImageLoc = this.sagittalSlice.currentSlice;
+    }
+
+    return new papaya.core.Coordinate(xImageLoc, yImageLoc, zImageLoc);
+};
+
+
+
 papaya.viewer.Viewer.prototype.convertCurrentCoordinateToScreen = function (screenSlice) {
     return this.convertCoordinateToScreen(this.currentCoord, screenSlice);
 };
 
 
 
+papaya.viewer.Viewer.prototype.intersectsMainSlice = function (coord) {
+    var sliceDirection = this.mainImage.sliceDirection;
+
+    if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+        return (coord.z === this.mainImage.currentSlice);
+    } else if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+        return (coord.y === this.mainImage.currentSlice);
+    } else if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+        return (coord.x === this.mainImage.currentSlice);
+    }
+
+    return false;
+};
+
+
+
 papaya.viewer.Viewer.prototype.convertCoordinateToScreen = function (coor, screenSlice) {
-    var x, y, sliceDirection = screenSlice.sliceDirection;
+    var x, y, sliceDirection;
+
+    if (screenSlice === undefined) {
+        screenSlice = this.mainImage;
+    }
+
+    sliceDirection = screenSlice.sliceDirection;
 
     if (sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
         x = papayaFloorFast(screenSlice.finalTransform[0][2] + (coor.x + 0.5) * screenSlice.finalTransform[0][0]);
