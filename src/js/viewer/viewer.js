@@ -1854,7 +1854,10 @@ papaya.viewer.Viewer.prototype.resetUpdateTimer = function (me) {
 papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
     var draggingStarted = true, menuData, menu, pickedColor;
 
-    me.stopPropagation();
+    if (!papaya.Container.allowPropagation) {
+        me.stopPropagation();
+    }
+
     me.preventDefault();
 
     if (this.showingContextMenu) {
@@ -1970,7 +1973,10 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
 
 papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
-    me.stopPropagation();
+    if (!papaya.Container.allowPropagation) {
+        me.stopPropagation();
+    }
+
     me.preventDefault();
 
     if (this.showingContextMenu) {
@@ -2237,7 +2243,10 @@ papaya.viewer.Viewer.prototype.touchMoveEvent = function (me) {
 
 
 papaya.viewer.Viewer.prototype.touchStartEvent = function (me) {
-    me.stopPropagation();
+    if (!papaya.Container.allowPropagation) {
+        me.stopPropagation();
+    }
+
     me.preventDefault();
     this.longTouchTimer = setTimeout(papaya.utilities.ObjectUtils.bind(this, function() {this.doLongTouch(me); }), 500);
 };

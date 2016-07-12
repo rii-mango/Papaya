@@ -102,6 +102,7 @@ papaya.Container.DICOM_SUPPORT = true;
 
 papaya.Container.syncViewers = false;
 papaya.Container.syncViewersWorld = false;
+papaya.Container.allowPropagation = false;
 papaya.Container.papayaLastHoveredViewer = null;
 
 
