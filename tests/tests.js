@@ -324,6 +324,16 @@ params["message"] = "Test: mango surface.";
 
 params = initTest();
 params["images"] = ["data/sample_image.nii.gz"];
+params["surfaces"] = ["data/sample_image_bin.vtk"];
+params["message"] = "Test: VTK binary surface.";
+
+params = initTest();
+params["images"] = ["data/sample_image.nii.gz"];
+params["surfaces"] = ["data/sample_image_text.vtk"];
+params["message"] = "Test: VTK text surface.";
+
+params = initTest();
+params["images"] = ["data/sample_image.nii.gz"];
 params["surfaces"] = ["data/sample_image.surf.gii"];
 params["surfaceLink"] = true;
 params["message"] = "Test: surfaces, surfaceLink.";

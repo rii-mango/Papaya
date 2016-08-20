@@ -349,15 +349,15 @@ papaya.viewer.Viewer.prototype.loadSurface = function (ref, forceUrl, forceEncod
     var surface = new papaya.surface.Surface(this.container.display, this.container.params);
 
     if (forceEncode) {
-        surface.readEncodedData(ref[0], papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
+        surface.readEncodedData(ref[0], this.volume, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
     } else if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
-        surface.readEncodedData(loadableImage.encode, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
+        surface.readEncodedData(loadableImage.encode, this.volume, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
     } else if (forceUrl) {
-        surface.readURL(ref, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
+        surface.readURL(ref, this.volume, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
     } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
-        surface.readURL(loadableImage.url, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
+        surface.readURL(loadableImage.url, this.volume, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
     } else {
-        surface.readFile(ref[0], papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
+        surface.readFile(ref[0], this.volume, papaya.utilities.ObjectUtils.bind(this, this.initializeSurface));
     }
 };
 

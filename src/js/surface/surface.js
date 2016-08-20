@@ -31,6 +31,7 @@ papaya.surface.Surface = papaya.surface.Surface || function (progressMeter, para
     this.fileFormat = null;
     this.params = params;
     this.nextSurface = null;
+    this.volume = null;
     this.alpha = 1;
 };
 
@@ -39,6 +40,7 @@ papaya.surface.Surface = papaya.surface.Surface || function (progressMeter, para
 papaya.surface.Surface.SURFACE_TYPE_UNKNOWN = 0;
 papaya.surface.Surface.SURFACE_TYPE_GIFTI = 1;
 papaya.surface.Surface.SURFACE_TYPE_MANGO = 2;
+papaya.surface.Surface.SURFACE_TYPE_VTK = 3;
 
 
 
@@ -49,6 +51,8 @@ papaya.surface.Surface.findSurfaceType = function (filename) {
         return papaya.surface.Surface.SURFACE_TYPE_GIFTI;
     } else if (papaya.surface.SurfaceMango.isThisFormat(filename)) {
         return papaya.surface.Surface.SURFACE_TYPE_MANGO;
+    } else if (papaya.surface.SurfaceVTK.isThisFormat(filename)) {
+        return papaya.surface.Surface.SURFACE_TYPE_VTK;
     }
 
     return papaya.surface.Surface.SURFACE_TYPE_UNKNOWN;
@@ -66,16 +70,19 @@ papaya.surface.Surface.prototype.makeFileFormat = function (filename) {
         this.fileFormat = new papaya.surface.SurfaceGIFTI();
     } else if (this.surfaceType === papaya.surface.Surface.SURFACE_TYPE_MANGO) {
         this.fileFormat = new papaya.surface.SurfaceMango();
+    } else if (this.surfaceType === papaya.surface.Surface.SURFACE_TYPE_VTK) {
+        this.fileFormat = new papaya.surface.SurfaceVTK();
     }
 };
 
 
 
-papaya.surface.Surface.prototype.readURL = function (url, callback) {
+papaya.surface.Surface.prototype.readURL = function (url, volume, callback) {
     var xhr, surface = this;
 
     this.filename = url.substr(url.lastIndexOf("/") + 1, url.length);
     this.onFinishedRead = callback;
+    this.volume = volume;
     this.processParams(this.filename);
     this.makeFileFormat(this.filename);
 
@@ -126,12 +133,13 @@ papaya.surface.Surface.prototype.readURL = function (url, callback) {
 
 
 
-papaya.surface.Surface.prototype.readFile = function (file, callback) {
+papaya.surface.Surface.prototype.readFile = function (file, volume, callback) {
     var blob = papaya.utilities.PlatformUtils.makeSlice(file, 0, file.size),
         surface = this;
 
     this.filename = file.name;
     this.onFinishedRead = callback;
+    this.volume = volume;
     this.processParams(this.filename);
     this.makeFileFormat(this.filename);
 
@@ -169,9 +177,10 @@ papaya.surface.Surface.prototype.readFile = function (file, callback) {
 
 
 
-papaya.surface.Surface.prototype.readEncodedData = function (name, callback) {
+papaya.surface.Surface.prototype.readEncodedData = function (name, volume, callback) {
     this.filename = (name + ".surf.gii");
     this.onFinishedRead = callback;
+    this.volume = volume;
     this.processParams(name);
     this.makeFileFormat(this.filename);
 
@@ -230,9 +239,8 @@ papaya.surface.Surface.prototype.readData = function () {
     };
 
     try {
-        this.fileFormat.readData(this.rawData, prog, papaya.utilities.ObjectUtils.bind(this, this.finishedReading));
+        this.fileFormat.readData(this.rawData, prog, papaya.utilities.ObjectUtils.bind(this, this.finishedReading), this.volume);
     } catch (err) {
-        console.log(err.stack);
         this.error = err;
         this.onFinishedRead(this);
     }

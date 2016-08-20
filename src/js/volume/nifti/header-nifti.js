@@ -82,6 +82,7 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getVoxelDimensions = function () {
 
     vd.spatialUnit = (this.nifti.xyzt_units & papaya.volume.nifti.HeaderNIFTI.SPATIAL_UNITS_MASK);
     vd.temporalUnit = (this.nifti.xyzt_units & papaya.volume.nifti.HeaderNIFTI.TEMPORAL_UNITS_MASK);
+    vd.flip = (this.nifti.pixDims[0] === -1);
 
     return vd;
 };

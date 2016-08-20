@@ -17,6 +17,7 @@ papaya.volume.VoxelDimensions = papaya.volume.VoxelDimensions || function (colSi
     this.xSize = 0;
     this.ySize = 0;
     this.zSize = 0;
+    this.flip = false;
     this.timeSize = timeSize;
     this.spatialUnit = papaya.volume.VoxelDimensions.UNITS_UNKNOWN;
     this.temporalUnit = papaya.volume.VoxelDimensions.UNITS_UNKNOWN;
