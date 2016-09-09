@@ -206,7 +206,7 @@ papaya.surface.Surface.prototype.readEncodedData = function (name, volume, callb
 
 
 papaya.surface.Surface.prototype.processParams = function (name) {
-    var screenParams = params[name];
+    var screenParams = this.params[name];
     if (screenParams) {
         if (screenParams.color !== undefined) {
             this.solidColor = screenParams.color;
