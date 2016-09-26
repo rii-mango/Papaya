@@ -1281,6 +1281,10 @@ papaya.Container.prototype.findLoadableImage = function (name, surface) {
         }
     }
 
+    if (window[name] !== undefined) {
+        return {encode:name};
+    }
+
     return null;
 };
 
