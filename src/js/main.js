@@ -1290,6 +1290,28 @@ papaya.Container.prototype.findLoadableImage = function (name, surface) {
 
 
 
+papaya.Container.prototype.findLoadableImages = function (refs, surface) {
+    var ctr, loadable, loadables = [];
+
+    if (refs) {
+        for (ctr = 0; ctr < refs.length; ctr++) {
+            loadable = this.findLoadableImage(refs[ctr], surface);
+
+            if (loadable) {
+                loadables.push(loadable);
+            }
+        }
+    }
+
+    if (loadables.length > 0) {
+        return loadables;
+    }
+
+    return null;
+};
+
+
+
 papaya.Container.prototype.expandViewer = function () {
     var container = this;
 

@@ -271,29 +271,33 @@ papaya.viewer.Viewer.prototype.showDialog = function (title, data, datasource, c
 
 
 papaya.viewer.Viewer.prototype.loadBaseImage = function (refs, forceUrl, forceEncode) {
-    var imageRefs, loadableImage = this.container.findLoadableImage(refs);
+    var ctr, imageRefs = [], loadableImages = this.container.findLoadableImages(refs);
     this.volume = new papaya.volume.Volume(this.container.display, this, this.container.params);
 
     if (forceEncode) {
-        imageRefs = loadableImage.encode;
-        if (!(imageRefs instanceof Array)) {
-            imageRefs = [];
-            imageRefs[0] = loadableImage.encode;
+        if (loadableImages) {
+            for (ctr = 0; ctr < loadableImages.length; ctr += 1) {
+                imageRefs.push(loadableImages[ctr].encode);
+            }
         }
 
         this.volume.readEncodedData(imageRefs, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
-    } else if ((loadableImage !== null) && (loadableImage.encode !== undefined)) {
-        imageRefs = loadableImage.encode;
-        if (!(imageRefs instanceof Array)) {
-            imageRefs = [];
-            imageRefs[0] = loadableImage.encode;
+    } else if ((loadableImages !== null) && (loadableImages[0].encode !== undefined)) {
+        for (ctr = 0; ctr < loadableImages.length; ctr += 1) {
+            imageRefs.push(loadableImages[ctr].encode);
         }
 
         this.volume.readEncodedData(imageRefs, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
     } else if (forceUrl) {
         this.volume.readURLs(refs, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
-    } else if ((loadableImage !== null) && (loadableImage.url !== undefined)) {
-        this.volume.readURLs([loadableImage.url], papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
+    } else if ((loadableImages !== null) && (loadableImages[0].url !== undefined)) {
+        if (loadableImages) {
+            for (ctr = 0; ctr < loadableImages.length; ctr += 1) {
+                imageRefs.push(loadableImages[ctr].url);
+            }
+        }
+
+        this.volume.readURLs(imageRefs, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
     } else {
         this.volume.readFiles(refs, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
     }
