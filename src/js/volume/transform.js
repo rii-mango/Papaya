@@ -485,9 +485,20 @@ papaya.volume.Transform.prototype.updateWorldMat = function () {
 
 
 
-papaya.volume.Transform.prototype.updateTransforms = function (mat) {
-    this.mat = mat;
+papaya.volume.Transform.prototype.updateMat = function (mat) {
+    var ctrIn, ctrOut;
 
+    for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
+        for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
+            this.mat[ctrOut][ctrIn] = mat[ctrOut][ctrIn];
+        }
+    }
+};
+
+
+
+papaya.volume.Transform.prototype.updateTransforms = function (mat) {
+    this.updateMat(mat);
     this.updateSizeMat();
     this.updateOrientMat();
     this.updateOriginMat();
