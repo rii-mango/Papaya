@@ -16,7 +16,16 @@ fi
 
 java -Xmx512M -jar lib/papaya-builder.jar "$@"
 
-if [ -f build/papaya.js ]
+NO_COMPRESS=false
+for var in "$@"
+do
+	if [[ '-nocompress' = "$var" ]]
+	then
+		NO_COMPRESS=true
+	fi
+done
+
+if [ -f build/papaya.js ] && [ $NO_COMPRESS = false ]
 then
     echo Further compressing...
     java -jar lib/compiler.jar --warning_level QUIET --compilation_level SIMPLE_OPTIMIZATIONS --language_in=ECMASCRIPT5 --js build/papaya.js --js_output_file build/papaya-out.js
