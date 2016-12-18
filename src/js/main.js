@@ -108,8 +108,8 @@ papaya.Container.papayaLastHoveredViewer = null;
 
 /*** Static Methods ***/
 
-papaya.Container.restartViewer = function (index, refs, forceUrl, forceEncode) {
-    papayaContainers[index].viewer.restart(refs, forceUrl, forceEncode);
+papaya.Container.restartViewer = function (index, refs, forceUrl, forceEncode, forceBinary) {
+    papayaContainers[index].viewer.restart(refs, forceUrl, forceEncode, forceBinary);
 };
 
 
@@ -125,6 +125,11 @@ papaya.Container.resetViewer = function (index, params) {
         if (params.loadedEncodedImages) {
             params.encodedImages = params.loadedEncodedImages;
         }
+
+        if (params.loadedBinaryImages) {
+            params.binaryImages = params.loadedBinaryImages;
+        }
+
 
         if (params.loadedSurfaces) {
             params.surfaces = params.loadedSurfaces;
@@ -189,9 +194,11 @@ papaya.Container.addImage = function (index, imageRef, imageParams) {
     }
 
     if (papayaContainers[index].params.images) {
-        papayaContainers[index].viewer.loadImage(imageRefs, true, false);
+        papayaContainers[index].viewer.loadImage(imageRefs, true, false, false);
+    } else if(papayaContainers[index].params.binaryImages) {
+        papayaContainers[index].viewer.loadImage(imageRefs, false, false, true);
     } else if (papayaContainers[index].params.encodedImages) {
-        papayaContainers[index].viewer.loadImage(imageRefs, false, true);
+        papayaContainers[index].viewer.loadImage(imageRefs, false, true, false);
     }
 };
 
@@ -337,6 +344,7 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params,
 
 
 papaya.Container.buildContainer = function (containerHTML, params, replaceIndex) {
+
     var container, message, viewerHtml, loadUrl, index, imageRefs = null;
 
     message = papaya.utilities.PlatformUtils.checkForBrowserCompatibility();
@@ -390,7 +398,7 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
                 imageRefs[0] = loadUrl;
             }
 
-            container.viewer.loadImage(imageRefs, true, false);
+            container.viewer.loadImage(imageRefs, true, false, false);
         } else if (container.params.images) {
             imageRefs = container.params.images[0];
             if (!(imageRefs instanceof Array)) {
@@ -398,7 +406,7 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
                 imageRefs[0] = container.params.images[0];
             }
 
-            container.viewer.loadImage(imageRefs, true, false);
+            container.viewer.loadImage(imageRefs, true, false, false);
         } else if (container.params.encodedImages) {
             imageRefs = container.params.encodedImages[0];
             if (!(imageRefs instanceof Array)) {
@@ -406,7 +414,10 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
                 imageRefs[0] = container.params.encodedImages[0];
             }
 
-            container.viewer.loadImage(imageRefs, false, true);
+            container.viewer.loadImage(imageRefs, false, true, false);
+        } else if(container.params.binaryImages) {
+            imageRefs = container.params.binaryImages[0];
+            container.viewer.loadImage(imageRefs, false, false, true);
         } else if (container.params.files) {
             imageRefs = container.params.files[0];
             if (!(imageRefs instanceof Array)) {
@@ -414,7 +425,7 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
                 imageRefs[0] = container.params.files[0];
             }
 
-            container.viewer.loadImage(imageRefs, false, false);
+            container.viewer.loadImage(imageRefs, false, false, false);
         } else {
             container.viewer.finishedLoading();
         }
@@ -674,18 +685,22 @@ papaya.Container.prototype.getViewerDimensions = function () {
 
         width = papayaRoundFast(height / ratio);
     } else {
+
         width = parentWidth;
         height = papayaRoundFast(width / ratio);
     }
 
     if (!this.nestedViewer || this.collapsable) {
+
         if (this.orthogonalTall) {
+
             maxWidth = window.innerWidth - (this.fullScreenPadding ? (2 * PAPAYA_PADDING) : 0);
             if (width > maxWidth) {
                 width = maxWidth;
                 height = papayaRoundFast(width * ratio);
             }
         } else {
+
             maxHeight = window.innerHeight - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
                 PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
                 (this.showControlBar ? 2*papaya.ui.Toolbar.SIZE : 0);
@@ -693,6 +708,7 @@ papaya.Container.prototype.getViewerDimensions = function () {
                 height = maxHeight;
                 width = papayaRoundFast(height * ratio);
             }
+
         }
     }
 
@@ -1126,6 +1142,8 @@ papaya.Container.prototype.hasMoreToLoad = function () {
 papaya.Container.prototype.hasImageToLoad = function () {
     if (this.params.images) {
         return (this.loadingImageIndex < this.params.images.length);
+    } else if(this.params.binaryImages) {
+        return (this.loadingImageIndex < this.params.binaryImages.length);
     } else if (this.params.encodedImages) {
         return (this.loadingImageIndex < this.params.encodedImages.length);
     } else if (this.params.files) {
@@ -1208,11 +1226,27 @@ papaya.Container.prototype.loadNextImage = function () {
                 imageRefs[0] = this.params.images[this.loadingImageIndex];
             }
 
-            this.viewer.loadImage(imageRefs, true, false);
+            this.viewer.loadImage(imageRefs, true, false, false);
             this.loadingImageIndex += 1;
         } else {
             this.params.loadedImages = this.params.images;
             this.params.images = [];
+        }
+    } else if(this.params.binaryImages) {
+        if (this.loadingImageIndex < this.params.binaryImages.length) {
+            loadingNext = true;
+            imageRefs = this.params.binaryImages[this.loadingImageIndex];
+
+            if (!(imageRefs instanceof Array)) {
+                imageRefs = [];
+                imageRefs[0] = this.params.binaryImages[this.loadingImageIndex];
+            }
+
+            this.viewer.loadImage(imageRefs, false, false, true);
+            this.loadingImageIndex += 1;
+        } else {
+            this.params.loadedEncodedImages = this.params.binaryImages;
+            this.params.binaryImages = [];
         }
     } else if (this.params.encodedImages) {
         if (this.loadingImageIndex < this.params.encodedImages.length) {
@@ -1224,7 +1258,7 @@ papaya.Container.prototype.loadNextImage = function () {
                 imageRefs[0] = this.params.encodedImages[this.loadingImageIndex];
             }
 
-            this.viewer.loadImage(imageRefs, false, true);
+            this.viewer.loadImage(imageRefs, false, true, false);
             this.loadingImageIndex += 1;
         } else {
             this.params.loadedEncodedImages = this.params.encodedImages;
@@ -1240,7 +1274,7 @@ papaya.Container.prototype.loadNextImage = function () {
                 imageRefs[0] = this.params.files[this.loadingImageIndex];
             }
 
-            this.viewer.loadImage(imageRefs, false, false);
+            this.viewer.loadImage(imageRefs, false, false, false);
             this.loadingImageIndex += 1;
         } else {
             this.params.loadedFiles = this.params.files;
@@ -1256,6 +1290,8 @@ papaya.Container.prototype.loadNextImage = function () {
 papaya.Container.prototype.readyForDnD = function () {
     return !this.kioskMode && ((this.params.images === undefined) ||
         (this.loadingImageIndex >= this.params.images.length)) &&
+        ((this.params.binaryImages === undefined) ||
+        (this.loadingImageIndex >= this.params.binaryImages.length)) &&
         ((this.params.encodedImages === undefined) ||
         (this.loadingImageIndex >= this.params.encodedImages.length)) &&
         ((this.params.encodedSurfaces === undefined) ||
