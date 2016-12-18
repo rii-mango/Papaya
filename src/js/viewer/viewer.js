@@ -1223,8 +1223,7 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
     }
 
     if (this.container.display) {
-        this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z,
-            this.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z));
+        this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
     }
 
     if (this.container.contextManager && this.container.contextManager.drawToViewer) {
@@ -2474,6 +2473,8 @@ papaya.viewer.Viewer.prototype.getCurrentValueAt = function (ctrX, ctrY, ctrZ) {
     interpolation &= (this.container.preferences.smoothDisplay === "Yes");
 
     if (this.worldSpace) {
+        interpolation |= ((this.currentScreenVolume.volume === this.volume) && this.volume.isWorldSpaceOnly());
+
         return this.currentScreenVolume.volume.getVoxelAtCoordinate(
             (ctrX - this.volume.header.origin.x) * this.volume.header.voxelDimensions.xSize,
             (this.volume.header.origin.y - ctrY) * this.volume.header.voxelDimensions.ySize,
@@ -2812,8 +2813,7 @@ papaya.viewer.Viewer.prototype.goToInitialCoordinate = function () {
         this.gotoCoordinate(coord);
 
         if (this.container.display) {
-            this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z,
-                this.getCurrentValueAt(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z));
+            this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
         }
     }
 };
