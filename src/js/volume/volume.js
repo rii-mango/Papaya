@@ -455,8 +455,6 @@ papaya.volume.Volume.prototype.applyBestTransform = function () {
 papaya.volume.Volume.prototype.isWorldSpaceOnly = function () {
     /*jslint bitwise: true */
 
-    return false;
-
     var nifti, foundDataOrderTransform = false;
 
     if (this.header.fileFormat instanceof papaya.volume.nifti.HeaderNIFTI) {
