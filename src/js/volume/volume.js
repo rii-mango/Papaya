@@ -189,7 +189,7 @@ papaya.volume.Volume.prototype.loadURL = function (url, vol) {
         })
         .progress(function (loaded,total) {
             progPerc = parseInt(100 * (vol.loadedFileCount) / vol.urls.length, 10);
-            progressText = papaya.volume.Volume.PROGRESS_LABEL_LOADING + 
+            progressText = papaya.volume.Volume.PROGRESS_LABEL_LOADING +
                 ' image ' + (vol.loadedFileCount + 1) + ' of ' + vol.urls.length + ' (' + progPerc + '%)';
             vol.progressMeter.drawProgress(loaded / total, progressText);
         });
@@ -207,10 +207,42 @@ papaya.volume.Volume.prototype.readEachURL = function (vol, index) {
             getFileDeferred
         );
     }
-    return $.when.apply($, deferredLoads); 
+    return $.when.apply($, deferredLoads);
 };
 
+papaya.volume.Volume.prototype.readBinaryData = function (names, callback) {
+    var vol = null;
 
+    try {
+        this.fileName = names[0];
+        this.onFinishedRead = callback;
+        vol = this;
+        this.fileLength = 0;
+        vol.readNextBinaryData(vol, 0, names);
+    } catch (err) {
+        if (vol) {
+            vol.error = new Error("There was a problem reading that file:\n\n" + err.message);
+            vol.finishedLoad();
+        }
+    }
+};
+
+papaya.volume.Volume.prototype.readNextBinaryData = function (vol, index, names) {
+    if (index < names.length) {
+        try {
+            vol.rawData[index] = papaya.utilities.ObjectUtils.dereference(names[index]);
+            vol.compressed = this.fileIsCompressed(this.fileName, vol.rawData[index]);
+            setTimeout(function () {vol.readNextBinaryData(vol, index + 1, names); }, 0);
+        } catch (err) {
+            if (vol) {
+                vol.error = new Error("There was a problem reading that file:\n\n" + err.message);
+                vol.finishedLoad();
+            }
+        }
+    } else {
+        vol.decompress(vol);
+    }
+};
 
 papaya.volume.Volume.prototype.readEncodedData = function (names, callback) {
     var vol = null;
