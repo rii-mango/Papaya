@@ -2846,19 +2846,14 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
 
     var scrollSign, isSliceScroll;
 
-/*
     if (this.container.nestedViewer || ((papayaContainers.length > 1) && !this.container.collapsable)) {
         return;
     }
-*/
 
     e = e || window.event;
+
     if (e.preventDefault) {
         e.preventDefault();
-    }
-
-    if(e.target != this.canvas) {
-        return;
     }
 
     e.returnValue = false;
