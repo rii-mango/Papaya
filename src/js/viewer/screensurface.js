@@ -904,7 +904,6 @@ papaya.viewer.ScreenSurface.prototype.drawOrientedText = function (gl, str, font
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     this.orientationContext.imageSmoothingEnabled = true;
-    this.orientationContext.webkitImageSmoothingEnabled = true;
     this.orientationContext.mozImageSmoothingEnabled = true;
     this.orientationContext.msImageSmoothingEnabled = true;
     this.orientationContext.textAlign = "center";
@@ -1094,7 +1093,6 @@ papaya.viewer.ScreenSurface.prototype.makeOrientedTextSquare = function () {
     this.orientationCanvas = document.createElement("canvas");
     this.orientationContext = this.orientationCanvas.getContext('2d');
     this.orientationContext.imageSmoothingEnabled = true;
-    this.orientationContext.webkitImageSmoothingEnabled = true;
     this.orientationContext.mozImageSmoothingEnabled = true;
     this.orientationContext.msImageSmoothingEnabled = true;
     this.orientationContext.fillStyle = "#FFFFFF";
@@ -1108,7 +1106,6 @@ papaya.viewer.ScreenSurface.prototype.updateOrientedTextSquare = function (fontS
     var textWidth, textHeight, textSize;
 
     this.orientationContext.imageSmoothingEnabled = true;
-    this.orientationContext.webkitImageSmoothingEnabled = true;
     this.orientationContext.mozImageSmoothingEnabled = true;
     this.orientationContext.msImageSmoothingEnabled = true;
     this.orientationContext.fillStyle = "#FFFFFF";

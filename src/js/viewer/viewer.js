@@ -1176,12 +1176,10 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
     // intialize screen slices
     if (this.container.preferences.smoothDisplay === "No") {
         this.context.imageSmoothingEnabled = false;
-        this.context.webkitImageSmoothingEnabled = false;
         this.context.mozImageSmoothingEnabled = false;
         this.context.msImageSmoothingEnabled = false;
     } else {
         this.context.imageSmoothingEnabled = true;
-        this.context.webkitImageSmoothingEnabled = true;
         this.context.mozImageSmoothingEnabled = true;
         this.context.msImageSmoothingEnabled = true;
     }
