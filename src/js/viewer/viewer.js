@@ -244,11 +244,11 @@ papaya.viewer.Viewer.drawRoundRect = function (ctx, x, y, width, height, radius,
 
 /*** Prototype Methods ***/
 
-papaya.viewer.Viewer.prototype.loadImage = function (refs, forceUrl, forceEncode) {
+papaya.viewer.Viewer.prototype.loadImage = function (refs, forceUrl, forceEncode, forceBinary) {
     if (this.screenVolumes.length === 0) {
-        this.loadBaseImage(refs, forceUrl, forceEncode);
+        this.loadBaseImage(refs, forceUrl, forceEncode, forceBinary);
     } else {
-        this.loadOverlay(refs, forceUrl, forceEncode);
+        this.loadOverlay(refs, forceUrl, forceEncode, forceBinary);
     }
 };
 
@@ -270,11 +270,21 @@ papaya.viewer.Viewer.prototype.showDialog = function (title, data, datasource, c
 
 
 
-papaya.viewer.Viewer.prototype.loadBaseImage = function (refs, forceUrl, forceEncode) {
+papaya.viewer.Viewer.prototype.loadBaseImage = function (refs, forceUrl, forceEncode, forceBinary) {
+
     var ctr, imageRefs = [], loadableImages = this.container.findLoadableImages(refs);
     this.volume = new papaya.volume.Volume(this.container.display, this, this.container.params);
 
-    if (forceEncode) {
+    if(forceBinary) {
+
+        if (loadableImages) {
+            for (ctr = 0; ctr < loadableImages.length; ctr += 1) {
+                imageRefs.push(loadableImages[ctr].encode);
+            }
+        }
+
+        this.volume.readBinaryData(imageRefs, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
+    } else if (forceEncode) {
         if (loadableImages) {
             for (ctr = 0; ctr < loadableImages.length; ctr += 1) {
                 imageRefs.push(loadableImages[ctr].encode);
@@ -305,7 +315,7 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function (refs, forceUrl, forceEn
 
 
 
-papaya.viewer.Viewer.prototype.loadOverlay = function (refs, forceUrl, forceEncode) {
+papaya.viewer.Viewer.prototype.loadOverlay = function (refs, forceUrl, forceEncode, forceBinary) {
     var imageRefs, loadableImage = this.container.findLoadableImage(refs);
     this.loadingVolume = new papaya.volume.Volume(this.container.display, this, this.container.params);
 
@@ -314,7 +324,9 @@ papaya.viewer.Viewer.prototype.loadOverlay = function (refs, forceUrl, forceEnco
             ") has been reached!");
         this.initializeOverlay();
     } else {
-        if (forceEncode) {
+        if (forceBinary) {
+            this.loadingVolume.readBinaryData(imageRefs, papaya.utilities.ObjectUtils.bind(this, this.initializeOverlay));
+        } else if (forceEncode) {
             imageRefs = loadableImage.encode;
             if (!(imageRefs instanceof Array)) {
                 imageRefs = [];
@@ -2836,6 +2848,7 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
     }
 
     e = e || window.event;
+
     if (e.preventDefault) {
         e.preventDefault();
     }
@@ -3314,10 +3327,10 @@ papaya.viewer.Viewer.prototype.isShowingSurfaceCrosshairs = function () {
 
 
 
-papaya.viewer.Viewer.prototype.restart = function (refs, forceUrl, forceEncode) {
+papaya.viewer.Viewer.prototype.restart = function (refs, forceUrl, forceEncode, forceBinary) {
     this.resetViewer();
     this.container.toolbar.updateImageButtons();
-    this.loadImage(refs, forceUrl, forceEncode);
+    this.loadImage(refs, forceUrl, forceEncode, forceBinary);
 };
 
 
