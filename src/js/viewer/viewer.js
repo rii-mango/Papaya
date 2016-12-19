@@ -696,9 +696,9 @@ papaya.viewer.Viewer.prototype.finishedLoading = function () {
 
 
 papaya.viewer.Viewer.prototype.addScroll = function () {
-    if (!this.container.nestedViewer) {
+    // if (!this.container.nestedViewer) {
         window.addEventListener(papaya.utilities.PlatformUtils.getSupportedScrollEvent(), this.listenerScroll, false);
-    }
+    // }
 };
 
 
@@ -2842,12 +2842,17 @@ papaya.viewer.Viewer.prototype.isUsingAtlas = function (name) {
 
 papaya.viewer.Viewer.prototype.scrolled = function (e) {
     var scrollSign, isSliceScroll;
-
+/*
     if (this.container.nestedViewer || ((papayaContainers.length > 1) && !this.container.collapsable)) {
         return;
     }
-
+*/
     e = e || window.event;
+
+    //If the scroll event happened outside the canvas don't handle it
+    if(e.target != this.canvas) {
+        return;
+    }
 
     if (e.preventDefault) {
         e.preventDefault();
