@@ -122,6 +122,7 @@ papaya.viewer.Viewer.KEYCODE_DECREMENT_MAIN = 86;
 papaya.viewer.Viewer.KEYCODE_TOGGLE_CROSSHAIRS = 65;
 papaya.viewer.Viewer.KEYCODE_SERIES_BACK = 188;  // , <
 papaya.viewer.Viewer.KEYCODE_SERIES_FORWARD = 190;  // . >
+papaya.viewer.Viewer.KEYCODE_RULER = 82;
 papaya.viewer.Viewer.MAX_OVERLAYS = 8;
 papaya.viewer.Viewer.ORIENTATION_MARKER_SUPERIOR = "S";
 papaya.viewer.Viewer.ORIENTATION_MARKER_INFERIOR = "I";
@@ -1745,6 +1746,13 @@ papaya.viewer.Viewer.prototype.keyDownEvent = function (ke) {
         this.incrementSeriesPoint();
     } else if (keyCode === papaya.viewer.Viewer.KEYCODE_SERIES_BACK) {
         this.decrementSeriesPoint();
+    } else if (keyCode === papaya.viewer.Viewer.KEYCODE_RULER) {
+        if (this.container.preferences.showRuler === "Yes") {
+            this.container.preferences.showRuler = "No";
+        } else {
+            this.container.preferences.showRuler = "Yes";
+        }
+        this.drawViewer(true, true);
     } else {
         this.keyPressIgnored = true;
     }
@@ -1927,7 +1935,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                     menu.showMenu();
                     this.showingContextMenu = true;
                 }
-            } else if (((me.button === 2) || this.isControlKeyDown) && !this.currentScreenVolume.rgb && !this.container.kioskMode) {
+            } else if (((me.button === 2) || this.isControlKeyDown) && !this.currentScreenVolume.rgb) {
                 this.isWindowControl = true;
 
                 if (this.container.showImageButtons && (this.container.showControlBar || !this.container.kioskMode) &&
