@@ -683,7 +683,7 @@ papaya.ui.Toolbar.prototype.isShowingMenus = function () {
 
 
 papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
-    var imageIndex, colorTableName, dialog, atlasName, imageName, folder, ctr;
+    var imageIndex, colorTableName, dialog, atlasName, imageName, folder, ctr, ctrI, ignored;
 
     if (!keepopen) {
         this.closeAllMenus();
@@ -713,7 +713,15 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
         } else if (action === "OpenFolder") {
             folder = [];
             for (ctr = 0; ctr < file.length; ctr += 1) {
-                if (file[ctr].name.startsWith('.')) {
+                ignored = false;
+
+                for (ctrI = 0; ctrI < papaya.Container.ignorePatterns.length; ctrI += 1) {
+                    if (papaya.Container.ignorePatterns[ctrI].test(file[ctr].name)) {
+                        ignored = true;
+                    }
+                }
+
+                if (ignored) {
                     console.log("Ignoring file " + file[ctr].name);
                 } else {
                     folder.push(file[ctr]);

@@ -104,6 +104,7 @@ papaya.Container.syncViewers = false;
 papaya.Container.syncViewersWorld = false;
 papaya.Container.allowPropagation = false;
 papaya.Container.papayaLastHoveredViewer = null;
+papaya.Container.ignorePatterns = [/^[.]/];
 
 
 /*** Static Methods ***/
