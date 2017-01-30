@@ -1330,6 +1330,10 @@ papaya.Container.prototype.findLoadableImage = function (name, surface) {
 papaya.Container.prototype.findLoadableImages = function (refs, surface) {
     var ctr, loadable, loadables = [];
 
+    if (!Array.isArray(refs)) {
+        refs = [refs];
+    }
+
     if (refs) {
         for (ctr = 0; ctr < refs.length; ctr++) {
             loadable = this.findLoadableImage(refs[ctr], surface);

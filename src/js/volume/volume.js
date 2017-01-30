@@ -44,7 +44,7 @@ papaya.volume.Volume.PROGRESS_LABEL_LOADING = "Loading";
 papaya.volume.Volume.prototype.fileIsCompressed = function (filename, data) {
     var buf, magicCookie1, magicCookie2;
 
-    if (filename.indexOf(".gz") !== -1) {
+    if (filename && filename.indexOf(".gz") !== -1) {
         return true;
     }
 

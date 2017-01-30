@@ -272,12 +272,10 @@ papaya.viewer.Viewer.prototype.showDialog = function (title, data, datasource, c
 
 
 papaya.viewer.Viewer.prototype.loadBaseImage = function (refs, forceUrl, forceEncode, forceBinary) {
-
     var ctr, imageRefs = [], loadableImages = this.container.findLoadableImages(refs);
     this.volume = new papaya.volume.Volume(this.container.display, this, this.container.params);
 
-    if(forceBinary) {
-
+    if (forceBinary) {
         if (loadableImages) {
             for (ctr = 0; ctr < loadableImages.length; ctr += 1) {
                 imageRefs.push(loadableImages[ctr].encode);
