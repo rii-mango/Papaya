@@ -10,16 +10,16 @@ Papaya is a pure JavaScript medical research image viewer, supporting [DICOM and
 
 Quickstart Guide
 ------
-###Development
+### Development
 Load `tests/debug_local.html` or `tests/debug_server.html` in your [favorite](http://www.jetbrains.com/webstorm/) JavaScript debugger.
 
 
-###[Building](https://github.com/rii-mango/Papaya/wiki/How-To-Build-Papaya)
+### [Building](https://github.com/rii-mango/Papaya/wiki/How-To-Build-Papaya)
 See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the latest release or run `papaya-builder.sh` to create your own build.  See the [documentation](https://github.com/rii-mango/Papaya/wiki/How-To-Build-Papaya) for more information.
 
-###[Usage](https://github.com/rii-mango/Papaya/wiki/Usage) & [Configuration](https://github.com/rii-mango/Papaya/wiki/Configuration)
+### [Usage](https://github.com/rii-mango/Papaya/wiki/Usage) & [Configuration](https://github.com/rii-mango/Papaya/wiki/Configuration)
 
-####Basic usage (loads a blank viewer)
+#### Basic usage (loads a blank viewer)
 ```html
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
@@ -35,7 +35,7 @@ See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the late
 </html>
 ```
 
-####To automatically load images and configure other options
+#### To automatically load images and configure other options
 ```html
 <head>
     ...
