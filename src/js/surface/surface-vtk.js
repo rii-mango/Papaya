@@ -27,6 +27,7 @@ papaya.surface.SurfaceVTK = papaya.surface.SurfaceVTK || function () {
         this.ascii = false;
         this.volume = null;
         this.done = false;
+        this.headerRead = false;
     };
 
 
@@ -78,7 +79,7 @@ papaya.surface.SurfaceVTK.prototype.getNextLine = function (limit) {
 
         val = this.dv.getUint8(this.index++);
         if (val < 32) { // newline
-            if ((this.index < this.dv.byteLength) && (this.dv.getUint8(this.index) < 32)) {
+            if ((!this.headerRead || this.ascii) && (this.index < this.dv.byteLength) && (this.dv.getUint8(this.index) < 32)) {
                 this.index++;
             }
             break;
@@ -104,6 +105,8 @@ papaya.surface.SurfaceVTK.prototype.readData = function (data, progress, onFinis
     this.description = this.getNextLine().trim();
     this.ascii = (this.getNextLine() == papaya.surface.SurfaceVTK.MAGIC_NUMBER_ASCII);
     this.datasetType = this.getNextLine().substring(papaya.surface.SurfaceVTK.MAGIC_NUMBER_DATASET.length).trim();
+
+    this.headerRead = true;
 
     if (this.datasetType != papaya.surface.SurfaceVTK.MAGIC_NUMBER_POLYDATA) {
         this.error = new Error("VTK: Only POLYDATA format is currently supported!");
