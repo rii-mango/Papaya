@@ -104,7 +104,7 @@ papaya.surface.SurfaceVTK.prototype.readData = function (data, progress, onFinis
     this.description = this.getNextLine().trim();
     this.ascii = (this.getNextLine() == papaya.surface.SurfaceVTK.MAGIC_NUMBER_ASCII);
     this.datasetType = this.getNextLine().substring(papaya.surface.SurfaceVTK.MAGIC_NUMBER_DATASET.length).trim();
-console.log("|"+this.datasetType+"|");
+
     if (this.datasetType != papaya.surface.SurfaceVTK.MAGIC_NUMBER_POLYDATA) {
         this.error = new Error("VTK: Only POLYDATA format is currently supported!");
         this.onFinishedRead();
