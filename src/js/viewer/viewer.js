@@ -2699,18 +2699,20 @@ papaya.viewer.Viewer.prototype.setCurrentScreenVol = function (index) {
 papaya.viewer.Viewer.prototype.updateWindowTitle = function () {
     var title;
 
-    title = this.getNiceFilename(this.getCurrentScreenVolIndex());
+    if (this.initialized) {
+        title = this.getNiceFilename(this.getCurrentScreenVolIndex());
 
-    if (this.currentScreenVolume.volume.numTimepoints > 1) {
-        title = (title + " (" + (this.currentScreenVolume.currentTimepoint + 1) + " of " +
+        if (this.currentScreenVolume.volume.numTimepoints > 1) {
+            title = (title + " (" + (this.currentScreenVolume.currentTimepoint + 1) + " of " +
             this.currentScreenVolume.volume.numTimepoints + ")");
-    }
+        }
 
-    if (this.isZooming()) {
-        title = (title + " " + this.getZoomString());
-    }
+        if (this.isZooming()) {
+            title = (title + " " + this.getZoomString());
+        }
 
-    this.container.toolbar.updateTitleBar(title);
+        this.container.toolbar.updateTitleBar(title);
+    }
 };
 
 
