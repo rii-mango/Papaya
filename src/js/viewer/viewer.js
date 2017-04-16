@@ -690,6 +690,7 @@ papaya.viewer.Viewer.prototype.finishedLoading = function () {
 
     this.container.toolbar.buildToolbar();
     this.container.toolbar.updateImageButtons();
+    this.updateWindowTitle();
 };
 
 

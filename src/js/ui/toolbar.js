@@ -131,7 +131,7 @@ papaya.ui.Toolbar.MENU_DATA = {
                 {"label": "Show License", "action": "License"}
             ]
         },
-        {"label": "", "icons": null, "titleBar": "true" },
+        {"label": "TITLE", "icons": null, "titleBar": "true" },
         {"label": "EXPAND", "icons": [papaya.ui.Toolbar.ICON_EXPAND, papaya.ui.Toolbar.ICON_COLLAPSE], "items": [],
             "method": "isCollapsable", "required": "isExpandable" },
         {"label": "SPACE", "icons": [papaya.ui.Toolbar.ICON_IMAGESPACE, papaya.ui.Toolbar.ICON_WORLDSPACE],
