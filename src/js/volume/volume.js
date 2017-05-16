@@ -119,6 +119,10 @@ papaya.volume.Volume.prototype.readURLs = function (urls, callback) {
     this.onFinishedRead = callback;
     this.compressed = this.fileIsCompressed(this.fileName);
 
+    if (this.fileName.indexOf("?") !== -1) {
+        this.fileName = this.fileName.substr(0, this.fileName.indexOf("?"));
+    }
+
     this.rawData = [];
     this.loadedFileCount = 0;
     this.readEachURL(this)
@@ -138,7 +142,6 @@ papaya.volume.Volume.prototype.readURLs = function (urls, callback) {
                 vol.fileName + "):\n\n" + message);
             vol.finishedLoad();
         });
-
 };
 
 
@@ -349,6 +352,8 @@ papaya.volume.Volume.prototype.getZSize = function () {
 
 
 papaya.volume.Volume.prototype.decompress = function (vol) {
+    vol.compressed = vol.compressed || vol.fileIsCompressed(vol.fileName, vol.rawData[0]);
+
     if (vol.compressed) {
         try {
             pako.inflate(new Uint8Array(vol.rawData[0]), null, this.progressMeter,
