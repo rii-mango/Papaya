@@ -48,18 +48,19 @@ papaya.ui.Menu.doShowMenu = function (viewer, el, menu, right) {
     var posV, pos, eWidth, mWidth, mHeight, left, top, dHeight;
 
     //get the position of the placeholder element
+    var parentPos = $(el).parent().offset();
     posV = $(viewer.canvas).offset();
     dHeight = $(viewer.container.display.canvas).outerHeight();
     pos = $(el).offset();
     eWidth = $(el).outerWidth();
     mWidth = $(menu).outerWidth();
     mHeight = $(menu).outerHeight();
-    left = pos.left + (right ? ((-1 * mWidth) + eWidth) : 5) + "px";
+    left = pos.left - parentPos.left + (right ? ((-1 * mWidth) + eWidth) : 0) + "px";
 
     if (viewer.container.showControlBar && viewer.container.kioskMode && viewer.container.showImageButtons) {
-        top = ((posV.top) + $(viewer.canvas).outerHeight() + PAPAYA_SPACING + dHeight - mHeight) + "px";
+        top = (-1 * PAPAYA_SPACING - mHeight) + "px";
     } else {
-        top = (posV.top) + "px";
+        top = ($(el).outerHeight() + (right ? 0 : PAPAYA_SPACING)) + "px";
     }
 
     //show the menu directly over the placeholder
@@ -133,7 +134,7 @@ papaya.ui.Menu.prototype.buildMenuButton = function () {
     } else if (this.isTitleBar) {
         html = "<div class='" + PAPAYA_MENU_UNSELECTABLE + " " + PAPAYA_MENU_TITLEBAR_CSS + " " + PAPAYA_TITLEBAR_CSS +
             "' style='z-index:-1;position:absolute;top:" +
-            (this.viewer.container.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE) + "px;width:" +
+            (0) + "px;width:" +
             this.htmlParent.width() + "px;text-align:center;color:" + papaya.ui.Menu.getNiceForegroundColor(this.viewer.bgColor) + "'>" +
             this.label + "</div>";
     } else {

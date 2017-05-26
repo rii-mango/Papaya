@@ -952,7 +952,7 @@ papaya.ui.Toolbar.prototype.updateTitleBar = function (title) {
         elem.innerHTML = title;
     }
 
-    this.container.titlebarHtml.css({top: (this.container.viewerHtml.position().top - 1.25 * papaya.ui.Toolbar.SIZE)});
+    this.container.titlebarHtml.css({top: (0)});
 };
 
 

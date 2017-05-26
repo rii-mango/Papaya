@@ -928,8 +928,7 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
         this.display.drawEmptyDisplay();
     }
 
-    this.titlebarHtml.css({width: dims[0] + "px", top: (this.viewerHtml.position().top - 1.25 *
-        papaya.ui.Toolbar.SIZE)});
+    this.titlebarHtml.css({width: dims[0] + "px", top: (0)});
 };
 
 
