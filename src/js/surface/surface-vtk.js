@@ -21,7 +21,6 @@ papaya.surface.SurfaceVTK = papaya.surface.SurfaceVTK || function () {
         this.triangleData = null;
         this.normalsData = null;
         this.colorsData = null;
-        this.solidColor = [1, 1, 1, 1];
         this.vtkVersion = null;
         this.description = null;
         this.ascii = false;
