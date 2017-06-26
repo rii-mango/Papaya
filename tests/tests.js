@@ -256,6 +256,11 @@ params["message"] = "Test: orthogonalTall.";
 
 params = initTest();
 params["images"] = ["data/sample_image.nii.gz"];
+params["noNewFiles"] = true;
+params["message"] = "Test: noNewFiles.";
+
+params = initTest();
+params["images"] = ["data/sample_image.nii.gz"];
 params["showControls"] = false;
 params["message"] = "Test: showControls (false).";
 

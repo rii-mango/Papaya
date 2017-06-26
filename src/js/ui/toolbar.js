@@ -340,7 +340,11 @@ papaya.ui.Toolbar.prototype.buildToolbar = function () {
         if ((this.container.viewer.screenVolumes.length > 0) && this.container.viewer.screenVolumes[0].rgb) {
             papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.RGB_FILE_MENU_DATA;
         } else {
-            papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.FILE_MENU_DATA;
+            if (this.container.noNewFiles) {
+                papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.RGB_FILE_MENU_DATA;
+            } else {
+                papaya.ui.Toolbar.MENU_DATA.menus[0] = papaya.ui.Toolbar.FILE_MENU_DATA;
+            }
             this.buildOpenMenuItems(papaya.ui.Toolbar.MENU_DATA);
         }
 

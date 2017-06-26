@@ -47,6 +47,7 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.orthogonalTall = false;
     this.orthogonalDynamic = false;
     this.kioskMode = false;
+    this.noNewFiles = false;
     this.showControls = true;
     this.showControlBar = false;
     this.showImageButtons = true;
@@ -742,6 +743,10 @@ papaya.Container.prototype.readGlobalParams = function() {
         this.showControls = this.params.showControls;
     }
 
+    if (this.params.noNewFiles !== undefined) {  // default is false
+        this.noNewFiles = this.params.noNewFiles;
+    }
+
     if (this.params.showImageButtons !== undefined) {  // default is true
         this.showImageButtons = this.params.showImageButtons;
     }
@@ -810,6 +815,7 @@ papaya.Container.prototype.reset = function () {
     this.orthogonalTall = false;
     this.orthogonalDynamic = false;
     this.kioskMode = false;
+    this.noNewFiles = false;
     this.showControls = true;
     this.showControlBar = false;
     this.fullScreenPadding = true;
