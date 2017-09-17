@@ -243,6 +243,12 @@ papaya.volume.dicom.HeaderDICOM.prototype.getName = function () {
 
 
 
+papaya.volume.dicom.HeaderDICOM.prototype.getSeriesLabels = function () {
+    return null;
+};
+
+
+
 papaya.volume.dicom.HeaderDICOM.prototype.findSeries = function (id) {
     if (Object.keys(this.seriesMap).length === 0) {
         return null;

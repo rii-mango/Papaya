@@ -93,6 +93,17 @@ papaya.utilities.StringUtils.pad = function (num, size) {
 };
 
 
+// https://stackoverflow.com/questions/36487636/javascript-convert-array-buffer-to-string
+papaya.utilities.StringUtils.arrayBufferToString = function (buffer) {
+    var arr = new Uint8Array(buffer);
+    var str = String.fromCharCode.apply(String, arr);
+    if(/[\u0080-\uffff]/.test(str)){
+        throw new Error("this string seems to contain (still encoded) multibytes");
+    }
+    return str;
+};
+
+
 /*** String (Prototype Methods) ***/
 
 if (typeof String.prototype.startsWith !== 'function') {

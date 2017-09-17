@@ -478,3 +478,9 @@ papaya.volume.Volume.prototype.isWorldSpaceOnly = function () {
 
     return false;
 };
+
+
+
+papaya.volume.Volume.prototype.getSeriesLabels = function () {
+    return this.header.getSeriesLabels();
+};

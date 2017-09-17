@@ -2703,8 +2703,11 @@ papaya.viewer.Viewer.prototype.updateWindowTitle = function () {
         title = this.getNiceFilename(this.getCurrentScreenVolIndex());
 
         if (this.currentScreenVolume.volume.numTimepoints > 1) {
-            title = (title + " (" + (this.currentScreenVolume.currentTimepoint + 1) + " of " +
-            this.currentScreenVolume.volume.numTimepoints + ")");
+            if (this.currentScreenVolume.seriesLabels && (this.currentScreenVolume.seriesLabels.length > this.currentScreenVolume.currentTimepoint)) {
+                title = this.currentScreenVolume.seriesLabels[this.currentScreenVolume.currentTimepoint];
+            } else {
+                title = (title + " (" + (this.currentScreenVolume.currentTimepoint + 1) + " of " + this.currentScreenVolume.volume.numTimepoints + ")");
+            }
         }
 
         if (this.isZooming()) {

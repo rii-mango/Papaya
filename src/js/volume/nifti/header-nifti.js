@@ -15,6 +15,7 @@ papaya.volume.nifti.HeaderNIFTI = papaya.volume.nifti.HeaderNIFTI || function ()
     this.nifti = null;
     this.isNIFTI2 = false;
     this.compressed = false;
+    this.ext = null;
     this.imageData = null;
 };
 
@@ -43,6 +44,15 @@ papaya.volume.nifti.HeaderNIFTI.prototype.readHeaderData = function (data, progr
                                                                      onFinishedHeaderRead) {
     this.nifti = nifti.readHeader(data[0]);
     this.isNIFTI2 = nifti.isNIFTI2(data[0]);
+
+    try {
+        if (nifti.hasExtension(this.nifti)) {
+            this.ext = nifti.readExtensionData(this.nifti, data[0]);
+        }
+    } catch (err) {
+        console.log("Problem reading NIFTI extension.")
+    }
+
     this.imageData = nifti.readImage(this.nifti, data[0]);
     onFinishedHeaderRead();
 };
@@ -69,6 +79,39 @@ papaya.volume.nifti.HeaderNIFTI.prototype.getImageDimensions = function () {
 
 papaya.volume.nifti.HeaderNIFTI.prototype.getName = function () {
     return null;
+};
+
+
+
+papaya.volume.nifti.HeaderNIFTI.prototype.getSeriesLabels = function () {
+    var seriesLabels = null;
+
+    if (this.ext) {
+        try {
+            var xml = papaya.utilities.StringUtils.arrayBufferToString(this.ext).replace(/[^\x20-\x7F]/g, "").trim();
+            var xmlDoc = $.parseXML(xml),
+                $xml = $(xmlDoc),
+                $vol = $xml.find("MangoVolume");
+
+            if ($vol.length) {
+                var $series = $vol.find("Series");
+                if ($series.length) {
+                    var $points = $series.find("Point");
+                    var length = $series.attr("length");
+                    seriesLabels = new Array(length);
+                    $points.each(function () {
+                        var index = $(this).attr("index"),
+                            label = $(this).attr("name");
+                        seriesLabels[parseInt(index)] = label;
+                    });
+                }
+            }
+        } catch (err) {
+            console.log("Unrecognized NIFTI extension found.")
+        }
+    }
+
+    return seriesLabels;
 };
 
 
