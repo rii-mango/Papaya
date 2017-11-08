@@ -40,6 +40,10 @@ papaya.volume.dicom.HeaderDICOM.SUPPORTED_TRANSFER_SYNTAXES = [
     "1.2.840.10008.1.2.4.57",
     "1.2.840.10008.1.2.4.70",  // selection 1
 
+    // jpeg-LS compressed
+    "1.2.840.10008.1.2.4.80",  // lossless
+    "1.2.840.10008.1.2.4.81",
+
     // jpeg 2000 compressed
     "1.2.840.10008.1.2.4.90",  // lossless
     "1.2.840.10008.1.2.4.91",
