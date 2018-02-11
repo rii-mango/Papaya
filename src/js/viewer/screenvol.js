@@ -41,9 +41,14 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
     this.isHighResSlice = this.volume.header.imageDimensions.getNumVoxelsSlice() > (512 * 512);
     this.currentCoord = currentCoord;
     this.seriesLabels = this.volume.getSeriesLabels();
+    this.staticIcon = null;
 
     var screenParams = params[this.volume.fileName];
     if (screenParams) {
+        if (screenParams.icon) {
+            this.staticIcon = screenParams.icon;
+        }
+
         if (screenParams.interpolation !== undefined) {
             this.interpolation = screenParams.interpolation;
         }
@@ -494,7 +499,19 @@ papaya.viewer.ScreenVolume.prototype.getHiddenLabel = function () {
 papaya.viewer.ScreenVolume.prototype.updateIcon = function () {
     var step, ctrY, ctrX, index, value;
 
-    if (this.imageDataIcon) {
+    if (this.staticIcon) {
+        var imageObj = new Image(papaya.viewer.ColorTable.ICON_SIZE, papaya.viewer.ColorTable.ICON_SIZE);
+        var screenVolObj = this;
+
+        imageObj.onload = function() {
+            screenVolObj.contextIcon.drawImage(imageObj, 0, 0, imageObj.naturalWidth, imageObj.naturalHeight, 0,0,
+                papaya.viewer.ColorTable.ICON_SIZE, papaya.viewer.ColorTable.ICON_SIZE);
+            screenVolObj.icon = screenVolObj.canvasIcon.toDataURL();
+        };
+
+        imageObj.src = this.staticIcon;
+
+    } else if (this.imageDataIcon) {
         step = papaya.viewer.ColorTable.LUT_MAX / papaya.viewer.ColorTable.ICON_SIZE;
 
         for (ctrY = 0; ctrY < papaya.viewer.ColorTable.ICON_SIZE; ctrY += 1) {
