@@ -76,7 +76,11 @@ papaya.utilities.MathUtils.getPowerOfTwo = function (value, pow) {
 
 function papayaRoundFast(val) {
     /*jslint bitwise: true */
-    return (0.5 + val) | 0;
+    if (val > 0) {
+        return (val + 0.5) | 0;
+    }
+
+    return (val - 0.5) | 0;
 }
 
 
