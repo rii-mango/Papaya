@@ -215,6 +215,10 @@ papaya.surface.Surface.prototype.processParams = function (name) {
         if (screenParams.alpha !== undefined) {
             this.alpha = screenParams.alpha;
         }
+
+        if (screenParams.icon !== undefined) {
+            this.staticIcon = screenParams.icon;
+        }
     }
 };
 

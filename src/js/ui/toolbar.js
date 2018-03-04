@@ -615,27 +615,43 @@ papaya.ui.Toolbar.prototype.doUpdateImageButtons = function () {
 
 
 papaya.ui.Toolbar.prototype.updateSurfaceButtons = function () {
-    var ctr, dataUrl, data, solidColor;
+    var ctr, dataUrl, solidColor, that = this;
 
     this.surfaceMenus = [];
 
     if (this.container.showImageButtons) {
         for (ctr = this.viewer.surfaces.length - 1; ctr >= 0; ctr -= 1) {
-            solidColor = this.viewer.surfaces[ctr].solidColor;
+            var surf = this.viewer.surfaces[ctr];
 
-            if (solidColor === null) {
-                solidColor = [.5,.5,.5];
+            if (surf.staticIcon) {
+                var iconCb = function(dataUrl, index) {
+                    that.surfaceMenus.push((that.buildMenu({
+                        "label": "SurfaceButton",
+                        "icons": [dataUrl],
+                        "items": papaya.ui.Toolbar.SURFACE_MENU_DATA.items,
+                        "imageButton": true,
+                        "surfaceButton": true
+                    }, null, that.viewer.surfaces[index], index.toString())));
+                };
+
+                papaya.viewer.ScreenVolume.makeStaticIcon(surf.staticIcon, iconCb, ctr);
+            } else {
+                solidColor = surf.solidColor;
+
+                if (solidColor === null) {
+                    solidColor = [.5, .5, .5];
+                }
+
+                dataUrl = papaya.viewer.ScreenVolume.makeSolidIcon(solidColor[0], solidColor[1], solidColor[2]);
+
+                this.surfaceMenus.push((this.buildMenu({
+                    "label": "SurfaceButton",
+                    "icons": [dataUrl],
+                    "items": papaya.ui.Toolbar.SURFACE_MENU_DATA.items,
+                    "imageButton": true,
+                    "surfaceButton": true
+                }, null, surf, ctr.toString())));
             }
-
-            dataUrl = papaya.viewer.ScreenVolume.makeSolidIcon(solidColor[0], solidColor[1], solidColor[2]);
-
-            data = {
-                "menus" : [
-                    {"label": "SurfaceButton", "icons": [dataUrl], "items": papaya.ui.Toolbar.SURFACE_MENU_DATA.items, "imageButton": true, "surfaceButton": true}
-                ]
-            };
-
-            this.surfaceMenus.push((this.buildMenu(data.menus[0], null, this.viewer.surfaces[ctr], ctr.toString())));
         }
     }
 };

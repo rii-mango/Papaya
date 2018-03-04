@@ -169,6 +169,24 @@ papaya.viewer.ScreenVolume.makeSolidIcon = function (r, g, b) {
 };
 
 
+papaya.viewer.ScreenVolume.makeStaticIcon = function (url, cb, index) {
+    var imageObj = new Image(papaya.viewer.ColorTable.ICON_SIZE, papaya.viewer.ColorTable.ICON_SIZE);
+
+    var canvasIcon = document.createElement("canvas");
+    canvasIcon.width = papaya.viewer.ColorTable.ICON_SIZE;
+    canvasIcon.height = papaya.viewer.ColorTable.ICON_SIZE;
+    var ctx = canvasIcon.getContext("2d");
+
+    imageObj.onload = function() {
+        ctx.drawImage(imageObj, 0, 0, imageObj.naturalWidth, imageObj.naturalHeight, 0,0,
+            papaya.viewer.ColorTable.ICON_SIZE, papaya.viewer.ColorTable.ICON_SIZE);
+        cb(canvasIcon.toDataURL(), index);
+    };
+
+    imageObj.src = url;
+};
+
+
 
 /*** Prototype Methods ***/
 
@@ -500,17 +518,12 @@ papaya.viewer.ScreenVolume.prototype.updateIcon = function () {
     var step, ctrY, ctrX, index, value;
 
     if (this.staticIcon) {
-        var imageObj = new Image(papaya.viewer.ColorTable.ICON_SIZE, papaya.viewer.ColorTable.ICON_SIZE);
         var screenVolObj = this;
-
-        imageObj.onload = function() {
-            screenVolObj.contextIcon.drawImage(imageObj, 0, 0, imageObj.naturalWidth, imageObj.naturalHeight, 0,0,
-                papaya.viewer.ColorTable.ICON_SIZE, papaya.viewer.ColorTable.ICON_SIZE);
-            screenVolObj.icon = screenVolObj.canvasIcon.toDataURL();
+        var updateStaticIcon = function (dataURL) {
+            screenVolObj.icon = dataURL;
         };
 
-        imageObj.src = this.staticIcon;
-
+        papaya.viewer.ScreenVolume.makeStaticIcon(this.staticIcon, updateStaticIcon);
     } else if (this.imageDataIcon) {
         step = papaya.viewer.ColorTable.LUT_MAX / papaya.viewer.ColorTable.ICON_SIZE;
 
