@@ -276,10 +276,16 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function (refs, forceUrl, forceEn
     this.volume = new papaya.volume.Volume(this.container.display, this, this.container.params);
 
     if (forceBinary) {
-        if (loadableImages) {
+        if (loadableImages && loadableImages.length) {
             for (ctr = 0; ctr < loadableImages.length; ctr += 1) {
                 imageRefs.push(loadableImages[ctr].encode);
             }
+        } else {
+            if (!Array.isArray(refs)) {
+                refs = [refs];
+            }
+
+            imageRefs = refs;
         }
 
         this.volume.readBinaryData(imageRefs, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
@@ -324,6 +330,12 @@ papaya.viewer.Viewer.prototype.loadOverlay = function (refs, forceUrl, forceEnco
         this.initializeOverlay();
     } else {
         if (forceBinary) {
+            if (!Array.isArray(refs)) {
+                refs = [refs];
+            }
+
+            imageRefs = refs;
+
             this.loadingVolume.readBinaryData(imageRefs, papaya.utilities.ObjectUtils.bind(this, this.initializeOverlay));
         } else if (forceEncode) {
             imageRefs = loadableImage.encode;

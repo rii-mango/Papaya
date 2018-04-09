@@ -111,19 +111,20 @@
 
     <script type="text/javascript">
         var fileData;
+
         function handleFileSelect(evt) {
             var file = evt.target.files[0];
 
             var reader = new FileReader();
 
             reader.onload = function() {
-                var params = [];
                 fileData = reader.result;
-                params["binaryImages"] = ["fileData"];
+
+                var params = [];
+                params["binaryImages"] = [fileData];
                 papaya.Container.resetViewer(0, params);
             };
 
-            // Read in the image file as a data URL.
             reader.readAsArrayBuffer(file);
         }
 
