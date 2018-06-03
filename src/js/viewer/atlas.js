@@ -62,7 +62,11 @@ papaya.viewer.Atlas.prototype.getLabelAtCoordinate = function (xLoc, yLoc, zLoc)
         zTrans = zLoc;
     }
 
-    val = (this.volume.getVoxelAtCoordinate(xTrans, yTrans, zTrans, 0, true));
+    if (papaya.Container.atlasWorldSpace) {
+        val = (this.volume.getVoxelAtCoordinate(xTrans, yTrans, zTrans, 0, true));
+    } else {
+        val = (this.volume.getVoxelAtIndex(xLoc, yLoc, zLoc, 0, true));
+    }
 
     if (this.probabilistic) {
         val -= 1;

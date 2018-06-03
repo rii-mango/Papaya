@@ -107,6 +107,7 @@ papaya.Container.allowPropagation = false;
 papaya.Container.papayaLastHoveredViewer = null;
 papaya.Container.ignorePatterns = [/^[.]/];
 papaya.Container.atlas = null;
+papaya.Container.atlasWorldSpace = true;
 
 
 /*** Static Methods ***/
