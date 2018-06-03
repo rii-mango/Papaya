@@ -179,9 +179,9 @@ papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
         }
 
         // atlas labels
-        if (this.viewer.atlas && this.viewer.atlas.volume.isLoaded) {
+        if (this.viewer.atlas && (!this.viewer.atlas.volume || this.viewer.atlas.volume.isLoaded)) {
             this.viewer.getWorldCoordinateAtIndex(xLoc, yLoc, zLoc, this.tempCoord);
-            atlasLabel = this.viewer.atlas.getLabelAtCoordinate(this.tempCoord.x, this.tempCoord.y, this.tempCoord.z);
+            atlasLabel = this.viewer.atlas.getLabelAtCoordinate(this.tempCoord.x, this.tempCoord.y, this.tempCoord.z, xLoc, yLoc, zLoc);
             atlasNumLabels = atlasLabel.length;
             labelColorThresh = Math.ceil(this.viewer.atlas.maxLabels / 2);
 

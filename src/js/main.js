@@ -106,6 +106,7 @@ papaya.Container.syncViewersWorld = false;
 papaya.Container.allowPropagation = false;
 papaya.Container.papayaLastHoveredViewer = null;
 papaya.Container.ignorePatterns = [/^[.]/];
+papaya.Container.atlas = null;
 
 
 /*** Static Methods ***/
@@ -1162,7 +1163,7 @@ papaya.Container.prototype.hasImageToLoad = function () {
 
 
 papaya.Container.prototype.hasAtlasToLoad = function () {
-    return this.viewer.hasDefinedAtlas();
+    return (papaya.Container.atlas == null) && this.viewer.hasDefinedAtlas();
 };
 
 

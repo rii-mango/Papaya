@@ -673,6 +673,10 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
             }
         }
 
+        if (papaya.Container.atlas) {
+            this.atlas = papaya.Container.atlas;
+        }
+
         this.initialized = true;
         this.container.resizeViewerComponents(true);
         this.drawViewer();
