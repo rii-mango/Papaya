@@ -665,7 +665,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.context.fillStyle = this.bgColor;
         this.context.fillRect(0, 0, this.canvas.offsetWidth, this.canvas.offsetHeight);
 
-        if (this.volume.isWorldSpaceOnly()) {
+        if (this.volume.isWorldSpaceOnly() && !this.ignoreNiftiTransforms) {
             this.worldSpace = true;
         }
 
@@ -2773,10 +2773,13 @@ papaya.viewer.Viewer.prototype.processParams = function (params) {
         this.worldSpace = true;
     }
 
+    if (params.ignoreNiftiTransforms) {
+        this.ignoreNiftiTransforms = true;
+    }
+
     if (params.coordinate) {
         this.initialCoordinate = params.coordinate;
     }
-
 
     if (!this.container.isDesktopMode()) {
         if (params.showOrientation !== undefined) {
