@@ -665,8 +665,12 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.context.fillStyle = this.bgColor;
         this.context.fillRect(0, 0, this.canvas.offsetWidth, this.canvas.offsetHeight);
 
-        if (this.volume.isWorldSpaceOnly() && !this.ignoreNiftiTransforms) {
-            this.worldSpace = true;
+        if (this.volume.isWorldSpaceOnly()) {
+            if (this.ignoreNiftiTransforms) {
+                this.volume.header.orientationCertainty = papaya.volume.Header.ORIENTATION_CERTAINTY_UNKNOWN;
+            } else {
+                this.worldSpace = true;
+            }
         }
 
         this.initialized = true;
