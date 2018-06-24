@@ -42,6 +42,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.lowerImageTop = null;
     this.viewerDim = 0;
     this.worldSpace = false;
+    this.ignoreSync = false;
     this.currentCoord = new papaya.core.Coordinate(0, 0, 0);
     this.cursorPosition = new papaya.core.Coordinate(0, 0, 0);
     this.longestDim = 0;
@@ -2787,6 +2788,10 @@ papaya.viewer.Viewer.prototype.processParams = function (params) {
 
     if (params.coordinate) {
         this.initialCoordinate = params.coordinate;
+    }
+
+    if (params.ignoreSync) {
+        this.ignoreSync = params.ignoreSync;
     }
 
     if (!this.container.isDesktopMode()) {

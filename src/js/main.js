@@ -1495,17 +1495,19 @@ papaya.Container.prototype.coordinateChanged = function (viewer) {
     var ctr, coorWorld,
         coor = viewer.currentCoord;
 
-    if (papaya.Container.syncViewersWorld) {
-        for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
-            if (papayaContainers[ctr].viewer !== viewer) {
-                coorWorld = new papaya.core.Coordinate();
-                papayaContainers[ctr].viewer.gotoWorldCoordinate(viewer.getWorldCoordinateAtIndex(coor.x, coor.y, coor.z, coorWorld), true);
+    if (!viewer.ignoreSync) {
+        if (papaya.Container.syncViewersWorld) {
+            for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
+                if ((papayaContainers[ctr].viewer !== viewer) && !papayaContainers[ctr].viewer.ignoreSync) {
+                    coorWorld = new papaya.core.Coordinate();
+                    papayaContainers[ctr].viewer.gotoWorldCoordinate(viewer.getWorldCoordinateAtIndex(coor.x, coor.y, coor.z, coorWorld), true);
+                }
             }
-        }
-    } else if (papaya.Container.syncViewers) {
-        for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
-            if (papayaContainers[ctr].viewer !== viewer) {
-                papayaContainers[ctr].viewer.gotoCoordinate(coor, true);
+        } else if (papaya.Container.syncViewers) {
+            for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
+                if ((papayaContainers[ctr].viewer !== viewer) && !papayaContainers[ctr].viewer.ignoreSync) {
+                    papayaContainers[ctr].viewer.gotoCoordinate(coor, true);
+                }
             }
         }
     }
