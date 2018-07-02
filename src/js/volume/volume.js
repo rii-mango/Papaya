@@ -146,7 +146,7 @@ papaya.volume.Volume.prototype.readURLs = function (urls, callback) {
 
 
 
-papaya.volume.Volume.prototype.loadURL = function (url, vol) {
+papaya.volume.Volume.prototype.loadURL = function (url, vol, index) {
     var supported, deferredLoading, xhr, progPerc, progressText;
 
     deferredLoading = jQuery.Deferred();
@@ -185,7 +185,7 @@ papaya.volume.Volume.prototype.loadURL = function (url, vol) {
         .promise()
         .done(function (file) {
             vol.loadedFileCount++;
-            vol.rawData.push(file);
+            vol.rawData[index] = file;
         })
         .fail(function (vol, err, xhr) {
             console.error(vol, err, xhr);
@@ -201,17 +201,17 @@ papaya.volume.Volume.prototype.loadURL = function (url, vol) {
 };
 
 
-
-papaya.volume.Volume.prototype.readEachURL = function (vol, index) {
+papaya.volume.Volume.prototype.readEachURL = function (vol) {
     var deferredLoads = [];
+
     for (var i = 0; i < vol.urls.length; i++) {
-        var getFileDeferred = vol.loadURL( vol.urls[i], vol );
-        deferredLoads.push(
-            getFileDeferred
-        );
+        var getFileDeferred = vol.loadURL(vol.urls[i], vol, i);
+        deferredLoads.push(getFileDeferred);
     }
+
     return $.when.apply($, deferredLoads);
 };
+
 
 papaya.volume.Volume.prototype.readBinaryData = function (dataRefs, callback) {
     var vol = null;
@@ -387,6 +387,8 @@ papaya.volume.Volume.prototype.finishedDecompress = function (vol, data) {
 
 
 papaya.volume.Volume.prototype.finishedReadData = function (vol) {
+    vol.rawData = papaya.utilities.ArrayUtils.cleanArray(vol.rawData);
+
     vol.header.readHeaderData(vol.fileName, vol.rawData, this.progressMeter, this.dialogHandler,
         papaya.utilities.ObjectUtils.bind(this, this.finishedReadHeaderData));
 };

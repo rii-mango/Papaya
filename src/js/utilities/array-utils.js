@@ -39,6 +39,18 @@ papaya.utilities.ArrayUtils.contains = function (a, obj) {
 };
 
 
+// https://stackoverflow.com/questions/281264/remove-empty-elements-from-an-array-in-javascript
+papaya.utilities.ArrayUtils.cleanArray = function (actual) {
+    var newArray = new Array();
+    for (var i = 0; i < actual.length; i++) {
+        if (actual[i]) {
+            newArray.push(actual[i]);
+        }
+    }
+    return newArray;
+};
+
+
 /*** Array (Prototype Methods) ***/
 
 // http://stackoverflow.com/questions/2294703/multidimensional-array-cloning-using-javascript
