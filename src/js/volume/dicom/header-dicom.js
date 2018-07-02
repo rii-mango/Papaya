@@ -313,11 +313,15 @@ papaya.volume.dicom.HeaderDICOM.prototype.getVoxelDimensions = function () {
 
     sliceSpacing = Math.max(this.series.images[0].getSliceGap(), this.series.images[0].getSliceThickness());
 
+    if (daikon.Series.useExplicitSpacing) {
+        sliceSpacing = daikon.Series.useExplicitSpacing;
+    }
+
     if (this.series.isMosaic || this.series.isMultiFrame) {
         voxelDimensions = new papaya.volume.VoxelDimensions(pixelSpacing[1], pixelSpacing[0], sliceSpacing,
             this.series.images[0].getTR() / 1000.0);
     } else {
-        if (this.series.images.length === 1) {
+        if ((this.series.images.length === 1) || daikon.Series.useExplicitOrdering) {
             voxelDimensions = new papaya.volume.VoxelDimensions(pixelSpacing[1], pixelSpacing[0], sliceSpacing,
                 this.series.images[0].getTR() / 1000.0);
         } else {
