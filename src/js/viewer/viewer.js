@@ -295,6 +295,8 @@ papaya.viewer.Viewer.prototype.loadBaseImage = function (refs, forceUrl, forceEn
             for (ctr = 0; ctr < loadableImages.length; ctr += 1) {
                 imageRefs.push(loadableImages[ctr].encode);
             }
+        } else {
+            imageRefs = refs;
         }
 
         this.volume.readEncodedData(imageRefs, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));

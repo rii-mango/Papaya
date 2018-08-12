@@ -258,15 +258,15 @@ papaya.volume.Volume.prototype.readNextBinaryData = function (vol, index, dataRe
     }
 };
 
-papaya.volume.Volume.prototype.readEncodedData = function (names, callback) {
+papaya.volume.Volume.prototype.readEncodedData = function (dataRefs, callback) {
     var vol = null;
 
     try {
-        this.fileName = names[0];
+        this.fileName = dataRefs[0];
         this.onFinishedRead = callback;
         vol = this;
         this.fileLength = 0;
-        vol.readNextEncodedData(vol, 0, names);
+        vol.readNextEncodedData(vol, 0, dataRefs);
     } catch (err) {
         if (vol) {
             vol.error = new Error("There was a problem reading that file:\n\n" + err.message);
@@ -277,12 +277,20 @@ papaya.volume.Volume.prototype.readEncodedData = function (names, callback) {
 
 
 
-papaya.volume.Volume.prototype.readNextEncodedData = function (vol, index, names) {
-    if (index < names.length) {
+papaya.volume.Volume.prototype.readNextEncodedData = function (vol, index, dataRefs) {
+    if (index < dataRefs.length) {
         try {
-            vol.rawData[index] = Base64Binary.decodeArrayBuffer(papaya.utilities.ObjectUtils.dereference(names[index]));
+            var deref = papaya.utilities.ObjectUtils.dereference(dataRefs[index]);
+
+            if (deref) {
+                vol.rawData[index] = Base64Binary.decodeArrayBuffer(deref);
+            } else {
+                this.fileName = "unknown";
+                vol.rawData[index] = Base64Binary.decodeArrayBuffer(dataRefs[index]);
+            }
+
             vol.compressed = this.fileIsCompressed(this.fileName, vol.rawData[index]);
-            setTimeout(function () {vol.readNextEncodedData(vol, index + 1, names); }, 0);
+            setTimeout(function () {vol.readNextEncodedData(vol, index + 1, dataRefs); }, 0);
         } catch (err) {
             if (vol) {
                 vol.error = new Error("There was a problem reading that file:\n\n" + err.message);
