@@ -151,6 +151,9 @@ papaya.viewer.ScreenVolume = papaya.viewer.ScreenVolume || function (vol, params
         papaya.viewer.ColorTable.COLOR_BAR_HEIGHT);
     this.colorBar = null;
 
+    this.originalScreenMin = this.screenMin;
+    this.originalScreenMax = this.screenMax;
+
     this.updateIcon();
     this.updateColorBar();
 };
@@ -196,6 +199,12 @@ papaya.viewer.ScreenVolume.prototype.setScreenRange = function (min, max) {
     this.updateScreenRange();
 };
 
+
+papaya.viewer.ScreenVolume.prototype.resetScreenRange = function () {
+    this.screenMin = this.originalScreenMin;
+    this.screenMax = this.originalScreenMax;
+    this.updateScreenRange();
+};
 
 
 papaya.viewer.ScreenVolume.prototype.setScreenRangeNegatives = function (min, max) {
