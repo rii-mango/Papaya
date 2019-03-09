@@ -825,6 +825,10 @@ papaya.viewer.Viewer.prototype.initializeOverlay = function () {
         this.updateWindowTitle();
         this.loadingVolume = null;
 
+        if (screenParams && screenParams.loadingComplete) {
+            screenParams.loadingComplete();
+        }
+
         if (this.container.hasMoreToLoad()) {
             this.container.loadNext();
         } else {
