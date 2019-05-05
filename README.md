@@ -17,6 +17,8 @@ Load `tests/debug_local.html` or `tests/debug_server.html` in your [favorite](ht
 ### [Building](https://github.com/rii-mango/Papaya/wiki/How-To-Build-Papaya)
 See [here](https://github.com/rii-mango/Papaya/tree/master/release) for the latest release or run `papaya-builder.sh` to create your own build.  See the [documentation](https://github.com/rii-mango/Papaya/wiki/How-To-Build-Papaya) for more information.
 
+Build using npm: `npm run build`
+
 ### [Usage](https://github.com/rii-mango/Papaya/wiki/Usage) & [Configuration](https://github.com/rii-mango/Papaya/wiki/Configuration)
 
 #### Basic usage (loads a blank viewer)

@@ -1,0 +1,25 @@
+{
+  "name": "papaya-viewer",
+  "version": "1.0.1449",
+  "description": "A JavaScript medical image viewer.",
+  "main": "src/js/main.js",
+  "scripts": {
+    "build": "rm -rf ./build; mkdir ./build; ./papaya-builder.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rii-mango/Papaya.git"
+  },
+  "keywords": [
+    "JavaScript",
+    "medical imaging",
+    "nifti",
+    "DICOM"
+  ],
+  "author": "Michael Martinez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rii-mango/Papaya/issues"
+  },
+  "homepage": "https://github.com/rii-mango/Papaya"
+}
