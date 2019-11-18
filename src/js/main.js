@@ -690,8 +690,10 @@ papaya.Container.prototype.getViewerDimensions = function () {
         width = papayaRoundFast(height / ratio);
     } else {
 
-        width = parentWidth;
-        height = papayaRoundFast(width / ratio);
+        // width = parentWidth;
+        // height = papayaRoundFast(width / ratio);
+        width = this.containerHtml.parent().width()
+        height = this.containerHtml.parent().height();
     }
 
     if (!this.nestedViewer || this.collapsable) {
@@ -704,7 +706,6 @@ papaya.Container.prototype.getViewerDimensions = function () {
                 height = papayaRoundFast(width * ratio);
             }
         } else {
-
             maxHeight = window.innerHeight - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
                 PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
                 (this.showControlBar ? 2*papaya.ui.Toolbar.SIZE : 0);
