@@ -689,9 +689,11 @@ papaya.Container.prototype.getViewerDimensions = function () {
 
         width = papayaRoundFast(height / ratio);
     } else {
-
+        // Original
         // width = parentWidth;
         // height = papayaRoundFast(width / ratio);
+
+
         width = this.containerHtml.parent().width()
         height = this.containerHtml.parent().height();
     }

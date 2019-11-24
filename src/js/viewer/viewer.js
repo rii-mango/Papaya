@@ -99,6 +99,10 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.drawEmptyViewer();
 
     this.processParams(params);
+
+    // modification 25/11/2019
+    this.activeTool = null;
+
 };
 
 
@@ -1997,7 +2001,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                     this.grabbedHandle = this.selectedSlice.findProximalRulerHandle(this.convertScreenToImageCoordinateX(this.previousMousePosition.x - this.canvasRect.left, this.selectedSlice),
                         this.convertScreenToImageCoordinateY(this.previousMousePosition.y - this.canvasRect.top, this.selectedSlice));
 
-                    if (this.grabbedHandle === null) {
+                    if (this.grabbedHandle === null && this.activeTool === 'Crosshair') {
                         this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), false);
                         this.resetUpdateTimer(me);
                     }
@@ -2041,7 +2045,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
 
     if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
         if (me.handled !== true) {
-            if (!this.isWindowControl && !this.isZoomMode && !this.isContextMode && (this.grabbedHandle === null) && (!this.surfaceView || (this.surfaceView.grabbedRulerPoint === -1))) {
+            if (!this.isWindowControl && !this.isZoomMode && !this.isContextMode && (this.grabbedHandle === null) && (!this.surfaceView || (this.surfaceView.grabbedRulerPoint === -1)) && this.activeTool == 'Crosshair') {
                 this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
             }
 
@@ -2157,13 +2161,13 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
     currentMouseY = papaya.utilities.PlatformUtils.getMousePositionY(me);
 
     if (this.isDragging) {
-        if (this.grabbedHandle) {
+        if (this.grabbedHandle || this.activeTool === 'Ruler') {
             if (this.isInsideMainSlice(currentMouseX, currentMouseY)) {
                 this.grabbedHandle.x = this.convertScreenToImageCoordinateX(currentMouseX - this.canvasRect.left, this.selectedSlice);
                 this.grabbedHandle.y = this.convertScreenToImageCoordinateY(currentMouseY - this.canvasRect.top, this.selectedSlice);
                 this.drawViewer(true, true);
             }
-        } else if (this.isWindowControl) {
+        } else if (this.activeTool === 'Window') { // original: else if (this.isWindowControl)
             this.windowLevelChanged(this.previousMousePosition.x - currentMouseX, this.previousMousePosition.y - currentMouseY);
             this.previousMousePosition.x = currentMouseX;
             this.previousMousePosition.y = currentMouseY;
@@ -2198,7 +2202,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             }
 
             this.drawViewer(true);
-        } else {
+        } else if (this.activeTool === 'Crosshair') { // original: else, no if
             this.resetUpdateTimer(null);
 
             if (this.selectedSlice !== null) {
