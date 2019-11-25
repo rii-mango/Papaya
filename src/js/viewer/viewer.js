@@ -2171,6 +2171,20 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             this.windowLevelChanged(this.previousMousePosition.x - currentMouseX, this.previousMousePosition.y - currentMouseY);
             this.previousMousePosition.x = currentMouseX;
             this.previousMousePosition.y = currentMouseY;
+        // Modification 26/11/2019: add stackScroll
+        } else if (this.activeTool === 'StackScroll') {
+            var deltaY = this.previousMousePosition.y - currentMouseY;
+            var increment;
+            if (deltaY < 0) increment = false;
+            else if (deltaY > 0) increment = true;
+            this.previousMousePosition.y = currentMouseY;
+            if (deltaY !== 0) {
+                console.log(deltaY);
+                if (this.selectedSlice === this.axialSlice) this.incrementAxial(increment, Math.ceil(Math.abs(deltaY/6)));
+                if (this.selectedSlice === this.coronalSlice) this.incrementCoronal(increment, Math.ceil(Math.abs(deltaY/6)));
+                if (this.selectedSlice === this.sagittalSlice) this.incrementSagittal(increment, Math.ceil(Math.abs(deltaY/6)));
+            }
+        //////////////////////////////////////////////
         } else if (this.isPanning) {
             if (this.selectedSlice === this.surfaceView) {
                 this.surfaceView.updateTranslateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me),
