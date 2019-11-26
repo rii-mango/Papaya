@@ -1148,37 +1148,40 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
     this.context.fillStyle = "#000000";
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
+    // Modification 26/11/2019: disable drop && corner texts
+
     // draw drop text
-    this.context.fillStyle = "#AAAAAA";
+    // this.context.fillStyle = "#AAAAAA";
 
-    if (this.container.readyForDnD()) {
-        fontSize = 18;
-        this.context.font = fontSize + "px sans-serif";
-        locY = this.canvas.height - 22;
-        text = "Drop here or click the File menu";
-        metrics = this.context.measureText(text);
-        textWidth = metrics.width;
-        this.context.fillText(text, (this.canvas.width / 2) - (textWidth / 2), locY);
-    }
+    // if (this.container.readyForDnD()) {
+    //     fontSize = 18;
+    //     this.context.font = fontSize + "px sans-serif";
+    //     locY = this.canvas.height - 22;
+    //     text = "Drop here or click the File menu";
+    //     metrics = this.context.measureText(text);
+    //     textWidth = metrics.width;
+    //     this.context.fillText(text, (this.canvas.width / 2) - (textWidth / 2), locY);
+    // }
 
-    if (this.canvas.width > 900) {
-        // draw supported formats
-        fontSize = 14;
-        this.context.font = fontSize + "px sans-serif";
-        locY = this.canvas.height - 20;
-        text = "Supported formats: NIFTI" + (papaya.Container.DICOM_SUPPORT ? ", DICOM" : "");
-        this.context.fillText(text, 20, locY);
+    
+    // if (this.canvas.width > 900) {
+    //     // draw supported formats
+    //     fontSize = 14;
+    //     this.context.font = fontSize + "px sans-serif";
+    //     locY = this.canvas.height - 20;
+    //     text = "Supported formats: NIFTI" + (papaya.Container.DICOM_SUPPORT ? ", DICOM" : "");
+    //     this.context.fillText(text, 20, locY);
 
-        // draw Papaya version info
-        fontSize = 14;
-        this.context.font = fontSize + "px sans-serif";
-        locY = this.canvas.height - 20;
+    //     // draw Papaya version info
+    //     fontSize = 14;
+    //     this.context.font = fontSize + "px sans-serif";
+    //     locY = this.canvas.height - 20;
 
-        text = "Papaya (Build " + PAPAYA_BUILD_NUM + ")";
-        metrics = this.context.measureText(text);
-        textWidth = metrics.width;
-        this.context.fillText(text, this.canvas.width - textWidth - 20, locY);
-    }
+    //     text = "Papaya (Build " + PAPAYA_BUILD_NUM + ")";
+    //     metrics = this.context.measureText(text);
+    //     textWidth = metrics.width;
+    //     this.context.fillText(text, this.canvas.width - textWidth - 20, locY);
+    // }
 };
 
 
@@ -2179,7 +2182,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             else if (deltaY > 0) increment = true;
             this.previousMousePosition.y = currentMouseY;
             if (deltaY !== 0) {
-                console.log(deltaY);
+                // console.log(deltaY);
                 if (this.selectedSlice === this.axialSlice) this.incrementAxial(increment, Math.ceil(Math.abs(deltaY/6)));
                 if (this.selectedSlice === this.coronalSlice) this.incrementCoronal(increment, Math.ceil(Math.abs(deltaY/6)));
                 if (this.selectedSlice === this.sagittalSlice) this.incrementSagittal(increment, Math.ceil(Math.abs(deltaY/6)));

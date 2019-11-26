@@ -1061,46 +1061,49 @@ papaya.Container.prototype.setUpDnD = function () {
     };
 
     this.containerHtml[0].ondrop = function (evt) {
-        evt.preventDefault();
 
-        var dataTransfer = evt.dataTransfer;
+        //Modification 26/11/2019: disable onDrop
+        
+        // evt.preventDefault();
 
-        container.display.drawProgress(0.1, "Loading");
+        // var dataTransfer = evt.dataTransfer;
 
-        if (dataTransfer) {
-            if (dataTransfer.items && (dataTransfer.items.length > 0)) {
-                var items = dataTransfer.items,
-                    len = items.length,
-                    ctr, entry;
+        // container.display.drawProgress(0.1, "Loading");
 
-                for (ctr = 0; ctr<len; ctr += 1) {
-                    entry = items[ctr];
+        // if (dataTransfer) {
+        //     if (dataTransfer.items && (dataTransfer.items.length > 0)) {
+        //         var items = dataTransfer.items,
+        //             len = items.length,
+        //             ctr, entry;
 
-                    if (entry.getAsEntry) {
-                        entry = entry.getAsEntry();
-                    } else if(entry.webkitGetAsEntry) {
-                        entry = entry.webkitGetAsEntry();
-                    }
+        //         for (ctr = 0; ctr<len; ctr += 1) {
+        //             entry = items[ctr];
 
-                    if (entry.isFile) {
-                        container.readFile(entry, papaya.utilities.ObjectUtils.bind(container,
-                            container.addDroppedFile));
-                    } else if (entry.isDirectory) {
-                        container.readDir(entry);
-                    }
-                }
-            }
+        //             if (entry.getAsEntry) {
+        //                 entry = entry.getAsEntry();
+        //             } else if(entry.webkitGetAsEntry) {
+        //                 entry = entry.webkitGetAsEntry();
+        //             }
 
-            //else if (dataTransfer.mozGetDataAt) {  // permission denied :-(
-            //    console.log(dataTransfer.mozGetDataAt('application/x-moz-file', 0));
-            //}
+        //             if (entry.isFile) {
+        //                 container.readFile(entry, papaya.utilities.ObjectUtils.bind(container,
+        //                     container.addDroppedFile));
+        //             } else if (entry.isDirectory) {
+        //                 container.readDir(entry);
+        //             }
+        //         }
+        //     }
 
-            else if (dataTransfer.files && (dataTransfer.files.length > 0)) {
-                container.viewer.loadImage(evt.dataTransfer.files);
-            }
-        }
+        //     //else if (dataTransfer.mozGetDataAt) {  // permission denied :-(
+        //     //    console.log(dataTransfer.mozGetDataAt('application/x-moz-file', 0));
+        //     //}
 
-        return false;
+        //     else if (dataTransfer.files && (dataTransfer.files.length > 0)) {
+        //         container.viewer.loadImage(evt.dataTransfer.files);
+        //     }
+        // }
+
+        // return false;
     };
 };
 
