@@ -383,7 +383,6 @@ papaya.viewer.Display.prototype.drawError = function (message) {
 papaya.viewer.Display.prototype.drawProgress = function (progress, label) {
     var prog, display, now, progressIndex, yLoc, progressLabel;
     prog = Math.round(progress * 1000);
-
     if (prog > this.progress) {
         this.progress = prog;
 

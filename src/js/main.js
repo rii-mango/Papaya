@@ -61,6 +61,8 @@ papaya.Container = papaya.Container || function (containerHtml) {
     this.allowScroll = true;
     this.loadingComplete = null;
     this.resetComponents();
+    // Modification 28/11/2019: add reactPapayaViewport
+    this.reactPapayaViewport = null;
 };
 
 

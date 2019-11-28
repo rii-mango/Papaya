@@ -31,6 +31,9 @@ papaya.volume.Volume = papaya.volume.Volume || function (progressMeter, dialogHa
 
     this.header = new papaya.volume.Header((this.params !== undefined) && this.params.padAllImages);
     this.imageData = new papaya.volume.ImageData((this.params !== undefined) && this.params.padAllImages);
+
+    // Modification 28/11/2019: add reactPapayaViewport
+    this.reactPapayaViewport = null;
 };
 
 
@@ -223,7 +226,6 @@ papaya.volume.Volume.prototype.readBinaryData = function (dataRefs, callback) {
         } else {
             this.fileName = dataRefs[0];
         }
-
         this.onFinishedRead = callback;
         vol = this;
         this.fileLength = 0;
@@ -440,6 +442,8 @@ papaya.volume.Volume.prototype.finishedLoad = function () {
                 this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
                 this.numTimepoints = this.header.imageDimensions.timepoints || 1;
                 this.applyBestTransform();
+                // Moodification 28/11/2019: add setState callback to disable loading screen
+                this.reactPapayaViewport.setState({ finishedLoading: true });
             } else {
                 console.log(this.error);
             }

@@ -103,6 +103,9 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     // modification 25/11/2019
     this.activeTool = null;
 
+    // modification 28/11/2019: add reactPapayaViewport constructor
+    //this.volume.reactPapayaViewport = this.container.reactPapayaViewport;
+
 };
 
 
