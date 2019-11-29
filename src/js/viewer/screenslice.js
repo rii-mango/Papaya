@@ -73,6 +73,8 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
         radioFactor, dtiColorIndex = 0, interpolation, usedRaster = false, worldSpace = this.manager.isWorldMode(),
         originalVal;
 
+    // console.log('papaya updateSlice this', this);
+    // console.log('papaya updateSlice with slice', slice);
     slice = Math.round(slice);
 
     if ((this.manager.isRadiologicalMode() && this.isRadiologicalSensitive())) {
@@ -82,10 +84,10 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
     }
 
     if (force || (this.currentSlice !== slice)) {
-        this.currentSlice = slice;
+        this.currentSlice = slice; // currentSlice is the Current Slice Number e.g. 32
         origin = this.screenVolumes[0].volume.header.origin;  // base image origin
         voxelDims = this.screenVolumes[0].volume.header.voxelDimensions;
-
+        // console.log('papaya updateSlice canvasMain', this.canvasMain);
         this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
 
         if (this.contextDTILines) {

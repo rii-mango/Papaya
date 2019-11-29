@@ -1149,6 +1149,7 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
 
     // clear area
     this.context.fillStyle = "#000000";
+    // this.context.fillStyle = "#FFFFFF";
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     // Modification 26/11/2019: disable drop && corner texts
@@ -1276,7 +1277,7 @@ papaya.viewer.Viewer.prototype.hasSurface = function () {
 
 papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
     var textWidth, textWidthExample, offset, padding = 5;
-
+    console.log('papaya drawScreenSlice', this, slice);
     if (slice === this.surfaceView) {
         this.context.fillStyle = this.surfaceView.getBackgroundColor();
         this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
@@ -1298,13 +1299,13 @@ papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
     } else {
         this.context.fillStyle = papaya.viewer.Viewer.BACKGROUND_COLOR;
         this.context.setTransform(1, 0, 0, 1, 0, 0);
-        this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
+        // this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
         // console.log('papaya drawScreenSlice with', slice.screenOffsetX, slice.screenOffsetY, slice.screenWidth, slice.screenHeight)
-        // this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenWidth, slice.screenHeight);
+        this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenWidth, slice.screenHeight);
         this.context.save();
         this.context.beginPath();
-        this.context.rect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
-        // this.context.rect(slice.screenOffsetX, slice.screenOffsetY, slice.screenOffsetX, slice.screenOffsetY, slice.screenHeight, slice.screenWidth);
+        // this.context.rect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
+        this.context.rect(slice.screenOffsetX, slice.screenOffsetY, slice.screenWidth, slice.screenHeight);
         this.context.clip();
         this.context.setTransform(slice.finalTransform[0][0], 0, 0, slice.finalTransform[1][1], slice.finalTransform[0][2], slice.finalTransform[1][2]);
         this.context.drawImage(slice.canvasMain, 0, 0);
@@ -1632,20 +1633,38 @@ papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function () {
                 (((this.viewerDim - papaya.viewer.Viewer.GAP) / 3) * 2 + (papaya.viewer.Viewer.GAP) * 2);
         } else {
             //orthogonal no tall no surface
-            this.getTransformParameters(this.mainImage, this.viewerDim, false, 2);
+            // Modified 29/11/2019:
+            var horizontalFactor = 0.65;
+            this.getTransformParameters(this.mainImage, this.viewerDim, false, 2, horizontalFactor);
             this.mainImage.screenTransform[0][2] += this.mainImage.screenOffsetX = 0;
             this.mainImage.screenTransform[1][2] += this.mainImage.screenOffsetY = 0;
 
-            this.getTransformParameters(this.lowerImageBot, this.viewerDim, true, 2);
+            this.getTransformParameters(this.lowerImageBot, this.viewerDim, true, 2, horizontalFactor);
             this.lowerImageBot.screenTransform[0][2] += this.lowerImageBot.screenOffsetX =
-                (this.viewerDim + (papaya.viewer.Viewer.GAP));
+                (this.canvas.clientWidth * horizontalFactor + (papaya.viewer.Viewer.GAP));
             this.lowerImageBot.screenTransform[1][2] += this.lowerImageBot.screenOffsetY =
                 (((this.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
 
-            this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 2);
+            this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 2, horizontalFactor);
             this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX =
-                (this.viewerDim + (papaya.viewer.Viewer.GAP));
+                (this.canvas.clientWidth * horizontalFactor + (papaya.viewer.Viewer.GAP));
             this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY = 0;
+
+            // Original code
+            // this.getTransformParameters(this.mainImage, this.viewerDim, false, 2, horizontalFactor);
+            // this.mainImage.screenTransform[0][2] += this.mainImage.screenOffsetX = 0;
+            // this.mainImage.screenTransform[1][2] += this.mainImage.screenOffsetY = 0;
+
+            // this.getTransformParameters(this.lowerImageBot, this.viewerDim, true, 2, horizontalFactor);
+            // this.lowerImageBot.screenTransform[0][2] += this.lowerImageBot.screenOffsetX =
+            //     (this.viewerDim + (papaya.viewer.Viewer.GAP));
+            // this.lowerImageBot.screenTransform[1][2] += this.lowerImageBot.screenOffsetY =
+            //     (((this.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
+
+            // this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 2, horizontalFactor);
+            // this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX =
+            //     (this.viewerDim + (papaya.viewer.Viewer.GAP));
+            // this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY = 0;
         }
     }
 
@@ -1662,10 +1681,13 @@ papaya.viewer.Viewer.prototype.updateScreenSliceTransforms = function () {
 
 
 
-papaya.viewer.Viewer.prototype.getTransformParameters = function (image, height, lower, factor) {
+papaya.viewer.Viewer.prototype.getTransformParameters = function (image, height, lower, verticalFactor, horizontalFactor) {
+    // Modification 29/11/2019: change `factor` to verticalFactor, add horizontalFactor
+    var width = (lower ? this.canvas.clientWidth * (1 - horizontalFactor) : this.canvas.clientWidth * horizontalFactor);
+    var realHeight = height / verticalFactor;
     var bigScale, scaleX, scaleY, transX, transY;
-
-    bigScale = lower ? factor : 1;
+    var scaleDimension = width <= realHeight ? width : realHeight;
+    bigScale = lower ? verticalFactor : 1;
 
     if (image === this.surfaceView) {
         this.surfaceView.resize(this.viewerDim / bigScale);
@@ -1673,23 +1695,43 @@ papaya.viewer.Viewer.prototype.getTransformParameters = function (image, height,
     }
 
     if (image.getRealWidth() > image.getRealHeight()) {
-        scaleX = (((lower ? height - papaya.viewer.Viewer.GAP : height) / this.longestDim) / bigScale) *
+        scaleX = (((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) / bigScale) *
             (image.getXSize() / this.longestDimSize);
-        scaleY = ((((lower ? height - papaya.viewer.Viewer.GAP : height) / this.longestDim) *
+        scaleY = ((((scaleDimension ? height - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) *
             image.getYXratio()) / bigScale) * (image.getXSize() / this.longestDimSize);
     } else {
-        scaleX = ((((lower ? height - papaya.viewer.Viewer.GAP : height) / this.longestDim) *
-            image.getXYratio()) / bigScale) * (image.getYSize() / this.longestDimSize);
-        scaleY = (((lower ? height - papaya.viewer.Viewer.GAP : height) / this.longestDim) / bigScale) *
+        console.log('getTransformParameters', width, height);
+        scaleX = ((((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) *
+            image.getXYratio()) / (width <= height ? width/height : height/width)) * (image.getYSize() / this.longestDimSize);
+        scaleY = (((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) / (width <= height ? width/height : height/width)) *
             (image.getYSize() / this.longestDimSize);
     }
 
-    transX = (((lower ? height - papaya.viewer.Viewer.GAP : height) / bigScale) - (image.getXDim() * scaleX)) / 2;
+    transX = (((lower ? width - papaya.viewer.Viewer.GAP : width) / bigScale) - (image.getXDim() * scaleX)) / 2;
     transY = (((lower ? height - papaya.viewer.Viewer.GAP : height) / bigScale) - (image.getYDim() * scaleY)) / 2;
 
-    image.screenDim = (lower ? (height - papaya.viewer.Viewer.GAP) / factor : height);
+    // Original code
+    // if (image.getRealWidth() > image.getRealHeight()) {
+    //     scaleX = (((lower ? height - papaya.viewer.Viewer.GAP : height) / this.longestDim) / bigScale) *
+    //         (image.getXSize() / this.longestDimSize);
+    //     scaleY = ((((lower ? height - papaya.viewer.Viewer.GAP : height) / this.longestDim) *
+    //         image.getYXratio()) / bigScale) * (image.getXSize() / this.longestDimSize);
+    // } else {
+    //     console.log('getTransformParameters');
+    //     scaleX = ((((lower ? height - papaya.viewer.Viewer.GAP : height) / this.longestDim) *
+    //         image.getXYratio()) / bigScale) * (image.getYSize() / this.longestDimSize);
+    //     scaleY = (((lower ? height - papaya.viewer.Viewer.GAP : height) / this.longestDim) / bigScale) *
+    //         (image.getYSize() / this.longestDimSize);
+    // }
+    // transX = (((lower ? height - papaya.viewer.Viewer.GAP : height) / bigScale) - (image.getXDim() * scaleX)) / 2;
+    // transY = (((lower ? height - papaya.viewer.Viewer.GAP : height) / bigScale) - (image.getYDim() * scaleY)) / 2;
+
+    image.screenDim = (lower ? (height - papaya.viewer.Viewer.GAP) / verticalFactor : height);
     image.screenHeight = (lower ? height/2 : height);
-    image.screenWidth = image.screenDim;
+    // image.screenWidth = image.screenDim;
+    // console.log('papaya getTransformParameters', image.screenDim);
+    // console.log(this);
+    image.screenWidth = width;
     image.screenTransform[0][0] = scaleX;
     image.screenTransform[1][1] = scaleY;
     image.screenTransform[0][2] = transX;

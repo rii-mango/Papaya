@@ -91,6 +91,7 @@ papaya.viewer.Display.prototype.drawEmptyDisplay = function () {
     if (this.canDraw()) {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.context.fillStyle = "#000000";
+        // this.context.fillStyle = "#FFFFFF";
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     } else if (this.drawError) {
         this.drawError(this.errorMessage);
@@ -100,6 +101,7 @@ papaya.viewer.Display.prototype.drawEmptyDisplay = function () {
 
 
 papaya.viewer.Display.prototype.drawDisplay = function (xLoc, yLoc, zLoc) {
+    // draw coordinates and helper text
     var locY, val, viewerOrigin, height, atlasNumLabels, atlasLabelWidth, atlasLabel, ctr, metricsAtlas, sizeRatio,
         viewerVoxelDims, labelColorThresh, halfWidth, coordinateItemWidth, smallViewer, precision;
 

@@ -834,7 +834,6 @@ papaya.Container.prototype.reset = function () {
 
 papaya.Container.prototype.resizeViewerComponents = function (resize) {
     var dims, padding, diff = 0;
-
     this.toolbar.closeAllMenus();
 
     dims = this.getViewerDimensions();
