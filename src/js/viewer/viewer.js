@@ -1365,11 +1365,15 @@ papaya.viewer.Viewer.prototype.drawOrientation = function () {
     }
 
     orientStartX = this.mainImage.screenOffsetX;
-    orientEndX = this.mainImage.screenOffsetX + this.mainImage.screenDim;
+    // orientEndX = this.mainImage.screenOffsetX + this.mainImage.screenDim; // original
+    // Modified 02/12/2019: change screenDim to screenWidth to accomodate non-square viewport
+    orientEndX = this.mainImage.screenOffsetX + this.mainImage.screenWidth;
     orientMidX = Math.round(orientEndX / 2.0);
 
     orientStartY = this.mainImage.screenOffsetY;
-    orientEndY = this.mainImage.screenOffsetY + this.mainImage.screenDim;
+    // orientEndY = this.mainImage.screenOffsetY + this.mainImage.screenDim; // original
+    // Modified 02/12/2019: change screenDim to screenHeight to accomodate non-square viewport
+    orientEndY = this.mainImage.screenOffsetY + this.mainImage.screenHeight;
     orientMidY = Math.round(orientEndY / 2.0);
 
     if (showOrientation || this.mainImage.isRadiologicalSensitive()) {
@@ -1684,10 +1688,11 @@ papaya.viewer.Viewer.prototype.updateScreenSliceTransforms = function () {
 papaya.viewer.Viewer.prototype.getTransformParameters = function (image, height, lower, verticalFactor, horizontalFactor) {
     // Modification 29/11/2019: change `factor` to verticalFactor, add horizontalFactor
     var width = (lower ? this.canvas.clientWidth * (1 - horizontalFactor) : this.canvas.clientWidth * horizontalFactor);
-    var realHeight = height / verticalFactor;
     var bigScale, scaleX, scaleY, transX, transY;
-    var scaleDimension = width <= realHeight ? width : realHeight;
     bigScale = lower ? verticalFactor : 1;
+
+    var realHeight = height / bigScale;
+    var scaleDimension = width <= realHeight ? width : realHeight;
 
     if (image === this.surfaceView) {
         this.surfaceView.resize(this.viewerDim / bigScale);
@@ -1700,15 +1705,15 @@ papaya.viewer.Viewer.prototype.getTransformParameters = function (image, height,
         scaleY = ((((scaleDimension ? height - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) *
             image.getYXratio()) / bigScale) * (image.getXSize() / this.longestDimSize);
     } else {
-        console.log('getTransformParameters', width, height);
+        console.log('getTransformParameters', width, realHeight);
         scaleX = ((((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) *
-            image.getXYratio()) / (width <= height ? width/height : height/width)) * (image.getYSize() / this.longestDimSize);
-        scaleY = (((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) / (width <= height ? width/height : height/width)) *
+            image.getXYratio())) * (image.getYSize() / this.longestDimSize);
+        scaleY = (((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim)) *
             (image.getYSize() / this.longestDimSize);
     }
 
-    transX = (((lower ? width - papaya.viewer.Viewer.GAP : width) / bigScale) - (image.getXDim() * scaleX)) / 2;
-    transY = (((lower ? height - papaya.viewer.Viewer.GAP : height) / bigScale) - (image.getYDim() * scaleY)) / 2;
+    transX = (((lower ? width - papaya.viewer.Viewer.GAP : width)) - (image.getXDim() * scaleX)) / 2;
+    transY = (((lower ? realHeight - papaya.viewer.Viewer.GAP : realHeight)) - (image.getYDim() * scaleY)) / 2;
 
     // Original code
     // if (image.getRealWidth() > image.getRealHeight()) {
