@@ -443,7 +443,7 @@ papaya.volume.Volume.prototype.finishedLoad = function () {
                 this.numTimepoints = this.header.imageDimensions.timepoints || 1;
                 this.applyBestTransform();
                 // Moodification 28/11/2019: add setState callback to disable loading screen
-                this.reactPapayaViewport.setState({ finishedLoading: true });
+                if (this.reactPapayaViewport) this.reactPapayaViewport.setState({ finishedLoading: true });
             } else {
                 console.log(this.error);
             }
