@@ -104,8 +104,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.activeTool = null;
 
     // modification 28/11/2019: add reactPapayaViewport constructor
-    //this.volume.reactPapayaViewport = this.container.reactPapayaViewport;
-
+    this.reactPapayaViewport = null;
 };
 
 
@@ -1198,6 +1197,9 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
         this.drawEmptyViewer();
         return;
     }
+    // Modified: 12/12/2019
+    if (this.reactPapayaViewport.props.viewportSpecificData.intensityActive) this.reactPapayaViewport.setState({ updateMIP: true });
+    else this.reactPapayaViewport.setState({ updateMIP: false });
 
     this.context.save();
 
@@ -2237,6 +2239,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                 if (this.selectedSlice === this.coronalSlice) this.incrementCoronal(increment, Math.ceil(Math.abs(deltaY/6)));
                 if (this.selectedSlice === this.sagittalSlice) this.incrementSagittal(increment, Math.ceil(Math.abs(deltaY/6)));
             }
+            // if (this.reactPapayaViewport.props.viewportSpecificData.intensityActive) this.reactPapayaViewport.setState({ updateMIP: true });
         //////////////////////////////////////////////
         } else if (this.isPanning) {
             if (this.selectedSlice === this.surfaceView) {
@@ -3009,6 +3012,7 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
 
             this.gotoCoordinate(this.currentCoord);
         }
+
     } else {
         if (scrollSign !== 0) {
             this.isZoomMode = true;
