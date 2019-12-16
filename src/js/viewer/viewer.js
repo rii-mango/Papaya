@@ -977,7 +977,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
     }
 
     this.container.coordinateChanged(this);
-    viewer.drawViewer(false, crosshairsOnly);
+    viewer.drawViewer(false, crosshairsOnly, true);
 };
 
 
@@ -1189,7 +1189,7 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
 
 
 
-papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
+papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMIP) {
     var radiological = (this.container.preferences.radiological === "Yes"),
         showOrientation = (this.container.preferences.showOrientation === "Yes");
 
@@ -1198,9 +1198,12 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
         return;
     }
     // Modified: 12/12/2019
-    if (this.reactPapayaViewport.props.viewportSpecificData.intensityActive) this.reactPapayaViewport.setState({ updateMIP: true });
+    if (this.reactPapayaViewport.props.viewportSpecificData.intensityActive) {
+        if (!this.reactPapayaViewport.state.updateMIP) this.reactPapayaViewport.setState({ updateMIP: true });
+        else this.reactPapayaViewport.setState({ updateMIP: false });
+    }
     else this.reactPapayaViewport.setState({ updateMIP: false });
-
+    //////////
     this.context.save();
 
     if (skipUpdate) {
@@ -1237,7 +1240,8 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
     }
 
     // draw screen slices
-    this.drawScreenSlice(this.mainImage);
+    if (this.reactPapayaViewport.props.viewportSpecificData.intensityActive && forceMIP) this.drawScreenSlice(this.mainImage);
+    else if (!this.reactPapayaViewport.props.viewportSpecificData.intensityActive) this.drawScreenSlice(this.mainImage);
 
     if (this.container.orthogonal) {
         this.drawScreenSlice(this.lowerImageTop);
@@ -2220,7 +2224,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             if (this.isInsideMainSlice(currentMouseX, currentMouseY)) {
                 this.grabbedHandle.x = this.convertScreenToImageCoordinateX(currentMouseX - this.canvasRect.left, this.selectedSlice);
                 this.grabbedHandle.y = this.convertScreenToImageCoordinateY(currentMouseY - this.canvasRect.top, this.selectedSlice);
-                this.drawViewer(true, true);
+                this.drawViewer(true, true, true);
             }
         } else if (this.activeTool === 'Window') { // original: else if (this.isWindowControl)
             this.windowLevelChanged(this.previousMousePosition.x - currentMouseX, this.previousMousePosition.y - currentMouseY);
@@ -2245,7 +2249,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             if (this.selectedSlice === this.surfaceView) {
                 this.surfaceView.updateTranslateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me),
                     papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
-                this.drawViewer(false, true);
+                this.drawViewer(false, true, true);
             } else {
                 this.setCurrentPanLocation(
                     this.convertScreenToImageCoordinateX(currentMouseX, this.selectedSlice),
@@ -2280,11 +2284,11 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                     if (this.surfaceView.grabbedRulerPoint !== -1) {
                         this.surfaceView.pickRuler(currentMouseX - this.canvasRect.left,
                             currentMouseY - this.canvasRect.top);
-                        this.drawViewer(false, true);
+                        this.drawViewer(false, true, true);
                     } else {
                         this.surfaceView.updateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me),
                             papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
-                        this.drawViewer(false, true);
+                        this.drawViewer(false, true, true);
                         this.container.display.drawEmptyDisplay();
                     }
                 } else {
