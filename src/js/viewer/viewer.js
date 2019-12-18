@@ -24,17 +24,17 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.canvas.style.margin = 0;
     this.canvas.style.border = "none";
     // Modified 18/12/2019: add Crosshair canvas
-    this.canvasCrosshair = document.createElement("canvas");
-    this.canvasCrosshair.width = width;
-    this.canvasCrosshair.height = height;
-    this.canvasCrosshair.zIndex = 1;
-    this.contextCrosshair = this.canvasCrosshair.getContext("2d");
-    this.canvasCrosshair.style.padding = 0;
-    this.canvasCrosshair.style.margin = 0;
-    this.canvasCrosshair.style.border = "none";
-    this.canvasCrosshair.style.position = 'absolute';
-    this.canvasCrosshair.style.left = 0;
-    this.canvasCrosshair.style.top = 0;
+    this.canvasAnnotation = document.createElement("canvas");
+    this.canvasAnnotation.width = width;
+    this.canvasAnnotation.height = height;
+    this.canvasAnnotation.zIndex = 1;
+    this.contextAnnotation = this.canvasAnnotation.getContext("2d");
+    this.canvasAnnotation.style.padding = 0;
+    this.canvasAnnotation.style.margin = 0;
+    this.canvasAnnotation.style.border = "none";
+    this.canvasAnnotation.style.position = 'absolute';
+    this.canvasAnnotation.style.left = 0;
+    this.canvasAnnotation.style.top = 0;
     ///////////////////////////
     this.atlas = null;
     this.initialized = false;
@@ -534,17 +534,17 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
             this.lowerImageBot = this.coronalSlice;
         }
 
-        this.canvasCrosshair.addEventListener("mousemove", this.listenerMouseMove, false);
-        this.canvasCrosshair.addEventListener("mousedown", this.listenerMouseDown, false);
-        this.canvasCrosshair.addEventListener("mouseout", this.listenerMouseOut, false);
-        this.canvasCrosshair.addEventListener("mouseleave", this.listenerMouseLeave, false);
-        this.canvasCrosshair.addEventListener("mouseup", this.listenerMouseUp, false);
+        this.canvasAnnotation.addEventListener("mousemove", this.listenerMouseMove, false);
+        this.canvasAnnotation.addEventListener("mousedown", this.listenerMouseDown, false);
+        this.canvasAnnotation.addEventListener("mouseout", this.listenerMouseOut, false);
+        this.canvasAnnotation.addEventListener("mouseleave", this.listenerMouseLeave, false);
+        this.canvasAnnotation.addEventListener("mouseup", this.listenerMouseUp, false);
         document.addEventListener("keydown", this.listenerKeyDown, true);
         document.addEventListener("keyup", this.listenerKeyUp, true);
-        this.canvasCrosshair.addEventListener("touchmove", this.listenerTouchMove, false);
-        this.canvasCrosshair.addEventListener("touchstart", this.listenerTouchStart, false);
-        this.canvasCrosshair.addEventListener("touchend", this.listenerTouchEnd, false);
-        this.canvasCrosshair.addEventListener("dblclick", this.listenerMouseDoubleClick, false);
+        this.canvasAnnotation.addEventListener("touchmove", this.listenerTouchMove, false);
+        this.canvasAnnotation.addEventListener("touchstart", this.listenerTouchStart, false);
+        this.canvasAnnotation.addEventListener("touchend", this.listenerTouchEnd, false);
+        this.canvasAnnotation.addEventListener("dblclick", this.listenerMouseDoubleClick, false);
         document.addEventListener("contextmenu", this.listenerContextMenu, false);
 
         if (this.container.showControlBar) {
@@ -1297,7 +1297,7 @@ papaya.viewer.Viewer.prototype.hasSurface = function () {
 
 papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
     var textWidth, textWidthExample, offset, padding = 5;
-    console.log('papaya drawScreenSlice', this, slice);
+    // console.log('papaya drawScreenSlice', this, slice);
     if (slice === this.surfaceView) {
         this.context.fillStyle = this.surfaceView.getBackgroundColor();
         this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
@@ -1596,106 +1596,107 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
     var xLoc, yStart, yEnd, yLoc, xStart, xEnd;
     // Modified 18/12/2019 add clearRect function
-    this.contextCrosshair.clearRect(0, 0, this.canvasCrosshair.width, this.canvasCrosshair.height);
+    this.contextAnnotation.clearRect(0, 0, this.canvasAnnotation.width, this.canvasAnnotation.height);
     ///////////////////////
     // initialize crosshairs
-    this.contextCrosshair.setTransform(1, 0, 0, 1, 0, 0);
-    this.contextCrosshair.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR;
-    this.contextCrosshair.lineWidth = 1.0;
+    this.contextAnnotation.setTransform(1, 0, 0, 1, 0, 0);
+    this.contextAnnotation.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR;
+    this.contextAnnotation.lineWidth = 1.0;
 
     if ((this.mainImage !== this.axialSlice) || this.toggleMainCrosshairs) {
         // draw axial crosshairs
-        this.contextCrosshair.save();
-        this.contextCrosshair.beginPath();
-        this.contextCrosshair.rect(this.axialSlice.screenOffsetX, this.axialSlice.screenOffsetY, this.axialSlice.screenWidth,
+        this.contextAnnotation.save();
+        this.contextAnnotation.beginPath();
+        this.contextAnnotation.rect(this.axialSlice.screenOffsetX, this.axialSlice.screenOffsetY, this.axialSlice.screenWidth,
             this.axialSlice.screenHeight);
-        this.contextCrosshair.closePath();
-        this.contextCrosshair.clip();
+        this.contextAnnotation.closePath();
+        this.contextAnnotation.clip();
 
-        this.contextCrosshair.beginPath();
-
+        this.contextAnnotation.beginPath();
+        console.log('drawCrosshairs finalTransform', this.axialSlice.finalTransform);
         xLoc = (this.axialSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) *
             this.axialSlice.finalTransform[0][0]);
-        yStart = (this.axialSlice.finalTransform[1][2]);
-        yEnd = (this.axialSlice.finalTransform[1][2] + this.axialSlice.yDim * this.axialSlice.finalTransform[1][1]);
-        this.contextCrosshair.moveTo(xLoc, yStart);
-        this.contextCrosshair.lineTo(xLoc, yEnd);
+        // yStart = (this.axialSlice.finalTransform[1][2]);
+        yStart = (this.axialSlice.screenOffsetY);
+        // yEnd = (this.axialSlice.finalTransform[1][2] + this.axialSlice.yDim * this.axialSlice.finalTransform[1][1]);
+        yEnd = (this.axialSlice.screenHeight + this.axialSlice.screenOffsetY);
+        this.contextAnnotation.moveTo(xLoc, yStart);
+        this.contextAnnotation.lineTo(xLoc, yEnd);
 
         yLoc = (this.axialSlice.finalTransform[1][2] + (this.currentCoord.y + 0.5) *
             this.axialSlice.finalTransform[1][1]);
-        xStart = (this.axialSlice.finalTransform[0][2]);
-        xEnd = (this.axialSlice.finalTransform[0][2] + this.axialSlice.xDim * this.axialSlice.finalTransform[0][0]);
-        this.contextCrosshair.moveTo(xStart, yLoc);
-        this.contextCrosshair.lineTo(xEnd, yLoc);
+        // xStart = (this.axialSlice.finalTransform[0][2]);
+        xStart = (this.axialSlice.screenOffsetX);
+        // xEnd = (this.axialSlice.finalTransform[0][2] + this.axialSlice.xDim * this.axialSlice.finalTransform[0][0]);
+        xEnd = (this.axialSlice.screenWidth + this.axialSlice.screenOffsetX);
+        // console.table({ xLoc,})
+        this.contextAnnotation.moveTo(xStart, yLoc);
+        this.contextAnnotation.lineTo(xEnd, yLoc);
 
-        this.contextCrosshair.closePath();
-        this.contextCrosshair.stroke();
-        this.contextCrosshair.restore();
+        this.contextAnnotation.closePath();
+        this.contextAnnotation.stroke();
+        this.contextAnnotation.restore();
     }
 
 
     if ((this.mainImage !== this.coronalSlice) || this.toggleMainCrosshairs) {
         // draw coronal crosshairs
-        this.contextCrosshair.save();
-        this.contextCrosshair.beginPath();
-        this.contextCrosshair.rect(this.coronalSlice.screenOffsetX, this.coronalSlice.screenOffsetY, this.coronalSlice.screenWidth,
+        this.contextAnnotation.save();
+        this.contextAnnotation.beginPath();
+        this.contextAnnotation.rect(this.coronalSlice.screenOffsetX, this.coronalSlice.screenOffsetY, this.coronalSlice.screenWidth,
             this.coronalSlice.screenHeight);
-        this.contextCrosshair.closePath();
-        this.contextCrosshair.clip();
+        this.contextAnnotation.closePath();
+        this.contextAnnotation.clip();
 
-        this.contextCrosshair.beginPath();
+        this.contextAnnotation.beginPath();
 
         xLoc = (this.coronalSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) *
             this.coronalSlice.finalTransform[0][0]);
-        yStart = (this.coronalSlice.finalTransform[1][2]);
-        yEnd = (this.coronalSlice.finalTransform[1][2] + this.coronalSlice.yDim *
-            this.coronalSlice.finalTransform[1][1]);
-        this.contextCrosshair.moveTo(xLoc, yStart);
-        this.contextCrosshair.lineTo(xLoc, yEnd);
+        yStart = (this.coronalSlice.screenOffsetY);
+        yEnd = (this.coronalSlice.screenHeight + this.coronalSlice.screenOffsetY);
+        this.contextAnnotation.moveTo(xLoc, yStart);
+        this.contextAnnotation.lineTo(xLoc, yEnd);
 
         yLoc = (this.coronalSlice.finalTransform[1][2] + (this.currentCoord.z + 0.5) *
             this.coronalSlice.finalTransform[1][1]);
-        xStart = (this.coronalSlice.finalTransform[0][2]);
-        xEnd = (this.coronalSlice.finalTransform[0][2] + this.coronalSlice.xDim *
-            this.coronalSlice.finalTransform[0][0]);
-        this.contextCrosshair.moveTo(xStart, yLoc);
-        this.contextCrosshair.lineTo(xEnd, yLoc);
+        xStart = (this.coronalSlice.screenOffsetX);
+        xEnd = (this.coronalSlice.screenWidth + this.coronalSlice.screenOffsetX);
+        this.contextAnnotation.moveTo(xStart, yLoc);
+        this.contextAnnotation.lineTo(xEnd, yLoc);
 
-        this.contextCrosshair.closePath();
-        this.contextCrosshair.stroke();
-        this.contextCrosshair.restore();
+        this.contextAnnotation.closePath();
+        this.contextAnnotation.stroke();
+        this.contextAnnotation.restore();
     }
 
     if ((this.mainImage !== this.sagittalSlice) || this.toggleMainCrosshairs) {
         // draw sagittal crosshairs
-        this.contextCrosshair.save();
-        this.contextCrosshair.beginPath();
-        this.contextCrosshair.rect(this.sagittalSlice.screenOffsetX, this.sagittalSlice.screenOffsetY,
+        this.contextAnnotation.save();
+        this.contextAnnotation.beginPath();
+        this.contextAnnotation.rect(this.sagittalSlice.screenOffsetX, this.sagittalSlice.screenOffsetY,
             this.sagittalSlice.screenWidth, this.sagittalSlice.screenHeight);
-        this.contextCrosshair.closePath();
-        this.contextCrosshair.clip();
+        this.contextAnnotation.closePath();
+        this.contextAnnotation.clip();
 
-        this.contextCrosshair.beginPath();
+        this.contextAnnotation.beginPath();
 
         xLoc = (this.sagittalSlice.finalTransform[0][2] + (this.currentCoord.y + 0.5) *
             this.sagittalSlice.finalTransform[0][0]);
-        yStart = (this.sagittalSlice.finalTransform[1][2]);
-        yEnd = (this.sagittalSlice.finalTransform[1][2] + this.sagittalSlice.yDim *
-            this.sagittalSlice.finalTransform[1][1]);
-        this.contextCrosshair.moveTo(xLoc, yStart);
-        this.contextCrosshair.lineTo(xLoc, yEnd);
+        yStart = (this.sagittalSlice.screenOffsetY);
+        yEnd = (this.sagittalSlice.screenHeight + this.sagittalSlice.screenOffsetY);
+        this.contextAnnotation.moveTo(xLoc, yStart);
+        this.contextAnnotation.lineTo(xLoc, yEnd);
 
         yLoc = (this.sagittalSlice.finalTransform[1][2] + (this.currentCoord.z + 0.5) *
             this.sagittalSlice.finalTransform[1][1]);
-        xStart = (this.sagittalSlice.finalTransform[0][2]);
-        xEnd = (this.sagittalSlice.finalTransform[0][2] + this.sagittalSlice.xDim *
-            this.sagittalSlice.finalTransform[0][0]);
-        this.contextCrosshair.moveTo(xStart, yLoc);
-        this.contextCrosshair.lineTo(xEnd, yLoc);
+        xStart = (this.sagittalSlice.screenOffsetX);
+        xEnd = (this.sagittalSlice.screenWidth + this.sagittalSlice.screenOffsetX);
+        this.contextAnnotation.moveTo(xStart, yLoc);
+        this.contextAnnotation.lineTo(xEnd, yLoc);
 
-        this.contextCrosshair.closePath();
-        this.contextCrosshair.stroke();
-        this.contextCrosshair.restore();
+        this.contextAnnotation.closePath();
+        this.contextAnnotation.stroke();
+        this.contextAnnotation.restore();
     }
 };
 
@@ -1831,7 +1832,7 @@ papaya.viewer.Viewer.prototype.getTransformParameters = function (image, height,
         scaleY = ((((scaleDimension ? height - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) *
             image.getYXratio()) / bigScale) * (image.getXSize() / this.longestDimSize);
     } else {
-        console.log('getTransformParameters', width, realHeight);
+        // console.log('getTransformParameters', width, realHeight);
         scaleX = ((((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) *
             image.getXYratio())) * (image.getYSize() / this.longestDimSize);
         scaleY = (((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim)) *
@@ -2625,8 +2626,8 @@ papaya.viewer.Viewer.prototype.resizeViewer = function (dims) {
     this.canvas.width = dims[0];
     this.canvas.height = dims[1];
     // Modifiend 18/12/2019
-    this.canvasCrosshair.width = dims[0];
-    this.canvasCrosshair.height = dims[1];
+    this.canvasAnnotation.width = dims[0];
+    this.canvasAnnotation.height = dims[1];
     ///////////////////////////
 
     if (this.initialized) {
@@ -2769,18 +2770,18 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     this.isWindowControl = false;
     this.hasSeries = false;
     this.previousMousePosition = new papaya.core.Point();
-    this.canvasCrosshair.removeEventListener("mousemove", this.listenerMouseMove, false);
-    this.canvasCrosshair.removeEventListener("mousedown", this.listenerMouseDown, false);
-    this.canvasCrosshair.removeEventListener("mouseout", this.listenerMouseOut, false);
-    this.canvasCrosshair.removeEventListener("mouseleave", this.listenerMouseLeave, false);
-    this.canvasCrosshair.removeEventListener("mouseup", this.listenerMouseUp, false);
+    this.canvasAnnotation.removeEventListener("mousemove", this.listenerMouseMove, false);
+    this.canvasAnnotation.removeEventListener("mousedown", this.listenerMouseDown, false);
+    this.canvasAnnotation.removeEventListener("mouseout", this.listenerMouseOut, false);
+    this.canvasAnnotation.removeEventListener("mouseleave", this.listenerMouseLeave, false);
+    this.canvasAnnotation.removeEventListener("mouseup", this.listenerMouseUp, false);
     document.removeEventListener("keydown", this.listenerKeyDown, true);
     document.removeEventListener("keyup", this.listenerKeyUp, true);
     document.removeEventListener("contextmenu", this.listenerContextMenu, false);
-    this.canvasCrosshair.removeEventListener("touchmove", this.listenerTouchMove, false);
-    this.canvasCrosshair.removeEventListener("touchstart", this.listenerTouchStart, false);
-    this.canvasCrosshair.removeEventListener("touchend", this.listenerTouchEnd, false);
-    this.canvasCrosshair.removeEventListener("dblclick", this.listenerMouseDoubleClick, false);
+    this.canvasAnnotation.removeEventListener("touchmove", this.listenerTouchMove, false);
+    this.canvasAnnotation.removeEventListener("touchstart", this.listenerTouchStart, false);
+    this.canvasAnnotation.removeEventListener("touchend", this.listenerTouchEnd, false);
+    this.canvasAnnotation.removeEventListener("dblclick", this.listenerMouseDoubleClick, false);
 
     this.removeScroll();
 
@@ -3104,13 +3105,13 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
 */
     e = e || window.event;
     /* ORIGINAL
-    if(e.target != this.canvasCrosshair) {
+    if(e.target != this.canvasAnnotation) {
         return;
     }
     */
    
     //If the scroll event happened outside the canvas don't handle it
-    if(e.target != this.canvasCrosshair) {
+    if(e.target != this.canvasAnnotation) {
         return;
     }
 
