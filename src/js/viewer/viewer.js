@@ -534,17 +534,17 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
             this.lowerImageBot = this.coronalSlice;
         }
 
-        this.canvas.addEventListener("mousemove", this.listenerMouseMove, false);
-        this.canvas.addEventListener("mousedown", this.listenerMouseDown, false);
-        this.canvas.addEventListener("mouseout", this.listenerMouseOut, false);
-        this.canvas.addEventListener("mouseleave", this.listenerMouseLeave, false);
-        this.canvas.addEventListener("mouseup", this.listenerMouseUp, false);
+        this.canvasCrosshair.addEventListener("mousemove", this.listenerMouseMove, false);
+        this.canvasCrosshair.addEventListener("mousedown", this.listenerMouseDown, false);
+        this.canvasCrosshair.addEventListener("mouseout", this.listenerMouseOut, false);
+        this.canvasCrosshair.addEventListener("mouseleave", this.listenerMouseLeave, false);
+        this.canvasCrosshair.addEventListener("mouseup", this.listenerMouseUp, false);
         document.addEventListener("keydown", this.listenerKeyDown, true);
         document.addEventListener("keyup", this.listenerKeyUp, true);
-        this.canvas.addEventListener("touchmove", this.listenerTouchMove, false);
-        this.canvas.addEventListener("touchstart", this.listenerTouchStart, false);
-        this.canvas.addEventListener("touchend", this.listenerTouchEnd, false);
-        this.canvas.addEventListener("dblclick", this.listenerMouseDoubleClick, false);
+        this.canvasCrosshair.addEventListener("touchmove", this.listenerTouchMove, false);
+        this.canvasCrosshair.addEventListener("touchstart", this.listenerTouchStart, false);
+        this.canvasCrosshair.addEventListener("touchend", this.listenerTouchEnd, false);
+        this.canvasCrosshair.addEventListener("dblclick", this.listenerMouseDoubleClick, false);
         document.addEventListener("contextmenu", this.listenerContextMenu, false);
 
         if (this.container.showControlBar) {
@@ -2769,18 +2769,18 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     this.isWindowControl = false;
     this.hasSeries = false;
     this.previousMousePosition = new papaya.core.Point();
-    this.canvas.removeEventListener("mousemove", this.listenerMouseMove, false);
-    this.canvas.removeEventListener("mousedown", this.listenerMouseDown, false);
-    this.canvas.removeEventListener("mouseout", this.listenerMouseOut, false);
-    this.canvas.removeEventListener("mouseleave", this.listenerMouseLeave, false);
-    this.canvas.removeEventListener("mouseup", this.listenerMouseUp, false);
+    this.canvasCrosshair.removeEventListener("mousemove", this.listenerMouseMove, false);
+    this.canvasCrosshair.removeEventListener("mousedown", this.listenerMouseDown, false);
+    this.canvasCrosshair.removeEventListener("mouseout", this.listenerMouseOut, false);
+    this.canvasCrosshair.removeEventListener("mouseleave", this.listenerMouseLeave, false);
+    this.canvasCrosshair.removeEventListener("mouseup", this.listenerMouseUp, false);
     document.removeEventListener("keydown", this.listenerKeyDown, true);
     document.removeEventListener("keyup", this.listenerKeyUp, true);
     document.removeEventListener("contextmenu", this.listenerContextMenu, false);
-    this.canvas.removeEventListener("touchmove", this.listenerTouchMove, false);
-    this.canvas.removeEventListener("touchstart", this.listenerTouchStart, false);
-    this.canvas.removeEventListener("touchend", this.listenerTouchEnd, false);
-    this.canvas.removeEventListener("dblclick", this.listenerMouseDoubleClick, false);
+    this.canvasCrosshair.removeEventListener("touchmove", this.listenerTouchMove, false);
+    this.canvasCrosshair.removeEventListener("touchstart", this.listenerTouchStart, false);
+    this.canvasCrosshair.removeEventListener("touchend", this.listenerTouchEnd, false);
+    this.canvasCrosshair.removeEventListener("dblclick", this.listenerMouseDoubleClick, false);
 
     this.removeScroll();
 
@@ -3103,9 +3103,14 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
     }
 */
     e = e || window.event;
-
+    /* ORIGINAL
+    if(e.target != this.canvasCrosshair) {
+        return;
+    }
+    */
+   
     //If the scroll event happened outside the canvas don't handle it
-    if(e.target != this.canvas) {
+    if(e.target != this.canvasCrosshair) {
         return;
     }
 
