@@ -1629,7 +1629,8 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         xStart = (this.axialSlice.screenOffsetX);
         // xEnd = (this.axialSlice.finalTransform[0][2] + this.axialSlice.xDim * this.axialSlice.finalTransform[0][0]);
         xEnd = (this.axialSlice.screenWidth + this.axialSlice.screenOffsetX);
-        // console.table({ xLoc,})
+        console.log('drawCrosshairs xLoc', xLoc);
+        console.log('drawCrosshairs yLoc', yLoc);
         this.contextAnnotation.moveTo(xStart, yLoc);
         this.contextAnnotation.lineTo(xEnd, yLoc);
 
@@ -2339,6 +2340,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
 
     currentMouseX = papaya.utilities.PlatformUtils.getMousePositionX(me);
     currentMouseY = papaya.utilities.PlatformUtils.getMousePositionY(me);
+    console.log('mouseMoveEvent mouse', [currentMouseX - this.canvasRect.left, currentMouseY - this.canvasRect.top]);
 
     if (this.isDragging) {
         if (this.grabbedHandle || this.activeTool === 'Ruler') {
