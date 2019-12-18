@@ -962,6 +962,8 @@ papaya.Container.prototype.buildViewer = function (params) {
     dims = this.getViewerDimensions();
     this.viewer = new papaya.viewer.Viewer(this, dims[0], dims[1], params);
     this.viewerHtml.append($(this.viewer.canvas));
+    // Modified: 18/12/2019 append canvasCrosshair
+    this.viewerHtml.append($(this.viewer.canvasCrosshair));
     this.preferences.viewer = this.viewer;
 };
 

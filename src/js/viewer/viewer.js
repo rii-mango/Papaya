@@ -23,6 +23,19 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.canvas.style.padding = 0;
     this.canvas.style.margin = 0;
     this.canvas.style.border = "none";
+    // Modified 18/12/2019: add Crosshair canvas
+    this.canvasCrosshair = document.createElement("canvas");
+    this.canvasCrosshair.width = width;
+    this.canvasCrosshair.height = height;
+    this.canvasCrosshair.zIndex = 1;
+    this.contextCrosshair = this.canvasCrosshair.getContext("2d");
+    this.canvasCrosshair.style.padding = 0;
+    this.canvasCrosshair.style.margin = 0;
+    this.canvasCrosshair.style.border = "none";
+    this.canvasCrosshair.style.position = 'absolute';
+    this.canvasCrosshair.style.left = 0;
+    this.canvasCrosshair.style.top = 0;
+    ///////////////////////////
     this.atlas = null;
     this.initialized = false;
     this.pageLoaded = false;
@@ -112,7 +125,8 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
 
 papaya.viewer.Viewer.GAP = PAPAYA_SPACING;  // padding between slice views
 papaya.viewer.Viewer.BACKGROUND_COLOR = "rgba(0, 0, 0, 255)";
-papaya.viewer.Viewer.CROSSHAIRS_COLOR = "rgba(28, 134, 238, 255)";
+// papaya.viewer.Viewer.CROSSHAIRS_COLOR = "rgba(28, 134, 238, 255)";
+papaya.viewer.Viewer.CROSSHAIRS_COLOR = "rgba(0, 128, 0, 1)";
 papaya.viewer.Viewer.KEYCODE_ROTATE_VIEWS = 32;
 papaya.viewer.Viewer.KEYCODE_CENTER = 67;
 papaya.viewer.Viewer.KEYCODE_ORIGIN = 79;
@@ -1472,9 +1486,7 @@ papaya.viewer.Viewer.prototype.drawRuler = function () {
     this.context.fillStyle = "#FF1493";
     this.context.fillText(text, xText, yText);
 };
-
-
-
+/* ORIGINAL drawCrosshairs method
 papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
     var xLoc, yStart, yEnd, yLoc, xStart, xEnd;
 
@@ -1576,6 +1588,114 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.context.closePath();
         this.context.stroke();
         this.context.restore();
+    }
+};
+
+*/
+
+papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
+    var xLoc, yStart, yEnd, yLoc, xStart, xEnd;
+    // Modified 18/12/2019 add clearRect function
+    this.contextCrosshair.clearRect(0, 0, this.canvasCrosshair.width, this.canvasCrosshair.height);
+    ///////////////////////
+    // initialize crosshairs
+    this.contextCrosshair.setTransform(1, 0, 0, 1, 0, 0);
+    this.contextCrosshair.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR;
+    this.contextCrosshair.lineWidth = 1.0;
+
+    if ((this.mainImage !== this.axialSlice) || this.toggleMainCrosshairs) {
+        // draw axial crosshairs
+        this.contextCrosshair.save();
+        this.contextCrosshair.beginPath();
+        this.contextCrosshair.rect(this.axialSlice.screenOffsetX, this.axialSlice.screenOffsetY, this.axialSlice.screenWidth,
+            this.axialSlice.screenHeight);
+        this.contextCrosshair.closePath();
+        this.contextCrosshair.clip();
+
+        this.contextCrosshair.beginPath();
+
+        xLoc = (this.axialSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) *
+            this.axialSlice.finalTransform[0][0]);
+        yStart = (this.axialSlice.finalTransform[1][2]);
+        yEnd = (this.axialSlice.finalTransform[1][2] + this.axialSlice.yDim * this.axialSlice.finalTransform[1][1]);
+        this.contextCrosshair.moveTo(xLoc, yStart);
+        this.contextCrosshair.lineTo(xLoc, yEnd);
+
+        yLoc = (this.axialSlice.finalTransform[1][2] + (this.currentCoord.y + 0.5) *
+            this.axialSlice.finalTransform[1][1]);
+        xStart = (this.axialSlice.finalTransform[0][2]);
+        xEnd = (this.axialSlice.finalTransform[0][2] + this.axialSlice.xDim * this.axialSlice.finalTransform[0][0]);
+        this.contextCrosshair.moveTo(xStart, yLoc);
+        this.contextCrosshair.lineTo(xEnd, yLoc);
+
+        this.contextCrosshair.closePath();
+        this.contextCrosshair.stroke();
+        this.contextCrosshair.restore();
+    }
+
+
+    if ((this.mainImage !== this.coronalSlice) || this.toggleMainCrosshairs) {
+        // draw coronal crosshairs
+        this.contextCrosshair.save();
+        this.contextCrosshair.beginPath();
+        this.contextCrosshair.rect(this.coronalSlice.screenOffsetX, this.coronalSlice.screenOffsetY, this.coronalSlice.screenWidth,
+            this.coronalSlice.screenHeight);
+        this.contextCrosshair.closePath();
+        this.contextCrosshair.clip();
+
+        this.contextCrosshair.beginPath();
+
+        xLoc = (this.coronalSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) *
+            this.coronalSlice.finalTransform[0][0]);
+        yStart = (this.coronalSlice.finalTransform[1][2]);
+        yEnd = (this.coronalSlice.finalTransform[1][2] + this.coronalSlice.yDim *
+            this.coronalSlice.finalTransform[1][1]);
+        this.contextCrosshair.moveTo(xLoc, yStart);
+        this.contextCrosshair.lineTo(xLoc, yEnd);
+
+        yLoc = (this.coronalSlice.finalTransform[1][2] + (this.currentCoord.z + 0.5) *
+            this.coronalSlice.finalTransform[1][1]);
+        xStart = (this.coronalSlice.finalTransform[0][2]);
+        xEnd = (this.coronalSlice.finalTransform[0][2] + this.coronalSlice.xDim *
+            this.coronalSlice.finalTransform[0][0]);
+        this.contextCrosshair.moveTo(xStart, yLoc);
+        this.contextCrosshair.lineTo(xEnd, yLoc);
+
+        this.contextCrosshair.closePath();
+        this.contextCrosshair.stroke();
+        this.contextCrosshair.restore();
+    }
+
+    if ((this.mainImage !== this.sagittalSlice) || this.toggleMainCrosshairs) {
+        // draw sagittal crosshairs
+        this.contextCrosshair.save();
+        this.contextCrosshair.beginPath();
+        this.contextCrosshair.rect(this.sagittalSlice.screenOffsetX, this.sagittalSlice.screenOffsetY,
+            this.sagittalSlice.screenWidth, this.sagittalSlice.screenHeight);
+        this.contextCrosshair.closePath();
+        this.contextCrosshair.clip();
+
+        this.contextCrosshair.beginPath();
+
+        xLoc = (this.sagittalSlice.finalTransform[0][2] + (this.currentCoord.y + 0.5) *
+            this.sagittalSlice.finalTransform[0][0]);
+        yStart = (this.sagittalSlice.finalTransform[1][2]);
+        yEnd = (this.sagittalSlice.finalTransform[1][2] + this.sagittalSlice.yDim *
+            this.sagittalSlice.finalTransform[1][1]);
+        this.contextCrosshair.moveTo(xLoc, yStart);
+        this.contextCrosshair.lineTo(xLoc, yEnd);
+
+        yLoc = (this.sagittalSlice.finalTransform[1][2] + (this.currentCoord.z + 0.5) *
+            this.sagittalSlice.finalTransform[1][1]);
+        xStart = (this.sagittalSlice.finalTransform[0][2]);
+        xEnd = (this.sagittalSlice.finalTransform[0][2] + this.sagittalSlice.xDim *
+            this.sagittalSlice.finalTransform[0][0]);
+        this.contextCrosshair.moveTo(xStart, yLoc);
+        this.contextCrosshair.lineTo(xEnd, yLoc);
+
+        this.contextCrosshair.closePath();
+        this.contextCrosshair.stroke();
+        this.contextCrosshair.restore();
     }
 };
 
@@ -2504,6 +2624,10 @@ papaya.viewer.Viewer.prototype.resizeViewer = function (dims) {
     var halfPadding = PAPAYA_PADDING / 2, offset, swapButton, originButton, incButton, decButton, centerButton;
     this.canvas.width = dims[0];
     this.canvas.height = dims[1];
+    // Modifiend 18/12/2019
+    this.canvasCrosshair.width = dims[0];
+    this.canvasCrosshair.height = dims[1];
+    ///////////////////////////
 
     if (this.initialized) {
         this.calculateScreenSliceTransforms();
