@@ -35,6 +35,10 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.canvasAnnotation.style.position = 'absolute';
     this.canvasAnnotation.style.left = 0;
     this.canvasAnnotation.style.top = 0;
+    this.crossHair = {
+        xLoc: null,
+        yLoc: null
+    };
     ///////////////////////////
     this.atlas = null;
     this.initialized = false;
@@ -2733,7 +2737,11 @@ papaya.viewer.Viewer.prototype.getCurrentValueAt = function (ctrX, ctrY, ctrZ) {
     }
 };
 
+// Modified: 18/12/2019 add getCrosshair detection
+papaya.viewer.Viewer.prototype.getCrosshairDetection = function (currentMouseX, currentMouseY) {
 
+}
+////////////////////////////////////////////////////
 
 papaya.viewer.Viewer.prototype.resetViewer = function () {
     if (this.container.showControlBar) {
@@ -2784,7 +2792,8 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     this.canvasAnnotation.removeEventListener("touchstart", this.listenerTouchStart, false);
     this.canvasAnnotation.removeEventListener("touchend", this.listenerTouchEnd, false);
     this.canvasAnnotation.removeEventListener("dblclick", this.listenerMouseDoubleClick, false);
-
+    var contextAnnotation = this.canvasAnnotation.getContext('2d');
+    contextAnnotation.clearRect(0, 0, this.canvasAnnotation.width, this.canvasAnnotation.height);
     this.removeScroll();
 
     this.updateTimer = null;
