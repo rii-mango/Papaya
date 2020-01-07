@@ -1617,7 +1617,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.contextAnnotation.clip();
 
         this.contextAnnotation.beginPath();
-        console.log('drawCrosshairs finalTransform', this.axialSlice.finalTransform);
+        // console.log('drawCrosshairs finalTransform', this.axialSlice.finalTransform);
         xLoc = (this.axialSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) *
             this.axialSlice.finalTransform[0][0]);
         // yStart = (this.axialSlice.finalTransform[1][2]);

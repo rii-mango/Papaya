@@ -272,29 +272,33 @@ papaya.volume.Transform.prototype.updateOriginMat = function () {
 
 
 papaya.volume.Transform.prototype.updateImageMat = function (centerX, centerY, centerZ, rotX, rotY, rotZ) {
-    var theta, cosTheta, sinTheta, ctrOut, ctrIn;
+    var thetaX, thetaY, thetaZ, cosTheta, sinTheta, ctrOut, ctrIn;
     this.updateCenterMat(centerX, centerY, centerZ);
+    var directions = {
+        x: [],
+        y: [],
+        z: []
+    };
 
-
-    theta = (rotX * Math.PI) / 180.0;
-    cosTheta = Math.cos(theta);
-    sinTheta = Math.sin(theta);
+    thetaX = (rotX * Math.PI) / 180.0;
+    cosTheta = Math.cos(thetaX);
+    sinTheta = Math.sin(thetaX);
     this.rotMatX[1][1] = cosTheta;
     this.rotMatX[1][2] = sinTheta;
     this.rotMatX[2][1] = -1 * sinTheta;
     this.rotMatX[2][2] = cosTheta;
 
-    theta = (rotY * Math.PI) / 180.0;
-    cosTheta = Math.cos(theta);
-    sinTheta = Math.sin(theta);
+    thetaY = (rotY * Math.PI) / 180.0;
+    cosTheta = Math.cos(thetaY);
+    sinTheta = Math.sin(thetaY);
     this.rotMatY[0][0] = cosTheta;
     this.rotMatY[0][2] = -1 * sinTheta;
     this.rotMatY[2][0] = sinTheta;
     this.rotMatY[2][2] = cosTheta;
 
-    theta = (rotZ * Math.PI) / 180.0;
-    cosTheta = Math.cos(theta);
-    sinTheta = Math.sin(theta);
+    thetaZ = (rotZ * Math.PI) / 180.0;
+    cosTheta = Math.cos(thetaZ);
+    sinTheta = Math.sin(thetaZ);
     this.rotMatZ[0][0] = cosTheta;
     this.rotMatZ[0][1] = sinTheta;
     this.rotMatZ[1][0] = -1 * sinTheta;
@@ -319,7 +323,12 @@ papaya.volume.Transform.prototype.updateImageMat = function (centerX, centerY, c
                 (this.tempMat[ctrOut][3] * this.rotMatZ[3][ctrIn]);
         }
     }
-
+    papaya.volume.Transform.printTransform(this.rotMat);
+    directions.x = [rotX, this.rotMat[0][0], this.rotMat[1][0], this.rotMat[2][0]];
+    directions.y = [rotY, this.rotMat[0][1], this.rotMat[1][1], this.rotMat[2][1]];
+    directions.z = [rotZ, this.rotMat[0][2], this.rotMat[1][2], this.rotMat[2][2]];
+    console.log('directions');
+    console.table(directions);
     for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
         for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
             this.tempMat[ctrOut][ctrIn] =
@@ -359,7 +368,6 @@ papaya.volume.Transform.prototype.updateImageMat = function (centerX, centerY, c
                 (this.tempMat[ctrOut][3] * this.sizeMat[3][ctrIn]);
         }
     }
-
     this.volume.transform.updateTransforms(this.tempMat2);
 };
 
