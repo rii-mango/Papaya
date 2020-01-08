@@ -189,6 +189,9 @@ papaya.viewer.ScreenVolume.makeStaticIcon = function (url, cb, index) {
     imageObj.src = url;
 };
 
+papaya.viewer.ScreenVolume.prototype.rotateLocalizer = function (angle, volume) {
+    this.volume.transform.updateRollImageMat(angle, volume);
+}
 
 
 /*** Prototype Methods ***/
@@ -602,6 +605,8 @@ papaya.viewer.ScreenVolume.prototype.updateTransform = function () {
 
     this.volume.transform.updateImageMat(centerX, centerY, centerZ, rotX, rotY, rotZ);
 };
+
+
 
 
 

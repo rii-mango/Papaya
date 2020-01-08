@@ -28,6 +28,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.canvasAnnotation.width = width;
     this.canvasAnnotation.height = height;
     this.canvasAnnotation.zIndex = 1;
+    this.canvasAnnotation.setAttribute('style', 'pointer-events: none');
     this.contextAnnotation = this.canvasAnnotation.getContext("2d");
     this.canvasAnnotation.style.padding = 0;
     this.canvasAnnotation.style.margin = 0;
@@ -2344,7 +2345,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
 
     currentMouseX = papaya.utilities.PlatformUtils.getMousePositionX(me);
     currentMouseY = papaya.utilities.PlatformUtils.getMousePositionY(me);
-    console.log('mouseMoveEvent mouse', [currentMouseX - this.canvasRect.left, currentMouseY - this.canvasRect.top]);
+    // console.log('mouseMoveEvent mouse', [currentMouseX - this.canvasRect.left, currentMouseY - this.canvasRect.top]);
 
     if (this.isDragging) {
         if (this.grabbedHandle || this.activeTool === 'Ruler') {

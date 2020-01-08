@@ -313,6 +313,7 @@ papaya.volume.Transform.prototype.updateImageMat = function (centerX, centerY, c
                 (this.rotMatX[ctrOut][3] * this.rotMatY[3][ctrIn]);
         }
     }
+    // this.tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(this.rotMatX, this.rotMatY);
 
     for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
         for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
@@ -371,7 +372,104 @@ papaya.volume.Transform.prototype.updateImageMat = function (centerX, centerY, c
     this.volume.transform.updateTransforms(this.tempMat2);
 };
 
+papaya.volume.Transform.prototype.rotateOnAxis = function (axis, angle) {
+    var rotationMatrix = papaya.volume.Transform.IDENTITY;
+    var theta = (angle * Math.PI) / 180;
+    var cosTheta = Math.cos(theta);
+    var sinTheta = Math.sin(theta);
+//  https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
+    rotationMatrix[0][0] = cosTheta + axis[0]*axis[0]*(1 - cosTheta);
+    rotationMatrix[1][0] = axis[1]*axis[0]*(1 - cosTheta) + axis[2]*sinTheta;
+    rotationMatrix[2][0] = axis[2]*axis[0]*(1 - cosTheta) - axis[1]*sinTheta;
 
+    rotationMatrix[0][1] = axis[0]*axis[1]*(1 - cosTheta) - axis[2]*sinTheta;
+    rotationMatrix[1][1] = cosTheta + axis[1]*axis[1]*(1 - cosTheta);
+    rotationMatrix[2][1] = axis[2]*axis[1]*(1 - cosTheta) + axis[0]*sinTheta;
+
+    rotationMatrix[0][2] = axis[0]*axis[2]*(1 - cosTheta) + axis[1]*sinTheta;
+    rotationMatrix[1][2] = axis[1]*axis[2]*(1 - cosTheta) - axis[0]*sinTheta;
+    rotationMatrix[2][2] = cosTheta + axis[2]*axis[2]*(1 - cosTheta);
+
+    return rotationMatrix;
+}
+
+papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume) {
+    console.log('%cupdateRollImageMat', "color: green");
+    var centerX, centerY, centerZ;
+    var rotateOnAxis;
+    centerX = volume.currentCoord.x * volume.volume.header.voxelDimensions.xSize;
+    centerY = volume.currentCoord.y * volume.volume.header.voxelDimensions.ySize;
+    centerZ = volume.currentCoord.z * volume.volume.header.voxelDimensions.zSize;
+    this.updateCenterMat(centerX, centerY, centerZ);
+    var directions = {
+        x: [],
+        y: [],
+        z: []
+    };
+    papaya.volume.Transform.printTransform(this.rotMat);
+    // directions.x = [this.rotMat[0][0], this.rotMat[1][0], this.rotMat[2][0]];
+    // directions.y = [this.rotMat[0][1], this.rotMat[1][1], this.rotMat[2][1]];
+    // directions.z = [this.rotMat[0][2], this.rotMat[1][2], this.rotMat[2][2]];
+
+    directions.x = [this.rotMat[0][0], this.rotMat[0][1], this.rotMat[0][2]];
+    directions.y = [this.rotMat[1][0], this.rotMat[1][1], this.rotMat[1][2]];
+    directions.z = [this.rotMat[2][0], this.rotMat[2][1], this.rotMat[2][2]];
+
+    console.log('directions');
+    console.table(directions);
+
+    rotateOnAxis = papaya.volume.Transform.prototype.rotateOnAxis(directions.x, angle);
+    console.log('rotateOnAxis');
+    papaya.volume.Transform.printTransform(rotateOnAxis);
+
+    this.tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(this.rotMat, rotateOnAxis);
+    this.rotMat = papaya.utilities.ArrayUtils.multiplyMatrices(this.tempMat, papaya.volume.Transform.IDENTITY);
+    console.log('new RotationMat');
+    papaya.volume.Transform.printTransform(this.tempMat);
+
+    for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
+        for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
+            this.tempMat[ctrOut][ctrIn] =
+                (this.sizeMatInverse[ctrOut][0] * this.centerMatInverse[0][ctrIn]) +
+                (this.sizeMatInverse[ctrOut][1] * this.centerMatInverse[1][ctrIn]) +
+                (this.sizeMatInverse[ctrOut][2] * this.centerMatInverse[2][ctrIn]) +
+                (this.sizeMatInverse[ctrOut][3] * this.centerMatInverse[3][ctrIn]);
+        }
+    }
+
+    for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
+        for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
+            this.tempMat2[ctrOut][ctrIn] =
+                (this.tempMat[ctrOut][0] * this.rotMat[0][ctrIn]) +
+                (this.tempMat[ctrOut][1] * this.rotMat[1][ctrIn]) +
+                (this.tempMat[ctrOut][2] * this.rotMat[2][ctrIn]) +
+                (this.tempMat[ctrOut][3] * this.rotMat[3][ctrIn]);
+        }
+    }
+
+    for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
+        for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
+            this.tempMat[ctrOut][ctrIn] =
+                (this.tempMat2[ctrOut][0] * this.centerMat[0][ctrIn]) +
+                (this.tempMat2[ctrOut][1] * this.centerMat[1][ctrIn]) +
+                (this.tempMat2[ctrOut][2] * this.centerMat[2][ctrIn]) +
+                (this.tempMat2[ctrOut][3] * this.centerMat[3][ctrIn]);
+        }
+    }
+
+    for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
+        for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
+            this.tempMat2[ctrOut][ctrIn] =
+                (this.tempMat[ctrOut][0] * this.sizeMat[0][ctrIn]) +
+                (this.tempMat[ctrOut][1] * this.sizeMat[1][ctrIn]) +
+                (this.tempMat[ctrOut][2] * this.sizeMat[2][ctrIn]) +
+                (this.tempMat[ctrOut][3] * this.sizeMat[3][ctrIn]);
+        }
+    }
+    console.log('final imageMat');
+    papaya.volume.Transform.printTransform(this.tempMat);
+    this.volume.transform.updateTransforms(this.tempMat2);
+}
 
 papaya.volume.Transform.prototype.updateCenterMat = function (x, y, z) {
     this.centerMat[0][0] = 1;
