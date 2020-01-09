@@ -1335,7 +1335,7 @@ papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
         this.context.setTransform(slice.finalTransform[0][0], 0, 0, slice.finalTransform[1][1], slice.finalTransform[0][2], slice.finalTransform[1][2]);
         this.context.drawImage(slice.canvasMain, 0, 0);
         this.context.restore();
-
+        
         if (slice.canvasDTILines) {
             this.context.drawImage(slice.canvasDTILines, slice.screenOffsetX, slice.screenOffsetY);
         }

@@ -418,14 +418,14 @@ papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume) 
     console.log('directions');
     console.table(directions);
 
-    rotateOnAxis = papaya.volume.Transform.prototype.rotateOnAxis(directions.x, angle);
-    console.log('rotateOnAxis');
-    papaya.volume.Transform.printTransform(rotateOnAxis);
+    rotateOnAxis = papaya.volume.Transform.prototype.rotateOnAxis([0, 1, 0], angle);
+    // console.log('rotateOnAxis');
+    // papaya.volume.Transform.printTransform(rotateOnAxis);
 
     this.tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(this.rotMat, rotateOnAxis);
     this.rotMat = papaya.utilities.ArrayUtils.multiplyMatrices(this.tempMat, papaya.volume.Transform.IDENTITY);
-    console.log('new RotationMat');
-    papaya.volume.Transform.printTransform(this.tempMat);
+    // console.log('new RotationMat');
+    // papaya.volume.Transform.printTransform(this.tempMat);
 
     for (ctrOut = 0; ctrOut < 4; ctrOut += 1) {
         for (ctrIn = 0; ctrIn < 4; ctrIn += 1) {
@@ -466,8 +466,8 @@ papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume) 
                 (this.tempMat[ctrOut][3] * this.sizeMat[3][ctrIn]);
         }
     }
-    console.log('final imageMat');
-    papaya.volume.Transform.printTransform(this.tempMat);
+    // console.log('final imageMat');
+    // papaya.volume.Transform.printTransform(this.tempMat);
     this.volume.transform.updateTransforms(this.tempMat2);
 }
 
