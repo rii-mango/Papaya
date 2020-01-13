@@ -189,10 +189,6 @@ papaya.viewer.ScreenVolume.makeStaticIcon = function (url, cb, index) {
     imageObj.src = url;
 };
 
-papaya.viewer.ScreenVolume.prototype.rotateLocalizer = function (angle, volume) {
-    this.volume.transform.updateRollImageMat(angle, volume);
-}
-
 
 /*** Prototype Methods ***/
 
@@ -615,3 +611,21 @@ papaya.viewer.ScreenVolume.prototype.resetTransform = function () {
     this.rotationY = 0.5;
     this.rotationZ = 0.5;
 };
+
+papaya.viewer.ScreenVolume.prototype.rotateLocalizer = function (angle, volume, sliceLabel) {
+    // var direction = this.getDirections(sliceLabel);
+    this.volume.transform.updateRollImageMat(angle, volume, sliceLabel);
+}
+
+papaya.viewer.ScreenVolume.prototype.getDirections = function (slice) {
+    switch (slice) {
+        case 'AXIAL':
+            return [0, 0, 1];
+        case 'SAGITTAL':
+            return [1, 0, 0];
+        case 'CORONAL':
+            return [0, 1, 0];
+        default:
+            return [0, 0, 1];
+    }
+}

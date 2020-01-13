@@ -303,13 +303,13 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                         } else {
                             if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
                                 value = this.screenVolumes[ctr].volume.getVoxelAtMM(ctrX * voxelDims.xSize, ctrY *
-                                    voxelDims.ySize, slice * voxelDims.zSize, timepoint, !interpolation);
+                                    voxelDims.ySize, slice * voxelDims.zSize, timepoint, !interpolation, 'AXIAL');
                             } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
                                 value = this.screenVolumes[ctr].volume.getVoxelAtMM(ctrX * voxelDims.xSize, slice *
-                                    voxelDims.ySize, ctrY * voxelDims.zSize, timepoint, !interpolation);
+                                    voxelDims.ySize, ctrY * voxelDims.zSize, timepoint, !interpolation, 'CORONAL');
                             } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
                                 value = this.screenVolumes[ctr].volume.getVoxelAtMM(slice * voxelDims.xSize, ctrX *
-                                    voxelDims.ySize, ctrY * voxelDims.zSize, timepoint, !interpolation);
+                                    voxelDims.ySize, ctrY * voxelDims.zSize, timepoint, !interpolation, 'SAGITTAL');
                             }
                         }
 

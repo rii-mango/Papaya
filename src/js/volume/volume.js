@@ -324,8 +324,8 @@ papaya.volume.Volume.prototype.getVoxelAtCoordinate = function (xLoc, yLoc, zLoc
 
 
 
-papaya.volume.Volume.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, timepoint, useNN) {
-    return this.transform.getVoxelAtMM(xLoc, yLoc, zLoc, timepoint, useNN);
+papaya.volume.Volume.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, timepoint, useNN, sliceLabel) {
+    return this.transform.getVoxelAtMM(xLoc, yLoc, zLoc, timepoint, useNN, sliceLabel);
 };
 
 
