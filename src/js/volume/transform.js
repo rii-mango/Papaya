@@ -405,7 +405,30 @@ papaya.volume.Transform.prototype.rotateOnAxis = function (axis, angle) {
 
     return rotationMatrix;
 }
-
+papaya.volume.Transform.prototype.clampZero = function (num) {
+    var epsilon = 0.0001;
+    if (num>= -epsilon && num <= epsilon) return 0;
+    else return num;
+}
+papaya.volume.Transform.prototype.getDeterminant = function (v1, v2, v3) {
+    
+    // var mat = [[v1[0], v2[0], v3[0]], [v1[1], v2[1], v3[1]], [v1[2], v2[2], v3[2]]];
+    return (v1[0]*v2[1]*v3[2] + v2[0]*v3[1]*v1[2] + v3[0]*v1[1]*v2[2] - v3[0]*v2[1]*v1[2] - v2[0]*v1[1]*v3[2] - v1[0]*v3[1]*v2[2]);
+}
+papaya.volume.Transform.prototype.getAngleTo = function (v1, v2, v3) {
+    var dotProduct = v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+    var scalar1 = Math.sqrt(v1[0]*v1[0] + v1[1]*v1[1] + v1[2]*v1[2]);
+    var scalar2 = Math.sqrt(v2[0]*v2[0] + v2[1]*v2[1] + v2[2]*v2[2]);
+    var angle;
+    var det = this.getDeterminant(v1, v2, v3);
+    dotProduct = this.clampZero(dotProduct);
+    det = this.clampZero(det);
+    angle = (Math.acos(dotProduct / (scalar1 * scalar2))) * 180 / Math.PI;
+    console.log('dotProduct ', dotProduct, 'determinant', det);
+    // https://math.stackexchange.com/questions/2440638/angle-in-range-0-to-360-degrees-between-two-vectors-in-n-dimensional-space
+    if (det <= 0) return angle;
+    else return 360 - angle;
+}
 papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume, sliceLabel) {
     console.log('%cupdateRollImageMat', "color: green");
     var centerX, centerY, centerZ;
@@ -424,12 +447,7 @@ papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume, 
     // directions.y = [this.rotMat[0][1], this.rotMat[1][1], this.rotMat[2][1]];
     // directions.z = [this.rotMat[0][2], this.rotMat[1][2], this.rotMat[2][2]];
 
-    directions.x = [this.rotMat[0][0], this.rotMat[0][1], this.rotMat[0][2]];
-    directions.y = [this.rotMat[1][0], this.rotMat[1][1], this.rotMat[1][2]];
-    directions.z = [this.rotMat[2][0], this.rotMat[2][1], this.rotMat[2][2]];
 
-    console.log('directions');
-    console.table(directions);
 
     rotateOnAxis = papaya.volume.Transform.prototype.rotateOnAxis(this.getDirections(sliceLabel), angle);
     // console.log('rotateOnAxis');
@@ -438,6 +456,14 @@ papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume, 
     this.tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(this.rotMat, rotateOnAxis);
     this.rotMat = this.tempMat.clone();
     this.updateRotationMat(sliceLabel);
+    directions.x = [this.rotMat[0][0], this.rotMat[0][1], this.rotMat[0][2]];
+    directions.y = [this.rotMat[1][0], this.rotMat[1][1], this.rotMat[1][2]];
+    directions.z = [this.rotMat[2][0], this.rotMat[2][1], this.rotMat[2][2]];
+    console.log('directions');
+    console.table(directions);
+    console.log('angle X', this.getAngleTo([1, 0, 0], directions.x, this.getDirections(sliceLabel)));
+    console.log('angle Y', this.getAngleTo([0, 1, 0], directions.y, this.getDirections(sliceLabel)));
+    console.log('angle Z', this.getAngleTo([0, 0, 1], directions.z, this.getDirections(sliceLabel)));
     // console.log('new RotationMat');
     // papaya.volume.Transform.printTransform(this.tempMat);
     // this.tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(this.sizeMatInverse, this.centerMatInverse);
@@ -479,6 +505,7 @@ papaya.volume.Transform.prototype.getSliceImageMat = function (rotationMat) {
     tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat, rotationMat);
     tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat2, this.centerMat);
     tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat, this.sizeMat);
+    console.table(papaya.volume.Transform.decompose(tempMat2));
     return tempMat2;
 }
 

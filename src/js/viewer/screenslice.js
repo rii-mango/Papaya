@@ -73,11 +73,11 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
         radioFactor, dtiColorIndex = 0, interpolation, usedRaster = false, worldSpace = this.manager.isWorldMode(),
         originalVal;
 
-    if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-        window.corSlice = this;
-        console.log('papaya updateSlice finalTransform2', this);
-        console.table(this.finalTransform);
-    }
+    // if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+    //     window.corSlice = this;
+    //     console.log('papaya updateSlice finalTransform2', this);
+    //     console.table(this.finalTransform2);
+    // }
     // console.log('papaya updateSlice with slice', slice);
     slice = Math.round(slice);
 

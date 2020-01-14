@@ -1335,7 +1335,7 @@ papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
         this.context.setTransform(slice.finalTransform[0][0], 0, 0, slice.finalTransform[1][1], slice.finalTransform[0][2], slice.finalTransform[1][2]);
         this.context.drawImage(slice.canvasMain, 0, 0);
         this.context.restore();
-        
+
         if (slice.canvasDTILines) {
             this.context.drawImage(slice.canvasDTILines, slice.screenOffsetX, slice.screenOffsetY);
         }
@@ -1618,7 +1618,8 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.contextAnnotation.clip();
 
         this.contextAnnotation.beginPath();
-        // console.log('drawCrosshairs finalTransform', this.axialSlice.finalTransform);
+        console.log('drawCrosshairs finalTransform axial');
+        console.table(this.axialSlice.finalTransform);
         xLoc = (this.axialSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) *
             this.axialSlice.finalTransform[0][0]);
         // yStart = (this.axialSlice.finalTransform[1][2]);
@@ -1655,7 +1656,8 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.contextAnnotation.clip();
 
         this.contextAnnotation.beginPath();
-
+        console.log('drawCrosshairs finalTransform coronal');
+        console.table(this.coronalSlice.finalTransform);
         xLoc = (this.coronalSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) *
             this.coronalSlice.finalTransform[0][0]);
         yStart = (this.coronalSlice.screenOffsetY);
@@ -1685,6 +1687,8 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.contextAnnotation.clip();
 
         this.contextAnnotation.beginPath();
+        console.log('drawCrosshairs finalTransform sagittal');
+        console.table(this.sagittalSlice.finalTransform);
 
         xLoc = (this.sagittalSlice.finalTransform[0][2] + (this.currentCoord.y + 0.5) *
             this.sagittalSlice.finalTransform[0][0]);
