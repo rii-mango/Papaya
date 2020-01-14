@@ -46,7 +46,10 @@ papaya.volume.Transform = papaya.volume.Transform || function (mat, volume) {
     this.indexMatAxial = papaya.volume.Transform.IDENTITY.clone();
     this.indexMatSagittal = papaya.volume.Transform.IDENTITY.clone();
     this.indexMatCoronal = papaya.volume.Transform.IDENTITY.clone();
-
+    
+    this.localizerAngleAxial = 0;
+    this.localizerAngleSagittal = 0;
+    this.localizerAngleCoronal = 0;
     this.updateTransforms(mat);
 };
 
@@ -424,7 +427,7 @@ papaya.volume.Transform.prototype.getAngleTo = function (v1, v2, v3) {
     dotProduct = this.clampZero(dotProduct);
     det = this.clampZero(det);
     angle = (Math.acos(dotProduct / (scalar1 * scalar2))) * 180 / Math.PI;
-    console.log('dotProduct ', dotProduct, 'determinant', det);
+    // console.log('dotProduct ', dotProduct, 'determinant', det);
     // https://math.stackexchange.com/questions/2440638/angle-in-range-0-to-360-degrees-between-two-vectors-in-n-dimensional-space
     if (det <= 0) return angle;
     else return 360 - angle;
@@ -443,11 +446,6 @@ papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume, 
         z: []
     };
     papaya.volume.Transform.printTransform(this.rotMat);
-    // directions.x = [this.rotMat[0][0], this.rotMat[1][0], this.rotMat[2][0]];
-    // directions.y = [this.rotMat[0][1], this.rotMat[1][1], this.rotMat[2][1]];
-    // directions.z = [this.rotMat[0][2], this.rotMat[1][2], this.rotMat[2][2]];
-
-
 
     rotateOnAxis = papaya.volume.Transform.prototype.rotateOnAxis(this.getDirections(sliceLabel), angle);
     // console.log('rotateOnAxis');
@@ -461,22 +459,26 @@ papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume, 
     directions.z = [this.rotMat[2][0], this.rotMat[2][1], this.rotMat[2][2]];
     console.log('directions');
     console.table(directions);
-    console.log('angle X', this.getAngleTo([1, 0, 0], directions.x, this.getDirections(sliceLabel)));
-    console.log('angle Y', this.getAngleTo([0, 1, 0], directions.y, this.getDirections(sliceLabel)));
-    console.log('angle Z', this.getAngleTo([0, 0, 1], directions.z, this.getDirections(sliceLabel)));
-    // console.log('new RotationMat');
-    // papaya.volume.Transform.printTransform(this.tempMat);
-    // this.tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(this.sizeMatInverse, this.centerMatInverse);
-    // this.tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(this.tempMat, this.rotMat);
-    // this.tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(this.tempMat2, this.centerMat);
-    // this.tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(this.tempMat, this.sizeMat);
-
-    // console.log('final imageMat');
-    // papaya.volume.Transform.printTransform(this.tempMat);
-    // this.volume.transform.updateTransforms(this.tempMat2);
+    this.updateLocalizerAngle(sliceLabel, directions);
+    // console.table([this.localizerAngleAxial, this.localizerAngleSagittal, this.localizerAngleCoronal]);
     this.volume.transform.updateRollTransforms([this.getSliceImageMat(this.rotMatAxial), this.getSliceImageMat(this.rotMatSagittal), this.getSliceImageMat(this.rotMatCoronal)]);
 }
 
+papaya.volume.Transform.prototype.updateLocalizerAngle = function (sliceLabel, directions) {
+    switch (sliceLabel) {
+        case 'AXIAL':
+            this.localizerAngleAxial = this.getAngleTo([1, 0, 0], directions.x, this.getDirections(sliceLabel));
+            break;
+        case 'SAGITTAL':
+            this.localizerAngleSagittal = this.getAngleTo([0, 1, 0], directions.y, this.getDirections(sliceLabel));
+            break;
+        case 'CORONAL':
+            this.localizerAngleCoronal = this.getAngleTo([0, 0, 1], directions.z, this.getDirections(sliceLabel));
+            break;
+        default:
+            break;
+    }
+}
 papaya.volume.Transform.prototype.updateRotationMat = function (sliceLabelExclude) {
     switch (sliceLabelExclude) {
         case 'AXIAL':
@@ -505,7 +507,7 @@ papaya.volume.Transform.prototype.getSliceImageMat = function (rotationMat) {
     tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat, rotationMat);
     tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat2, this.centerMat);
     tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat, this.sizeMat);
-    console.table(papaya.volume.Transform.decompose(tempMat2));
+    // console.table(papaya.volume.Transform.decompose(tempMat2));
     return tempMat2;
 }
 

@@ -1599,7 +1599,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 */
 
 papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
-    var xLoc, yStart, yEnd, yLoc, xStart, xEnd;
+    var xLoc, yStart, yEnd, yLoc, xStart, xEnd, rotateAngle, rotateAngle2;
     // Modified 18/12/2019 add clearRect function
     this.contextAnnotation.clearRect(0, 0, this.canvasAnnotation.width, this.canvasAnnotation.height);
     ///////////////////////
@@ -1610,6 +1610,11 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
     if ((this.mainImage !== this.axialSlice) || this.toggleMainCrosshairs) {
         // draw axial crosshairs
+        var radius = this.axialSlice.screenWidth + this.axialSlice.screenHeight;
+        rotateAngle = (this.volume.transform.localizerAngleAxial) * Math.PI / 180 - Math.PI/2;
+        rotateAngle2 = (this.volume.transform.localizerAngleAxial) * Math.PI / 180;
+
+        // this.contextAnnotation.rotate(rotateAngle * Math.PI / 180);
         this.contextAnnotation.save();
         this.contextAnnotation.beginPath();
         this.contextAnnotation.rect(this.axialSlice.screenOffsetX, this.axialSlice.screenOffsetY, this.axialSlice.screenWidth,
@@ -1619,6 +1624,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
         this.contextAnnotation.beginPath();
         console.log('drawCrosshairs finalTransform axial');
+        // console.log(this.volume);
         console.table(this.axialSlice.finalTransform);
         xLoc = (this.axialSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) *
             this.axialSlice.finalTransform[0][0]);
@@ -1626,8 +1632,6 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         yStart = (this.axialSlice.screenOffsetY);
         // yEnd = (this.axialSlice.finalTransform[1][2] + this.axialSlice.yDim * this.axialSlice.finalTransform[1][1]);
         yEnd = (this.axialSlice.screenHeight + this.axialSlice.screenOffsetY);
-        this.contextAnnotation.moveTo(xLoc, yStart);
-        this.contextAnnotation.lineTo(xLoc, yEnd);
 
         yLoc = (this.axialSlice.finalTransform[1][2] + (this.currentCoord.y + 0.5) *
             this.axialSlice.finalTransform[1][1]);
@@ -1635,10 +1639,24 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         xStart = (this.axialSlice.screenOffsetX);
         // xEnd = (this.axialSlice.finalTransform[0][2] + this.axialSlice.xDim * this.axialSlice.finalTransform[0][0]);
         xEnd = (this.axialSlice.screenWidth + this.axialSlice.screenOffsetX);
-        console.log('drawCrosshairs xLoc', xLoc);
-        console.log('drawCrosshairs yLoc', yLoc);
-        this.contextAnnotation.moveTo(xStart, yLoc);
-        this.contextAnnotation.lineTo(xEnd, yLoc);
+        // console.log('drawCrosshairs xLoc', xLoc);
+        // console.log('drawCrosshairs yLoc', yLoc);
+        // draw first line
+        this.contextAnnotation.moveTo(xLoc, yLoc);
+        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle), yLoc + radius * Math.sin(rotateAngle));
+        this.contextAnnotation.moveTo(xLoc, yLoc);
+        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle + Math.PI), yLoc + radius * Math.sin(rotateAngle + + Math.PI));
+
+        this.contextAnnotation.moveTo(xLoc, yLoc);
+        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2), yLoc + radius * Math.sin(rotateAngle2));
+        this.contextAnnotation.moveTo(xLoc, yLoc);
+        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2 + Math.PI), yLoc + radius * Math.sin(rotateAngle2 + Math.PI));
+
+        // this.contextAnnotation.moveTo(xLoc, yStart);
+        // this.contextAnnotation.lineTo(xLoc, yEnd);
+
+        // this.contextAnnotation.moveTo(xStart, yLoc);
+        // this.contextAnnotation.lineTo(xEnd, yLoc);
 
         this.contextAnnotation.closePath();
         this.contextAnnotation.stroke();
@@ -1648,6 +1666,10 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
     if ((this.mainImage !== this.coronalSlice) || this.toggleMainCrosshairs) {
         // draw coronal crosshairs
+        var radius = this.coronalSlice.screenWidth + this.coronalSlice.screenHeight;
+        rotateAngle = (this.volume.transform.localizerAngleCoronal) * Math.PI / 180 - Math.PI/2;
+        rotateAngle2 = (this.volume.transform.localizerAngleCoronal) * Math.PI / 180;
+
         this.contextAnnotation.save();
         this.contextAnnotation.beginPath();
         this.contextAnnotation.rect(this.coronalSlice.screenOffsetX, this.coronalSlice.screenOffsetY, this.coronalSlice.screenWidth,
@@ -1662,15 +1684,24 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
             this.coronalSlice.finalTransform[0][0]);
         yStart = (this.coronalSlice.screenOffsetY);
         yEnd = (this.coronalSlice.screenHeight + this.coronalSlice.screenOffsetY);
-        this.contextAnnotation.moveTo(xLoc, yStart);
-        this.contextAnnotation.lineTo(xLoc, yEnd);
+        // this.contextAnnotation.moveTo(xLoc, yStart);
+        // this.contextAnnotation.lineTo(xLoc, yEnd);
 
         yLoc = (this.coronalSlice.finalTransform[1][2] + (this.currentCoord.z + 0.5) *
             this.coronalSlice.finalTransform[1][1]);
         xStart = (this.coronalSlice.screenOffsetX);
         xEnd = (this.coronalSlice.screenWidth + this.coronalSlice.screenOffsetX);
-        this.contextAnnotation.moveTo(xStart, yLoc);
-        this.contextAnnotation.lineTo(xEnd, yLoc);
+        // this.contextAnnotation.moveTo(xStart, yLoc);
+        // this.contextAnnotation.lineTo(xEnd, yLoc);
+        this.contextAnnotation.moveTo(xLoc, yLoc);
+        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle), yLoc + radius * Math.sin(rotateAngle));
+        this.contextAnnotation.moveTo(xLoc, yLoc);
+        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle + Math.PI), yLoc + radius * Math.sin(rotateAngle + Math.PI));
+
+        this.contextAnnotation.moveTo(xLoc, yLoc);
+        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2), yLoc + radius * Math.sin(rotateAngle2));
+        this.contextAnnotation.moveTo(xLoc, yLoc);
+        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2 + Math.PI), yLoc + radius * Math.sin(rotateAngle2 + Math.PI));
 
         this.contextAnnotation.closePath();
         this.contextAnnotation.stroke();
@@ -1679,6 +1710,11 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
     if ((this.mainImage !== this.sagittalSlice) || this.toggleMainCrosshairs) {
         // draw sagittal crosshairs
+        
+        var radius = this.sagittalSlice.screenWidth + this.sagittalSlice.screenHeight;
+        rotateAngle = (this.volume.transform.localizerAngleSagittal) * Math.PI / 180 - Math.PI/2;
+        rotateAngle2 = (this.volume.transform.localizerAngleSagittal) * Math.PI / 180;
+
         this.contextAnnotation.save();
         this.contextAnnotation.beginPath();
         this.contextAnnotation.rect(this.sagittalSlice.screenOffsetX, this.sagittalSlice.screenOffsetY,
@@ -1694,15 +1730,24 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
             this.sagittalSlice.finalTransform[0][0]);
         yStart = (this.sagittalSlice.screenOffsetY);
         yEnd = (this.sagittalSlice.screenHeight + this.sagittalSlice.screenOffsetY);
-        this.contextAnnotation.moveTo(xLoc, yStart);
-        this.contextAnnotation.lineTo(xLoc, yEnd);
+        // this.contextAnnotation.moveTo(xLoc, yStart);
+        // this.contextAnnotation.lineTo(xLoc, yEnd);
 
         yLoc = (this.sagittalSlice.finalTransform[1][2] + (this.currentCoord.z + 0.5) *
             this.sagittalSlice.finalTransform[1][1]);
         xStart = (this.sagittalSlice.screenOffsetX);
         xEnd = (this.sagittalSlice.screenWidth + this.sagittalSlice.screenOffsetX);
-        this.contextAnnotation.moveTo(xStart, yLoc);
-        this.contextAnnotation.lineTo(xEnd, yLoc);
+        // this.contextAnnotation.moveTo(xStart, yLoc);
+        // this.contextAnnotation.lineTo(xEnd, yLoc);
+        this.contextAnnotation.moveTo(xLoc, yLoc);
+        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle), yLoc + radius * Math.sin(rotateAngle));
+        this.contextAnnotation.moveTo(xLoc, yLoc);
+        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle + Math.PI), yLoc + radius * Math.sin(rotateAngle + Math.PI));
+
+        this.contextAnnotation.moveTo(xLoc, yLoc);
+        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2), yLoc + radius * Math.sin(rotateAngle2));
+        this.contextAnnotation.moveTo(xLoc, yLoc);
+        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2 + Math.PI), yLoc + radius * Math.sin(rotateAngle2 + Math.PI));
 
         this.contextAnnotation.closePath();
         this.contextAnnotation.stroke();
