@@ -64,7 +64,7 @@ papaya.viewer.ScreenSlice.DTI_COLORS = ['#ff0000', '#00ff00', '#0000ff'];
 
 /*** Prototype Methods ***/
 
-papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
+papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, isRotating) {
     /*jslint bitwise: true */
 
     var origin, voxelDims, ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha, timepoint, rgb, dti, valueA,
@@ -72,6 +72,9 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
         angle, s, c, dtiColors, dtiLocX, dtiLocY, dtiLocZ, dtiRGB, angle2, dtiAlphaFactor, readFirstRaster = false,
         radioFactor, dtiColorIndex = 0, interpolation, usedRaster = false, worldSpace = this.manager.isWorldMode(),
         originalVal;
+
+    console.log('isRotating', (isRotating) ? isRotating : 'nani');
+
 
     // if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
     //     window.corSlice = this;
@@ -303,13 +306,13 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                         } else {
                             if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
                                 value = this.screenVolumes[ctr].volume.getVoxelAtMM(ctrX * voxelDims.xSize, ctrY *
-                                    voxelDims.ySize, slice * voxelDims.zSize, timepoint, !interpolation, 'AXIAL');
+                                    voxelDims.ySize, slice * voxelDims.zSize, timepoint, !interpolation, (isRotating) ? isRotating : 'AXIAL');
                             } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
                                 value = this.screenVolumes[ctr].volume.getVoxelAtMM(ctrX * voxelDims.xSize, slice *
-                                    voxelDims.ySize, ctrY * voxelDims.zSize, timepoint, !interpolation, 'CORONAL');
+                                    voxelDims.ySize, ctrY * voxelDims.zSize, timepoint, !interpolation, (isRotating) ? isRotating : 'CORONAL');
                             } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
                                 value = this.screenVolumes[ctr].volume.getVoxelAtMM(slice * voxelDims.xSize, ctrX *
-                                    voxelDims.ySize, ctrY * voxelDims.zSize, timepoint, !interpolation, 'SAGITTAL');
+                                    voxelDims.ySize, ctrY * voxelDims.zSize, timepoint, !interpolation, (isRotating) ? isRotating : 'SAGITTAL');
                             }
                         }
 
