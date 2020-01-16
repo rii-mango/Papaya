@@ -25,6 +25,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.canvas.style.border = "none";
     // Modified 18/12/2019: add Crosshair canvas
     this.canvasAnnotation = document.createElement("canvas");
+    this.canvasAnnotation.title = "localizer";
     this.canvasAnnotation.width = width;
     this.canvasAnnotation.height = height;
     this.canvasAnnotation.zIndex = 1;
@@ -126,6 +127,10 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
 
     // modification 16/01/2020: add current interacting slice
     this.currentInteractingSlice = null;
+    this.currentDetectionRadius = 20;
+    this.isGrabbingLocalizer = false;
+    this.localizerDetected = 0; // 1: rotate, 2: move, 0: no detection
+
 
 };
 
@@ -1011,7 +1016,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
     this.container.coordinateChanged(this);
     // viewer.drawViewer(false, false, false, sliceLabel);
     viewer.screenVolumes[0].rotateLocalizer(0, viewer.screenVolumes[0], this.currentInteractingSlice); // update other viewport's image matrices
-    viewer.drawViewer(true, false, false);
+    viewer.drawViewer(true, crosshairsOnly, false);
 };
 
 
@@ -2188,11 +2193,10 @@ papaya.viewer.Viewer.prototype.resetUpdateTimer = function (me) {
 
 papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
     var draggingStarted = true, menuData, menu, pickedColor;
-
     if (!papaya.Container.allowPropagation) {
         me.stopPropagation();
     }
-
+    console.log('mouseDown', me);
     me.preventDefault();
 
     if (this.showingContextMenu) {
@@ -2278,7 +2282,8 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                     this.grabbedHandle = this.selectedSlice.findProximalRulerHandle(this.convertScreenToImageCoordinateX(this.previousMousePosition.x - this.canvasRect.left, this.selectedSlice),
                         this.convertScreenToImageCoordinateY(this.previousMousePosition.y - this.canvasRect.top, this.selectedSlice));
 
-                    if (this.grabbedHandle === null && this.activeTool === 'Crosshair') {
+                    if (this.grabbedHandle === null && this.localizerDetected === 2) {
+                        // console.log('mousedown', this.isGrabbingLocalizer);
                         this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), false);
                         this.resetUpdateTimer(me);
                     }
@@ -2296,8 +2301,9 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
             }
 
             this.isDragging = draggingStarted;
+            // console.log('mouseDown', this.isDragging);
             me.handled = true;
-        }
+        } 
 
         if (!this.controlsHidden) {
             this.controlsHiddenPrimed = true;
@@ -2323,7 +2329,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
     if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
         if (me.handled !== true) {
             if (!this.isWindowControl && !this.isZoomMode && !this.isContextMode && (this.grabbedHandle === null) && (!this.surfaceView || (this.surfaceView.grabbedRulerPoint === -1)) && this.activeTool == 'Crosshair') {
-                this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
+                // this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
             }
 
             if (this.selectedSlice === this.surfaceView) {
@@ -2423,7 +2429,7 @@ papaya.viewer.Viewer.prototype.findClickedSlice = function (viewer, xLoc, yLoc) 
 
 
 papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
-    me.preventDefault();
+    // me.preventDefault();
 
     if (this.showingContextMenu) {
         me.handled = true;
@@ -2440,34 +2446,37 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
     this.updateOffsetRect();
     var mouseX = currentMouseX - this.canvasRect.left;
     var mouseY = currentMouseY - this.canvasRect.top;
-    var localizerDetected = 0;
     // console.log('mouseMoveEvent mouse', [currentMouseX - this.canvasRect.left, currentMouseY - this.canvasRect.top]);
-    if (this.insideScreenSlice(this.axialSlice, mouseX, mouseY, this.volume.getXDim(), this.volume.getYDim())) {
-        localizerDetected = this.detectLocalizer(this.axialSlice, mouseX, mouseY);
-        this.changeCursor(localizerDetected);
-        // console.log('AXIAL BRO');
-    } else if (this.insideScreenSlice(this.sagittalSlice, mouseX, mouseY, this.volume.getXDim(), this.volume.getZDim())) {
-        localizerDetected = this.detectLocalizer(this.sagittalSlice, mouseX, mouseY);
-        this.changeCursor(localizerDetected);
-        // console.log('SAGITTAL BRO');
-    } else if (this.insideScreenSlice(this.coronalSlice, mouseX, mouseY, this.volume.getYDim(), this.volume.getZDim())) {
-        localizerDetected = this.detectLocalizer(this.coronalSlice, mouseX, mouseY);
-        this.changeCursor(localizerDetected);
-        // console.log('CORONAL BRO');
+    if (!this.isGrabbingLocalizer) {
+        if (this.insideScreenSlice(this.axialSlice, mouseX, mouseY, this.volume.getXDim(), this.volume.getYDim())) {
+            this.localizerDetected = this.detectLocalizer(this.axialSlice, mouseX, mouseY);
+            this.changeCursor(this.localizerDetected);
+            // console.log('AXIAL BRO');
+        } else if (this.insideScreenSlice(this.sagittalSlice, mouseX, mouseY, this.volume.getXDim(), this.volume.getZDim())) {
+            this.localizerDetected = this.detectLocalizer(this.sagittalSlice, mouseX, mouseY);
+            this.changeCursor(this.localizerDetected);
+            // console.log('SAGITTAL BRO');
+        } else if (this.insideScreenSlice(this.coronalSlice, mouseX, mouseY, this.volume.getYDim(), this.volume.getZDim())) {
+            this.localizerDetected = this.detectLocalizer(this.coronalSlice, mouseX, mouseY);
+            this.changeCursor(this.localizerDetected);
+            // console.log('CORONAL BRO');
+        }
     }
+
     if (this.isDragging) {
-        if (this.grabbedHandle || this.activeTool === 'Ruler') {
+        if (this.localizerDetected) this.isGrabbingLocalizer = true;
+        if (this.grabbedHandle || this.activeTool === 'Ruler' && !this.isGrabbingLocalizer) {
             if (this.isInsideMainSlice(currentMouseX, currentMouseY)) {
                 this.grabbedHandle.x = this.convertScreenToImageCoordinateX(currentMouseX - this.canvasRect.left, this.selectedSlice);
                 this.grabbedHandle.y = this.convertScreenToImageCoordinateY(currentMouseY - this.canvasRect.top, this.selectedSlice);
                 this.drawViewer(true, true, true);
             }
-        } else if (this.activeTool === 'Window') { // original: else if (this.isWindowControl)
+        } else if (this.activeTool === 'Window' && !this.isGrabbingLocalizer) { // original: else if (this.isWindowControl)
             this.windowLevelChanged(this.previousMousePosition.x - currentMouseX, this.previousMousePosition.y - currentMouseY);
             this.previousMousePosition.x = currentMouseX;
             this.previousMousePosition.y = currentMouseY;
         // Modification 26/11/2019: add stackScroll
-        } else if (this.activeTool === 'StackScroll') {
+        } else if (this.activeTool === 'StackScroll' && !this.isGrabbingLocalizer) {
             var deltaY = this.previousMousePosition.y - currentMouseY;
             var increment;
             if (deltaY < 0) increment = false;
@@ -2481,7 +2490,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             }
             // if (this.reactPapayaViewport.props.viewportSpecificData.intensityActive) this.reactPapayaViewport.setState({ updateMIP: true });
         //////////////////////////////////////////////
-        } else if (this.isPanning) {
+        } else if (this.isPanning && !this.isGrabbingLocalizer) {
             if (this.selectedSlice === this.surfaceView) {
                 this.surfaceView.updateTranslateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me),
                     papaya.utilities.PlatformUtils.getMousePositionY(me), (this.selectedSlice === this.mainImage) ? 1 : 3);
@@ -2493,7 +2502,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                     this.selectedSlice.sliceDirection
                 );
             }
-        } else if (this.isZoomMode) {
+        } else if (this.isZoomMode && !this.isGrabbingLocalizer) {
             if (this.selectedSlice === this.surfaceView) {
                 zoomFactorCurrent = ((this.previousMousePosition.y - currentMouseY) * 0.5) * this.surfaceView.scaleFactor;
                 this.surfaceView.zoom += zoomFactorCurrent;
@@ -2512,8 +2521,9 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             }
 
             this.drawViewer(true);
-        } else if (this.activeTool === 'Crosshair') { // original: else, no if
-            this.resetUpdateTimer(null);
+        } else if (this.localizerDetected === 2) { // original: else, no if
+            console.log('mousemove CROSSHAIR');
+            // this.resetUpdateTimer(null);
 
             if (this.selectedSlice !== null) {
                 if (this.selectedSlice === this.surfaceView) {
@@ -2529,12 +2539,14 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                     }
                 } else {
                     console.log('crosshair');
-                    this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me),
-                        papaya.utilities.PlatformUtils.getMousePositionY(me));
+                    this.updatePosition(this, currentMouseX,
+                        currentMouseY, false);
+                    this.resetUpdateTimer(me);
                 }
             }
         }
     } else {
+        this.isGrabbingLocalizer = false;
         this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me),
             papaya.utilities.PlatformUtils.getMousePositionY(me));
         this.isZoomMode = false;
@@ -3801,7 +3813,7 @@ papaya.viewer.Viewer.prototype.detectLocalizer = function (screenSlice, mouseX, 
     var localizerLines = screenSlice.localizerLines;
     var localizerCenter = screenSlice.localizerCenter;
 
-    var tolerance = 20; // pixels
+    var tolerance = this.currentDetectionRadius; // pixels
     linearInterpolation = function (x, y, t) {
         return (x + t * (y - x));
     };
