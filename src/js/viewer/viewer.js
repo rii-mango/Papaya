@@ -123,6 +123,10 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
 
     // modification 28/11/2019: add reactPapayaViewport constructor
     this.reactPapayaViewport = null;
+
+    // modification 16/01/2020: add current interacting slice
+    this.currentInteractingSlice = null;
+
 };
 
 
@@ -948,7 +952,7 @@ papaya.viewer.Viewer.prototype.isInsideMainSlice = function (xLoc, yLoc) {
 papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, crosshairsOnly) {
     var xImageLoc, yImageLoc, temp, originalX, originalY, surfaceCoord;
     var rotatedAngle;
-    var sliceLabel = null;
+    // var sliceLabel = null;
     viewer.updateOffsetRect();
     originalX = xLoc;
     originalY = yLoc;
@@ -960,7 +964,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
             xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.axialSlice);
             yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.axialSlice);
             rotatedAngle = viewer.volume.transform.localizerAngleAxial * Math.PI / 180;
-            sliceLabel = 'AXIAL';
+            this.currentInteractingSlice = 'AXIAL';
             var newXY = this.getCoordinateFromRotatedSlice(rotatedAngle, xImageLoc, yImageLoc);
 
             console.table(newXY);
@@ -979,7 +983,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
         if (!this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_CORONAL)) {
             xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.coronalSlice);
             yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.coronalSlice);
-            sliceLabel = 'CORONAL';
+            this.currentInteractingSlice = 'CORONAL';
             if ((xImageLoc !== viewer.currentCoord.x) || (yImageLoc !== viewer.currentCoord.y)) {
                 viewer.currentCoord.x = xImageLoc;
                 viewer.currentCoord.z = yImageLoc;
@@ -991,7 +995,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
         if (!this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL)) {
             xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.sagittalSlice);
             yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.sagittalSlice);
-            sliceLabel = 'SAGITTAL';
+            this.currentInteractingSlice = 'SAGITTAL';
             if ((xImageLoc !== viewer.currentCoord.x) || (yImageLoc !== viewer.currentCoord.y)) {
                 temp = xImageLoc;
                 viewer.currentCoord.y = temp;
@@ -1005,9 +1009,9 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
     }
 
     this.container.coordinateChanged(this);
-    viewer.drawViewer(false, crosshairsOnly, false, sliceLabel);
-    // viewer.screenVolumes[0].rotateLocalizer(rotatedAngle * 180 / Math.PI, viewer.screenVolumes[0], sliceLabel);
-    viewer.drawViewer(true, crosshairsOnly);
+    // viewer.drawViewer(false, false, false, sliceLabel);
+    viewer.screenVolumes[0].rotateLocalizer(0, viewer.screenVolumes[0], this.currentInteractingSlice); // update other viewport's image matrices
+    viewer.drawViewer(true, false, false);
 };
 
 
@@ -1166,6 +1170,7 @@ papaya.viewer.Viewer.prototype.insideScreenSlice = function (screenSlice, xLoc, 
         xEnd = papayaRoundFast(screenSlice.screenTransform[0][2] + xBound * screenSlice.screenTransform[0][0]);
         yStart = papayaRoundFast(screenSlice.screenTransform[1][2]);
         yEnd = papayaRoundFast(screenSlice.screenTransform[1][2] + yBound * screenSlice.screenTransform[1][1]);
+        // console.table([xStart, xEnd, yStart, yEnd, xLoc, yLoc]);
     }
 
     return ((xLoc >= xStart) && (xLoc < xEnd) && (yLoc >= yStart) && (yLoc < yEnd));
@@ -1639,35 +1644,44 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         // console.table(this.axialSlice.finalTransform);
         xLoc = (this.axialSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) *
             this.axialSlice.finalTransform[0][0]);
-        // yStart = (this.axialSlice.finalTransform[1][2]);
-        yStart = (this.axialSlice.screenOffsetY);
-        // yEnd = (this.axialSlice.finalTransform[1][2] + this.axialSlice.yDim * this.axialSlice.finalTransform[1][1]);
-        yEnd = (this.axialSlice.screenHeight + this.axialSlice.screenOffsetY);
-
         yLoc = (this.axialSlice.finalTransform[1][2] + (this.currentCoord.y + 0.5) *
             this.axialSlice.finalTransform[1][1]);
-        // xStart = (this.axialSlice.finalTransform[0][2]);
-        xStart = (this.axialSlice.screenOffsetX);
-        // xEnd = (this.axialSlice.finalTransform[0][2] + this.axialSlice.xDim * this.axialSlice.finalTransform[0][0]);
-        xEnd = (this.axialSlice.screenWidth + this.axialSlice.screenOffsetX);
-        // console.log('drawCrosshairs xLoc', xLoc);
-        // console.log('drawCrosshairs yLoc', yLoc);
+        this.axialSlice.localizerCenter.x = xLoc;
+        this.axialSlice.localizerCenter.y = yLoc;
+
+        xStart = xLoc + radius * Math.cos(rotateAngle);
+        yStart = yLoc + radius * Math.sin(rotateAngle);
+        xEnd = xLoc + radius * Math.cos(rotateAngle + Math.PI);
+        yEnd = yLoc + radius * Math.sin(rotateAngle + Math.PI);
+        this.axialSlice.localizerLines.xStart[0] = xStart;
+        this.axialSlice.localizerLines.yStart[0] = yStart;
+        this.axialSlice.localizerLines.xEnd[0] = xEnd;
+        this.axialSlice.localizerLines.yEnd[0] = yEnd;
+
         // draw first line
-        this.contextAnnotation.moveTo(xLoc, yLoc);
-        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle), yLoc + radius * Math.sin(rotateAngle));
-        this.contextAnnotation.moveTo(xLoc, yLoc);
-        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle + Math.PI), yLoc + radius * Math.sin(rotateAngle + + Math.PI));
+        this.contextAnnotation.moveTo(xStart, yStart);
+        this.contextAnnotation.lineTo(xEnd, yEnd);
+        // this.contextAnnotation.moveTo(xLoc, yLoc);
+        // this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle + Math.PI), yLoc + radius * Math.sin(rotateAngle + Math.PI));
+        xStart = xLoc + radius * Math.cos(rotateAngle2);
+        yStart = yLoc + radius * Math.sin(rotateAngle2);
+        xEnd = xLoc + radius * Math.cos(rotateAngle2 + Math.PI);
+        yEnd = yLoc + radius * Math.sin(rotateAngle2 + Math.PI);
+        this.axialSlice.localizerLines.xStart[1] = xStart;
+        this.axialSlice.localizerLines.yStart[1] = yStart;
+        this.axialSlice.localizerLines.xEnd[1] = xEnd;
+        this.axialSlice.localizerLines.yEnd[1] = yEnd;
 
-        this.contextAnnotation.moveTo(xLoc, yLoc);
-        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2), yLoc + radius * Math.sin(rotateAngle2));
-        this.contextAnnotation.moveTo(xLoc, yLoc);
-        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2 + Math.PI), yLoc + radius * Math.sin(rotateAngle2 + Math.PI));
+        this.contextAnnotation.moveTo(xStart, yStart);
+        this.contextAnnotation.lineTo(xEnd, yEnd);
 
-        // this.contextAnnotation.moveTo(xLoc, yStart);
-        // this.contextAnnotation.lineTo(xLoc, yEnd);
+        // this.contextAnnotation.moveTo(xLoc, yLoc);
+        // this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2), yLoc + radius * Math.sin(rotateAngle2));
+        // this.contextAnnotation.moveTo(xLoc, yLoc);
+        // this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2 + Math.PI), yLoc + radius * Math.sin(rotateAngle2 + Math.PI));
+        
+        // this.axialSlice.localizerLines.
 
-        // this.contextAnnotation.moveTo(xStart, yLoc);
-        // this.contextAnnotation.lineTo(xEnd, yLoc);
 
         this.contextAnnotation.closePath();
         this.contextAnnotation.stroke();
@@ -1693,26 +1707,34 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         // console.table(this.coronalSlice.finalTransform);
         xLoc = (this.coronalSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) *
             this.coronalSlice.finalTransform[0][0]);
-        yStart = (this.coronalSlice.screenOffsetY);
-        yEnd = (this.coronalSlice.screenHeight + this.coronalSlice.screenOffsetY);
-        // this.contextAnnotation.moveTo(xLoc, yStart);
-        // this.contextAnnotation.lineTo(xLoc, yEnd);
-
         yLoc = (this.coronalSlice.finalTransform[1][2] + (this.currentCoord.z + 0.5) *
             this.coronalSlice.finalTransform[1][1]);
-        xStart = (this.coronalSlice.screenOffsetX);
-        xEnd = (this.coronalSlice.screenWidth + this.coronalSlice.screenOffsetX);
-        // this.contextAnnotation.moveTo(xStart, yLoc);
-        // this.contextAnnotation.lineTo(xEnd, yLoc);
-        this.contextAnnotation.moveTo(xLoc, yLoc);
-        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle), yLoc + radius * Math.sin(rotateAngle));
-        this.contextAnnotation.moveTo(xLoc, yLoc);
-        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle + Math.PI), yLoc + radius * Math.sin(rotateAngle + Math.PI));
+        this.coronalSlice.localizerCenter.x = xLoc;
+        this.coronalSlice.localizerCenter.y = yLoc;
+        xStart = xLoc + radius * Math.cos(rotateAngle);
+        yStart = yLoc + radius * Math.sin(rotateAngle);
+        xEnd = xLoc + radius * Math.cos(rotateAngle + Math.PI);
+        yEnd = yLoc + radius * Math.sin(rotateAngle + Math.PI);
+        this.coronalSlice.localizerLines.xStart[0] = xStart;
+        this.coronalSlice.localizerLines.yStart[0] = yStart;
+        this.coronalSlice.localizerLines.xEnd[0] = xEnd;
+        this.coronalSlice.localizerLines.yEnd[0] = yEnd;
 
-        this.contextAnnotation.moveTo(xLoc, yLoc);
-        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2), yLoc + radius * Math.sin(rotateAngle2));
-        this.contextAnnotation.moveTo(xLoc, yLoc);
-        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2 + Math.PI), yLoc + radius * Math.sin(rotateAngle2 + Math.PI));
+        // draw first line
+        this.contextAnnotation.moveTo(xStart, yStart);
+        this.contextAnnotation.lineTo(xEnd, yEnd);
+
+        xStart = xLoc + radius * Math.cos(rotateAngle2);
+        yStart = yLoc + radius * Math.sin(rotateAngle2);
+        xEnd = xLoc + radius * Math.cos(rotateAngle2 + Math.PI);
+        yEnd = yLoc + radius * Math.sin(rotateAngle2 + Math.PI);
+        this.coronalSlice.localizerLines.xStart[1] = xStart;
+        this.coronalSlice.localizerLines.yStart[1] = yStart;
+        this.coronalSlice.localizerLines.xEnd[1] = xEnd;
+        this.coronalSlice.localizerLines.yEnd[1] = yEnd;
+
+        this.contextAnnotation.moveTo(xStart, yStart);
+        this.contextAnnotation.lineTo(xEnd, yEnd);
 
         this.contextAnnotation.closePath();
         this.contextAnnotation.stroke();
@@ -1739,26 +1761,35 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
         xLoc = (this.sagittalSlice.finalTransform[0][2] + (this.currentCoord.y + 0.5) *
             this.sagittalSlice.finalTransform[0][0]);
-        yStart = (this.sagittalSlice.screenOffsetY);
-        yEnd = (this.sagittalSlice.screenHeight + this.sagittalSlice.screenOffsetY);
-        // this.contextAnnotation.moveTo(xLoc, yStart);
-        // this.contextAnnotation.lineTo(xLoc, yEnd);
-
         yLoc = (this.sagittalSlice.finalTransform[1][2] + (this.currentCoord.z + 0.5) *
             this.sagittalSlice.finalTransform[1][1]);
-        xStart = (this.sagittalSlice.screenOffsetX);
-        xEnd = (this.sagittalSlice.screenWidth + this.sagittalSlice.screenOffsetX);
-        // this.contextAnnotation.moveTo(xStart, yLoc);
-        // this.contextAnnotation.lineTo(xEnd, yLoc);
-        this.contextAnnotation.moveTo(xLoc, yLoc);
-        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle), yLoc + radius * Math.sin(rotateAngle));
-        this.contextAnnotation.moveTo(xLoc, yLoc);
-        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle + Math.PI), yLoc + radius * Math.sin(rotateAngle + Math.PI));
+        this.sagittalSlice.localizerCenter.x = xLoc;
+        this.sagittalSlice.localizerCenter.y = yLoc;
 
-        this.contextAnnotation.moveTo(xLoc, yLoc);
-        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2), yLoc + radius * Math.sin(rotateAngle2));
-        this.contextAnnotation.moveTo(xLoc, yLoc);
-        this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2 + Math.PI), yLoc + radius * Math.sin(rotateAngle2 + Math.PI));
+        xStart = xLoc + radius * Math.cos(rotateAngle);
+        yStart = yLoc + radius * Math.sin(rotateAngle);
+        xEnd = xLoc + radius * Math.cos(rotateAngle + Math.PI);
+        yEnd = yLoc + radius * Math.sin(rotateAngle + Math.PI);
+        this.sagittalSlice.localizerLines.xStart[0] = xStart;
+        this.sagittalSlice.localizerLines.yStart[0] = yStart;
+        this.sagittalSlice.localizerLines.xEnd[0] = xEnd;
+        this.sagittalSlice.localizerLines.yEnd[0] = yEnd;
+
+        // draw first line
+        this.contextAnnotation.moveTo(xStart, yStart);
+        this.contextAnnotation.lineTo(xEnd, yEnd);
+
+        xStart = xLoc + radius * Math.cos(rotateAngle2);
+        yStart = yLoc + radius * Math.sin(rotateAngle2);
+        xEnd = xLoc + radius * Math.cos(rotateAngle2 + Math.PI);
+        yEnd = yLoc + radius * Math.sin(rotateAngle2 + Math.PI);
+        this.sagittalSlice.localizerLines.xStart[1] = xStart;
+        this.sagittalSlice.localizerLines.yStart[1] = yStart;
+        this.sagittalSlice.localizerLines.xEnd[1] = xEnd;
+        this.sagittalSlice.localizerLines.yEnd[1] = yEnd;
+
+        this.contextAnnotation.moveTo(xStart, yStart);
+        this.contextAnnotation.lineTo(xEnd, yEnd);
 
         this.contextAnnotation.closePath();
         this.contextAnnotation.stroke();
@@ -2405,8 +2436,25 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
 
     currentMouseX = papaya.utilities.PlatformUtils.getMousePositionX(me);
     currentMouseY = papaya.utilities.PlatformUtils.getMousePositionY(me);
-    // console.log('mouseMoveEvent mouse', [currentMouseX - this.canvasRect.left, currentMouseY - this.canvasRect.top]);
 
+    this.updateOffsetRect();
+    var mouseX = currentMouseX - this.canvasRect.left;
+    var mouseY = currentMouseY - this.canvasRect.top;
+    var localizerDetected = 0;
+    // console.log('mouseMoveEvent mouse', [currentMouseX - this.canvasRect.left, currentMouseY - this.canvasRect.top]);
+    if (this.insideScreenSlice(this.axialSlice, mouseX, mouseY, this.volume.getXDim(), this.volume.getYDim())) {
+        localizerDetected = this.detectLocalizer(this.axialSlice, mouseX, mouseY);
+        this.changeCursor(localizerDetected);
+        // console.log('AXIAL BRO');
+    } else if (this.insideScreenSlice(this.sagittalSlice, mouseX, mouseY, this.volume.getXDim(), this.volume.getZDim())) {
+        localizerDetected = this.detectLocalizer(this.sagittalSlice, mouseX, mouseY);
+        this.changeCursor(localizerDetected);
+        // console.log('SAGITTAL BRO');
+    } else if (this.insideScreenSlice(this.coronalSlice, mouseX, mouseY, this.volume.getYDim(), this.volume.getZDim())) {
+        localizerDetected = this.detectLocalizer(this.coronalSlice, mouseX, mouseY);
+        this.changeCursor(localizerDetected);
+        // console.log('CORONAL BRO');
+    }
     if (this.isDragging) {
         if (this.grabbedHandle || this.activeTool === 'Ruler') {
             if (this.isInsideMainSlice(currentMouseX, currentMouseY)) {
@@ -2799,10 +2847,6 @@ papaya.viewer.Viewer.prototype.getCurrentValueAt = function (ctrX, ctrY, ctrZ) {
     }
 };
 
-// Modified: 18/12/2019 add getCrosshair detection
-papaya.viewer.Viewer.prototype.getCrosshairDetection = function (currentMouseX, currentMouseY) {
-
-}
 ////////////////////////////////////////////////////
 
 papaya.viewer.Viewer.prototype.resetViewer = function () {
@@ -3748,4 +3792,82 @@ papaya.viewer.Viewer.prototype.convertImageToScreenCoordinateX = function (scree
 papaya.viewer.Viewer.prototype.convertImageToScreenCoordinateY = function (screenSlice, yLoc) {
     return (screenSlice.finalTransform[1][2] + (yLoc + 0.5) *
     screenSlice.finalTransform[1][1]);
+}
+
+// Modified 16/01/2020: add localizer detection
+papaya.viewer.Viewer.prototype.detectLocalizer = function (screenSlice, mouseX, mouseY) {
+    // console.log(localizerLines);
+    // console.log(mouseX, mouseY);
+    var localizerLines = screenSlice.localizerLines;
+    var localizerCenter = screenSlice.localizerCenter;
+
+    var tolerance = 20; // pixels
+    linearInterpolation = function (x, y, t) {
+        return (x + t * (y - x));
+    };
+    getPointNearest = function (line, x, y) {
+        var dx = line.xEnd - line.xStart;
+        var dy = line.yEnd - line.yStart;
+        var t = ((x - line.xStart) * dx + (y - line.yStart) * dy) / (dx*dx + dy*dy);
+        var point = {
+            x: this.linearInterpolation(line.xStart, line.xEnd, t),
+            y: this.linearInterpolation(line.yStart, line.yEnd, t),
+        }
+        return point;
+    };
+    getCenterDectection = function (center, x, y, radius) {
+        var distance = (center.x - x) * (center.x - x) + (center.y - y) * (center.y - y);
+
+        radius *= radius;
+        if (distance < radius) return true;
+        else return false;
+    }
+
+    var line0 = {
+        xStart: localizerLines.xStart[0],
+        yStart: localizerLines.yStart[0],
+        xEnd: localizerLines.xEnd[0],
+        yEnd: localizerLines.yEnd[0],
+    };
+    var line1 = {
+        xStart: localizerLines.xStart[1],
+        yStart: localizerLines.yStart[1],
+        xEnd: localizerLines.xEnd[1],
+        yEnd: localizerLines.yEnd[1],
+    };
+
+    var linePoint0 = getPointNearest(line0, mouseX, mouseY);
+    var linePoint1 = getPointNearest(line1, mouseX, mouseY);
+
+    var dx = [], dy = [];
+    var distance = [];
+
+    dx[0] = mouseX - linePoint0.x;
+    dx[1] = mouseX - linePoint1.x;
+
+    dy[0] = mouseY - linePoint0.y;
+    dy[1] = mouseY - linePoint1.y;
+
+    distance[0] = Math.abs(Math.sqrt(dx[0]*dx[0] + dy[0]*dy[0]));
+    distance[1] = Math.abs(Math.sqrt(dx[1]*dx[1] + dy[1]*dy[1]));
+    if (getCenterDectection(localizerCenter, mouseX, mouseY, tolerance)) return 2;
+    else if (distance[0] < tolerance || distance[1] < tolerance) return 1;
+    else return 0;
+}
+
+papaya.viewer.Viewer.prototype.changeCursor = function (condition) {
+    switch (condition) {
+        case 1:
+            document.body.style.cursor = 'pointer';
+            break;
+        case 2:
+            document.body.style.cursor = 'move';
+            break;
+        case 3:
+            document.body.style.cursor = 'default';
+            break;
+        default:
+            document.body.style.cursor = 'default';
+            break;
+    }
 }

@@ -45,6 +45,17 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
         this.tempPoint = new papaya.core.Point();
         this.canvasDTILines = null;
         this.contextDTILines = null;
+        // modification 16/01/2020: add localizers information
+        this.localizerLines = {
+            xStart: [],
+            yStart: [],
+            xEnd: [],
+            yEnd: [],
+        };
+        this.localizerCenter = {
+            x: null,
+            y: null
+        };
     };
 
 
@@ -73,7 +84,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, isRota
         radioFactor, dtiColorIndex = 0, interpolation, usedRaster = false, worldSpace = this.manager.isWorldMode(),
         originalVal;
 
-    console.log('isRotating', (isRotating) ? isRotating : 'nani');
+    // console.log('isRotating', (isRotating) ? isRotating : 'nani');
 
 
     // if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
