@@ -509,3 +509,10 @@ papaya.volume.Volume.prototype.isWorldSpaceOnly = function () {
 papaya.volume.Volume.prototype.getSeriesLabels = function () {
     return this.header.getSeriesLabels();
 };
+
+// modification 17/01/2020: add reset function
+
+papaya.volume.Volume.prototype.reset = function () {
+    this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
+    // this.applyBestTransform();
+}

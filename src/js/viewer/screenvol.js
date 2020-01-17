@@ -610,20 +610,21 @@ papaya.viewer.ScreenVolume.prototype.resetTransform = function () {
     this.rotationX = 0.5;
     this.rotationY = 0.5;
     this.rotationZ = 0.5;
+    this.volume.reset();
 };
 
-papaya.viewer.ScreenVolume.prototype.rotateLocalizer = function (angle, volume, sliceLabel) {
+papaya.viewer.ScreenVolume.prototype.rotateLocalizer = function (angle, sliceLabel) {
     // var direction = this.getDirections(sliceLabel);
-    this.volume.transform.updateRollImageMat(angle, volume, sliceLabel);
+    this.volume.transform.updateRollImageMat(angle, this, sliceLabel);
 }
 
 papaya.viewer.ScreenVolume.prototype.getDirections = function (slice) {
     switch (slice) {
-        case 'AXIAL':
+        case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
             return [0, 0, 1];
-        case 'SAGITTAL':
+        case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
             return [1, 0, 0];
-        case 'CORONAL':
+        case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
             return [0, 1, 0];
         default:
             return [0, 0, 1];
