@@ -25,7 +25,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.canvas.style.border = "none";
     // Modified 18/12/2019: add Crosshair canvas
     this.canvasAnnotation = document.createElement("canvas");
-    this.canvasAnnotation.title = "localizer";
+    // this.canvasAnnotation.title = "localizer";
     this.canvasAnnotation.width = width;
     this.canvasAnnotation.height = height;
     this.canvasAnnotation.zIndex = 1;
@@ -976,6 +976,19 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
             this.currentInteractingSlice = viewer.axialSlice;
 
             if ((xImageLoc !== viewer.currentCoord.x) || (yImageLoc !== viewer.currentCoord.y)) {
+                var center = {
+                    x: this.convertScreenToImageCoordinateX(viewer.axialSlice.localizerCenter.x, viewer.axialSlice),
+                    y: this.convertScreenToImageCoordinateY(viewer.axialSlice.localizerCenter.y, viewer.axialSlice)
+                };
+                var tempX = xImageLoc - center.x;
+                var tempY = yImageLoc - center.y;
+                var theta = -this.volume.transform.localizerAngleSagittal * Math.PI / 180;
+                var rotatedX = tempX * Math.cos(theta) - tempY * Math.sin(theta);
+                var rotatedY = tempX * Math.sin(theta) + tempY * Math.cos(theta);
+    
+                xImageLoc = rotatedX + center.x;
+                yImageLoc = rotatedY + center.y;
+
                 viewer.currentCoord.x = xImageLoc;
                 viewer.currentCoord.y = yImageLoc;
                 viewer.currentCoord.z = zImageLoc;
@@ -1013,9 +1026,10 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
         viewer.surfaceView.updateDynamic(originalX, originalY, (this.selectedSlice === this.mainImage) ? 1 : 3);
     }
 
+    viewer.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection); // update other viewport's image matrices
+
     this.container.coordinateChanged(this);
     // viewer.drawViewer(false, false, false, sliceLabel);
-    viewer.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection); // update other viewport's image matrices
     viewer.drawViewer(true, crosshairsOnly, false);
 };
 
@@ -1110,7 +1124,7 @@ papaya.viewer.Viewer.prototype.convertCoordinateToScreen = function (coor, scree
 
 papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yLoc) {
     var xImageLoc, yImageLoc, zImageLoc, surfaceCoord = null, found;
-
+    var center;
     if (this.container.display) {
         xLoc = xLoc - this.canvasRect.left;
         yLoc = yLoc - this.canvasRect.top;
@@ -1118,7 +1132,22 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yL
         if (this.insideScreenSlice(viewer.axialSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getYDim())) {
             xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.axialSlice);
             yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.axialSlice);
+
+            center = {
+                x: this.convertScreenToImageCoordinateX(viewer.axialSlice.localizerCenter.x, viewer.axialSlice),
+                y: this.convertScreenToImageCoordinateY(viewer.axialSlice.localizerCenter.y, viewer.axialSlice)
+            };
+            
+            var tempX = xImageLoc - center.x;
+            var tempY = yImageLoc - center.y;
+            var theta = this.volume.transform.localizerAngleSagittal * Math.PI / 180;
+            var rotatedX = tempX * Math.cos(theta) - tempY * Math.sin(theta);
+            var rotatedY = tempX * Math.sin(theta) + tempY * Math.cos(theta);
+            console.log('rotated', theta, rotatedX, rotatedY);
+            xImageLoc = rotatedX + center.x;
+            yImageLoc = rotatedY + center.y;
             zImageLoc = viewer.axialSlice.currentSlice;
+
             found = true;
         } else if (this.insideScreenSlice(viewer.coronalSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getZDim())) {
             xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.coronalSlice);
@@ -1150,6 +1179,7 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yL
             this.cursorPosition.y = yImageLoc;
             this.cursorPosition.z = zImageLoc;
             this.container.display.drawDisplay(xImageLoc, yImageLoc, zImageLoc);
+            this.drawAnnotation();
         } else {
             this.container.display.drawEmptyDisplay();
         }
@@ -1295,6 +1325,8 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
     if (showOrientation || radiological) {
         this.drawOrientation();
     }
+    // Modification 20/01/2020: add draw annotation method
+    this.drawAnnotation();
 
     if (this.container.preferences.showCrosshairs === "Yes") {
         this.drawCrosshairs();
@@ -1436,8 +1468,46 @@ papaya.viewer.Viewer.prototype.drawOrientation = function () {
             papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE);
     }
 };
+// Modification 20/01/2020: add draw annotation function
+papaya.viewer.Viewer.prototype.drawAnnotation = function () {
+    var metrics, textWidth, radiological, coordinate, orientStartX, orientEndX, orientMidX,
+        orientStartY, orientEndY, orientMidY,
+        showOrientation = (this.container.preferences.showOrientation === "Yes");
+    var text;
+    if (this.mainImage === this.surfaceView) {
+        return;
+    }
+    this.drawCrosshairs();
+    // this.contextAnnotation.setTransform(1, 0, 0, 1, 0, 0);
+    this.contextAnnotation.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
+    metrics = this.contextAnnotation.measureText("X");
+    textWidth = metrics.width;
+    radiological = (this.container.preferences.radiological === "Yes");
+    coordinate = {
+        x: this.cursorPosition.x,
+        y: this.cursorPosition.y,
+        z: this.cursorPosition.z,
+    };
 
+    orientStartX = this.mainImage.screenOffsetX;
+    // orientEndX = this.mainImage.screenOffsetX + this.mainImage.screenDim; // original
+    // Modified 02/12/2019: change screenDim to screenWidth to accomodate non-square viewport
+    orientEndX = this.mainImage.screenOffsetX + this.mainImage.screenWidth;
+    orientMidX = Math.round(orientEndX / 2.0);
 
+    orientStartY = this.mainImage.screenOffsetY;
+    // orientEndY = this.mainImage.screenOffsetY + this.mainImage.screenDim; // original
+    // Modified 02/12/2019: change screenDim to screenHeight to accomodate non-square viewport
+    orientEndY = this.mainImage.screenOffsetY + this.mainImage.screenHeight;
+    orientMidY = Math.round(orientEndY / 2.0);
+    text = 'X: ' + coordinate.x + '    ' + 'Y: ' + coordinate.y + '    ' + 'Z: ' + coordinate.z;
+    if (showOrientation) {
+        // this.contextAnnotation.fillStyle = '#ffffff';
+        // this.contextAnnotation.fillText(text, PAPAYA_PADDING, orientEndY - PAPAYA_PADDING);
+        this.contextAnnotation.fillStyle = this.getOrientationCertaintyColor();
+        this.contextAnnotation.fillText(text, papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE * 0.5, orientEndY - (papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE * 0.5));
+    }
+};
 
 papaya.viewer.Viewer.prototype.drawRuler = function () {
     var ruler1x, ruler1y, ruler2x, ruler2y, text, metrics, textWidth, textHeight, padding, xText, yText;
@@ -2530,7 +2600,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                 } else {
                     console.log('crosshair');
                     this.updatePosition(this, currentMouseX, currentMouseY, false);
-                    // this.resetUpdateTimer(me);
+                    this.resetUpdateTimer(me);
                 }
             }
         } else if (this.localizerDetected === 1) { // original: else, no if
