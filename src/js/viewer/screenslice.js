@@ -92,7 +92,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, isRota
     //     console.log('papaya updateSlice finalTransform2', this);
     //     console.table(this.finalTransform2);
     // }
-    // console.log('papaya updateSlice with slice', slice);
+    console.log('papaya updateSlice with slice', slice);
     slice = Math.round(slice);
 
     if ((this.manager.isRadiologicalMode() && this.isRadiologicalSensitive())) {
@@ -301,7 +301,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, isRota
                         }
                     } else {
                         if (worldSpace) {
-                            // console.log('WORLDSPACE');
+                            console.log('WORLDSPACE');
                             if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
                                 value = this.screenVolumes[ctr].volume.getVoxelAtCoordinate((ctrX - origin.x) *
                                     voxelDims.xSize, (origin.y - ctrY) * voxelDims.ySize, (origin.z - slice) *
