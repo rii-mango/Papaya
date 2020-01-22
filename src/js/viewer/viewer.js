@@ -1026,10 +1026,10 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
         viewer.surfaceView.updateDynamic(originalX, originalY, (this.selectedSlice === this.mainImage) ? 1 : 3);
     }
 
-    viewer.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection, false); // update other viewport's image matrices
+    // viewer.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection, true); // update other viewport's image matrices
     // viewer.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection);
-
-    // this.container.coordinateChanged(this);
+    viewer.screenVolumes[0].updatePosition(this.currentInteractingSlice);
+    this.container.coordinateChanged(this);
     // viewer.drawViewer(false, false, false, this.currentInteractingSlice);
     viewer.drawViewer(true, crosshairsOnly, false);
 };
@@ -2357,7 +2357,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
                     if (this.grabbedHandle === null && this.localizerDetected === 2) {
                         // console.log('mousedown', this.isGrabbingLocalizer);
-                        this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), false);
+                        this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), true);
                         // this.resetUpdateTimer(me);
                     }
                 } else if (this.selectedSlice && (this.selectedSlice === this.surfaceView)) {
