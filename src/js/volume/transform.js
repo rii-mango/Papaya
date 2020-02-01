@@ -476,12 +476,17 @@ papaya.volume.Transform.prototype.updatePosition = function (sliceLabel, volume)
     // update position across viewport
     // update center
     var centerX, centerY, centerZ;
+    var sliceImageMatAxial, sliceImageMatSagittal, sliceImageMatCoronal;
     centerX = volume.currentCoord.x * volume.volume.header.voxelDimensions.xSize;
     centerY = volume.currentCoord.y * volume.volume.header.voxelDimensions.ySize;
     centerZ = volume.currentCoord.z * volume.volume.header.voxelDimensions.zSize;
     this.updateCenterMat(centerX, centerY, centerZ);
     
-    this.volume.transform.updateRollTransforms([this.getSliceImageMat(this.rotMatAxial), this.getSliceImageMat(this.rotMatSagittal), this.getSliceImageMat(this.rotMatCoronal)]);
+    sliceImageMatAxial = this.getSliceImageMat(this.rotMatAxial, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_AXIAL);
+    sliceImageMatSagittal = this.getSliceImageMat(this.rotMatSagittal, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL);
+    sliceImageMatCoronal = this.getSliceImageMat(this.rotMatCoronal, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_CORONAL);
+
+    this.volume.transform.updateRollTransforms([sliceImageMatAxial, sliceImageMatSagittal, sliceImageMatCoronal]);
 }
 
 papaya.volume.Transform.prototype.applyRotation = function (direction, angle, mat) {
@@ -536,12 +541,19 @@ papaya.volume.Transform.prototype.updateRotationMat = function (sliceLabelExclud
 
 papaya.volume.Transform.prototype.getSliceImageMat = function (rotationMat, skip) {
     var tempMat, tempMat2;
-
-    tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(this.sizeMatInverse, this.centerMatInverse);
-    tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat, rotationMat);
-    tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat2, this.centerMat);
-    tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat, this.sizeMat);
-    // console.table(papaya.volume.Transform.decompose(tempMat2));
+    if (skip) {
+        rotationMat = papaya.volume.Transform.IDENTITY.clone();
+        tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(this.sizeMatInverse, this.centerMatInverse);
+        tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat, rotationMat);
+        tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat2, this.centerMat);
+        tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat, this.sizeMat);
+        // console.table(papaya.volume.Transform.decompose(tempMat2));
+    } else {
+        tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(this.sizeMatInverse, this.centerMatInverse);
+        tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat, rotationMat);
+        tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat2, this.centerMat);
+        tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat, this.sizeMat);
+    }
     return tempMat2;
 }
 
