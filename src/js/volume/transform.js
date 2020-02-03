@@ -481,12 +481,17 @@ papaya.volume.Transform.prototype.updatePosition = function (sliceLabel, volume)
     centerY = volume.currentCoord.y * volume.volume.header.voxelDimensions.ySize;
     centerZ = volume.currentCoord.z * volume.volume.header.voxelDimensions.zSize;
     this.updateCenterMat(centerX, centerY, centerZ);
-    
-    sliceImageMatAxial = this.getSliceImageMat(this.rotMatAxial, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_AXIAL);
-    sliceImageMatSagittal = this.getSliceImageMat(this.rotMatSagittal, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL);
-    sliceImageMatCoronal = this.getSliceImageMat(this.rotMatCoronal, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_CORONAL);
+    // this.updateCounterRoll(sliceLabel);
 
-    this.volume.transform.updateRollTransforms([sliceImageMatAxial, sliceImageMatSagittal, sliceImageMatCoronal]);
+    // sliceImageMatAxial = this.getSliceImageMat(this.rotMatAxial, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_AXIAL);
+    // sliceImageMatSagittal = this.getSliceImageMat(this.rotMatSagittal, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL);
+    // sliceImageMatCoronal = this.getSliceImageMat(this.rotMatCoronal, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_CORONAL);
+    
+    sliceImageMatAxial = this.getSliceImageMat(this.rotMatAxial, false);
+    sliceImageMatSagittal = this.getSliceImageMat(this.rotMatSagittal, false);
+    sliceImageMatCoronal = this.getSliceImageMat(this.rotMatCoronal, false);
+
+    this.volume.transform.updateRollTransforms([sliceImageMatAxial, sliceImageMatAxial, sliceImageMatAxial]);
 }
 
 papaya.volume.Transform.prototype.applyRotation = function (direction, angle, mat) {
@@ -535,6 +540,27 @@ papaya.volume.Transform.prototype.updateRotationMat = function (sliceLabelExclud
             break;
         default:
             this.rotMat = tempRotMat.clone();
+            break;
+    }
+}
+papaya.volume.Transform.prototype.updateCounterRoll = function (sliceLabelExclude) {
+    console.log('updateCounterRoll', sliceLabelExclude);
+    switch (sliceLabelExclude) {
+        case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
+            this.rotMatSagittal = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL), this.localizerAngleSagittal, this.rotMatSagittal);
+            this.rotMatCoronal = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_CORONAL), this.localizerAngleCoronal, this.rotMatCoronal);
+            break;
+        case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
+            this.rotMatAxial = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_AXIAL), this.localizerAngleAxial, this.rotMatAxial);
+            this.rotMatCoronal = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_CORONAL), this.localizerAngleCoronal, this.rotMatCoronal);
+            break;
+        case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
+            this.rotMatAxial = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_AXIAL), this.localizerAngleAxial, this.rotMatAxial);
+            this.rotMatSagittal = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL), this.localizerAngleSagittal, this.rotMatSagittal);
+            break;
+        default:
+            // this.rotMat = tempRotMat.clone();
+            console.log('updateCounterRoll default');
             break;
     }
 }

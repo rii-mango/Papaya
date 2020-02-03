@@ -1028,7 +1028,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
 
     // viewer.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection, true); // update other viewport's image matrices
     // viewer.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection);
-    viewer.screenVolumes[0].updatePosition(this.currentInteractingSlice);
+    viewer.screenVolumes[0].updatePosition(this.currentInteractingSlice.sliceDirection);
     // this.container.coordinateChanged(this);
     // viewer.drawViewer(false, false, false, this.currentInteractingSlice);
     viewer.drawViewer(true, crosshairsOnly, false);
@@ -1841,9 +1841,9 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
             this.sagittalSlice.finalTransform[0][0]);
         yLoc = (this.sagittalSlice.finalTransform[1][2] + (this.currentCoord.z + 0.5) *
             this.sagittalSlice.finalTransform[1][1]);
-        var rotatedLoc = this.getCoordinateFromRotatedSlice(rotateAngle2, xLoc, yLoc, 0, 0);
-        xLoc = rotatedLoc[0];
-        yLoc = rotatedLoc[1];
+        // var rotatedLoc = this.getCoordinateFromRotatedSlice(rotateAngle2, xLoc, yLoc, 0, 0);
+        // xLoc = rotatedLoc[0];
+        // yLoc = rotatedLoc[1];
         this.sagittalSlice.localizerCenter.x = xLoc;
         this.sagittalSlice.localizerCenter.y = yLoc;
 
