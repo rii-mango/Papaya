@@ -1028,8 +1028,8 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
 
     // viewer.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection, true); // update other viewport's image matrices
     // viewer.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection);
-    viewer.screenVolumes[0].updatePosition(this.currentInteractingSlice.sliceDirection);
-    // this.container.coordinateChanged(this);
+    // viewer.screenVolumes[0].updatePosition(this.currentInteractingSlice.sliceDirection);
+    this.container.coordinateChanged(this);
     // viewer.drawViewer(false, false, false, this.currentInteractingSlice);
     viewer.drawViewer(true, crosshairsOnly, false);
 };

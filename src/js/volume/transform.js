@@ -481,6 +481,8 @@ papaya.volume.Transform.prototype.updatePosition = function (sliceLabel, volume)
     centerY = volume.currentCoord.y * volume.volume.header.voxelDimensions.ySize;
     centerZ = volume.currentCoord.z * volume.volume.header.voxelDimensions.zSize;
     this.updateCenterMat(centerX, centerY, centerZ);
+
+    this.updateRotationMat(sliceLabel, this.rotMat);
     // this.updateCounterRoll(sliceLabel);
 
     // sliceImageMatAxial = this.getSliceImageMat(this.rotMatAxial, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_AXIAL);
@@ -491,7 +493,7 @@ papaya.volume.Transform.prototype.updatePosition = function (sliceLabel, volume)
     sliceImageMatSagittal = this.getSliceImageMat(this.rotMatSagittal, false);
     sliceImageMatCoronal = this.getSliceImageMat(this.rotMatCoronal, false);
 
-    this.volume.transform.updateRollTransforms([sliceImageMatAxial, sliceImageMatAxial, sliceImageMatAxial]);
+    this.volume.transform.updateRollTransforms([sliceImageMatAxial, sliceImageMatSagittal, sliceImageMatCoronal]);
 }
 
 papaya.volume.Transform.prototype.applyRotation = function (direction, angle, mat) {
