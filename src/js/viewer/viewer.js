@@ -1028,8 +1028,8 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
 
     // viewer.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection, true); // update other viewport's image matrices
     // viewer.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection);
-    // viewer.screenVolumes[0].updatePosition(this.currentInteractingSlice.sliceDirection);
-    this.container.coordinateChanged(this);
+    viewer.screenVolumes[0].updatePosition(this.currentInteractingSlice.sliceDirection);
+    // this.container.coordinateChanged(this);
     // viewer.drawViewer(false, false, false, this.currentInteractingSlice);
     viewer.drawViewer(true, crosshairsOnly, false);
 };
@@ -1705,8 +1705,8 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
     if ((this.mainImage !== this.axialSlice) || this.toggleMainCrosshairs) {
         // draw axial crosshairs
         var radius = this.axialSlice.screenWidth + this.axialSlice.screenHeight;
-        rotateAngle = (-this.volume.transform.localizerAngleAxial) * Math.PI / 180 - Math.PI/2;
-        rotateAngle2 = (-this.volume.transform.localizerAngleAxial) * Math.PI / 180;
+        rotateAngle = (this.volume.transform.localizerAngleAxial) * Math.PI / 180 - Math.PI/2;
+        rotateAngle2 = (this.volume.transform.localizerAngleAxial) * Math.PI / 180;
 
         // this.contextAnnotation.rotate(rotateAngle * Math.PI / 180);
         this.contextAnnotation.save();
@@ -1770,8 +1770,8 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
     if ((this.mainImage !== this.coronalSlice) || this.toggleMainCrosshairs) {
         // draw coronal crosshairs
         var radius = this.coronalSlice.screenWidth + this.coronalSlice.screenHeight;
-        rotateAngle = (-this.volume.transform.localizerAngleCoronal) * Math.PI / 180 - Math.PI/2;
-        rotateAngle2 = (-this.volume.transform.localizerAngleCoronal) * Math.PI / 180;
+        rotateAngle = (this.volume.transform.localizerAngleCoronal) * Math.PI / 180 - Math.PI/2;
+        rotateAngle2 = (this.volume.transform.localizerAngleCoronal) * Math.PI / 180;
 
         this.contextAnnotation.save();
         this.contextAnnotation.beginPath();
@@ -1823,8 +1823,8 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         // draw sagittal crosshairs
         
         var radius = this.sagittalSlice.screenWidth + this.sagittalSlice.screenHeight;
-        rotateAngle = (-this.volume.transform.localizerAngleSagittal) * Math.PI / 180 - Math.PI/2;
-        rotateAngle2 = (-this.volume.transform.localizerAngleSagittal) * Math.PI / 180;
+        rotateAngle = (this.volume.transform.localizerAngleSagittal) * Math.PI / 180 - Math.PI/2;
+        rotateAngle2 = (this.volume.transform.localizerAngleSagittal) * Math.PI / 180;
 
         this.contextAnnotation.save();
         this.contextAnnotation.beginPath();
@@ -3967,7 +3967,7 @@ papaya.viewer.Viewer.prototype.getRotatingAngle = function (center, preX, preY, 
     preY -= this.canvasRect.top;
     var currentAngle = Math.atan2(mouseY - center.y, mouseX - center.x) * 180 / Math.PI;
     var prevAngle = Math.atan2(preY - center.y, preX - center.x) * 180 / Math.PI
-    return prevAngle - currentAngle;
+    return currentAngle - prevAngle;
 }
 
 papaya.viewer.Viewer.prototype.updateCurrentInteractingSlice = function (mouseX, mouseY) {

@@ -1515,6 +1515,7 @@ papaya.Container.prototype.coordinateChanged = function (viewer) {
         } else if (papaya.Container.syncViewers) {
             for (ctr = 0; ctr < papayaContainers.length; ctr += 1) {
                 if ((papayaContainers[ctr].viewer !== viewer) && !papayaContainers[ctr].viewer.ignoreSync) {
+                    // console.log('coordinateChanged');
                     papayaContainers[ctr].viewer.gotoCoordinate(coor, true);
                 }
             }

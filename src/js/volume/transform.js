@@ -480,10 +480,10 @@ papaya.volume.Transform.prototype.updatePosition = function (sliceLabel, volume)
     centerX = volume.currentCoord.x * volume.volume.header.voxelDimensions.xSize;
     centerY = volume.currentCoord.y * volume.volume.header.voxelDimensions.ySize;
     centerZ = volume.currentCoord.z * volume.volume.header.voxelDimensions.zSize;
-    this.updateCenterMat(centerX, centerY, centerZ);
+    // this.updateCenterMat(centerX, centerY, centerZ);
 
-    this.updateRotationMat(sliceLabel, this.rotMat);
-    // this.updateCounterRoll(sliceLabel);
+    // this.updateRotationMat(sliceLabel, this.rotMat);
+    this.updateCounterRoll(sliceLabel);
 
     // sliceImageMatAxial = this.getSliceImageMat(this.rotMatAxial, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_AXIAL);
     // sliceImageMatSagittal = this.getSliceImageMat(this.rotMatSagittal, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL);
@@ -549,8 +549,10 @@ papaya.volume.Transform.prototype.updateCounterRoll = function (sliceLabelExclud
     console.log('updateCounterRoll', sliceLabelExclude);
     switch (sliceLabelExclude) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
-            this.rotMatSagittal = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL), this.localizerAngleSagittal, this.rotMatSagittal);
-            this.rotMatCoronal = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_CORONAL), this.localizerAngleCoronal, this.rotMatCoronal);
+            this.rotMatSagittal = this.rotMatAxial.clone();
+            // this.rotMatSagittal = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL), -this.localizerAngleSagittal, this.rotMatSagittal);
+            this.rotMatCoronal = this.rotMatAxial.clone();
+            // this.rotMatCoronal = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_CORONAL), -this.localizerAngleCoronal, this.rotMatCoronal);
             break;
         case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
             this.rotMatAxial = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_AXIAL), this.localizerAngleAxial, this.rotMatAxial);
