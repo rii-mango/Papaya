@@ -1841,9 +1841,13 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
             this.sagittalSlice.finalTransform[0][0]);
         yLoc = (this.sagittalSlice.finalTransform[1][2] + (this.currentCoord.z + 0.5) *
             this.sagittalSlice.finalTransform[1][1]);
-        // var rotatedLoc = this.getCoordinateFromRotatedSlice(rotateAngle2, xLoc, yLoc, 0, 0);
-        // xLoc = rotatedLoc[0];
-        // yLoc = rotatedLoc[1];
+        xCenter = this.sagittalSlice.screenOffsetX + (this.sagittalSlice.screenWidth / 2);
+        yCenter = this.sagittalSlice.screenOffsetY + (this.sagittalSlice.screenHeight / 2);
+        var rotatedLoc = this.getCoordinateFromRotatedSlice(-rotateAngle2, xLoc, yLoc, Math.floor(xCenter), Math.floor(yCenter));
+        xLoc = rotatedLoc[0];
+        yLoc = rotatedLoc[1];
+        console.log('Sagittal Slice center', xLoc, yLoc);
+
         this.sagittalSlice.localizerCenter.x = xLoc;
         this.sagittalSlice.localizerCenter.y = yLoc;
 
@@ -2523,7 +2527,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
     var mouseX = currentMouseX - this.canvasRect.left;
     var mouseY = currentMouseY - this.canvasRect.top;
     this.updateCurrentInteractingSlice(mouseX, mouseY);
-
+    console.log(mouseX, mouseY);
     if (!this.isGrabbingLocalizer) {
         this.localizerDetected = this.detectLocalizer(this.currentInteractingSlice, mouseX, mouseY);
         this.changeCursor(this.localizerDetected);
@@ -3862,11 +3866,11 @@ papaya.viewer.Viewer.prototype.getCoordinateFromRotatedSlice = function (angle, 
     // We need to map the coordinate of the non-rotated image (resulted from rotating the localizers) to that of the rotated image
     // Using Rotation of axes method from https://en.wikipedia.org/wiki/Rotation_of_axes
     // Angle in radians
-
+    console.table([angle, x, y, originX, originY]);
     var newX, newY;
     newX = (x - originX) * Math.cos(angle) + (y - originY) * Math.sin(angle);
     newY = - (x - originX) * Math.sin(angle) + (y - originY) * Math.cos(angle);
-    return [newX, newY];
+    return [newX + originX, newY + originY];
 }
 
 papaya.viewer.Viewer.prototype.convertImageToScreenCoordinateX = function (screenSlice, xLoc) {

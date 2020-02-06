@@ -483,15 +483,15 @@ papaya.volume.Transform.prototype.updatePosition = function (sliceLabel, volume)
     // this.updateCenterMat(centerX, centerY, centerZ);
 
     // this.updateRotationMat(sliceLabel, this.rotMat);
-    // this.updateCounterRoll(sliceLabel);
+    this.updateCounterRoll(sliceLabel);
 
-    // sliceImageMatAxial = this.getSliceImageMat(this.rotMatAxial, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_AXIAL);
-    // sliceImageMatSagittal = this.getSliceImageMat(this.rotMatSagittal, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL);
-    // sliceImageMatCoronal = this.getSliceImageMat(this.rotMatCoronal, sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_CORONAL);
+    sliceImageMatAxial = this.getSliceImageMat(this.rotMatAxial);
+    sliceImageMatSagittal = this.getSliceImageMat(this.rotMatSagittal);
+    sliceImageMatCoronal = this.getSliceImageMat(this.rotMatCoronal);
     // sliceImageMat = this.getSliceImageMat(this.rotMat, false);
-    sliceImageMatAxial = (sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) ? this.getSliceImageMat(this.rotMatAxial, false) : this.getSliceImageMat(this.rotMat, false);
-    sliceImageMatSagittal = (sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) ? this.getSliceImageMat(this.rotMatSagittal, false) : this.getSliceImageMat(this.rotMat, false);
-    sliceImageMatCoronal = (sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) ? this.getSliceImageMat(this.rotMatCoronal, false) : this.getSliceImageMat(this.rotMat, false);
+    // sliceImageMatAxial = (sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) ? this.getSliceImageMat(this.rotMatAxial, false) : this.getSliceImageMat(this.getRotationMat(sliceLabel), false);
+    // sliceImageMatSagittal = (sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) ? this.getSliceImageMat(this.rotMatSagittal, false) : this.getSliceImageMat(this.getRotationMat(sliceLabel), false);
+    // sliceImageMatCoronal = (sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) ? this.getSliceImageMat(this.rotMatCoronal, false) : this.getSliceImageMat(this.getRotationMat(sliceLabel), false);
 
     this.volume.transform.updateRollTransforms([sliceImageMatAxial, sliceImageMatSagittal, sliceImageMatCoronal]);
 }
