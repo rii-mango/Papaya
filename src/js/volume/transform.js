@@ -483,11 +483,11 @@ papaya.volume.Transform.prototype.updatePosition = function (sliceLabel, volume)
     // this.updateCenterMat(centerX, centerY, centerZ);
 
     // this.updateRotationMat(sliceLabel, this.rotMat);
-    this.updateCounterRoll(sliceLabel);
+    // this.updateCounterRoll(sliceLabel);
 
-    sliceImageMatAxial = this.getSliceImageMat(this.rotMatAxial);
-    sliceImageMatSagittal = this.getSliceImageMat(this.rotMatSagittal);
-    sliceImageMatCoronal = this.getSliceImageMat(this.rotMatCoronal);
+    sliceImageMatAxial = this.getSliceImageMat(this.rotMat);
+    sliceImageMatSagittal = this.getSliceImageMat(this.rotMat);
+    sliceImageMatCoronal = this.getSliceImageMat(this.rotMat);
     // sliceImageMat = this.getSliceImageMat(this.rotMat, false);
     // sliceImageMatAxial = (sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) ? this.getSliceImageMat(this.rotMatAxial, false) : this.getSliceImageMat(this.getRotationMat(sliceLabel), false);
     // sliceImageMatSagittal = (sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) ? this.getSliceImageMat(this.rotMatSagittal, false) : this.getSliceImageMat(this.getRotationMat(sliceLabel), false);
@@ -549,21 +549,23 @@ papaya.volume.Transform.prototype.updateCounterRoll = function (sliceLabelExclud
     console.log('updateCounterRoll', sliceLabelExclude);
     switch (sliceLabelExclude) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
-            this.rotMatSagittal = this.rotMatAxial.clone();
+            var tempRotMat = this.rotMatAxial.clone();
+            tempRotMat = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_AXIAL), this.localizerAngleAxial, tempRotMat);
+            this.rotMatSagittal = tempRotMat.clone();
             this.rotMatSagittal = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL), -this.localizerAngleSagittal, this.rotMatSagittal);
-            this.rotMatCoronal = this.rotMatAxial.clone();
+            this.rotMatCoronal = tempRotMat.clone();
             this.rotMatCoronal = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_CORONAL), -this.localizerAngleCoronal, this.rotMatCoronal);
             break;
         case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
-            this.rotMatAxial = this.rotMatSagittal.clone();
+            this.rotMatAxial = this.rotMat.clone();
             this.rotMatAxial = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_AXIAL), this.localizerAngleAxial, this.rotMatAxial);
-            this.rotMatCoronal = this.rotMatSagittal.clone();
+            this.rotMatCoronal = this.rotMat.clone();
             this.rotMatCoronal = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_CORONAL), this.localizerAngleCoronal, this.rotMatCoronal);
             break;
         case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
-            this.rotMatAxial = this.rotMatCoronal.clone();
+            this.rotMatAxial = this.rotMat.clone();
             this.rotMatAxial = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_AXIAL), this.localizerAngleAxial, this.rotMatAxial);
-            this.rotMatSagittal = this.rotMatCoronal.clone();
+            this.rotMatSagittal = this.rotMat.clone();
             this.rotMatSagittal = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL), this.localizerAngleSagittal, this.rotMatSagittal);
             break;
         default:
