@@ -966,13 +966,19 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
 
     if (this.insideScreenSlice(viewer.axialSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getYDim())) {
         if (!this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_AXIAL)) {
-            imageCoord = this.convertScreenToImageCoordinate(xLoc, yLoc, viewer.axialSlice);
+            var center = this.getSliceCenterPosition(this.axialSlice.sliceDirection);
+            rotatedAngle = viewer.volume.transform.localizerAngleAxial * Math.PI / 180;
+            var inverseRotatedCoordinate = this.getCoordinateFromRotatedSlice(-rotatedAngle, xLoc, yLoc, center.x, center.y, true);
+            imageCoord = this.convertScreenToImageCoordinate(inverseRotatedCoordinate[0], inverseRotatedCoordinate[1], viewer.axialSlice);
             // xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.axialSlice);
             // yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.axialSlice);
+            
             xImageLoc = imageCoord.x;
             yImageLoc = imageCoord.y;
             zImageLoc = imageCoord.z;
-            rotatedAngle = viewer.volume.transform.localizerAngleAxial * Math.PI / 180;
+            // xImageLoc = inverseRotatedCoordinate[0];
+            // yImageLoc = inverseRotatedCoordinate[1];
+            // zImageLoc = imageCoord.z;
             this.currentInteractingSlice = viewer.axialSlice;
 
             if ((xImageLoc !== viewer.currentCoord.x) || (yImageLoc !== viewer.currentCoord.y)) {
@@ -3862,14 +3868,20 @@ papaya.viewer.Viewer.prototype.addParametric = function (imageIndex) {
 
 //Modified 15/01/2020: add method to transform coordinate from rotated image to non-rotated image
 
-papaya.viewer.Viewer.prototype.getCoordinateFromRotatedSlice = function (angle, x, y, originX, originY) {
+papaya.viewer.Viewer.prototype.getCoordinateFromRotatedSlice = function (angle, x, y, originX, originY, inverse) {
     // We need to map the coordinate of the non-rotated image (resulted from rotating the localizers) to that of the rotated image
     // Using Rotation of axes method from https://en.wikipedia.org/wiki/Rotation_of_axes
     // Angle in radians
+    // x, y is screen position
     console.table([angle, x, y, originX, originY]);
     var newX, newY;
-    newX = (x - originX) * Math.cos(angle) + (y - originY) * Math.sin(angle);
-    newY = - (x - originX) * Math.sin(angle) + (y - originY) * Math.cos(angle);
+    if (inverse){
+        newX = (x - originX) * Math.cos(angle) - (y - originY) * Math.sin(angle);
+        newY = (x - originX) * Math.sin(angle) + (y - originY) * Math.cos(angle);
+    } else {
+        newX = (x - originX) * Math.cos(angle) + (y - originY) * Math.sin(angle);
+        newY = - (x - originX) * Math.sin(angle) + (y - originY) * Math.cos(angle);
+    }
     return [newX + originX, newY + originY];
 }
 
@@ -3984,6 +3996,27 @@ papaya.viewer.Viewer.prototype.updateCurrentInteractingSlice = function (mouseX,
     } else if (this.insideScreenSlice(this.coronalSlice, mouseX, mouseY, this.volume.getYDim(), this.volume.getZDim())) {
         this.currentInteractingSlice = this.coronalSlice;
         // console.log('CORONAL BRO');
+    }
+}
+
+papaya.viewer.Viewer.prototype.getSliceCenterPosition = function (sliceLabel) {
+    // get canvas center position
+    var x, y;
+    switch (sliceLabel) {
+        case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
+            xCenter = this.axialSlice.screenOffsetX + (this.axialSlice.screenWidth / 2);
+            yCenter = this.axialSlice.screenOffsetY + (this.axialSlice.screenHeight / 2);
+            return {x: xCenter, y: yCenter};
+        case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
+            xCenter = this.sagittalSlice.screenOffsetX + (this.sagittalSlice.screenWidth / 2);
+            yCenter = this.sagittalSlice.screenOffsetY + (this.sagittalSlice.screenHeight / 2);
+            return {x: xCenter, y: yCenter};
+        case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
+            xCenter = this.coronalSlice.screenOffsetX + (this.coronalSlice.screenWidth / 2);
+            yCenter = this.coronalSlice.screenOffsetY + (this.coronalSlice.screenHeight / 2);
+            return {x: xCenter, y: yCenter};
+        default:
+            break;
     }
 }
 
