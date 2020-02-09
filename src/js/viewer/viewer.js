@@ -966,9 +966,9 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
 
     if (this.insideScreenSlice(viewer.axialSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getYDim())) {
         if (!this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_AXIAL)) {
-            var center = this.getSliceCenterPosition(this.axialSlice.sliceDirection);
+            var center = this.getSliceCenterPosition(this.axialSlice);
             rotatedAngle = viewer.volume.transform.localizerAngleAxial * Math.PI / 180;
-            var inverseRotatedCoordinate = this.getCoordinateFromRotatedSlice(-rotatedAngle, xLoc, yLoc, center.x, center.y, true);
+            var inverseRotatedCoordinate = this.getCoordinateFromRotatedSlice(rotatedAngle, xLoc, yLoc, center.x, center.y, true);
             imageCoord = this.convertScreenToImageCoordinate(inverseRotatedCoordinate[0], inverseRotatedCoordinate[1], viewer.axialSlice);
             // xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.axialSlice);
             // yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.axialSlice);
@@ -982,18 +982,6 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
             this.currentInteractingSlice = viewer.axialSlice;
 
             if ((xImageLoc !== viewer.currentCoord.x) || (yImageLoc !== viewer.currentCoord.y)) {
-                // var center = {
-                //     x: this.convertScreenToImageCoordinateX(viewer.axialSlice.localizerCenter.x, viewer.axialSlice),
-                //     y: this.convertScreenToImageCoordinateY(viewer.axialSlice.localizerCenter.y, viewer.axialSlice)
-                // };
-                // var tempX = xImageLoc - center.x;
-                // var tempY = yImageLoc - center.y;
-                // var theta = -this.volume.transform.localizerAngleSagittal * Math.PI / 180;
-                // var rotatedX = tempX * Math.cos(theta) - tempY * Math.sin(theta);
-                // var rotatedY = tempX * Math.sin(theta) + tempY * Math.cos(theta);
-    
-                // xImageLoc = rotatedX + center.x;
-                // yImageLoc = rotatedY + center.y;
 
                 viewer.currentCoord.x = xImageLoc;
                 viewer.currentCoord.y = yImageLoc;
@@ -1005,25 +993,50 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
     } else if (this.insideScreenSlice(viewer.coronalSlice, xLoc, yLoc, viewer.volume.getXDim(),
             viewer.volume.getZDim())) {
         if (!this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_CORONAL)) {
-            xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.coronalSlice);
-            yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.coronalSlice);
+            // xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.coronalSlice);
+            // yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.coronalSlice);
+            var center = this.getSliceCenterPosition(this.coronalSlice);
+            rotatedAngle = viewer.volume.transform.localizerAngleCoronal * Math.PI / 180;
+            var inverseRotatedCoordinate = this.getCoordinateFromRotatedSlice(rotatedAngle, xLoc, yLoc, center.x, center.y, true);
+            imageCoord = this.convertScreenToImageCoordinate(inverseRotatedCoordinate[0], inverseRotatedCoordinate[1], viewer.coronalSlice);
+            xImageLoc = imageCoord.x;
+            yImageLoc = imageCoord.y;
+            zImageLoc = imageCoord.z;
+
             this.currentInteractingSlice = viewer.coronalSlice;
             if ((xImageLoc !== viewer.currentCoord.x) || (yImageLoc !== viewer.currentCoord.y)) {
+                // viewer.currentCoord.x = xImageLoc;
+                // viewer.currentCoord.z = yImageLoc;
+
                 viewer.currentCoord.x = xImageLoc;
-                viewer.currentCoord.z = yImageLoc;
+                viewer.currentCoord.y = yImageLoc;
+                viewer.currentCoord.z = zImageLoc;
+
                 this.draggingSliceDir = papaya.viewer.ScreenSlice.DIRECTION_CORONAL;
             }
         }
     } else if (this.insideScreenSlice(viewer.sagittalSlice, xLoc, yLoc, viewer.volume.getYDim(),
             viewer.volume.getZDim())) {
         if (!this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL)) {
-            xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.sagittalSlice);
-            yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.sagittalSlice);
+            // xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.sagittalSlice);
+            // yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.sagittalSlice);
+            var center = this.getSliceCenterPosition(this.sagittalSlice);
+            rotatedAngle = viewer.volume.transform.localizerAngleSagittal * Math.PI / 180;
+            var inverseRotatedCoordinate = this.getCoordinateFromRotatedSlice(rotatedAngle, xLoc, yLoc, center.x, center.y, true);
+            imageCoord = this.convertScreenToImageCoordinate(inverseRotatedCoordinate[0], inverseRotatedCoordinate[1], viewer.sagittalSlice);
+            console.log('updatePosition imageCoord', imageCoord);
+            xImageLoc = imageCoord.x;
+            yImageLoc = imageCoord.y;
+            zImageLoc = imageCoord.z;
+
             this.currentInteractingSlice = viewer.sagittalSlice;
             if ((xImageLoc !== viewer.currentCoord.x) || (yImageLoc !== viewer.currentCoord.y)) {
-                temp = xImageLoc;
-                viewer.currentCoord.y = temp;
-                viewer.currentCoord.z = yImageLoc;
+                // viewer.currentCoord.y = xImageLoc;
+                // viewer.currentCoord.z = yImageLoc;
+                viewer.currentCoord.x = xImageLoc;
+                viewer.currentCoord.y = yImageLoc;
+                viewer.currentCoord.z = zImageLoc;
+                
                 this.draggingSliceDir = papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL;
             }
         }
@@ -1852,7 +1865,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         var rotatedLoc = this.getCoordinateFromRotatedSlice(-rotateAngle2, xLoc, yLoc, Math.floor(xCenter), Math.floor(yCenter));
         xLoc = rotatedLoc[0];
         yLoc = rotatedLoc[1];
-        console.log('Sagittal Slice center', xLoc, yLoc);
+        // console.log('Sagittal Slice center', xLoc, yLoc);
 
         this.sagittalSlice.localizerCenter.x = xLoc;
         this.sagittalSlice.localizerCenter.y = yLoc;
@@ -2429,6 +2442,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
             this.isPanning = false;
             this.selectedSlice = null;
             this.controlsHiddenPrimed = false;
+            this.isGrabbingLocalizer = false;
 
             me.handled = true;
         }
@@ -2534,10 +2548,6 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
     var mouseY = currentMouseY - this.canvasRect.top;
     this.updateCurrentInteractingSlice(mouseX, mouseY);
     console.log(mouseX, mouseY);
-    if (!this.isGrabbingLocalizer) {
-        this.localizerDetected = this.detectLocalizer(this.currentInteractingSlice, mouseX, mouseY);
-        this.changeCursor(this.localizerDetected);
-    }
 
     if (this.isDragging) {
         if (this.localizerDetected) this.isGrabbingLocalizer = true;
@@ -2629,7 +2639,10 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             this.drawViewer(true, false, false);
         }
     } else {
-        this.isGrabbingLocalizer = false;
+        if (!this.isGrabbingLocalizer) {
+            this.localizerDetected = this.detectLocalizer(this.currentInteractingSlice, mouseX, mouseY);
+            this.changeCursor(this.localizerDetected);
+        }
         this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me),
             papaya.utilities.PlatformUtils.getMousePositionY(me));
         this.isZoomMode = false;
@@ -3873,7 +3886,7 @@ papaya.viewer.Viewer.prototype.getCoordinateFromRotatedSlice = function (angle, 
     // Using Rotation of axes method from https://en.wikipedia.org/wiki/Rotation_of_axes
     // Angle in radians
     // x, y is screen position
-    console.table([angle, x, y, originX, originY]);
+    // console.table([angle, x, y, originX, originY]);
     var newX, newY;
     if (inverse){
         newX = (x - originX) * Math.cos(angle) - (y - originY) * Math.sin(angle);
@@ -3999,25 +4012,12 @@ papaya.viewer.Viewer.prototype.updateCurrentInteractingSlice = function (mouseX,
     }
 }
 
-papaya.viewer.Viewer.prototype.getSliceCenterPosition = function (sliceLabel) {
+papaya.viewer.Viewer.prototype.getSliceCenterPosition = function (slice) {
     // get canvas center position
     var x, y;
-    switch (sliceLabel) {
-        case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
-            xCenter = this.axialSlice.screenOffsetX + (this.axialSlice.screenWidth / 2);
-            yCenter = this.axialSlice.screenOffsetY + (this.axialSlice.screenHeight / 2);
-            return {x: xCenter, y: yCenter};
-        case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
-            xCenter = this.sagittalSlice.screenOffsetX + (this.sagittalSlice.screenWidth / 2);
-            yCenter = this.sagittalSlice.screenOffsetY + (this.sagittalSlice.screenHeight / 2);
-            return {x: xCenter, y: yCenter};
-        case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
-            xCenter = this.coronalSlice.screenOffsetX + (this.coronalSlice.screenWidth / 2);
-            yCenter = this.coronalSlice.screenOffsetY + (this.coronalSlice.screenHeight / 2);
-            return {x: xCenter, y: yCenter};
-        default:
-            break;
-    }
+    var xCenter = slice.screenOffsetX + (slice.screenWidth / 2);
+    var yCenter = slice.screenOffsetY + (slice.screenHeight / 2);
+    return {x: xCenter, y: yCenter};
 }
 
 papaya.viewer.Viewer.prototype.restoreViewer = function () {

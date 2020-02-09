@@ -485,9 +485,9 @@ papaya.volume.Transform.prototype.updatePosition = function (sliceLabel, volume)
     // this.updateRotationMat(sliceLabel, this.rotMat);
     // this.updateCounterRoll(sliceLabel);
 
-    sliceImageMatAxial = this.getSliceImageMat(this.rotMat);
-    sliceImageMatSagittal = this.getSliceImageMat(this.rotMat);
-    sliceImageMatCoronal = this.getSliceImageMat(this.rotMat);
+    sliceImageMatAxial = this.getSliceImageMat(this.rotMatAxial);
+    sliceImageMatSagittal = this.getSliceImageMat(this.rotMatSagittal);
+    sliceImageMatCoronal = this.getSliceImageMat(this.rotMatCoronal);
     // sliceImageMat = this.getSliceImageMat(this.rotMat, false);
     // sliceImageMatAxial = (sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) ? this.getSliceImageMat(this.rotMatAxial, false) : this.getSliceImageMat(this.getRotationMat(sliceLabel), false);
     // sliceImageMatSagittal = (sliceLabel === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) ? this.getSliceImageMat(this.rotMatSagittal, false) : this.getSliceImageMat(this.getRotationMat(sliceLabel), false);
