@@ -50,6 +50,13 @@ papaya.volume.Transform = papaya.volume.Transform || function (mat, volume) {
     this.localizerAngleAxial = 0;
     this.localizerAngleSagittal = 0;
     this.localizerAngleCoronal = 0;
+
+    this.centerCoord = {
+        x: volume.header.imageDimensions.xDim / 2,
+        y: volume.header.imageDimensions.yDim / 2,
+        z: volume.header.imageDimensions.zDim / 2
+    };
+
     this.updateTransforms(mat);
 };
 
@@ -444,6 +451,7 @@ papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume, 
     centerY = volume.currentCoord.y * volume.volume.header.voxelDimensions.ySize;
     centerZ = volume.currentCoord.z * volume.volume.header.voxelDimensions.zSize;
     this.updateCenterMat(centerX, centerY, centerZ);
+    this.updateCenterCoord(volume.currentCoord.x, volume.currentCoord.y, volume.currentCoord.z);
     // this.updateRotationMat();
     var directions = {
         x: [],
@@ -593,6 +601,11 @@ papaya.volume.Transform.prototype.getSliceImageMat = function (rotationMat, skip
     return tempMat2;
 }
 
+papaya.volume.Transform.prototype.updateCenterCoord = function (x, y, z) {
+    this.centerCoord.x = x;
+    this.centerCoord.y = y;
+    this.centerCoord.z = z;
+};
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 papaya.volume.Transform.prototype.updateCenterMat = function (x, y, z) {
