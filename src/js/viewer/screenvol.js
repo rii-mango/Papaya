@@ -613,9 +613,9 @@ papaya.viewer.ScreenVolume.prototype.resetTransform = function () {
     this.volume.reset();
 };
 
-papaya.viewer.ScreenVolume.prototype.rotateLocalizer = function (angle, sliceLabel, isRotating) {
+papaya.viewer.ScreenVolume.prototype.rotateLocalizer = function (angle, sliceLabel, centerCoord) {
     // var direction = this.getDirections(sliceLabel);
-    this.volume.transform.updateRollImageMat(angle, this, sliceLabel, isRotating);
+    this.volume.transform.updateRollImageMat(angle, this, sliceLabel, centerCoord);
 }
 
 

@@ -130,7 +130,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.currentDetectionRadius = 20;
     this.isGrabbingLocalizer = false;
     this.localizerDetected = 0; // 1: rotate, 2: move, 0: no detection
-
+    this.centerCoordInverse = null;
 
 };
 
@@ -969,9 +969,12 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
             var center = this.getSliceCenterPosition(this.axialSlice);
             rotatedAngle = viewer.volume.transform.localizerAngleAxial * Math.PI / 180;
             var inverseRotatedCoordinate = this.getCoordinateFromRotatedSlice(rotatedAngle, xLoc, yLoc, center.x, center.y, true);
+            var rotatedCoordinate = this.getCoordinateFromRotatedSlice(rotatedAngle, xLoc, yLoc, center.x, center.y, false);
             imageCoord = this.convertScreenToImageCoordinate(inverseRotatedCoordinate[0], inverseRotatedCoordinate[1], viewer.axialSlice);
             // xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.axialSlice);
             // yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.axialSlice);
+            // this.centerCoordInverse = this.convertScreenToImageCoordinate(rotatedCoordinate[0], rotatedCoordinate[1], viewer.axialSlice);
+            this.centerCoordInverse = imageCoord;
             
             xImageLoc = imageCoord.x;
             yImageLoc = imageCoord.y;
@@ -1280,10 +1283,10 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
 
 
 
-papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMIP, isRotating) {
+papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMIP) {
     var radiological = (this.container.preferences.radiological === "Yes"),
         showOrientation = (this.container.preferences.showOrientation === "Yes");
-
+    var currentSliceDir = (this.currentInteractingSlice) ? this.currentInteractingSlice.sliceDirection : -1;
     if (!this.initialized) {
         this.drawEmptyViewer();
         return;
@@ -1304,15 +1307,15 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
         this.sagittalSlice.repaint(this.currentCoord.x, force, this.worldSpace);
     } else {
         if (force || (this.draggingSliceDir !== papaya.viewer.ScreenSlice.DIRECTION_AXIAL)) {
-            this.axialSlice.updateSlice(this.currentCoord.z, force, isRotating, this.worldSpace);
+            this.axialSlice.updateSlice(this.currentCoord.z, force, currentSliceDir);
         }
 
         if (force || (this.draggingSliceDir !== papaya.viewer.ScreenSlice.DIRECTION_CORONAL)) {
-            this.coronalSlice.updateSlice(this.currentCoord.y, force, isRotating, this.worldSpace);
+            this.coronalSlice.updateSlice(this.currentCoord.y, force, currentSliceDir);
         }
 
         if (force || (this.draggingSliceDir !== papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL)) {
-            this.sagittalSlice.updateSlice(this.currentCoord.x, force, isRotating, this.worldSpace);
+            this.sagittalSlice.updateSlice(this.currentCoord.x, force, currentSliceDir);
         }
     }
 
@@ -2640,7 +2643,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                         this.container.display.drawEmptyDisplay();
                     }
                 } else {
-                    console.log('crosshair');
+                    // console.log('crosshair');
                     this.updatePosition(this, currentMouseX, currentMouseY, false);
                     this.resetUpdateTimer(me);
                 }
@@ -2648,11 +2651,12 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
         } else if (this.localizerDetected === 1) { // original: else, no if
             // console.log('mousemove ROTATE', localizerCenter);
             // this.resetUpdateTimer(null);
+            var centerCoord = (this.centerCoordInverse) ? this.centerCoordInverse : this.currentCoord;
             var rotateAngle = this.getRotatingAngle(this.currentInteractingSlice, this.previousMousePosition.x, this.previousMousePosition.y, currentMouseX, currentMouseY);
-            this.screenVolumes[0].rotateLocalizer(rotateAngle, this.currentInteractingSlice.sliceDirection, true);
+            this.screenVolumes[0].rotateLocalizer(rotateAngle, this.currentInteractingSlice.sliceDirection, centerCoord);
             this.previousMousePosition.x = currentMouseX;
             this.previousMousePosition.y = currentMouseY;
-            this.drawViewer(true, false, false);
+            this.drawViewer(false, false, false);
         }
     } else {
         if (!this.isGrabbingLocalizer) {

@@ -443,15 +443,15 @@ papaya.volume.Transform.prototype.getAngleTo = function (v1, v2, v3) {
     else return 360 - angle;
 }
 
-papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume, sliceLabel, isRotating) {
+papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume, sliceLabel, centerCoord) {
     console.log('%cupdateRollImageMat', "color: green", sliceLabel);
     var centerX, centerY, centerZ;
     var rotateOnAxis;
-    centerX = volume.currentCoord.x * volume.volume.header.voxelDimensions.xSize;
-    centerY = volume.currentCoord.y * volume.volume.header.voxelDimensions.ySize;
-    centerZ = volume.currentCoord.z * volume.volume.header.voxelDimensions.zSize;
+    centerX = centerCoord.x * volume.volume.header.voxelDimensions.xSize;
+    centerY = centerCoord.y * volume.volume.header.voxelDimensions.ySize;
+    centerZ = centerCoord.z * volume.volume.header.voxelDimensions.zSize;
     this.updateCenterMat(centerX, centerY, centerZ);
-    this.updateCenterCoord(volume.currentCoord.x, volume.currentCoord.y, volume.currentCoord.z);
+    this.updateCenterCoord(centerCoord.x, centerCoord.y, centerCoord.z);
     // this.updateRotationMat();
     var directions = {
         x: [],
