@@ -444,7 +444,7 @@ papaya.volume.Transform.prototype.getAngleTo = function (v1, v2, v3) {
 }
 
 papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume, sliceLabel, centerCoord) {
-    console.log('%cupdateRollImageMat', "color: green", sliceLabel);
+    // console.log('%cupdateRollImageMat', "color: green", sliceLabel);
     var centerX, centerY, centerZ;
     var rotateOnAxis;
     centerX = centerCoord.x * volume.volume.header.voxelDimensions.xSize;
@@ -472,10 +472,10 @@ papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume, 
     directions.x = [this.rotMat[0][0], this.rotMat[0][1], this.rotMat[0][2]];
     directions.y = [this.rotMat[1][0], this.rotMat[1][1], this.rotMat[1][2]];
     directions.z = [this.rotMat[2][0], this.rotMat[2][1], this.rotMat[2][2]];
-    console.log('directions');
-    console.table(directions);
+    // console.log('directions');
+    // console.table(directions);
     this.updateLocalizerAngle(sliceLabel, directions, angle);
-    console.table([this.localizerAngleAxial, this.localizerAngleCoronal, this.localizerAngleSagittal]);
+    // console.table([this.localizerAngleAxial, this.localizerAngleCoronal, this.localizerAngleSagittal]);
     // console.table([this.localizerAngleAxial, this.localizerAngleSagittal, this.localizerAngleCoronal]);
     this.volume.transform.updateRollTransforms([this.getSliceImageMat(this.rotMatAxial), this.getSliceImageMat(this.rotMatSagittal), this.getSliceImageMat(this.rotMatCoronal)]);
 }
