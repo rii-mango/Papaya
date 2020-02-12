@@ -489,6 +489,7 @@ papaya.volume.Transform.prototype.updatePosition = function (sliceLabel, volume)
     centerY = volume.currentCoord.y * volume.volume.header.voxelDimensions.ySize;
     centerZ = volume.currentCoord.z * volume.volume.header.voxelDimensions.zSize;
     // this.updateCenterMat(centerX, centerY, centerZ);
+    // this.updateCenterCoord(centerCoord.x, centerCoord.y, centerCoord.z);
 
     // this.updateRotationMat(sliceLabel, this.rotMat);
     // this.updateCounterRoll(sliceLabel);
@@ -549,7 +550,7 @@ papaya.volume.Transform.prototype.updateRotationMat = function (sliceLabelExclud
             this.rotMatSagittal = this.applyRotation(this.getDirections(papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL), -this.localizerAngleSagittal, this.rotMatSagittal);
             break;
         default:
-            this.rotMat = tempRotMat.clone();
+            // this.rotMat = tempRotMat.clone();
             break;
     }
 }
