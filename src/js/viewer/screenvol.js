@@ -624,6 +624,11 @@ papaya.viewer.ScreenVolume.prototype.updatePosition = function (sliceLabel, cent
     this.volume.transform.updatePosition(sliceLabel, this, centerCoord);
 }
 
+papaya.viewer.ScreenVolume.prototype.updateCenterCoord = function (centerCoord) {
+    // var direction = this.getDirections(sliceLabel);
+    this.volume.transform.updateCenterCoord(centerCoord.x, centerCoord.y, centerCoord.z);
+}
+
 papaya.viewer.ScreenVolume.prototype.getDirections = function (slice) {
     switch (slice) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
