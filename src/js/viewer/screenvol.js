@@ -618,6 +618,11 @@ papaya.viewer.ScreenVolume.prototype.rotateLocalizer = function (angle, sliceLab
     this.volume.transform.updateRollImageMat(angle, this, sliceLabel, centerCoord);
 }
 
+papaya.viewer.ScreenVolume.prototype.resetSliceRotation = function (sliceLabel, centerCoord) {
+    // var direction = this.getDirections(sliceLabel);
+    var angle = this.getSliceRotatingAngle(sliceLabel);
+    this.volume.transform.updateRollImageMat(-angle, this, sliceLabel, centerCoord);
+}
 
 papaya.viewer.ScreenVolume.prototype.updatePosition = function (sliceLabel, centerCoord) {
     // var direction = this.getDirections(sliceLabel);
@@ -640,4 +645,8 @@ papaya.viewer.ScreenVolume.prototype.getDirections = function (slice) {
         default:
             return [0, 0, 1];
     }
+}
+
+papaya.viewer.ScreenVolume.prototype.getSliceRotatingAngle = function (sliceLabel) {
+    return this.volume.transform.getSliceRotatingAngle(sliceLabel);
 }

@@ -505,6 +505,35 @@ papaya.volume.Transform.prototype.updatePosition = function (sliceLabel, volume)
     this.volume.transform.updateRollTransforms([sliceImageMatAxial, sliceImageMatSagittal, sliceImageMatCoronal]);
 }
 
+papaya.volume.Transform.prototype.resetSliceRotation = function (sliceLabel) {
+    switch (sliceLabel) {
+        case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
+            this.localizerAngleAxial = 0;
+            break;
+        case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
+            this.localizerAngleSagittal = 0;
+            break;
+        case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
+            this.localizerAngleCoronal = 0;
+            break;
+        default:
+            break;
+    }
+}
+
+papaya.volume.Transform.prototype.getSliceRotatingAngle = function (sliceLabel) {
+    switch (sliceLabel) {
+        case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
+            return this.localizerAngleAxial;
+        case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
+            return this.localizerAngleSagittal;
+        case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
+            return this.localizerAngleCoronal;
+        default:
+            break;
+    }
+}
+
 papaya.volume.Transform.prototype.applyRotation = function (direction, angle, mat) {
     var rotateOnAxis = this.rotateOnAxis(direction, angle);
     var tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(mat, rotateOnAxis);
