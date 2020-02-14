@@ -618,10 +618,19 @@ papaya.viewer.ScreenVolume.prototype.rotateLocalizer = function (angle, sliceLab
     this.volume.transform.updateRollImageMat(angle, this, sliceLabel, centerCoord);
 }
 
-papaya.viewer.ScreenVolume.prototype.resetSliceRotation = function (sliceLabel, centerCoord) {
+papaya.viewer.ScreenVolume.prototype.updateCenterMat = function (centerCoord, skip) {
+    var centerX, centerY, centerZ;
+    centerX = centerCoord.x * this.volume.header.voxelDimensions.xSize;
+    centerY = centerCoord.y * this.volume.header.voxelDimensions.ySize;
+    centerZ = centerCoord.z * this.volume.header.voxelDimensions.zSize;
+    this.volume.transform.updateCenterMat(centerX, centerY, centerZ);
+    if (!skip) this.volume.transform.updateCenterCoord(centerCoord.x, centerCoord.y, centerCoord.z);
+}
+
+papaya.viewer.ScreenVolume.prototype.resetSliceRotation = function (sliceLabel) {
     // var direction = this.getDirections(sliceLabel);
     var angle = this.getSliceRotatingAngle(sliceLabel);
-    this.volume.transform.updateRollImageMat(-angle, this, sliceLabel, centerCoord);
+    this.volume.transform.updateRollImageMat(-angle, this, sliceLabel);
 }
 
 papaya.viewer.ScreenVolume.prototype.updatePosition = function (sliceLabel, centerCoord) {

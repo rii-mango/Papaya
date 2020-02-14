@@ -445,13 +445,6 @@ papaya.volume.Transform.prototype.getAngleTo = function (v1, v2, v3) {
 
 papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume, sliceLabel, centerCoord) {
     // console.log('%cupdateRollImageMat', "color: green", sliceLabel);
-    var centerX, centerY, centerZ;
-    var rotateOnAxis;
-    centerX = centerCoord.x * volume.volume.header.voxelDimensions.xSize;
-    centerY = centerCoord.y * volume.volume.header.voxelDimensions.ySize;
-    centerZ = centerCoord.z * volume.volume.header.voxelDimensions.zSize;
-    this.updateCenterMat(centerX, centerY, centerZ);
-    this.updateCenterCoord(centerCoord.x, centerCoord.y, centerCoord.z);
     // this.updateRotationMat();
     var directions = {
         x: [],
@@ -483,11 +476,11 @@ papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume, 
 papaya.volume.Transform.prototype.updatePosition = function (sliceLabel, volume) {
     // update position across viewport
     // update center
-    var centerX, centerY, centerZ;
+    // var centerX, centerY, centerZ;
     var sliceImageMatAxial, sliceImageMatSagittal, sliceImageMatCoronal;
-    centerX = volume.currentCoord.x * volume.volume.header.voxelDimensions.xSize;
-    centerY = volume.currentCoord.y * volume.volume.header.voxelDimensions.ySize;
-    centerZ = volume.currentCoord.z * volume.volume.header.voxelDimensions.zSize;
+    // centerX = volume.currentCoord.x * volume.volume.header.voxelDimensions.xSize;
+    // centerY = volume.currentCoord.y * volume.volume.header.voxelDimensions.ySize;
+    // centerZ = volume.currentCoord.z * volume.volume.header.voxelDimensions.zSize;
     // this.updateCenterMat(centerX, centerY, centerZ);
     // this.updateCenterCoord(centerCoord.x, centerCoord.y, centerCoord.z);
 

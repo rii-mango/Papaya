@@ -971,7 +971,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
             // console.log(this.axialSlice.finalTransform);
             rotatedAngle = viewer.volume.transform.localizerAngleAxial * Math.PI / 180;
             var inverseRotatedCoordinate = this.getCoordinateFromRotatedSlice(rotatedAngle, xLoc, yLoc, center.x, center.y, true);
-            imageCoord = this.convertScreenToImageCoordinate(inverseRotatedCoordinate[0], inverseRotatedCoordinate[1], viewer.axialSlice, true);
+            imageCoord = this.convertScreenToImageCoordinate(inverseRotatedCoordinate[0], inverseRotatedCoordinate[1], viewer.axialSlice);
             // xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.axialSlice);
             // yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.axialSlice);
             // var absCenter = this.getSliceCenterPosition(this.axialSlice, true);
@@ -1718,6 +1718,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
 papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
     var xLoc, yStart, yEnd, yLoc, xStart, xEnd, rotateAngle, rotateAngle2;
+    console.log('drawCrosshairs');
     // Modified 18/12/2019 add clearRect function
     this.contextAnnotation.clearRect(0, 0, this.canvasAnnotation.width, this.canvasAnnotation.height);
     ///////////////////////
@@ -2648,13 +2649,13 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                     console.log("crosshair");
                     var currentRotatingAngle = this.screenVolumes[0].getSliceRotatingAngle(this.currentInteractingSlice.sliceDirection);
                     // this.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection, this.currentCoord);
-                    this.screenVolumes[0].resetSliceRotation(this.currentInteractingSlice.sliceDirection, this.currentCoord);
+                    // this.screenVolumes[0].resetSliceRotation(this.currentInteractingSlice.sliceDirection, this.currentCoord);
                     this.updatePosition(this, currentMouseX, currentMouseY, false);
-                    this.screenVolumes[0].rotateLocalizer(currentRotatingAngle, this.currentInteractingSlice.sliceDirection, this.currentCoord);
+                    // this.screenVolumes[0].rotateLocalizer(currentRotatingAngle, this.currentInteractingSlice.sliceDirection, this.currentCoord);
                     this.previousMousePosition.x = currentMouseX;
                     this.previousMousePosition.y = currentMouseY;
-                    console.log('localizer center: ', this.currentInteractingSlice.localizerCenter);
-                    console.log('currentCoord center: ', this.convertCoordinateToScreen(this.currentCoord, this.currentInteractingSlice));
+                    // console.log('localizer center: ', this.currentInteractingSlice.localizerCenter);
+                    // console.log('currentCoord center: ', this.convertCoordinateToScreen(this.currentCoord, this.currentInteractingSlice));
                     this.drawViewer(false, false, false);
                     // this.resetUpdateTimer(me);
                 }
@@ -2662,19 +2663,39 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
         } else if (this.localizerDetected === 1) { // original: else, no if
             this.updateOffsetRect();
             var localizerCenter = this.currentInteractingSlice.localizerCenter;
-            console.log('localizer center: ', localizerCenter);
-            console.log('currentCoord center: ', this.convertCoordinateToScreen(this.currentCoord, this.currentInteractingSlice));
+            var oldCenter = this.convertCoordinateToScreen(this.volume.transform.centerCoord, this.currentInteractingSlice)
+            // console.log('localizer center: ', localizerCenter);
+            // console.log('currentCoord center: ', this.convertCoordinateToScreen(this.currentCoord, this.currentInteractingSlice));
             // console.log('slice center: ', this.volume.transform.centerCoord);
             var currentRotatingAngle = this.screenVolumes[0].getSliceRotatingAngle(this.currentInteractingSlice.sliceDirection);
             var rotateAngle = this.getRotatingAngle(this.currentInteractingSlice, this.previousMousePosition.x, this.previousMousePosition.y, currentMouseX, currentMouseY);
-            // this.screenVolumes[0].rotateLocalizer(rotateAngle, this.currentInteractingSlice.sliceDirection, this.currentCoord);
-            // console.log(currentRotatingAngle, rotateAngle);
-            // this.screenVolumes[0].rotateLocalizer(rotateAngle, this.currentInteractingSlice.sliceDirection, this.currentCoord);
-            this.screenVolumes[0].resetSliceRotation(this.currentInteractingSlice.sliceDirection, this.currentCoord);
-            this.updatePosition(this, localizerCenter.x + this.canvasRect.left, localizerCenter.y + this.canvasRect.top, false);
-            // this.volume.transform.localizerAngleAxial = currentRotatingAngle + rotateAngle;
-            this.screenVolumes[0].rotateLocalizer(rotateAngle + currentRotatingAngle, this.currentInteractingSlice.sliceDirection, this.currentCoord);
+            var oldCoord = this.volume.transform.centerCoord;
+            this.screenVolumes[0].updateCenterMat(this.currentCoord);
+            this.screenVolumes[0].resetSliceRotation(this.currentInteractingSlice.sliceDirection);
             // this.updatePosition(this, localizerCenter.x + this.canvasRect.left, localizerCenter.y + this.canvasRect.top, false);
+            // this.updatePosition(this, oldCenter.x + this.canvasRect.left, oldCenter.y + this.canvasRect.top, false);
+            // this.screenVolumes[0].updateCenterMat(this.currentCoord);
+            this.updatePosition(this, localizerCenter.x + this.canvasRect.left, localizerCenter.y + this.canvasRect.top, false);
+            this.screenVolumes[0].updateCenterMat(this.currentCoord);
+            // var currentCoord = this.currentCoord;
+            // var oldCoord = this.volume.transform.centerCoord;
+            this.screenVolumes[0].rotateLocalizer(rotateAngle + currentRotatingAngle, this.currentInteractingSlice.sliceDirection);
+            // this.screenVolumes[0].resetSliceRotation(this.currentInteractingSlice.sliceDirection);
+            // this.updatePosition(this, oldCenter.x + this.canvasRect.left, oldCenter.y + this.canvasRect.top, false);
+
+            // this.screenVolumes[0].updateCenterMat(this.currentCoord);
+            // this.screenVolumes[0].rotateLocalizer(rotateAngle + currentRotatingAngle, this.currentInteractingSlice.sliceDirection);
+
+            // this.currentCoord = currentCoord;
+            // this.screenVolumes[0].updateCenterMat(oldCoord);
+            // this.screenVolumes[0].resetSliceRotation(this.currentInteractingSlice.sliceDirection);
+
+            // this.updatePosition(this, oldCenter.x + this.canvasRect.left, oldCenter.y + this.canvasRect.top, false);
+
+            // this.screenVolumes[0].updateCenterMat(this.currentCoord);
+            // this.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection);
+            // this.updatePosition(this, oldCenter.x + this.canvasRect.left, oldCenter.y + this.canvasRect.top, false);
+            // this.volume.transform.centerCoord = this.currentCoord;
             this.drawViewer(false, false, false);
             this.previousMousePosition.x = currentMouseX;
             this.previousMousePosition.y = currentMouseY;
@@ -4118,7 +4139,8 @@ papaya.viewer.Viewer.prototype.getSliceCenterPosition = function (slice, isAbsol
 }
 
 papaya.viewer.Viewer.prototype.restoreViewer = function () {
-    this.screenVolumes[0].resetTransform();
+    // this.screenVolumes[0].resetTransform();
+    this.volume.reset();
     this.currentCoord.setCoordinate(papayaFloorFast(this.volume.getXDim() / 2), papayaFloorFast(this.volume.getYDim() / 2),
     papayaFloorFast(this.volume.getZDim() / 2));
     this.drawViewer(true, false);
