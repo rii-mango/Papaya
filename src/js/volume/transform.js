@@ -820,7 +820,6 @@ papaya.volume.Transform.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, tim
     // xTrans = ((xLoc * this.mmMat[0][0]) + (yLoc * this.mmMat[0][1]) + (zLoc * this.mmMat[0][2]) + (this.mmMat[0][3]));
     // yTrans = ((xLoc * this.mmMat[1][0]) + (yLoc * this.mmMat[1][1]) + (zLoc * this.mmMat[1][2]) + (this.mmMat[1][3]));
     // zTrans = ((xLoc * this.mmMat[2][0]) + (yLoc * this.mmMat[2][1]) + (zLoc * this.mmMat[2][2]) + (this.mmMat[2][3]));
-
     xTrans = ((xLoc * mat[0][0]) + (yLoc * mat[0][1]) + (zLoc * mat[0][2]) + (mat[0][3]));
     yTrans = ((xLoc * mat[1][0]) + (yLoc * mat[1][1]) + (zLoc * mat[1][2]) + (mat[1][3]));
     zTrans = ((xLoc * mat[2][0]) + (yLoc * mat[2][1]) + (zLoc * mat[2][2]) + (mat[2][3]));
@@ -833,10 +832,13 @@ papaya.volume.Transform.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, tim
 papaya.volume.Transform.prototype.getmmMatFromSlice = function (sliceLabel) {
     switch (sliceLabel) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
+            if (!this.mmMatAxial) this.mmMatAxial = this.getSliceImageMat(this.rotMatAxial);
             return this.mmMatAxial;
         case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
+            if (!this.mmMatSagittal) this.mmMatSagittal = this.getSliceImageMat(this.rotMatSagittal);
             return this.mmMatSagittal;
         case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
+            if (!this.mmMatCoronal) this.mmMatCoronal = this.getSliceImageMat(this.rotMatCoronal);
             return this.mmMatCoronal;
         default:
             return;

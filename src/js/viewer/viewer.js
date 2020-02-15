@@ -2657,7 +2657,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                     this.previousMousePosition.y = currentMouseY;
                     // console.log('localizer center: ', this.currentInteractingSlice.localizerCenter);
                     // console.log('currentCoord center: ', this.convertCoordinateToScreen(this.currentCoord, this.currentInteractingSlice));
-                    this.drawViewer(false, false, false);
+                    this.drawViewer(true, false, false);
                     // this.resetUpdateTimer(me);
                 }
             }
@@ -2697,7 +2697,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             // this.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection);
             // this.updatePosition(this, oldCenter.x + this.canvasRect.left, oldCenter.y + this.canvasRect.top, false);
             // this.volume.transform.centerCoord = this.currentCoord;
-            this.drawViewer(false, false, false);
+            this.drawViewer(true, false, false);
             this.previousMousePosition.x = currentMouseX;
             this.previousMousePosition.y = currentMouseY;
             // this.drawViewer(false, false, false);
@@ -2890,8 +2890,9 @@ papaya.viewer.Viewer.prototype.gotoCoordinate = function (coor, nosync) {
     } else {
         this.currentCoord.z = coor.z;
     }
-
+    this.reactPapayaViewport.setState({ indexChanged: true });
     this.drawViewer(true);
+    this.reactPapayaViewport.setState({ indexChanged: false });
     this.updateSliceSliderControl();
 
     if (nosync) {
