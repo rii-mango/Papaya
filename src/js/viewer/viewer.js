@@ -2651,7 +2651,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                     // this.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection, this.currentCoord);
                     // this.screenVolumes[0].resetSliceRotation(this.currentInteractingSlice.sliceDirection, this.currentCoord);
                     this.updatePosition(this, currentMouseX, currentMouseY, false);
-                    this.screenVolumes[0].updateCenterCoord(this.currentCoord, true);
+                    // this.screenVolumes[0].updateCenterCoord(this.currentCoord, true);
                     // this.screenVolumes[0].rotateLocalizer(currentRotatingAngle, this.currentInteractingSlice.sliceDirection, this.currentCoord);
                     this.previousMousePosition.x = currentMouseX;
                     this.previousMousePosition.y = currentMouseY;
