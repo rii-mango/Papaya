@@ -131,7 +131,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.isGrabbingLocalizer = false;
     this.localizerDetected = 0; // 1: rotate, 2: move, 0: no detection
     this.centerCoordInverse = null;
-
+    this.screenDrawing = new papaya.viewer.ScreenDrawing();
 };
 
 
@@ -937,9 +937,12 @@ papaya.viewer.Viewer.prototype.loadAtlas = function () {
 
 
 papaya.viewer.Viewer.prototype.isInsideMainSlice = function (xLoc, yLoc) {
-    this.updateOffsetRect();
-    xLoc = xLoc - this.canvasRect.left;
-    yLoc = yLoc - this.canvasRect.top;
+    // this.updateOffsetRect();
+    // xLoc = xLoc - this.canvasRect.left;
+    // yLoc = yLoc - this.canvasRect.top;
+    var loc = this.convertMouseCoordToCanvas(xLoc, yLoc);
+    xLoc = loc.x;
+    yLoc = loc.y;
 
     if (this.mainImage === this.axialSlice) {
         return this.insideScreenSlice(this.axialSlice, xLoc, yLoc, this.volume.getXDim(), this.volume.getYDim());
@@ -958,15 +961,17 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
     var xImageLoc, yImageLoc, zImageLoc, temp, originalX, originalY, surfaceCoord;
     var rotatedAngle, imageCoord;
     // var sliceLabel = null;
-    viewer.updateOffsetRect();
+    // viewer.updateOffsetRect();
     originalX = xLoc;
     originalY = yLoc;
-    xLoc = xLoc - this.canvasRect.left;
-    yLoc = yLoc - this.canvasRect.top;
+    // xLoc = xLoc - this.canvasRect.left;
+    // yLoc = yLoc - this.canvasRect.top;
 
     if (this.insideScreenSlice(viewer.axialSlice, xLoc, yLoc, viewer.volume.getXDim(), viewer.volume.getYDim())) {
         if (this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_AXIAL)) {
-            var center = this.getSliceCenterPosition(this.axialSlice, false);
+            // var center = this.getSliceCenterPosition(this.axialSlice, false);
+            var center = this.axialSlice.getCenter(this.volume, false);
+
             // var center = this.this.axialSlice.localizerCenter;
             // console.log(this.axialSlice.finalTransform);
             rotatedAngle = viewer.volume.transform.localizerAngleAxial * Math.PI / 180;
@@ -1001,7 +1006,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
         if (this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_CORONAL)) {
             // xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.coronalSlice);
             // yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.coronalSlice);
-            var center = this.getSliceCenterPosition(this.coronalSlice);
+            var center = this.coronalSlice.getCenter(this.volume, false);
             rotatedAngle = viewer.volume.transform.localizerAngleCoronal * Math.PI / 180;
             var inverseRotatedCoordinate = this.getCoordinateFromRotatedSlice(-rotatedAngle, xLoc, yLoc, center.x, center.y, true);
             imageCoord = this.convertScreenToImageCoordinate(inverseRotatedCoordinate[0], inverseRotatedCoordinate[1], viewer.coronalSlice);
@@ -1026,7 +1031,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
         if (this.isDragging || (this.draggingSliceDir === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL)) {
             // xImageLoc = this.convertScreenToImageCoordinateX(xLoc, viewer.sagittalSlice);
             // yImageLoc = this.convertScreenToImageCoordinateY(yLoc, viewer.sagittalSlice);
-            var center = this.getSliceCenterPosition(this.sagittalSlice);
+            var center = this.sagittalSlice.getCenter(this.volume, false);
             rotatedAngle = viewer.volume.transform.localizerAngleSagittal * Math.PI / 180;
             var inverseRotatedCoordinate = this.getCoordinateFromRotatedSlice(-rotatedAngle, xLoc, yLoc, center.x, center.y, true);
             imageCoord = this.convertScreenToImageCoordinate(inverseRotatedCoordinate[0], inverseRotatedCoordinate[1], viewer.sagittalSlice);
@@ -2650,7 +2655,8 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                     var currentRotatingAngle = this.screenVolumes[0].getSliceRotatingAngle(this.currentInteractingSlice.sliceDirection);
                     // this.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection, this.currentCoord);
                     // this.screenVolumes[0].resetSliceRotation(this.currentInteractingSlice.sliceDirection, this.currentCoord);
-                    this.updatePosition(this, currentMouseX, currentMouseY, false);
+                    var canvasLoc = this.convertMouseCoordToCanvas(currentMouseX, currentMouseY);
+                    this.updatePosition(this, canvasLoc.x, canvasLoc.y, false);
                     // this.screenVolumes[0].updateCenterCoord(this.currentCoord, true);
                     // this.screenVolumes[0].rotateLocalizer(currentRotatingAngle, this.currentInteractingSlice.sliceDirection, this.currentCoord);
                     this.previousMousePosition.x = currentMouseX;
@@ -2662,7 +2668,6 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                 }
             }
         } else if (this.localizerDetected === 1) { // original: else, no if
-            this.updateOffsetRect();
             var localizerCenter = this.currentInteractingSlice.localizerCenter;
             var oldCenter = this.convertCoordinateToScreen(this.volume.transform.centerCoord, this.currentInteractingSlice)
             // console.log('localizer center: ', localizerCenter);
@@ -2676,7 +2681,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             // this.updatePosition(this, localizerCenter.x + this.canvasRect.left, localizerCenter.y + this.canvasRect.top, false);
             // this.updatePosition(this, oldCenter.x + this.canvasRect.left, oldCenter.y + this.canvasRect.top, false);
             // this.screenVolumes[0].updateCenterMat(this.currentCoord);
-            this.updatePosition(this, localizerCenter.x + this.canvasRect.left, localizerCenter.y + this.canvasRect.top, false);
+            this.updatePosition(this, localizerCenter.x, localizerCenter.y, false);
             this.screenVolumes[0].updateCenterMat(this.currentCoord);
             // var currentCoord = this.currentCoord;
             // var oldCoord = this.volume.transform.centerCoord;
@@ -4146,4 +4151,11 @@ papaya.viewer.Viewer.prototype.restoreViewer = function () {
     this.currentCoord.setCoordinate(papayaFloorFast(this.volume.getXDim() / 2), papayaFloorFast(this.volume.getYDim() / 2),
     papayaFloorFast(this.volume.getZDim() / 2));
     this.drawViewer(true, false);
+}
+
+papaya.viewer.Viewer.prototype.convertMouseCoordToCanvas = function (mouseX, mouseY) {
+    this.updateOffsetRect();
+    mouseX -= this.canvasRect.left;
+    mouseY -= this.canvasRect.top;
+    return {x: mouseX, y: mouseY};
 }

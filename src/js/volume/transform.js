@@ -276,9 +276,9 @@ papaya.volume.Transform.prototype.updateMmTransform = function () {
             (this.indexMat[ctrOut][3] * this.sizeMatInverse[3][ctrIn]);
         }
     }
-    this.mmMatAxial = papaya.utilities.ArrayUtils.multiplyMatrices(this.indexMatAxial, this.sizeMatInverse);
-    this.mmMatSagittal = papaya.utilities.ArrayUtils.multiplyMatrices(this.indexMatSagittal, this.sizeMatInverse);
-    this.mmMatCoronal = papaya.utilities.ArrayUtils.multiplyMatrices(this.indexMatCoronal, this.sizeMatInverse);
+    this.mmMatAxial = papaya.utilities.MatrixUtils.multiplyMatrices(this.indexMatAxial, this.sizeMatInverse);
+    this.mmMatSagittal = papaya.utilities.MatrixUtils.multiplyMatrices(this.indexMatSagittal, this.sizeMatInverse);
+    this.mmMatCoronal = papaya.utilities.MatrixUtils.multiplyMatrices(this.indexMatCoronal, this.sizeMatInverse);
 };
 
 papaya.volume.Transform.prototype.updateOriginMat = function () {
@@ -394,27 +394,6 @@ papaya.volume.Transform.prototype.updateImageMat = function (centerX, centerY, c
     }
     this.volume.transform.updateTransforms(this.tempMat2);
 };
-// Modified 13/01/2020: add functions to support localizer rotation
-papaya.volume.Transform.prototype.rotateOnAxis = function (axis, angle) {
-    var rotationMatrix = papaya.volume.Transform.IDENTITY;
-    var theta = (angle * Math.PI) / 180;
-    var cosTheta = Math.cos(theta);
-    var sinTheta = Math.sin(theta);
-//  https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
-    rotationMatrix[0][0] = cosTheta + axis[0]*axis[0]*(1 - cosTheta);
-    rotationMatrix[1][0] = axis[1]*axis[0]*(1 - cosTheta) + axis[2]*sinTheta;
-    rotationMatrix[2][0] = axis[2]*axis[0]*(1 - cosTheta) - axis[1]*sinTheta;
-
-    rotationMatrix[0][1] = axis[0]*axis[1]*(1 - cosTheta) - axis[2]*sinTheta;
-    rotationMatrix[1][1] = cosTheta + axis[1]*axis[1]*(1 - cosTheta);
-    rotationMatrix[2][1] = axis[2]*axis[1]*(1 - cosTheta) + axis[0]*sinTheta;
-
-    rotationMatrix[0][2] = axis[0]*axis[2]*(1 - cosTheta) + axis[1]*sinTheta;
-    rotationMatrix[1][2] = axis[1]*axis[2]*(1 - cosTheta) - axis[0]*sinTheta;
-    rotationMatrix[2][2] = cosTheta + axis[2]*axis[2]*(1 - cosTheta);
-
-    return rotationMatrix;
-}
 
 papaya.volume.Transform.prototype.clampZero = function (num) {
     var epsilon = 0.0001;
@@ -528,8 +507,8 @@ papaya.volume.Transform.prototype.getSliceRotatingAngle = function (sliceLabel) 
 }
 
 papaya.volume.Transform.prototype.applyRotation = function (direction, angle, mat) {
-    var rotateOnAxis = this.rotateOnAxis(direction, angle);
-    var tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(mat, rotateOnAxis);
+    var rotateOnAxis = papaya.utilities.MatrixUtils.rotateOnAxis(direction, angle);
+    var tempMat = papaya.utilities.MatrixUtils.multiplyMatrices(mat, rotateOnAxis);
     return tempMat;
 }
 
@@ -610,16 +589,16 @@ papaya.volume.Transform.prototype.getSliceImageMat = function (rotationMat, skip
     var tempMat, tempMat2;
     if (skip) {
         rotationMat = papaya.volume.Transform.IDENTITY.clone();
-        tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(this.sizeMatInverse, this.centerMatInverse);
-        tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat, rotationMat);
-        tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat2, this.centerMat);
-        tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat, this.sizeMat);
+        tempMat = papaya.utilities.MatrixUtils.multiplyMatrices(this.sizeMatInverse, this.centerMatInverse);
+        tempMat2 = papaya.utilities.MatrixUtils.multiplyMatrices(tempMat, rotationMat);
+        tempMat = papaya.utilities.MatrixUtils.multiplyMatrices(tempMat2, this.centerMat);
+        tempMat2 = papaya.utilities.MatrixUtils.multiplyMatrices(tempMat, this.sizeMat);
         // console.table(papaya.volume.Transform.decompose(tempMat2));
     } else {
-        tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(this.sizeMatInverse, this.centerMatInverse);
-        tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat, rotationMat);
-        tempMat = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat2, this.centerMat);
-        tempMat2 = papaya.utilities.ArrayUtils.multiplyMatrices(tempMat, this.sizeMat);
+        tempMat = papaya.utilities.MatrixUtils.multiplyMatrices(this.sizeMatInverse, this.centerMatInverse);
+        tempMat2 = papaya.utilities.MatrixUtils.multiplyMatrices(tempMat, rotationMat);
+        tempMat = papaya.utilities.MatrixUtils.multiplyMatrices(tempMat2, this.centerMat);
+        tempMat2 = papaya.utilities.MatrixUtils.multiplyMatrices(tempMat, this.sizeMat);
     }
     return tempMat2;
 }
@@ -846,9 +825,9 @@ papaya.volume.Transform.prototype.getmmMatFromSlice = function (sliceLabel) {
 }
 
 papaya.volume.Transform.prototype.updateIndexSliceTransform = function (imageMats) {
-    this.indexMatAxial = papaya.utilities.ArrayUtils.multiplyMatrices(this.orientMat, imageMats[0]);
-    this.indexMatSagittal = papaya.utilities.ArrayUtils.multiplyMatrices(this.orientMat, imageMats[1]);
-    this.indexMatCoronal = papaya.utilities.ArrayUtils.multiplyMatrices(this.orientMat, imageMats[2]);
+    this.indexMatAxial = papaya.utilities.MatrixUtils.multiplyMatrices(this.orientMat, imageMats[0]);
+    this.indexMatSagittal = papaya.utilities.MatrixUtils.multiplyMatrices(this.orientMat, imageMats[1]);
+    this.indexMatCoronal = papaya.utilities.MatrixUtils.multiplyMatrices(this.orientMat, imageMats[2]);
 };
 
 papaya.volume.Transform.prototype.getDirections = function (sliceLabel) {

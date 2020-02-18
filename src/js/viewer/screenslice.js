@@ -603,6 +603,22 @@ papaya.viewer.ScreenSlice.prototype.getYDim = function () {
     return this.yDim;
 };
 
+papaya.viewer.ScreenSlice.prototype.getCenter = function (volume, isAbsolute) {
+    var xCenter, yCenter;
+    // var slice = this;
+    if (isAbsolute) {
+        xCenter = this.screenOffsetX + (this.screenWidth / 2);
+        yCenter = this.screenOffsetY + (this.screenHeight / 2);
+    } else {
+        xCenter = (this.finalTransform[0][2] + (volume.transform.centerCoord.x + 0.5) *
+        this.finalTransform[0][0]);
+        yCenter = (this.finalTransform[1][2] + (volume.transform.centerCoord.y + 0.5) *
+        this.finalTransform[1][1]);
+    }
+
+    return {x: xCenter, y: yCenter};
+}
+
 
 
 papaya.viewer.ScreenSlice.prototype.updateZoomTransform = function (zoomFactor, xZoomTrans, yZoomTrans, xPanTrans,
