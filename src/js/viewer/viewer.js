@@ -1509,7 +1509,11 @@ papaya.viewer.Viewer.prototype.drawAnnotation = function () {
     if (this.mainImage === this.surfaceView) {
         return;
     }
+
+
     this.drawCrosshairs();
+    this.screenDrawing.drawCurve(this.contextAnnotation, this.canvasAnnotation);
+
     // this.contextAnnotation.setTransform(1, 0, 0, 1, 0, 0);
     this.contextAnnotation.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
     metrics = this.contextAnnotation.measureText("X");
@@ -1723,7 +1727,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
 papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
     var xLoc, yStart, yEnd, yLoc, xStart, xEnd, rotateAngle, rotateAngle2;
-    console.log('drawCrosshairs');
+    // console.log('drawCrosshairs');
     // Modified 18/12/2019 add clearRect function
     this.contextAnnotation.clearRect(0, 0, this.canvasAnnotation.width, this.canvasAnnotation.height);
     ///////////////////////
@@ -2322,7 +2326,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
     if (!papaya.Container.allowPropagation) {
         me.stopPropagation();
     }
-    console.log('mouseDown', me);
+    // console.log('mouseDown', me);
     me.preventDefault();
 
     if (this.showingContextMenu) {
@@ -2330,6 +2334,9 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
         me.handled = true;
         return;
     }
+    var mouseX = papaya.utilities.PlatformUtils.getMousePositionX(me);
+    var mouseY = papaya.utilities.PlatformUtils.getMousePositionY(me);
+    var canvasLoc = this.convertMouseCoordToCanvas(mouseX, mouseY);
 
     if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
         if (me.handled !== true) {
@@ -2403,6 +2410,10 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                 } else {
                     this.setZoomLocation();
                 }
+            } else if (me.button === 0 && this.activeTool === "DrawCurve") {
+                // console.log("YAY IM DRAWING CURVE");
+                console.log('screenDrawing', this.screenDrawing);
+                this.screenDrawing.addPoint(canvasLoc.x, canvasLoc.y);
             } else {
                 if (this.selectedSlice && (this.selectedSlice !== this.surfaceView)) {
                     this.grabbedHandle = this.selectedSlice.findProximalRulerHandle(this.convertScreenToImageCoordinateX(this.previousMousePosition.x - this.canvasRect.left, this.selectedSlice),
@@ -4150,6 +4161,7 @@ papaya.viewer.Viewer.prototype.restoreViewer = function () {
     this.volume.reset();
     this.currentCoord.setCoordinate(papayaFloorFast(this.volume.getXDim() / 2), papayaFloorFast(this.volume.getYDim() / 2),
     papayaFloorFast(this.volume.getZDim() / 2));
+    this.screenDrawing.clearPoints(true);
     this.drawViewer(true, false);
 }
 
