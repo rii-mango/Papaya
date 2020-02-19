@@ -87,6 +87,8 @@ papaya.viewer.ScreenDrawing.prototype.getPoint = function (pointID) {
 papaya.viewer.ScreenDrawing.prototype.removePoint = function (pointID) {
     // remove a point by pointID from array
     this.pointsRef = this.pointsRef.filter(function (point) {return point.id !== pointID});
+    this.detectedPointRef = [];
+    this.pointsNeedUpdate = true;
 };
 
 papaya.viewer.ScreenDrawing.prototype.updatePointDetection = function (mouseX, mouseY) {
@@ -110,11 +112,11 @@ papaya.viewer.ScreenDrawing.prototype.updatePointDetection = function (mouseX, m
 };
 
 papaya.viewer.ScreenDrawing.prototype.updatePointPosition = function (pointID, mouseX, mouseY) {
+    this.pointsNeedUpdate = true;
     this.pointsRef.forEach(function (item, index) {
         if (item.id === pointID) {
             item.value[0] = mouseX;
             item.value[1] = mouseY;
-            this.pointsNeedUpdate = true;
         }
     })
 };
@@ -122,7 +124,7 @@ papaya.viewer.ScreenDrawing.prototype.updatePointPosition = function (pointID, m
 papaya.viewer.ScreenDrawing.prototype.buildPointsArray = function () {
     // build array of points for drawing
     var pointsArray = [];
-    var detectedPoint = this.detectedPoint;
+    var detectedPoint = [];
     this.clearPoints(false);
     this.pointsRef.forEach(function (item, index) {
         pointsArray = pointsArray.concat(item.value);
@@ -133,13 +135,16 @@ papaya.viewer.ScreenDrawing.prototype.buildPointsArray = function () {
     });
     this.points = pointsArray;
     this.detectedPoint = detectedPoint;
+    // console.log('detectedPoint', this.detectedPoint);
 };
 
 papaya.viewer.ScreenDrawing.prototype.clearPoints = function (clearAll) {
     if (clearAll) {
         this.pointsRef = [];
+        this.detectedPointRef = [];
         this.maxPointIndex = 0;
         this.points = [];
+        this.detectedPoint = [];
     } else {
         this.points = [];
     }
