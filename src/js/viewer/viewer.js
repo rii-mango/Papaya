@@ -2410,10 +2410,10 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                 } else {
                     this.setZoomLocation();
                 }
-            } else if (me.button === 0 && this.activeTool === "DrawCurve") {
-                // console.log("YAY IM DRAWING CURVE");
-                console.log('screenDrawing', this.screenDrawing);
-                this.screenDrawing.addPoint(canvasLoc.x, canvasLoc.y);
+            } else if (me.button === 0 && this.activeTool === "DrawCurve" && !this.localizerDetected) {
+                if (this.screenDrawing.detectedPointRef.length){
+
+                } else this.screenDrawing.addPoint(canvasLoc.x, canvasLoc.y);
             } else {
                 if (this.selectedSlice && (this.selectedSlice !== this.surfaceView)) {
                     this.grabbedHandle = this.selectedSlice.findProximalRulerHandle(this.convertScreenToImageCoordinateX(this.previousMousePosition.x - this.canvasRect.left, this.selectedSlice),
@@ -2481,7 +2481,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
             this.selectedSlice = null;
             this.controlsHiddenPrimed = false;
             this.isGrabbingLocalizer = false;
-
+            this.screenDrawing.detectedPointRef = [];
             me.handled = true;
         }
     }
@@ -2585,6 +2585,8 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
     var mouseX = currentMouseX - this.canvasRect.left;
     var mouseY = currentMouseY - this.canvasRect.top;
     this.updateCurrentInteractingSlice(mouseX, mouseY);
+    if (!this.screenDrawing.detectedPointRef.length) this.screenDrawing.updatePointDetection(mouseX, mouseY);
+    // console.log(this.screenDrawing.detec)
     // console.log(mouseX, mouseY);
 
     if (this.isDragging) {
@@ -2717,6 +2719,9 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             this.previousMousePosition.x = currentMouseX;
             this.previousMousePosition.y = currentMouseY;
             // this.drawViewer(false, false, false);
+        } else if (this.screenDrawing.detectedPointRef.length && this.activeTool === "DrawCurve" && !this.isGrabbingLocalizer) {
+            var id = this.screenDrawing.detectedPointRef[0].id;
+            this.screenDrawing.updatePointPosition(id, mouseX, mouseY);
         }
     } else {
         if (!this.isGrabbingLocalizer) {
