@@ -611,10 +611,28 @@ papaya.viewer.ScreenSlice.prototype.getCenter = function (volume, isAbsolute) {
         xCenter = this.screenOffsetX + (this.screenWidth / 2);
         yCenter = this.screenOffsetY + (this.screenHeight / 2);
     } else {
-        xCenter = (this.finalTransform[0][2] + (volume.transform.centerCoord.x + 0.5) *
-        this.finalTransform[0][0]);
-        yCenter = (this.finalTransform[1][2] + (volume.transform.centerCoord.y + 0.5) *
-        this.finalTransform[1][1]);
+        switch (this.sliceDirection) {
+            case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
+                xCenter = (this.finalTransform[0][2] + (volume.transform.centerCoord.x + 0.5) *
+                this.finalTransform[0][0]);
+                yCenter = (this.finalTransform[1][2] + (volume.transform.centerCoord.y + 0.5) *
+                this.finalTransform[1][1]);
+                break;
+            case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
+                xCenter = (this.finalTransform[0][2] + (volume.transform.centerCoord.y + 0.5) *
+                this.finalTransform[0][0]);
+                yCenter = (this.finalTransform[1][2] + (volume.transform.centerCoord.z + 0.5) *
+                this.finalTransform[1][1]);
+                break;
+            case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
+                xCenter = (this.finalTransform[0][2] + (volume.transform.centerCoord.x + 0.5) *
+                this.finalTransform[0][0]);
+                yCenter = (this.finalTransform[1][2] + (volume.transform.centerCoord.z + 0.5) *
+                this.finalTransform[1][1]);
+                break;
+            default:
+                break;
+        }
     }
 
     return {x: xCenter, y: yCenter};
