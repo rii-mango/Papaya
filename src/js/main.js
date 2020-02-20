@@ -675,6 +675,10 @@ papaya.Container.prototype.hasSurface = function () {
     return (this.viewer && (this.viewer.surfaces.length > 0));
 };
 
+papaya.Container.prototype.hasOblique = function () {
+    return (this.viewer && (this.viewer.cmprSlice || this.viewer.obliqueSlice));
+};
+
 
 
 

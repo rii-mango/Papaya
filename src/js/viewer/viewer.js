@@ -53,7 +53,9 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.axialSlice = null;
     this.coronalSlice = null;
     this.sagittalSlice = null;
+    this.cmprSlice = null;
     this.surfaceView = null;
+    this.obliqueView = null;
     this.selectedSlice = null;
     this.mainImage = null;
     this.lowerImageBot2 = null;
@@ -468,6 +470,56 @@ papaya.viewer.Viewer.prototype.initializeSurface = function (surface) {
     } else if (surface.error) {
         this.container.display.drawError(surface.error);
     }
+};
+
+papaya.viewer.Viewer.prototype.initializeCMPRView = function () {
+    var dummyValue = 1;
+
+    this.lowerImageBot2 = this.cmprSlice = new papaya.viewer.ScreenSlice(this.volume, papaya.viewer.ScreenSlice.DIRECTION_OBLIQUE,
+        this.volume.getXDim(), this.volume.getYDim(), this.volume.getXSize(), this.volume.getYSize(),
+        this.screenVolumes, this);
+    this.obliqueView = this.cmprSlice; // for compatibility 
+    // this.surfaces.push(dummyValue);
+    this.container.resizeViewerComponents(true);
+    this.viewsChanged();
+
+    // if (!surface.error) {
+    //     while (currentSurface !== null) {
+    //         this.surfaces.push(currentSurface);
+    //         currentSurface = currentSurface.nextSurface;
+    //     }
+
+    //     if (this.surfaceView === null) {
+    //         this.lowerImageBot2 = this.surfaceView = new papaya.viewer.ScreenSurface(this.volume, this.surfaces, this, this.container.params);
+    //         this.container.resizeViewerComponents(true);
+    //     } else {
+    //         currentSurface = surface;
+
+    //         while (currentSurface !== null) {
+    //             this.surfaceView.initBuffers(this.surfaceView.context, currentSurface);
+    //             currentSurface = currentSurface.nextSurface;
+    //         }
+    //     }
+
+    //     if (this.container.params.mainView && (this.container.params.mainView.toLowerCase() === "surface")) {
+    //         this.mainImage = this.surfaceView;
+    //         this.lowerImageTop = this.axialSlice;
+    //         this.lowerImageBot = this.sagittalSlice;
+    //         this.lowerImageBot2 = this.coronalSlice;
+    //         this.viewsChanged();
+    //     }
+
+    //     this.container.toolbar.buildToolbar();
+    //     this.container.toolbar.updateImageButtons();
+
+    //     if (this.container.hasMoreToLoad()) {
+    //         this.container.loadNext();
+    //     } else {
+    //         this.finishedLoading();
+    //     }
+    // } else if (surface.error) {
+    //     this.container.display.drawError(surface.error);
+    // }
 };
 
 
@@ -1383,6 +1435,10 @@ papaya.viewer.Viewer.prototype.hasSurface = function () {
     return (this.container.hasSurface() && this.surfaceView && this.surfaceView.initialized);
 };
 
+papaya.viewer.Viewer.prototype.hasOblique = function () {
+    return (this.container.hasOblique() && this.obliqueView);
+};
+
 
 
 papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
@@ -1935,8 +1991,10 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
 
 papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function () {
+    var horizontalFactor = 0.65;
+
     if (this.container.orthogonalTall) {
-        if (this.container.hasSurface()) {
+        if (this.container.hasSurface() || this.container.hasOblique()) {
             this.viewerDim = this.canvas.height / 1.333;
 
             this.getTransformParameters(this.mainImage, this.viewerDim, false, 3);
@@ -1970,24 +2028,25 @@ papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function () {
             this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY =  this.viewerDim + (papaya.viewer.Viewer.GAP);
         }
     } else {
-        //orthogonal no tall
+        //orthogonal no tall, has surface
         this.viewerDim = this.canvas.height;
 
-        if (this.container.hasSurface()) {
-            this.getTransformParameters(this.mainImage, this.viewerDim, false, 3);
+        if (this.container.hasSurface() || this.container.hasOblique()) {
+
+            this.getTransformParameters(this.mainImage, this.viewerDim, false, 2, horizontalFactor);
             this.mainImage.screenTransform[0][2] += this.mainImage.screenOffsetX = 0;
             this.mainImage.screenTransform[1][2] += this.mainImage.screenOffsetY = 0;
 
-            this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 3);
-            this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX =
-                (this.viewerDim + (papaya.viewer.Viewer.GAP));
-            this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY = 0;
-
-            this.getTransformParameters(this.lowerImageBot, this.viewerDim, true, 3);
+            this.getTransformParameters(this.lowerImageBot, this.viewerDim, true, 2, horizontalFactor);
             this.lowerImageBot.screenTransform[0][2] += this.lowerImageBot.screenOffsetX =
-                (this.viewerDim + (papaya.viewer.Viewer.GAP));
+                (this.canvas.clientWidth * horizontalFactor + (papaya.viewer.Viewer.GAP));
             this.lowerImageBot.screenTransform[1][2] += this.lowerImageBot.screenOffsetY =
-                (((this.viewerDim - papaya.viewer.Viewer.GAP) / 3) + (papaya.viewer.Viewer.GAP));
+                (((this.viewerDim - papaya.viewer.Viewer.GAP) / 2) + (papaya.viewer.Viewer.GAP));
+
+            this.getTransformParameters(this.lowerImageTop, this.viewerDim, true, 2, horizontalFactor);
+            this.lowerImageTop.screenTransform[0][2] += this.lowerImageTop.screenOffsetX =
+                (this.canvas.clientWidth * horizontalFactor + (papaya.viewer.Viewer.GAP));
+            this.lowerImageTop.screenTransform[1][2] += this.lowerImageTop.screenOffsetY = 0;
 
             this.getTransformParameters(this.lowerImageBot2, this.viewerDim, true, 3);
             this.lowerImageBot2.screenTransform[0][2] += this.lowerImageBot2.screenOffsetX =
@@ -1997,7 +2056,6 @@ papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function () {
         } else {
             //orthogonal no tall no surface
             // Modified 29/11/2019:
-            var horizontalFactor = 0.65;
             this.getTransformParameters(this.mainImage, this.viewerDim, false, 2, horizontalFactor);
             this.mainImage.screenTransform[0][2] += this.mainImage.screenOffsetX = 0;
             this.mainImage.screenTransform[1][2] += this.mainImage.screenOffsetY = 0;
@@ -2265,7 +2323,7 @@ papaya.viewer.Viewer.prototype.rotateViews = function () {
 papaya.viewer.Viewer.prototype.viewsChanged = function () {
     this.calculateScreenSliceTransforms();
 
-    if (this.hasSurface()) {
+    if (this.hasSurface() || this.hasOblique()) {
         this.lowerImageBot2.clearDTILinesImage();
     }
 
@@ -2398,7 +2456,10 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                 if (me.button === 0) {
                     if (this.screenDrawing.detectedPointRef.length){
                         this.isGrabbingLocalizer = true;
-                    } else this.screenDrawing.addPoint(canvasLoc.x, canvasLoc.y);
+                    } else {
+                        this.screenDrawing.addPoint(canvasLoc.x, canvasLoc.y);
+                        this.screenDrawing.drawCurve(this.contextAnnotation, this.canvasAnnotation);
+                    }
                 } else if (me.button === 1) {
                     this.screenDrawing.updatePointDetection(canvasLoc.x, canvasLoc.y);
                     console.log('REMOVING POINT BRO');
