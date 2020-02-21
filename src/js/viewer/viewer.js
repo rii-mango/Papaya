@@ -1466,7 +1466,7 @@ papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
         this.context.fillStyle = papaya.viewer.Viewer.BACKGROUND_COLOR;
         this.context.setTransform(1, 0, 0, 1, 0, 0);
         // this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
-        console.log('papaya drawScreenSlice with', slice.screenOffsetX, slice.screenOffsetY, slice.screenWidth, slice.screenHeight)
+        // console.log('papaya drawScreenSlice with', slice.screenOffsetX, slice.screenOffsetY, slice.screenWidth, slice.screenHeight)
         this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenWidth, slice.screenHeight);
         this.context.save();
         this.context.beginPath();
@@ -2109,9 +2109,10 @@ papaya.viewer.Viewer.prototype.getTransformParameters = function (image, height,
     var width = (lower ? this.canvas.clientWidth * (1 - horizontalFactor) : this.canvas.clientWidth * horizontalFactor);
     var bigScale, scaleX, scaleY, transX, transY;
     bigScale = lower ? verticalFactor : 1;
-
-    var realHeight = height / bigScale;
+    console.log('getTransformParameters', width, height, papaya.viewer.Viewer.GAP);
+    var realHeight = height / bigScale; // 'height' input is viewer height, not individual slice's height
     var scaleDimension = width <= realHeight ? width : realHeight;
+    // var scaleDimension = width;
 
     if (image === this.surfaceView) {
         this.surfaceView.resize(this.viewerDim / bigScale);
@@ -2121,18 +2122,24 @@ papaya.viewer.Viewer.prototype.getTransformParameters = function (image, height,
     //     console.log('getTransformParameters width', width);
     // }
 
-    if (image.getRealWidth() > image.getRealHeight()) {
-        scaleX = (((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) / bigScale) *
-            (image.getXSize() / this.longestDimSize);
-        scaleY = ((((scaleDimension ? height - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) *
-            image.getYXratio()) / bigScale) * (image.getXSize() / this.longestDimSize);
-    } else {
-        // console.log('getTransformParameters', width, realHeight);
-        scaleX = ((((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) *
-            image.getXYratio())) * (image.getYSize() / this.longestDimSize);
-        scaleY = (((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim)) *
-            (image.getYSize() / this.longestDimSize);
-    }
+    scaleX = ((((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) *
+    image.getXYratio())) * (image.getYSize() / this.longestDimSize);
+    scaleY = (((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim)) *
+    (image.getYSize() / this.longestDimSize);
+    // if (image.getRealWidth() > image.getRealHeight()) {
+    //     console.log('readWidth > realHeight', image);
+    //     scaleX = (((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) / bigScale) *
+    //         (image.getXSize() / this.longestDimSize);
+    //     scaleY = ((((scaleDimension ? height - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) *
+    //         image.getYXratio()) / bigScale) * (image.getXSize() / this.longestDimSize);
+    // } else {
+    //     // console.log('getTransformParameters', width, realHeight);
+    //     console.log('readWidth < realHeight', image);
+    //     scaleX = ((((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) *
+    //         image.getXYratio())) * (image.getYSize() / this.longestDimSize);
+    //     scaleY = (((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim)) *
+    //         (image.getYSize() / this.longestDimSize);
+    // }
 
     transX = (((lower ? width - papaya.viewer.Viewer.GAP : width)) - (image.getXDim() * scaleX)) / 2;
     transY = (((lower ? realHeight - papaya.viewer.Viewer.GAP : realHeight)) - (image.getYDim() * scaleY)) / 2;
