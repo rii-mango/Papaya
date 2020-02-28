@@ -549,7 +549,7 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                 readFirstRaster = true;
             }
         }
-
+        // console.log('repaint imageDataDraw', this.imageDataDraw);
         this.contextMain.putImageData(this.imageDataDraw, 0, 0);
     } else {
         this.updateSlice(slice, true);

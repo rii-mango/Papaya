@@ -479,6 +479,7 @@ papaya.viewer.Viewer.prototype.initializeCMPRView = function () {
         this.volume.getXDim(), this.volume.getYDim(), this.volume.getXSize(), this.volume.getYSize(),
         this.screenVolumes, this);
     this.obliqueView = this.cmprSlice; // for compatibility 
+    this.cmprSlice.imageData[0] = this.axialSlice.imageData[0];
     // this.surfaces.push(dummyValue);
     this.container.resizeViewerComponents(true);
     this.viewsChanged();
@@ -1382,6 +1383,10 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
         this.surfaceView.draw();
     }
 
+    if (this.hasOblique()) {
+        this.cmprSlice.repaint();
+    }
+
     // intialize screen slices
     if (this.container.preferences.smoothDisplay === "No") {
         this.context.imageSmoothingEnabled = false;
@@ -1443,7 +1448,8 @@ papaya.viewer.Viewer.prototype.hasOblique = function () {
 
 papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
     var textWidth, textWidthExample, offset, padding = 5;
-    // console.log('papaya drawScreenSlice', this, slice);
+    console.log('papaya drawScreenSlice', slice);
+
     if (slice === this.surfaceView) {
         this.context.fillStyle = this.surfaceView.getBackgroundColor();
         this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
