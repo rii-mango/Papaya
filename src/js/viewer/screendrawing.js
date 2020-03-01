@@ -9,8 +9,9 @@ var papaya = papaya || {};
 papaya.viewer = papaya.viewer || {};
 
 /*** Constructor ***/
-papaya.viewer.ScreenDrawing = papaya.viewer.ScreenDrawing || function () {
+papaya.viewer.ScreenCurve = papaya.viewer.ScreenCurve || function (viewer, pointsRef) {
 /*jslint sub: true */
+    this.viewer = viewer;
     this.points = [];
     this.detectedPoint = [];
     this.lineWidth = 3;
@@ -20,17 +21,18 @@ papaya.viewer.ScreenDrawing = papaya.viewer.ScreenDrawing || function () {
     this.tension = 0.5;
     this.segmentResolutions = 30;
     this.isClosed = false;
-    this.pointsRef = [];
+    (pointsRef) ? this.pointsRef = pointsRef : this.pointsRef = [];
     this.detectedPointRef = [];
     this.maxPointIndex = 0;
     this.pointsNeedUpdate = false;
-    // console.log('ScreenDrawing imported');
+    this.finalTransform = [];
+    // console.log('ScreenCurve imported');
 };
 // functions
 
-papaya.viewer.ScreenDrawing.prototype.drawCurve = function (context, canvas) {
+papaya.viewer.ScreenCurve.prototype.drawCurve = function (context, canvas, finalTransform) {
     if (this.pointsNeedUpdate) {
-        this.buildPointsArray();
+        this.buildPointsArray(finalTransform);
         this.pointsNeedUpdate = false;
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
@@ -56,7 +58,7 @@ papaya.viewer.ScreenDrawing.prototype.drawCurve = function (context, canvas) {
     }
 };
 
-papaya.viewer.ScreenDrawing.prototype.drawPoint = function (context, canvas, posX, posY, radius) {
+papaya.viewer.ScreenCurve.prototype.drawPoint = function (context, canvas, posX, posY, radius) {
     // console.log(this.points);
 
         // context.clearRect(0, 0, canvas.width, canvas.height);
@@ -68,7 +70,7 @@ papaya.viewer.ScreenDrawing.prototype.drawPoint = function (context, canvas, pos
     context.fill();
 };
 
-papaya.viewer.ScreenDrawing.prototype.addPoint = function (mouseX, mouseY) {
+papaya.viewer.ScreenCurve.prototype.addPoint = function (mouseX, mouseY) {
     // accept input that is converted to canvas coordinates
     // this.points.push([mouseX, mouseY]);
     this.pointsRef.push({
@@ -80,18 +82,18 @@ papaya.viewer.ScreenDrawing.prototype.addPoint = function (mouseX, mouseY) {
     // console.log('point added', this.pointsRef);
 };
 
-papaya.viewer.ScreenDrawing.prototype.getPoint = function (pointID) {
+papaya.viewer.ScreenCurve.prototype.getPoint = function (pointID) {
     return this.pointsRef.filter(function (point) {return point.id === pointID});
 };
 
-papaya.viewer.ScreenDrawing.prototype.removePoint = function (pointID) {
+papaya.viewer.ScreenCurve.prototype.removePoint = function (pointID) {
     // remove a point by pointID from array
     this.pointsRef = this.pointsRef.filter(function (point) {return point.id !== pointID});
     this.detectedPointRef = [];
     this.pointsNeedUpdate = true;
 };
 
-papaya.viewer.ScreenDrawing.prototype.updatePointDetection = function (mouseX, mouseY) {
+papaya.viewer.ScreenCurve.prototype.updatePointDetection = function (mouseX, mouseY) {
     var tolerance = this.pointRadius;
     this.detectedPointRef = this.pointsRef.filter(function (point) {
         // console.log((point.value[0] - tolerance, mouseX, point.value[1] - tolerance <= mouseY <= point.value[1] + tolerance));
@@ -111,7 +113,7 @@ papaya.viewer.ScreenDrawing.prototype.updatePointDetection = function (mouseX, m
     }
 };
 
-papaya.viewer.ScreenDrawing.prototype.updatePointPosition = function (pointID, mouseX, mouseY) {
+papaya.viewer.ScreenCurve.prototype.updatePointPosition = function (pointID, mouseX, mouseY) {
     this.pointsNeedUpdate = true;
     this.pointsRef.forEach(function (item, index) {
         if (item.id === pointID) {
@@ -121,24 +123,30 @@ papaya.viewer.ScreenDrawing.prototype.updatePointPosition = function (pointID, m
     })
 };
 
-papaya.viewer.ScreenDrawing.prototype.buildPointsArray = function () {
+papaya.viewer.ScreenCurve.prototype.buildPointsArray = function (finalTransform) {
     // build array of points for drawing
     var pointsArray = [];
     var detectedPoint = [];
     this.clearPoints(false);
     this.pointsRef.forEach(function (item, index) {
-        pointsArray = pointsArray.concat(item.value);
+        var screenX = finalTransform[0][2] + (item.value[0] + 0.5) * finalTransform[0][0];
+        var screenY = finalTransform[1][2] + (item.value[1] + 0.5) * finalTransform[1][1];
+        // pointsArray = pointsArray.concat(item.value);
+        pointsArray = pointsArray.concat([screenX, screenY]);
         // console.log(pointsArray);
     });
     this.detectedPointRef.forEach(function (item, index) {
-        detectedPoint.push(item.value[0], item.value[1]);
+        var screenX = finalTransform[0][2] + (item.value[0] + 0.5) * finalTransform[0][0];
+        var screenY = finalTransform[1][2] + (item.value[1] + 0.5) * finalTransform[1][1];
+        // detectedPoint.push(item.value[0], item.value[1]);
+        detectedPoint.push(screenX, screenY);
     });
     this.points = pointsArray;
     this.detectedPoint = detectedPoint;
     // console.log('detectedPoint', this.detectedPoint);
 };
 
-papaya.viewer.ScreenDrawing.prototype.clearPoints = function (clearAll) {
+papaya.viewer.ScreenCurve.prototype.clearPoints = function (clearAll) {
     if (clearAll) {
         this.pointsRef = [];
         this.detectedPointRef = [];
@@ -148,5 +156,10 @@ papaya.viewer.ScreenDrawing.prototype.clearPoints = function (clearAll) {
     } else {
         this.points = [];
     }
+    // this.pointsNeedUpdate = true;
+};
+
+papaya.viewer.ScreenCurve.prototype.updateFinalTransform = function (slice) {
+    this.finalTransform = slice.finalTransform
     // this.pointsNeedUpdate = true;
 };

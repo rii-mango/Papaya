@@ -128,12 +128,12 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.reactPapayaViewport = null;
 
     // modification 16/01/2020: add current interacting slice
-    this.currentInteractingSlice = null;
+    this.currentInteractingSlice = this.axialSlice;
     this.currentDetectionRadius = 20;
     this.isGrabbingLocalizer = false;
     this.localizerDetected = 0; // 1: rotate, 2: move, 0: no detection
     this.centerCoordInverse = null;
-    this.screenDrawing = new papaya.viewer.ScreenDrawing();
+    this.screenCurve = new papaya.viewer.ScreenCurve(this);
 };
 
 
@@ -1421,6 +1421,8 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
         this.drawCrosshairs();
     }
 
+    if (this.activeTool === "DrawCurve") this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.currentInteractingSlice.finalTransform);
+
     if (this.container.preferences.showRuler === "Yes") {
         this.drawRuler();
     }
@@ -1571,10 +1573,8 @@ papaya.viewer.Viewer.prototype.drawAnnotation = function () {
     if (this.mainImage === this.surfaceView) {
         return;
     }
-
-
     this.drawCrosshairs();
-    this.screenDrawing.drawCurve(this.contextAnnotation, this.canvasAnnotation);
+    this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.currentInteractingSlice.finalTransform)
 
     // this.contextAnnotation.setTransform(1, 0, 0, 1, 0, 0);
     this.contextAnnotation.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
@@ -2332,7 +2332,7 @@ papaya.viewer.Viewer.prototype.rotateViews = function () {
         this.lowerImageTop = this.mainImage;
         this.mainImage = temp;
     }
-
+    if (this.screenCurve) this.screenCurve.pointsNeedUpdate = true;
     this.viewsChanged();
 };
 
@@ -2472,18 +2472,23 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
             } else if (this.activeTool === "DrawCurve" && !this.localizerDetected) {
                 console.log(me.button);
                 if (me.button === 0) {
-                    if (this.screenDrawing.detectedPointRef.length){
+                    if (this.screenCurve.detectedPointRef.length){
                         this.isGrabbingLocalizer = true;
                     } else {
-                        this.screenDrawing.addPoint(canvasLoc.x, canvasLoc.y);
-                        this.screenDrawing.drawCurve(this.contextAnnotation, this.canvasAnnotation);
+                        // this.screenCurve.addPoint(canvasLoc.x, canvasLoc.y);
+                        var cursorPosition = this.getXYImageCoordinate(this.currentInteractingSlice);
+                        this.screenCurve.addPoint(cursorPosition.x, cursorPosition.y);
+                        this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.currentInteractingSlice.finalTransform);
+                        // this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.sagittalSlice.finalTransform);
                     }
                 } else if (me.button === 1) {
-                    this.screenDrawing.updatePointDetection(canvasLoc.x, canvasLoc.y);
+                    // this.screenCurve.updatePointDetection(canvasLoc.x, canvasLoc.y);
+                    var cursorPosition = this.getXYImageCoordinate(this.currentInteractingSlice);
+                    this.screenCurve.updatePointDetection(cursorPosition.x, cursorPosition.y);
                     console.log('REMOVING POINT BRO');
-                    if (this.screenDrawing.detectedPointRef.length){
-                        this.screenDrawing.removePoint(this.screenDrawing.detectedPointRef[0].id);
-                        this.screenDrawing.drawCurve(this.contextAnnotation, this.canvasAnnotation);
+                    if (this.screenCurve.detectedPointRef.length){
+                        this.screenCurve.removePoint(this.screenCurve.detectedPointRef[0].id);
+                        this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.currentInteractingSlice.finalTransform);
                     }
                 }
             } else if (this.isAltKeyDown && this.selectedSlice) {
@@ -2570,7 +2575,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
             this.selectedSlice = null;
             this.controlsHiddenPrimed = false;
             this.isGrabbingLocalizer = false;
-            this.screenDrawing.detectedPointRef = [];
+            this.screenCurve.detectedPointRef = [];
             me.handled = true;
         }
     }
@@ -2674,7 +2679,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
     var mouseX = currentMouseX - this.canvasRect.left;
     var mouseY = currentMouseY - this.canvasRect.top;
     this.updateCurrentInteractingSlice(mouseX, mouseY);
-    // console.log(this.screenDrawing.detec)
+    // console.log(this.screenCurve.detec)
     // console.log(mouseX, mouseY);
 
     if (this.isDragging) {
@@ -2807,17 +2812,22 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             this.previousMousePosition.x = currentMouseX;
             this.previousMousePosition.y = currentMouseY;
             // this.drawViewer(false, false, false);
-        } else if (this.screenDrawing.detectedPointRef.length && this.activeTool === "DrawCurve" && this.isGrabbingLocalizer) {
+        } else if (this.screenCurve.detectedPointRef.length && this.activeTool === "DrawCurve" && this.isGrabbingLocalizer) {
             // console.log('OYOYOY dragging curve');
-            var id = this.screenDrawing.detectedPointRef[0].id;
-            this.screenDrawing.updatePointPosition(id, mouseX, mouseY);
-            this.screenDrawing.drawCurve(this.contextAnnotation, this.canvasAnnotation);
+            var id = this.screenCurve.detectedPointRef[0].id;
+            this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me),
+            papaya.utilities.PlatformUtils.getMousePositionY(me));
+            var cursorPosition = this.getXYImageCoordinate(this.currentInteractingSlice);
+            this.screenCurve.updatePointPosition(id, cursorPosition.x, cursorPosition.y);
+            this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.currentInteractingSlice.finalTransform);
         }
     } else {
         if (!this.isGrabbingLocalizer) {
             this.localizerDetected = this.detectLocalizer(this.currentInteractingSlice, mouseX, mouseY);
             this.changeCursor(this.localizerDetected);
-            this.screenDrawing.updatePointDetection(mouseX, mouseY);
+            // this.screenCurve.updatePointDetection(mouseX, mouseY);
+            var cursorPosition = this.getXYImageCoordinate(this.currentInteractingSlice);
+            this.screenCurve.updatePointDetection(cursorPosition.x, cursorPosition.y);
         }
         this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me),
             papaya.utilities.PlatformUtils.getMousePositionY(me));
@@ -3029,6 +3039,7 @@ papaya.viewer.Viewer.prototype.resizeViewer = function (dims) {
     // Modifiend 18/12/2019
     this.canvasAnnotation.width = dims[0];
     this.canvasAnnotation.height = dims[1];
+    if (this.screenCurve) this.screenCurve.pointsNeedUpdate = true;
     ///////////////////////////
 
     if (this.initialized) {
@@ -4257,7 +4268,7 @@ papaya.viewer.Viewer.prototype.restoreViewer = function () {
     this.volume.reset();
     this.currentCoord.setCoordinate(papayaFloorFast(this.volume.getXDim() / 2), papayaFloorFast(this.volume.getYDim() / 2),
     papayaFloorFast(this.volume.getZDim() / 2));
-    this.screenDrawing.clearPoints(true);
+    this.screenCurve.clearPoints(true);
     this.obliqueView = null;
     this.cmprSlice = null;
     this.viewsChanged();
@@ -4269,4 +4280,21 @@ papaya.viewer.Viewer.prototype.convertMouseCoordToCanvas = function (mouseX, mou
     mouseX -= this.canvasRect.left;
     mouseY -= this.canvasRect.top;
     return {x: mouseX, y: mouseY};
+}
+
+papaya.viewer.Viewer.prototype.getXYImageCoordinate = function (slice) {
+    var coord = null;
+    switch (slice.sliceDirection) {
+        case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
+            coord = { x: this.cursorPosition.x, y: this.cursorPosition.y}
+            return coord;
+        case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
+            coord = { x: this.cursorPosition.y, y: this.cursorPosition.z}
+            return coord;
+        case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
+            coord = { x: this.cursorPosition.x, y: this.cursorPosition.z}
+            return coord;
+        default:
+            break;
+    }
 }
