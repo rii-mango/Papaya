@@ -142,7 +142,9 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
 papaya.viewer.Viewer.GAP = PAPAYA_SPACING;  // padding between slice views
 papaya.viewer.Viewer.BACKGROUND_COLOR = "rgba(0, 0, 0, 255)";
 // papaya.viewer.Viewer.CROSSHAIRS_COLOR = "rgba(28, 134, 238, 255)";
-papaya.viewer.Viewer.CROSSHAIRS_COLOR = "rgba(0, 128, 0, 1)";
+papaya.viewer.Viewer.CROSSHAIR_COLOR_AXIAL = "red";
+papaya.viewer.Viewer.CROSSHAIR_COLOR_CORONAL = "blue";
+papaya.viewer.Viewer.CROSSHAIR_COLOR_SAGITTAL = "rgba(0, 128, 0, 1)";
 papaya.viewer.Viewer.KEYCODE_ROTATE_VIEWS = 32;
 papaya.viewer.Viewer.KEYCODE_CENTER = 67;
 papaya.viewer.Viewer.KEYCODE_ORIGIN = 79;
@@ -1686,7 +1688,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
     // initialize crosshairs
     this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR;
+    this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIR_COLOR_SAGITTAL;
     this.context.lineWidth = 1.0;
 
     if ((this.mainImage !== this.axialSlice) || this.toggleMainCrosshairs) {
@@ -1791,11 +1793,36 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
     var xLoc, yStart, yEnd, yLoc, xStart, xEnd, rotateAngle, rotateAngle2;
     // console.log('drawCrosshairs');
     // Modified 18/12/2019 add clearRect function
+    var drawLine = function (context, lineStyle, xStart, xEnd, yStart, yEnd) {
+        context.beginPath();
+        context.strokeStyle = lineStyle;
+        context.moveTo(xStart, yStart);
+        context.lineTo(xEnd, yEnd);
+        context.closePath();
+        context.stroke();
+    };
+    var clipCenter = function (context, canvas, xLoc, yLoc) {
+        var centerClipRadius = 10;
+        context.save();
+        context.beginPath();
+        context.rect(xLoc - centerClipRadius, yLoc - centerClipRadius, centerClipRadius * 2,
+        centerClipRadius * 2);
+        context.closePath();
+        context.clip();
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.restore();
+    };
+    var drawCornerBox = function (context, boxStyle, slice) {
+        var boxSize = 20;
+        context.fillStyle = boxStyle;
+        context.fillRect(slice.screenOffsetX + slice.screenWidth - boxSize, slice.screenOffsetY, boxSize, boxSize);
+    };
+
     this.contextAnnotation.clearRect(0, 0, this.canvasAnnotation.width, this.canvasAnnotation.height);
     ///////////////////////
     // initialize crosshairs
     this.contextAnnotation.setTransform(1, 0, 0, 1, 0, 0);
-    this.contextAnnotation.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR;
+    this.contextAnnotation.strokeStyle = papaya.viewer.Viewer.CROSSHAIR_COLOR_SAGITTAL;
     this.contextAnnotation.lineWidth = 1.0;
 
     if ((this.mainImage !== this.axialSlice) || this.toggleMainCrosshairs) {
@@ -1812,7 +1839,6 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.contextAnnotation.closePath();
         this.contextAnnotation.clip();
 
-        this.contextAnnotation.beginPath();
         // console.log('drawCrosshairs finalTransform axial');
         // console.log(this.volume);
         // console.table(this.axialSlice.finalTransform);
@@ -1821,8 +1847,6 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         yLoc = (this.axialSlice.finalTransform[1][2] + (this.currentCoord.y + 0.5) *
             this.axialSlice.finalTransform[1][1]);
         var center = this.getSliceCenterPosition(this.axialSlice);
-        // xCenter = this.sagittalSlice.screenOffsetX + (this.sagittalSlice.screenWidth / 2);
-        // yCenter = this.sagittalSlice.screenOffsetY + (this.sagittalSlice.screenHeight / 2);
         var rotatedLoc = this.getCoordinateFromRotatedSlice(rotateAngle2, xLoc, yLoc, center.x, center.y, true);
         xLoc = rotatedLoc[0];
         yLoc = rotatedLoc[1];
@@ -1840,8 +1864,8 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.axialSlice.localizerLines.yEnd[0] = yEnd;
 
         // draw first line
-        this.contextAnnotation.moveTo(xStart, yStart);
-        this.contextAnnotation.lineTo(xEnd, yEnd);
+        drawLine(this.contextAnnotation, papaya.viewer.Viewer.CROSSHAIR_COLOR_SAGITTAL, xStart, xEnd, yStart, yEnd);
+
         // this.contextAnnotation.moveTo(xLoc, yLoc);
         // this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle + Math.PI), yLoc + radius * Math.sin(rotateAngle + Math.PI));
         xStart = xLoc + radius * Math.cos(rotateAngle2);
@@ -1853,19 +1877,9 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.axialSlice.localizerLines.xEnd[1] = xEnd;
         this.axialSlice.localizerLines.yEnd[1] = yEnd;
 
-        this.contextAnnotation.moveTo(xStart, yStart);
-        this.contextAnnotation.lineTo(xEnd, yEnd);
-
-        // this.contextAnnotation.moveTo(xLoc, yLoc);
-        // this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2), yLoc + radius * Math.sin(rotateAngle2));
-        // this.contextAnnotation.moveTo(xLoc, yLoc);
-        // this.contextAnnotation.lineTo(xLoc + radius * Math.cos(rotateAngle2 + Math.PI), yLoc + radius * Math.sin(rotateAngle2 + Math.PI));
-        
-        // this.axialSlice.localizerLines.
-
-
-        this.contextAnnotation.closePath();
-        this.contextAnnotation.stroke();
+        drawLine(this.contextAnnotation, papaya.viewer.Viewer.CROSSHAIR_COLOR_CORONAL, xStart, xEnd, yStart, yEnd);
+        clipCenter(this.contextAnnotation, this.canvasAnnotation, xLoc, yLoc);
+        drawCornerBox(this.contextAnnotation, papaya.viewer.Viewer.CROSSHAIR_COLOR_AXIAL, this.axialSlice);
         this.contextAnnotation.restore();
     }
 
@@ -1883,7 +1897,6 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.contextAnnotation.closePath();
         this.contextAnnotation.clip();
 
-        this.contextAnnotation.beginPath();
         // console.log('drawCrosshairs finalTransform coronal');
         // console.table(this.coronalSlice.finalTransform);
         xLoc = (this.coronalSlice.finalTransform[0][2] + (this.currentCoord.x + 0.5) *
@@ -1910,8 +1923,9 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.coronalSlice.localizerLines.yEnd[0] = yEnd;
 
         // draw first line
-        this.contextAnnotation.moveTo(xStart, yStart);
-        this.contextAnnotation.lineTo(xEnd, yEnd);
+
+        drawLine(this.contextAnnotation, papaya.viewer.Viewer.CROSSHAIR_COLOR_CORONAL, xStart, xEnd, yStart, yEnd);
+
 
         xStart = xLoc + radius * Math.cos(rotateAngle2);
         yStart = yLoc + radius * Math.sin(rotateAngle2);
@@ -1921,12 +1935,10 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.coronalSlice.localizerLines.yStart[1] = yStart;
         this.coronalSlice.localizerLines.xEnd[1] = xEnd;
         this.coronalSlice.localizerLines.yEnd[1] = yEnd;
-
-        this.contextAnnotation.moveTo(xStart, yStart);
-        this.contextAnnotation.lineTo(xEnd, yEnd);
-
-        this.contextAnnotation.closePath();
-        this.contextAnnotation.stroke();
+        
+        drawLine(this.contextAnnotation, papaya.viewer.Viewer.CROSSHAIR_COLOR_AXIAL, xStart, xEnd, yStart, yEnd);
+        clipCenter(this.contextAnnotation, this.canvasAnnotation, xLoc, yLoc);
+        drawCornerBox(this.contextAnnotation, papaya.viewer.Viewer.CROSSHAIR_COLOR_CORONAL, this.coronalSlice);
         this.contextAnnotation.restore();
     }
 
@@ -1944,7 +1956,6 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.contextAnnotation.closePath();
         this.contextAnnotation.clip();
 
-        this.contextAnnotation.beginPath();
         // console.log('drawCrosshairs finalTransform sagittal');
         // console.table(this.sagittalSlice.finalTransform);
 
@@ -1973,8 +1984,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.sagittalSlice.localizerLines.yEnd[0] = yEnd;
 
         // draw first line
-        this.contextAnnotation.moveTo(xStart, yStart);
-        this.contextAnnotation.lineTo(xEnd, yEnd);
+        drawLine(this.contextAnnotation, papaya.viewer.Viewer.CROSSHAIR_COLOR_SAGITTAL, xStart, xEnd, yStart, yEnd);
 
         xStart = xLoc + radius * Math.cos(rotateAngle2);
         yStart = yLoc + radius * Math.sin(rotateAngle2);
@@ -1985,11 +1995,9 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.sagittalSlice.localizerLines.xEnd[1] = xEnd;
         this.sagittalSlice.localizerLines.yEnd[1] = yEnd;
 
-        this.contextAnnotation.moveTo(xStart, yStart);
-        this.contextAnnotation.lineTo(xEnd, yEnd);
-
-        this.contextAnnotation.closePath();
-        this.contextAnnotation.stroke();
+        drawLine(this.contextAnnotation, papaya.viewer.Viewer.CROSSHAIR_COLOR_AXIAL, xStart, xEnd, yStart, yEnd);
+        clipCenter(this.contextAnnotation, this.canvasAnnotation, xLoc, yLoc);
+        drawCornerBox(this.contextAnnotation, papaya.viewer.Viewer.CROSSHAIR_COLOR_SAGITTAL, this.sagittalSlice);
         this.contextAnnotation.restore();
     }
 };
