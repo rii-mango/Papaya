@@ -1924,7 +1924,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
         // draw first line
 
-        drawLine(this.contextAnnotation, papaya.viewer.Viewer.CROSSHAIR_COLOR_CORONAL, xStart, xEnd, yStart, yEnd);
+        drawLine(this.contextAnnotation, papaya.viewer.Viewer.CROSSHAIR_COLOR_SAGITTAL, xStart, xEnd, yStart, yEnd);
 
 
         xStart = xLoc + radius * Math.cos(rotateAngle2);
@@ -1984,7 +1984,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         this.sagittalSlice.localizerLines.yEnd[0] = yEnd;
 
         // draw first line
-        drawLine(this.contextAnnotation, papaya.viewer.Viewer.CROSSHAIR_COLOR_SAGITTAL, xStart, xEnd, yStart, yEnd);
+        drawLine(this.contextAnnotation, papaya.viewer.Viewer.CROSSHAIR_COLOR_CORONAL, xStart, xEnd, yStart, yEnd);
 
         xStart = xLoc + radius * Math.cos(rotateAngle2);
         yStart = yLoc + radius * Math.sin(rotateAngle2);
