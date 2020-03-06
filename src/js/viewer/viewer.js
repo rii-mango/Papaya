@@ -134,6 +134,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.localizerDetected = 0; // 1: rotate, 2: move, 0: no detection
     this.centerCoordInverse = null;
     this.screenCurve = new papaya.viewer.ScreenCurve(this);
+    this.screenLayout = [this.mainImage, this.lowerImageTop, this.lowerImageBot, this.lowerImageBot2];
 };
 
 
@@ -1576,7 +1577,7 @@ papaya.viewer.Viewer.prototype.drawAnnotation = function () {
         return;
     }
     this.drawCrosshairs();
-    this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.currentInteractingSlice.finalTransform)
+    if (this.activeTool === "DrawCurve") this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.currentInteractingSlice.finalTransform)
 
     // this.contextAnnotation.setTransform(1, 0, 0, 1, 0, 0);
     this.contextAnnotation.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
@@ -2368,7 +2369,7 @@ papaya.viewer.Viewer.prototype.viewsChanged = function () {
         $("#" + PAPAYA_DEFAULT_SLIDER_ID + this.container.containerIndex + "main").find("button").prop("disabled",
             (this.mainImage === this.surfaceView));
     }
-
+    this.updateCurrentScreenLayout();
     this.drawViewer(true);
     this.updateSliceSliderControl();
 };
@@ -2430,6 +2431,8 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
             this.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
 
             this.findClickedSlice(this, this.previousMousePosition.x, this.previousMousePosition.y);
+            this.updateCurrentInteractingSlice(canvasLoc.x, canvasLoc.y);
+            this.localizerDetected = this.detectLocalizer(this.currentInteractingSlice, canvasLoc.x, canvasLoc.y);
 
             if (((me.button === 2) || this.isControlKeyDown || this.isLongTouch) && this.container.contextManager && (this.selectedSlice === this.mainImage) && (this.mainImage === this.surfaceView)) {
                 this.contextMenuMousePositionX = this.previousMousePosition.x - this.canvasRect.left;
@@ -2683,10 +2686,10 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
     currentMouseX = papaya.utilities.PlatformUtils.getMousePositionX(me);
     currentMouseY = papaya.utilities.PlatformUtils.getMousePositionY(me);
 
-    this.updateOffsetRect();
-    var mouseX = currentMouseX - this.canvasRect.left;
-    var mouseY = currentMouseY - this.canvasRect.top;
-    this.updateCurrentInteractingSlice(mouseX, mouseY);
+    var mouse = this.convertMouseCoordToCanvas(currentMouseX, currentMouseY);
+    var mouseX = mouse.x
+    var mouseY = mouse.y
+    this.updateCurrentScreenLayout();
     // console.log(this.screenCurve.detec)
     // console.log(mouseX, mouseY);
 
@@ -2830,6 +2833,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.currentInteractingSlice.finalTransform);
         }
     } else {
+        this.updateCurrentInteractingSlice(mouseX, mouseY);
         if (!this.isGrabbingLocalizer) {
             this.localizerDetected = this.detectLocalizer(this.currentInteractingSlice, mouseX, mouseY);
             this.changeCursor(this.localizerDetected);
@@ -2896,6 +2900,7 @@ papaya.viewer.Viewer.prototype.mouseLeaveEvent = function () {};
 
 
 papaya.viewer.Viewer.prototype.touchMoveEvent = function (me) {
+    console.log('touchMoveEvent');
     if (!this.didLongTouch) {
         if (this.longTouchTimer) {
             clearTimeout(this.longTouchTimer);
@@ -2908,7 +2913,7 @@ papaya.viewer.Viewer.prototype.touchMoveEvent = function (me) {
         }
 
         this.mouseMoveEvent(me);
-    }
+    } else this.mouseMoveEvent(me);
 };
 
 
@@ -2917,8 +2922,8 @@ papaya.viewer.Viewer.prototype.touchStartEvent = function (me) {
     if (!papaya.Container.allowPropagation) {
         me.stopPropagation();
     }
-
     me.preventDefault();
+    this.mouseDownEvent(me);
     this.longTouchTimer = setTimeout(papaya.utilities.ObjectUtils.bind(this, function() {this.doLongTouch(me); }), 500);
 };
 
@@ -4223,16 +4228,30 @@ papaya.viewer.Viewer.prototype.getRotatingAngle = function (slice, preX, preY, m
 }
 
 papaya.viewer.Viewer.prototype.updateCurrentInteractingSlice = function (mouseX, mouseY) {
-    if (this.insideScreenSlice(this.axialSlice, mouseX, mouseY, this.volume.getXDim(), this.volume.getYDim())) {
-        this.currentInteractingSlice = this.axialSlice;
-        // console.log('AXIAL BRO');
-    } else if (this.insideScreenSlice(this.sagittalSlice, mouseX, mouseY, this.volume.getXDim(), this.volume.getZDim())) {
-        this.currentInteractingSlice = this.sagittalSlice;
-        // console.log('SAGITTAL BRO');
-    } else if (this.insideScreenSlice(this.coronalSlice, mouseX, mouseY, this.volume.getYDim(), this.volume.getZDim())) {
-        this.currentInteractingSlice = this.coronalSlice;
-        // console.log('CORONAL BRO');
+    // detect current slice based on current mouse position
+    // Different from this.findCLickedSlice() since this doesn't account for the image in the viewport,
+    // meaning it will detect if the mouse is INSIDE VIEWPORT, not INSIDE IMAGE like findClickedSlice()
+    // console.log(this.screenLayout);
+    // var currentSlice = null;
+    for (var i = 0; i < this.screenLayout.length; i++) {
+        if (this.screenLayout[i]) {
+            if ((mouseX <= this.screenLayout[i].screenOffsetX + this.screenLayout[i].screenWidth && mouseX >= this.screenLayout[i].screenOffsetX)
+            && (mouseY <= this.screenLayout[i].screenOffsetY + this.screenLayout[i].screenHeight && mouseY >= this.screenLayout[i].screenOffsetY)) {
+                this.currentInteractingSlice = this.screenLayout[i];
+                // console.log('sliceDetection', currentSlice);
+            }
+        }
     }
+    // console.log('sliceDetection', currentSlice);
+    // this.currentInteractingSlice = currentSlice;
+}
+
+papaya.viewer.Viewer.prototype.updateCurrentScreenLayout = function () {
+    this.screenLayout = [];
+    if (this.mainImage) this.screenLayout.push(this.mainImage);
+    if (this.lowerImageTop) this.screenLayout.push(this.lowerImageTop);
+    if (this.lowerImageBot) this.screenLayout.push(this.lowerImageBot);
+    if (this.lowerImageBot2) this.screenLayout.push(this.lowerImageBot2);
 }
 
 papaya.viewer.Viewer.prototype.getSliceCenterPosition = function (slice, isAbsolute) {

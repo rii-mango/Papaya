@@ -92,7 +92,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, curren
     //     console.log('papaya updateSlice finalTransform2', this);
     //     console.table(this.finalTransform2);
     // }
-    console.log('papaya updateSlice with slice', slice);
+    // console.log('papaya updateSlice with slice', slice);
     slice = Math.round(slice);
 
     if ((this.manager.isRadiologicalMode() && this.isRadiologicalSensitive())) {
