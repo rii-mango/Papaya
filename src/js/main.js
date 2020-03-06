@@ -689,11 +689,13 @@ papaya.Container.prototype.getViewerDimensions = function () {
     ratio = (this.orthogonal ? (this.hasSurface() ? 1.333 : 1.5) : 1);
 
     if (this.orthogonalTall || !this.orthogonal) {
-        height = (this.collapsable ? window.innerHeight : this.containerHtml.parent().height()) - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
-            PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding && !this.nestedViewer ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
-            (this.showControlBar ? 2*papaya.ui.Toolbar.SIZE : 0);
+        // height = (this.collapsable ? window.innerHeight : this.containerHtml.parent().height()) - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
+        //     PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding && !this.nestedViewer ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
+        //     (this.showControlBar ? 2*papaya.ui.Toolbar.SIZE : 0);
 
-        width = papayaRoundFast(height / ratio);
+        // width = papayaRoundFast(height / ratio);
+        width = this.containerHtml.parent().width()
+        height = this.containerHtml.parent().height();
     } else {
         // Original
         // width = parentWidth;
