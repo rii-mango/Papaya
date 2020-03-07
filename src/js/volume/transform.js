@@ -422,7 +422,7 @@ papaya.volume.Transform.prototype.getAngleTo = function (v1, v2, v3) {
     else return 360 - angle;
 }
 
-papaya.volume.Transform.prototype.updateRollImageMat = function (angle, volume, sliceLabel, centerCoord) {
+papaya.volume.Transform.prototype.updateRollImageMat = function (angle, sliceLabel) {
     // console.log('%cupdateRollImageMat', "color: green", sliceLabel);
     // this.updateRotationMat();
     var directions = {

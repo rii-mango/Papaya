@@ -125,7 +125,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.activeTool = null;
 
     // modification 28/11/2019: add reactPapayaViewport constructor
-    this.reactPapayaViewport = null;
+    // this.reactPapayaViewport = null;
 
     // modification 16/01/2020: add current interacting slice
     this.currentInteractingSlice = this.axialSlice;
@@ -4308,10 +4308,17 @@ papaya.viewer.Viewer.prototype.getSliceCenterPosition = function (slice, isAbsol
 
 papaya.viewer.Viewer.prototype.restoreViewer = function () {
     // this.screenVolumes[0].resetTransform();
-    this.volume.reset();
+    var reactPapayaViewport = this.reactPapayaViewport;
+    console.log('restoreViewer', reactPapayaViewport);
     this.currentCoord.setCoordinate(papayaFloorFast(this.volume.getXDim() / 2), papayaFloorFast(this.volume.getYDim() / 2),
     papayaFloorFast(this.volume.getZDim() / 2));
+    this.volume.reset(this.currentCoord);
+    this.volume.reset(this.currentCoord);
     this.screenCurve.clearPoints(true);
+    // papaya.Container.resetViewer(this.container.containerIndex, this.container.params);
+    // console.log('restoreViewer after', reactPapayaViewport);
+    // window.papayaContainers[0].viewer.reactPapayaViewport = reactPapayaViewport;
+    this.updateScreenSliceTransforms();
     this.obliqueView = null;
     this.cmprSlice = null;
     this.viewsChanged();

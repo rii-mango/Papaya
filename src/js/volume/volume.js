@@ -512,7 +512,14 @@ papaya.volume.Volume.prototype.getSeriesLabels = function () {
 
 // modification 17/01/2020: add reset function
 
-papaya.volume.Volume.prototype.reset = function () {
+papaya.volume.Volume.prototype.reset = function (centerCoord) {
+    var centerX, centerY, centerZ;
+    centerX = centerCoord.x * this.header.voxelDimensions.xSize;
+    centerY = centerCoord.y * this.header.voxelDimensions.ySize;
+    centerZ = centerCoord.z * this.header.voxelDimensions.zSize;
     this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
+    this.transform.updateCenterMat(centerX, centerY, centerZ);
+    this.transform.updatePosition();
+    this.transform.updateRollImageMat(0, 1);
     // this.applyBestTransform();
 }
