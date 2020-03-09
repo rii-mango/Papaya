@@ -57,8 +57,8 @@ papaya.volume.Transform = papaya.volume.Transform || function (mat, volume) {
         y: volume.header.imageDimensions.yDim / 2,
         z: volume.header.imageDimensions.zDim / 2
     };
-
     this.updateTransforms(mat);
+    console.log([this.mmMatAxial, this.mmMatCoronal, this.mmMatSagittal]);
 };
 
 
@@ -758,7 +758,7 @@ papaya.volume.Transform.prototype.updateTransforms = function (mat) {
 
 
 papaya.volume.Transform.prototype.updateRollTransforms = function (imageMats) {
-    // this.updateMat(mat);
+    // this.updateMat(imageMats[0]);
     this.updateSizeMat();
     this.updateOrientMat();
     this.updateOriginMat();
