@@ -11,6 +11,7 @@ papaya.volume = papaya.volume || {};
 
 /*** Constructor ***/
 papaya.volume.Transform = papaya.volume.Transform || function (mat, volume) {
+    console.log('TRANSFORM CONSTRUCTOR');
     this.voxelValue = new papaya.volume.VoxelValue(volume.imageData, volume.header.imageType,
         volume.header.imageDimensions, volume.header.imageRange, volume.header.orientation);
     this.voxelDimensions = volume.header.voxelDimensions;
