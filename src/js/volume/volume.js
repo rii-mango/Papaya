@@ -517,35 +517,8 @@ papaya.volume.Volume.prototype.reset = function (centerCoord) {
     centerX = centerCoord.x * this.header.voxelDimensions.xSize;
     centerY = centerCoord.y * this.header.voxelDimensions.ySize;
     centerZ = centerCoord.z * this.header.voxelDimensions.zSize;
-    // this.transform.updateRollImageMat(0, 1);
 
-    // this.transform = null;
     this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
     this.transform.updateRollImageMat(0, 1);
     this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
-
-    // this.transform.updateRollImageMat(0, 2);
-    // this.transform.mmMat = this.transform.mmMatAxial.clone();
-    // this.transform.rotMat = papaya.volume.Transform.IDENTITY.clone();
-    // console.log(this.transform.mmMatAxial, this.transform.mmMat);
-    // this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
-    // this.transform.updateTransforms(papaya.volume.Transform.IDENTITY.clone());
-    // this.transform.updateRollTransforms([papaya.volume.Transform.IDENTITY.clone(), papaya.volume.Transform.IDENTITY.clone(), papaya.volume.Transform.IDENTITY.clone()]);
-    // console.log(this.transform.mmMatAxial, this.transform.mmMat);
-
-    // this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
-    // this.applyBestTransform();
-    // this.transform.updateRollImageMat(0, 1);
-
-    // this.transform = null;
-
-    // this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
-    // this.transform.updateCenterMat(centerX, centerY, centerZ);
-    // this.transform.updateMmTransform();
-    // this.transform.updateRollImageMat(0, 1);
-    // this.transform.updateRollImageMat(0, 2);
-    // this.transform.updateRollImageMat(0, 3);
-
-    // this.transform.updatePosition();
-    // this.applyBestTransform();
 }

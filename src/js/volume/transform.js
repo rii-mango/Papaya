@@ -58,7 +58,7 @@ papaya.volume.Transform = papaya.volume.Transform || function (mat, volume) {
         z: volume.header.imageDimensions.zDim / 2
     };
     this.updateTransforms(mat);
-    console.log([this.mmMatAxial, this.mmMatCoronal, this.mmMatSagittal]);
+    // console.log([this.mmMatAxial, this.mmMatCoronal, this.mmMatSagittal]);
 };
 
 

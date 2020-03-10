@@ -2811,30 +2811,9 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             var oldCoord = this.volume.transform.centerCoord;
             this.screenVolumes[0].updateCenterMat(this.currentCoord);
             this.screenVolumes[0].resetSliceRotation(this.currentInteractingSlice.sliceDirection);
-            // this.updatePosition(this, localizerCenter.x + this.canvasRect.left, localizerCenter.y + this.canvasRect.top, false);
-            // this.updatePosition(this, oldCenter.x + this.canvasRect.left, oldCenter.y + this.canvasRect.top, false);
-            // this.screenVolumes[0].updateCenterMat(this.currentCoord);
             this.updatePosition(this, localizerCenter.x, localizerCenter.y, false);
             this.screenVolumes[0].updateCenterMat(this.currentCoord);
-            // var currentCoord = this.currentCoord;
-            // var oldCoord = this.volume.transform.centerCoord;
             this.screenVolumes[0].rotateLocalizer(rotateAngle + currentRotatingAngle, this.currentInteractingSlice.sliceDirection);
-            // this.screenVolumes[0].resetSliceRotation(this.currentInteractingSlice.sliceDirection);
-            // this.updatePosition(this, oldCenter.x + this.canvasRect.left, oldCenter.y + this.canvasRect.top, false);
-
-            // this.screenVolumes[0].updateCenterMat(this.currentCoord);
-            // this.screenVolumes[0].rotateLocalizer(rotateAngle + currentRotatingAngle, this.currentInteractingSlice.sliceDirection);
-
-            // this.currentCoord = currentCoord;
-            // this.screenVolumes[0].updateCenterMat(oldCoord);
-            // this.screenVolumes[0].resetSliceRotation(this.currentInteractingSlice.sliceDirection);
-
-            // this.updatePosition(this, oldCenter.x + this.canvasRect.left, oldCenter.y + this.canvasRect.top, false);
-
-            // this.screenVolumes[0].updateCenterMat(this.currentCoord);
-            // this.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection);
-            // this.updatePosition(this, oldCenter.x + this.canvasRect.left, oldCenter.y + this.canvasRect.top, false);
-            // this.volume.transform.centerCoord = this.currentCoord;
             this.drawViewer(true, false, false);
             this.previousMousePosition.x = currentMouseX;
             this.previousMousePosition.y = currentMouseY;
