@@ -4292,6 +4292,7 @@ papaya.viewer.Viewer.prototype.restoreViewer = function () {
     this.currentCoord.setCoordinate(papayaFloorFast(this.volume.getXDim() / 2), papayaFloorFast(this.volume.getYDim() / 2),
     papayaFloorFast(this.volume.getZDim() / 2));
     this.volume.reset(this.currentCoord);
+    this.screenVolumes[0].resetScreenRange();
     // this.volume.reset(this.currentCoord);
     this.screenCurve.clearPoints(true);
     // papaya.Container.resetViewer(this.container.containerIndex, this.container.params);
