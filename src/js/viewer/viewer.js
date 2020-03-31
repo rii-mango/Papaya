@@ -1052,7 +1052,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
             // if (updateCenterCoord) this.screenVolumes[0].updateCenterCoord(imageCoord);
 
             if ((xImageLoc !== viewer.currentCoord.x) || (yImageLoc !== viewer.currentCoord.y)) {
-                console.log('currentCoord updated');
+                // console.log('currentCoord updated');
                 viewer.currentCoord.x = xImageLoc;
                 viewer.currentCoord.y = yImageLoc;
                 viewer.currentCoord.z = zImageLoc;
@@ -4288,7 +4288,7 @@ papaya.viewer.Viewer.prototype.getSliceCenterPosition = function (slice, isAbsol
 papaya.viewer.Viewer.prototype.restoreViewer = function () {
     // this.screenVolumes[0].resetTransform();
     var reactPapayaViewport = this.reactPapayaViewport;
-    console.log('restoreViewer', reactPapayaViewport);
+    // console.log('restoreViewer', reactPapayaViewport);
     this.currentCoord.setCoordinate(papayaFloorFast(this.volume.getXDim() / 2), papayaFloorFast(this.volume.getYDim() / 2),
     papayaFloorFast(this.volume.getZDim() / 2));
     this.volume.reset(this.currentCoord);
