@@ -2504,8 +2504,10 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                     } else {
                         // this.screenCurve.addPoint(canvasLoc.x, canvasLoc.y);
                         var cursorPosition = this.getXYImageCoordinate(this.currentInteractingSlice);
-                        this.screenCurve.addPoint(cursorPosition.x, cursorPosition.y);
+                        if (!this.screenCurve.slice) this.screenCurve.updateCurrentSlice(this.currentInteractingSlice);
+                        this.screenCurve.addPoint(cursorPosition.x, cursorPosition.y, this.currentInteractingSlice);
                         this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.currentInteractingSlice.finalTransform);
+                        this.screenCurve.buildPapayaCurveSegments();
                         // this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.sagittalSlice.finalTransform);
                     }
                 } else if (me.button === 1) {

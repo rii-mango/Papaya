@@ -22,7 +22,7 @@ papaya.viewer.ScreenCurve = papaya.viewer.ScreenCurve || function (viewer, slice
     this.tension = 0.5;
     this.segmentResolutions = 30;
     this.curveSegments = null;
-    this.papayaCurveSegments = null;
+    this.papayaCoordCurveSegments = [];
     this.isClosed = false;
     (pointsRef) ? this.pointsRef = pointsRef : this.pointsRef = [];
     this.detectedPointRef = [];
@@ -72,9 +72,11 @@ papaya.viewer.ScreenCurve.prototype.drawPoint = function (context, canvas, posX,
     context.fill();
 };
 
-papaya.viewer.ScreenCurve.prototype.addPoint = function (mouseX, mouseY) {
+papaya.viewer.ScreenCurve.prototype.addPoint = function (mouseX, mouseY, slice) {
     // accept input that is converted to canvas coordinates
     // this.points.push([mouseX, mouseY]);
+    // console.log(slice, this.slice);
+    if (slice.sliceDirection !== this.slice.sliceDirection) return false;
     this.pointsRef.push({
         id: this.maxPointIndex,
         value: [mouseX, mouseY]
@@ -149,11 +151,15 @@ papaya.viewer.ScreenCurve.prototype.buildPointsArray = function (finalTransform)
 };
 
 papaya.viewer.ScreenCurve.prototype.buildPapayaCurveSegments = function () {
+    // console.log('buildPapayaCurveSegments');
     var point, papayaCoord;
-    for (let i = 0; i < this.curveSegments.length; i += 2) {
-        point = [this.curveSegments[0], this.curveSegments[1]];
-        papayaCoord = this.convertScreenToImageCoordinate(viewer.)
+    this.papayaCoordCurveSegments = [];
+    for (var i = 0; i < this.curveSegments.length; i += 2) {
+        point = [this.curveSegments[i], this.curveSegments[i+1]];
+        papayaCoord = this.convertScreenToImageCoordinate(this.slice.sliceDirection, point);
+        this.papayaCoordCurveSegments.push(papayaCoord);
     }
+    // console.log(this.papayaCoordCurveSegments);
 };
 
 papaya.viewer.ScreenCurve.prototype.clearPoints = function (clearAll) {
@@ -174,25 +180,31 @@ papaya.viewer.ScreenCurve.prototype.updateFinalTransform = function (slice) {
     // this.pointsNeedUpdate = true;
 };
 
+papaya.viewer.ScreenCurve.prototype.updateCurrentSlice = function (slice) {
+    this.slice = slice;
+    this.finalTransform = slice.finalTransform
+    // this.pointsNeedUpdate = true;
+};
+
 papaya.viewer.ScreenCurve.prototype.convertScreenToImageCoordinate = function (sliceDirection, screenCoord) {
     // screenCoord: array of 2 elements
     // screenCoord[0]: x, screenCoord[1]: y
     var xImage, yImage;
     switch (sliceDirection) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
-            xImage = (screenCoord[0] - this.finalTransform[0][2]) / screenSlice.finalTransform[0][0];
-            yImage = (screenCoord[1] - this.finalTransform[1][2]) / screenSlice.finalTransform[1][1];
-            zImage = viewer.axialSlice.currentSlice;
+            xImage = (screenCoord[0] - this.finalTransform[0][2]) / this.slice.finalTransform[0][0];
+            yImage = (screenCoord[1] - this.finalTransform[1][2]) / this.slice.finalTransform[1][1];
+            zImage = this.viewer.axialSlice.currentSlice;
             break;
         case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
-            yImage = (screenCoord[0] - this.finalTransform[0][2]) / screenSlice.finalTransform[0][0];
-            zImage = (screenCoord[1] - this.finalTransform[1][2]) / screenSlice.finalTransform[1][1];
-            xImage = viewer.sagittalSlice.currentSlice;
+            yImage = (screenCoord[0] - this.finalTransform[0][2]) / this.slice.finalTransform[0][0];
+            zImage = (screenCoord[1] - this.finalTransform[1][2]) / this.slice.finalTransform[1][1];
+            xImage = this.viewer.sagittalSlice.currentSlice;
             break;
         case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
-            xImage = (screenCoord[0] - this.finalTransform[0][2]) / screenSlice.finalTransform[0][0];
-            zImage = (screenCoord[1] - this.finalTransform[1][2]) / screenSlice.finalTransform[1][1];
-            yImage = viewer.coronalSlice.currentSlice;
+            xImage = (screenCoord[0] - this.finalTransform[0][2]) / this.slice.finalTransform[0][0];
+            zImage = (screenCoord[1] - this.finalTransform[1][2]) / this.slice.finalTransform[1][1];
+            yImage = this.viewer.coronalSlice.currentSlice;
             break;
     }
     return new papaya.core.Coordinate(xImage, yImage, zImage);
