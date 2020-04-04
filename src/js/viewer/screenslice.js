@@ -379,7 +379,6 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, curren
 };
 
 
-
 papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace) {
     /*jslint bitwise: true */
 
@@ -805,3 +804,48 @@ papaya.viewer.ScreenSlice.prototype.clearDTILinesImage = function () {
     this.canvasDTILines = null;
     this.contextDTILines = null;
 };
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (points, sliceDirection) {
+    // parse image along the sliceDirection line of sight (current slice's direction)
+    // input points can be of a line or a curve, point must be papaya.Core.coordinate object
+
+    var maxDim = 0; // maximum dimension along line of sight
+    var voxelDims = this.screenVolumes[0].volume.header.voxelDimensions;
+
+    var imageData = [];
+    var index, value;
+    var timepoint = 0;
+    var interpolation = true;
+    if (!points.length) return false;
+
+    // test case where oblique rotation are not allowed, line of sight is exactly perpendicular to the default planes
+    switch (sliceDirection) {
+        case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
+            maxDim = voxelDims.zSize;
+        case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
+            maxDim = voxelDims.xSize;
+        case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
+            maxDim = voxelDims.ySize;
+    }
+
+    for (var i = 0; i < maxDim; i++) {
+        for (var j = 0; j < points.length; j++) {
+            switch (sliceDirection) {
+                case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
+                    value = this.screenVolumes[0].volume.getVoxelAtMM(points[j].x * voxelDims.xSize, points[j].y *
+                        voxelDims.ySize, i * voxelDims.zSize, timepoint, !interpolation, sliceDirection);
+                case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
+                    value = this.screenVolumes[0].volume.getVoxelAtMM(i * voxelDims.xSize, points[j].y *
+                        voxelDims.ySize, points[j].z * voxelDims.zSize, timepoint, !interpolation, sliceDirection);
+                case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
+                    value = this.screenVolumes[0].volume.getVoxelAtMM(points[j].x * voxelDims.xSize, i *
+                        voxelDims.ySize, points[j].z * voxelDims.zSize, timepoint, !interpolation, sliceDirection);
+            }
+            index = ((i * points.length) + j) * 4;
+            // originalVal = value;
+            this.imageData[0][index] = value;
+        }
+    }
+}
