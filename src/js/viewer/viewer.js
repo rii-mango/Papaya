@@ -2828,6 +2828,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             var cursorPosition = this.getXYImageCoordinate(this.currentInteractingSlice);
             this.screenCurve.updatePointPosition(id, cursorPosition.x, cursorPosition.y);
             this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.currentInteractingSlice.finalTransform);
+            this.cmprSlice.updateObliqueSlice(this.screenCurve.papayaCoordCurveSegments, this.screenCurve.slice.sliceDirection);
         }
     } else {
         this.updateCurrentInteractingSlice(mouseX, mouseY);

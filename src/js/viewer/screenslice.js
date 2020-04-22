@@ -810,7 +810,7 @@ papaya.viewer.ScreenSlice.prototype.clearDTILinesImage = function () {
 papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (points, sliceDirection) {
     // parse image along the sliceDirection line of sight (current slice's direction)
     // input points can be of a line or a curve, point must be papaya.Core.coordinate object
-
+    console.log('updateObliqueSlice', this);
     var maxDim = 0; // maximum dimension along line of sight
     var voxelDims = this.screenVolumes[0].volume.header.voxelDimensions;
 
@@ -820,7 +820,7 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (points, slice
     var interpolation = true;
     if (!points.length) return false;
 
-    // test case where oblique rotation are not allowed, line of sight is exactly perpendicular to the default planes
+    // test case where oblique rotation are not allowed, line of sights is exactly perpendicular to the default planes
     switch (sliceDirection) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
             maxDim = voxelDims.zSize;
@@ -848,4 +848,12 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (points, slice
             this.imageData[0][index] = value;
         }
     }
+
+    var debug = function (debug) {
+        console.log('input', points);
+        console.log('sliceDir', sliceDirection);
+        console.log('imageData', this.imageData);
+        console.log('maxDim', maxDim);
+    }
+    debug.call(this);
 }
