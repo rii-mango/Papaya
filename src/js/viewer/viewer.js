@@ -481,6 +481,7 @@ papaya.viewer.Viewer.prototype.initializeCMPRView = function () {
     this.lowerImageBot2 = this.cmprSlice = new papaya.viewer.ScreenSlice(this.volume, papaya.viewer.ScreenSlice.DIRECTION_OBLIQUE,
         this.volume.getXDim(), this.volume.getYDim(), this.volume.getXSize(), this.volume.getYSize(),
         this.screenVolumes, this);
+    this.cmprSlice.imageData = [];
     this.obliqueView = this.cmprSlice; // for compatibility 
     this.cmprSlice.imageData[0] = this.axialSlice.imageData[0];
     // this.surfaces.push(dummyValue);
@@ -1389,7 +1390,7 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
     }
 
     if (this.hasOblique()) {
-        this.cmprSlice.repaint();
+        this.cmprSlice.repaintTest();
     }
 
     // intialize screen slices
@@ -2518,6 +2519,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                     if (this.screenCurve.detectedPointRef.length){
                         this.screenCurve.removePoint(this.screenCurve.detectedPointRef[0].id);
                         this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.currentInteractingSlice.finalTransform);
+                        this.screenCurve.buildPapayaCurveSegments();
                     }
                 }
             } else if (this.isAltKeyDown && this.selectedSlice) {
