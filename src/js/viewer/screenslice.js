@@ -824,10 +824,13 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (points, slice
     switch (sliceDirection) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
             maxDim = imageDims.zDim;
+            break;
         case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
             maxDim = imageDims.xDim;
+            break;
         case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
             maxDim = imageDims.yDim;
+            break;
     }
 
     for (var i = 0; i < maxDim; i++) {
@@ -836,12 +839,15 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (points, slice
                 case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
                     value = this.screenVolumes[0].volume.getVoxelAtMM(points[j].x * voxelDims.xSize, points[j].y *
                         voxelDims.ySize, i * voxelDims.zSize, timepoint, !interpolation, sliceDirection);
+                    break;
                 case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
                     value = this.screenVolumes[0].volume.getVoxelAtMM(i * voxelDims.xSize, points[j].y *
                         voxelDims.ySize, points[j].z * voxelDims.zSize, timepoint, !interpolation, sliceDirection);
+                    break;
                 case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
                     value = this.screenVolumes[0].volume.getVoxelAtMM(points[j].x * voxelDims.xSize, i *
                         voxelDims.ySize, points[j].z * voxelDims.zSize, timepoint, !interpolation, sliceDirection);
+                    break;
             }
             index = ((i * points.length) + j) * 4;
             // originalVal = value;
@@ -857,7 +863,7 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (points, slice
         console.log('input', points);
         console.log('sliceDir', sliceDirection);
         console.log('imageData', this.imageData);
-        console.log('maxDim', maxDim);
+        console.log('maxDim', imageDims, maxDim);
     }
     debug.call(this);
 }
@@ -878,7 +884,9 @@ papaya.viewer.ScreenSlice.prototype.repaintTest = function (slice, force, worldS
     if (this.contextDTILines) {
         this.contextDTILines.clearRect(0, 0, this.screenDim, this.screenDim);
     }
-
+    // clear imageDataDraw
+    this.imageDataDraw = this.contextMain.createImageData(this.xDim, this.yDim);
+    // this.imageDataDraw.data = [[]];
     if (this.imageData.length === this.screenVolumes.length) {
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
             if (this.screenVolumes[ctr].hidden) {

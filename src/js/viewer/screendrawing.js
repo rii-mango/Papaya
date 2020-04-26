@@ -20,7 +20,7 @@ papaya.viewer.ScreenCurve = papaya.viewer.ScreenCurve || function (viewer, slice
     this.fillStyle = "red"
     this.pointRadius = 5;
     this.tension = 0.5;
-    this.segmentResolutions = 30;
+    this.segmentResolutions = 150;
     this.curveSegments = null;
     this.papayaCoordCurveSegments = [];
     this.isClosed = false;
@@ -153,11 +153,17 @@ papaya.viewer.ScreenCurve.prototype.buildPointsArray = function (finalTransform)
 papaya.viewer.ScreenCurve.prototype.buildPapayaCurveSegments = function () {
     // console.log('buildPapayaCurveSegments');
     var point, papayaCoord;
+    var roundResult = true;
     this.papayaCoordCurveSegments = [];
     for (var i = 0; i < this.curveSegments.length; i += 2) {
         point = [this.curveSegments[i], this.curveSegments[i+1]];
-        papayaCoord = this.convertScreenToImageCoordinate(this.slice.sliceDirection, point);
-        this.papayaCoordCurveSegments.push(papayaCoord);
+        papayaCoord = this.convertScreenToImageCoordinate(this.slice.sliceDirection, point, roundResult);
+        // map 1-1 to image coordinate
+        if (i > 2 && roundResult) {
+            var prevCoord = this.papayaCoordCurveSegments[this.papayaCoordCurveSegments.length - 1];
+            if (papayaCoord.x !== prevCoord.x || papayaCoord.y !== prevCoord.y || papayaCoord.z !== prevCoord.z) this.papayaCoordCurveSegments.push(papayaCoord);
+        }             
+        else this.papayaCoordCurveSegments.push(papayaCoord);
     }
     // console.log(this.papayaCoordCurveSegments);
 };
@@ -186,7 +192,7 @@ papaya.viewer.ScreenCurve.prototype.updateCurrentSlice = function (slice) {
     // this.pointsNeedUpdate = true;
 };
 
-papaya.viewer.ScreenCurve.prototype.convertScreenToImageCoordinate = function (sliceDirection, screenCoord) {
+papaya.viewer.ScreenCurve.prototype.convertScreenToImageCoordinate = function (sliceDirection, screenCoord, roundResult) {
     // screenCoord: array of 2 elements
     // screenCoord[0]: x, screenCoord[1]: y
     var xImage, yImage;
@@ -207,5 +213,6 @@ papaya.viewer.ScreenCurve.prototype.convertScreenToImageCoordinate = function (s
             yImage = this.viewer.coronalSlice.currentSlice;
             break;
     }
-    return new papaya.core.Coordinate(xImage, yImage, zImage);
+    if (roundResult) return new papaya.core.Coordinate(Math.floor(xImage), Math.floor(yImage), Math.floor(zImage));
+    else return new papaya.core.Coordinate(xImage, yImage, zImage);
 }
