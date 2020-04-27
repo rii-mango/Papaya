@@ -807,10 +807,11 @@ papaya.viewer.ScreenSlice.prototype.clearDTILinesImage = function () {
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (points, sliceDirection) {
+papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (segment, sliceDirection) {
     // parse image along the sliceDirection line of sight (current slice's direction)
     // input points can be of a line or a curve, point must be papaya.Core.coordinate object
     console.log('updateObliqueSlice', this);
+    var points = segment.points;
     var maxDim = 0; // maximum dimension along line of sight
     var voxelDims = this.screenVolumes[0].volume.header.voxelDimensions;
     var imageDims = this.screenVolumes[0].volume.header.imageDimensions;
@@ -818,6 +819,7 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (points, slice
     var index, value;
     var timepoint = 0;
     var interpolation = true;
+    var pixelSpacing = this.calculateObliquePixelSpacing(sliceDirection, segment, voxelDims);
     if (!points.length) return false;
 
     // test case where oblique rotation are not allowed, line of sights is exactly perpendicular to the default planes
@@ -855,17 +857,49 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (points, slice
         }
     }
     this.imageData = imageData;
-    this.xDim = maxDim;
-    this.yDim = points.length;
+    this.yDim = maxDim;
+    this.xDim = points.length;
+    this.xSize = pixelSpacing.xSize;
+    this.ySize = pixelSpacing.ySize;
 
     var debug = function (debug) {
         window.currentSlice = this;
-        console.log('input', points);
+        console.log('input', segment.points);
         console.log('sliceDir', sliceDirection);
         console.log('imageData', this.imageData);
         console.log('maxDim', imageDims, maxDim);
+        console.log('delta', segment.delta);
+        console.log('pixelSpacing', voxelDims, pixelSpacing);
     }
     debug.call(this);
+}
+
+papaya.viewer.ScreenSlice.prototype.calculateObliquePixelSpacing = function (sliceDirection, segment, voxelDims) {
+    // calculate the final image's pixel spacing
+    // final image needs pixel spacing information to compute transformation matrix, if pixel spacing is incorrect, the image will be warped or distorted
+    // hardcore, does not expected to work on non-orthogonal curves (curve on oblique slices)
+    var xSize, ySize;
+    var delta = segment.delta;
+    var ratio;
+    switch (sliceDirection) {
+        case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
+            ratio = (delta.x > delta.y) ? delta.y / delta.x : delta.x / delta.y;
+            xSize = (delta.x > delta.y) ? (1 - ratio) * voxelDims.xSize + (ratio) * voxelDims.ySize : (1 - ratio) * voxelDims.ySize + (ratio) * voxelDims.xSize;
+            ySize = voxelDims.zSize;
+            break;
+        case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
+            ratio = (delta.z > delta.y) ? delta.y / delta.z : delta.z / delta.y;
+            xSize = (delta.z > delta.y) ? (1 - ratio) * voxelDims.zSize + (ratio) * voxelDims.ySize : (1 - ratio) * voxelDims.ySize + (ratio) * voxelDims.zSize;
+            ySize = voxelDims.xSize;
+            break;
+        case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
+            ratio = (delta.x > delta.z) ? delta.z / delta.x : delta.x / delta.z;
+            xSize = (delta.x > delta.z) ? (1 - ratio) * voxelDims.xSize + (ratio) * voxelDims.zSize : (1 - ratio) * voxelDims.zSize + (ratio) * voxelDims.xSize;
+            ySize = voxelDims.ySize;
+            break;
+    }
+
+    return {xSize: xSize, ySize: ySize};
 }
 
 papaya.viewer.ScreenSlice.prototype.repaintTest = function (slice, force, worldSpace) {

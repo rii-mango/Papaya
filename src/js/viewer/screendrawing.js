@@ -22,7 +22,7 @@ papaya.viewer.ScreenCurve = papaya.viewer.ScreenCurve || function (viewer, slice
     this.tension = 0.5;
     this.segmentResolutions = 150;
     this.curveSegments = null;
-    this.papayaCoordCurveSegments = [];
+    this.papayaCoordCurveSegments = {};
     this.isClosed = false;
     (pointsRef) ? this.pointsRef = pointsRef : this.pointsRef = [];
     this.detectedPointRef = [];
@@ -154,17 +154,33 @@ papaya.viewer.ScreenCurve.prototype.buildPapayaCurveSegments = function () {
     // console.log('buildPapayaCurveSegments');
     var point, papayaCoord;
     var roundResult = true;
-    this.papayaCoordCurveSegments = [];
+    var min = [Infinity, Infinity, Infinity];
+    var max = [-1, -1, -1]; // use this to calculate pixel size
+    this.papayaCoordCurveSegments.delta = {
+        x: 0,
+        y: 0,
+        z: 0
+    };
+    this.papayaCoordCurveSegments.points = [];
     for (var i = 0; i < this.curveSegments.length; i += 2) {
         point = [this.curveSegments[i], this.curveSegments[i+1]];
         papayaCoord = this.convertScreenToImageCoordinate(this.slice.sliceDirection, point, roundResult);
+        if (papayaCoord.x < min[0]) min[0] = papayaCoord.x;
+        if (papayaCoord.y < min[1]) min[1] = papayaCoord.y;
+        if (papayaCoord.z < min[2]) min[2] = papayaCoord.z;
+        if (papayaCoord.x > max[0]) max[0] = papayaCoord.x;
+        if (papayaCoord.y > max[1]) max[1] = papayaCoord.y;
+        if (papayaCoord.z > max[2]) max[2] = papayaCoord.z;
         // map 1-1 to image coordinate
         if (i > 2 && roundResult) {
-            var prevCoord = this.papayaCoordCurveSegments[this.papayaCoordCurveSegments.length - 1];
-            if (papayaCoord.x !== prevCoord.x || papayaCoord.y !== prevCoord.y || papayaCoord.z !== prevCoord.z) this.papayaCoordCurveSegments.push(papayaCoord);
+            var prevCoord = this.papayaCoordCurveSegments.points[this.papayaCoordCurveSegments.points.length - 1];
+            if (papayaCoord.x !== prevCoord.x || papayaCoord.y !== prevCoord.y || papayaCoord.z !== prevCoord.z) this.papayaCoordCurveSegments.points.push(papayaCoord);
         }             
-        else this.papayaCoordCurveSegments.push(papayaCoord);
+        else this.papayaCoordCurveSegments.points.push(papayaCoord);
     }
+    this.papayaCoordCurveSegments.delta.x = max[0] - min[0];
+    this.papayaCoordCurveSegments.delta.y = max[1] - min[1];
+    this.papayaCoordCurveSegments.delta.z = max[2] - min[2];
     // console.log(this.papayaCoordCurveSegments);
 };
 
