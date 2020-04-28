@@ -819,7 +819,7 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (segment, slic
     var index, value;
     var timepoint = 0;
     var interpolation = true;
-    var pixelSpacing = this.calculateObliquePixelSpacing(sliceDirection, segment, voxelDims);
+    var pixelSpacing = this.calculateObliquePixelSpacing(sliceDirection, segment, voxelDims, imageDims);
     if (!points.length) return false;
 
     // test case where oblique rotation are not allowed, line of sights is exactly perpendicular to the default planes
@@ -871,34 +871,51 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (segment, slic
         console.log('delta', segment.delta);
         console.log('pixelSpacing', voxelDims, pixelSpacing);
     }
-    debug.call(this);
+    // debug.call(this);
 }
 
-papaya.viewer.ScreenSlice.prototype.calculateObliquePixelSpacing = function (sliceDirection, segment, voxelDims) {
+papaya.viewer.ScreenSlice.prototype.calculateObliquePixelSpacing = function (sliceDirection, segment, voxelDims, imageDims) {
     // calculate the final image's pixel spacing
     // final image needs pixel spacing information to compute transformation matrix, if pixel spacing is incorrect, the image will be warped or distorted
     // hardcore, does not expected to work on non-orthogonal curves (curve on oblique slices)
     var xSize, ySize;
     var delta = segment.delta;
+    var length = segment.points.length;
     var ratio;
+    var ratioX, ratioY;
     switch (sliceDirection) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
-            ratio = (delta.x > delta.y) ? delta.y / delta.x : delta.x / delta.y;
-            xSize = (delta.x > delta.y) ? (1 - ratio) * voxelDims.xSize + (ratio) * voxelDims.ySize : (1 - ratio) * voxelDims.ySize + (ratio) * voxelDims.xSize;
+            // ratio = (delta.x > delta.y) ? delta.y / delta.x : delta.x / delta.y;
+            // ratioX = delta.x / length;
+            // ratioY = delta.y / length;
+            // xSize = (delta.x > delta.y) ? (1 - ratio) * voxelDims.xSize + (ratio) * voxelDims.ySize : (1 - ratio) * voxelDims.ySize + (ratio) * voxelDims.xSize;
+            // xSize = ratioX * voxelDims.xSize + ratioY * voxelDims.ySize;
+            xSize = voxelDims.xSize;
             ySize = voxelDims.zSize;
             break;
         case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
-            ratio = (delta.z > delta.y) ? delta.y / delta.z : delta.z / delta.y;
-            xSize = (delta.z > delta.y) ? (1 - ratio) * voxelDims.zSize + (ratio) * voxelDims.ySize : (1 - ratio) * voxelDims.ySize + (ratio) * voxelDims.zSize;
+            // ratio = (delta.z > delta.y) ? delta.y / delta.z : delta.z / delta.y;
+            // xSize = (delta.z > delta.y) ? (1 - ratio) * voxelDims.zSize + (ratio) * voxelDims.ySize : (1 - ratio) * voxelDims.ySize + (ratio) * voxelDims.zSize;
+            xSize = voxelDims.zSize;
             ySize = voxelDims.xSize;
             break;
         case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
-            ratio = (delta.x > delta.z) ? delta.z / delta.x : delta.x / delta.z;
-            xSize = (delta.x > delta.z) ? (1 - ratio) * voxelDims.xSize + (ratio) * voxelDims.zSize : (1 - ratio) * voxelDims.zSize + (ratio) * voxelDims.xSize;
+            // ratio = (delta.x > delta.z) ? delta.z / delta.x : delta.x / delta.z;
+            // xSize = (delta.x > delta.z) ? (1 - ratio) * voxelDims.xSize + (ratio) * voxelDims.zSize : (1 - ratio) * voxelDims.zSize + (ratio) * voxelDims.xSize;
+            xSize = voxelDims.zSize;
             ySize = voxelDims.ySize;
             break;
     }
 
+    var debug = function (debug) {
+        window.currentSlice = this;
+        console.log('segment', delta, length);
+        console.log('voxelDims', voxelDims);
+        console.log('ratio', ratio, ratioX, ratioY);
+        console.log('spacing', xSize, ySize);
+        console.log('finalTransform', this.finalTransform);
+    }
+    debug.call(this);
     return {xSize: xSize, ySize: ySize};
 }
 
@@ -1080,7 +1097,7 @@ papaya.viewer.ScreenSlice.prototype.repaintTest = function (slice, force, worldS
         this.updateSlice(slice, true);
     }
     var debug = function (debug) {
-        // window.currentSlice = this;
+        window.currentSlice = this;
         // console.log('input', points);
         // console.log('sliceDir', sliceDirection);
         console.log('imageDataDraw', this.imageDataDraw);

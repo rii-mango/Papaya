@@ -20,7 +20,7 @@ papaya.viewer.ScreenCurve = papaya.viewer.ScreenCurve || function (viewer, slice
     this.fillStyle = "red"
     this.pointRadius = 5;
     this.tension = 0.5;
-    this.segmentResolutions = 150;
+    this.segmentResolutions = Math.floor(724*Math.sqrt(2));
     this.curveSegments = null;
     this.papayaCoordCurveSegments = {};
     this.isClosed = false;
@@ -229,6 +229,6 @@ papaya.viewer.ScreenCurve.prototype.convertScreenToImageCoordinate = function (s
             yImage = this.viewer.coronalSlice.currentSlice;
             break;
     }
-    if (roundResult) return new papaya.core.Coordinate(Math.floor(xImage), Math.floor(yImage), Math.floor(zImage));
+    if (roundResult) return new papaya.core.Coordinate(Math.round(xImage), Math.round(yImage), Math.round(zImage));
     else return new papaya.core.Coordinate(xImage, yImage, zImage);
 }

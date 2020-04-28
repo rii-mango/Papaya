@@ -1363,7 +1363,7 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
         else this.reactPapayaViewport.setState({ updateMIP: false });
     }
     else this.reactPapayaViewport.setState({ updateMIP: false });
-    console.log('Current Coord:', this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
+    // console.log('Current Coord:', this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
     //////////
     this.context.save();
 
@@ -1456,7 +1456,7 @@ papaya.viewer.Viewer.prototype.hasOblique = function () {
 
 papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
     var textWidth, textWidthExample, offset, padding = 5;
-    console.log('papaya drawScreenSlice', slice);
+    // console.log('papaya drawScreenSlice', slice);
 
     if (slice === this.surfaceView) {
         this.context.fillStyle = this.surfaceView.getBackgroundColor();
@@ -2009,7 +2009,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
 
 papaya.viewer.Viewer.prototype.calculateScreenSliceTransforms = function () {
-    console.log('calculateScreenSliceTransforms');
+    // console.log('calculateScreenSliceTransforms');
     var horizontalFactor = 0.65;
     var verticalFactor = 0.65;
     this.viewerDim = {
