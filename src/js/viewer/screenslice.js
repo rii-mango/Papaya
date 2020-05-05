@@ -864,14 +864,14 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (segment, slic
 
     var debug = function (debug) {
         window.currentSlice = this;
-        console.log('input', segment.points);
+        console.log('input length', segment.points.length);
         console.log('sliceDir', sliceDirection);
         console.log('imageData', this.imageData);
         console.log('maxDim', imageDims, maxDim);
         console.log('delta', segment.delta);
         console.log('pixelSpacing', voxelDims, pixelSpacing);
     }
-    // debug.call(this);
+    debug.call(this);
 }
 
 papaya.viewer.ScreenSlice.prototype.calculateObliquePixelSpacing = function (sliceDirection, segment, voxelDims, imageDims) {
@@ -915,7 +915,7 @@ papaya.viewer.ScreenSlice.prototype.calculateObliquePixelSpacing = function (sli
         console.log('spacing', xSize, ySize);
         console.log('finalTransform', this.finalTransform);
     }
-    debug.call(this);
+    // debug.call(this);
     return {xSize: xSize, ySize: ySize};
 }
 
