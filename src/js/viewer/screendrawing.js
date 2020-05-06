@@ -21,7 +21,7 @@ papaya.viewer.ScreenCurve = papaya.viewer.ScreenCurve || function (viewer, slice
     this.pointRadius = 5;
     this.tension = 0.5;
     // this.segmentResolutions = Math.floor(724*Math.sqrt(2));
-    this.segmentResolutions = 40;
+    this.segmentResolutions = 20;
     this.curveSegments = null;
     this.papayaCoordCurveSegments = {};
     this.isClosed = false;
@@ -182,6 +182,8 @@ papaya.viewer.ScreenCurve.prototype.buildPapayaCurveSegments = function () {
     this.papayaCoordCurveSegments.delta.x = max[0] - min[0];
     this.papayaCoordCurveSegments.delta.y = max[1] - min[1];
     this.papayaCoordCurveSegments.delta.z = max[2] - min[2];
+    // pad points between segments
+    this.papayaCoordCurveSegments.points = this.padCoordinate(this.papayaCoordCurveSegments.points);
     // console.log(this.papayaCoordCurveSegments);
 };
 
@@ -209,6 +211,10 @@ papaya.viewer.ScreenCurve.prototype.updateCurrentSlice = function (slice) {
     // this.pointsNeedUpdate = true;
 };
 
+papaya.viewer.ScreenCurve.prototype.hasPoint = function () {
+    return (this.pointsRef.length > 0 ? true : false)
+};
+
 papaya.viewer.ScreenCurve.prototype.convertScreenToImageCoordinate = function (sliceDirection, screenCoord, roundResult) {
     // screenCoord: array of 2 elements
     // screenCoord[0]: x, screenCoord[1]: y
@@ -233,3 +239,104 @@ papaya.viewer.ScreenCurve.prototype.convertScreenToImageCoordinate = function (s
     if (roundResult) return new papaya.core.Coordinate(Math.round(xImage), Math.round(yImage), Math.round(zImage));
     else return new papaya.core.Coordinate(xImage, yImage, zImage);
 }
+
+papaya.viewer.ScreenCurve.prototype.padCoordinate = function (segments) {
+    // fill coordinates between 2 distance point
+    // we need to create a continuos line of coordinates between each point
+    // using Bresenham line drawing algorithm, the resulting line will always be 1 pixel thick
+    var MIN_DISTANCE = 5; // minimum segment distance
+    var result = [];
+    var pad = function (x0, y0, z0, x1, y1, z1) {
+        // Bresenham line 3D
+        result.push(new papaya.core.Coordinate(x0, y0, z0));
+        var dx = Math.abs(x1 - x0);
+        var dy = Math.abs(y1 - y0);
+        var dz = Math.abs(z1 - z0);
+        var sx = x1 > x0 ? 1 : -1;
+        var sy = y1 > y0 ? 1 : -1;
+        var sz = z1 > z0 ? 1 : -1;
+        var e1;
+        var e2;
+        // Driving axis is X-axis
+        if (dx >= dy && dx >= dz) {
+          e1 = 2 * dy - dx;
+          e2 = 2 * dz - dx;
+          while (x0 !== x1) {
+            x0 += sx;
+            if (e1 >= 0) {
+              y0 += sy;
+              e1 -= 2 * dx;
+            }
+            if (e2 >= 0) {
+              z0 += sz;
+              e2 -= 2 * dx;
+            }
+            e1 += 2 * dy;
+            e2 += 2 * dz;
+            result.push(new papaya.core.Coordinate(x0, y0, z0));
+          }
+        }
+          // Driving axis is Y-axis
+        else if (dy >= dx && dy >= dz) {
+          e1 = 2 * dx - dy;
+          e2 = 2 * dz - dy;
+          while (y0 !== y1) {
+            y0 += sy;
+            if (e1 >= 0) {
+              x0 += sx;
+              e1 -= 2 * dy;
+            }
+            if (e2 >= 0) {
+              z0 += sz;
+              e2 -= 2 * dy;
+            }
+            e1 += 2 * dx;
+            e2 += 2 * dz;
+            result.push(new papaya.core.Coordinate(x0, y0, z0));
+          }
+        }
+        // Driving axis is Z-axis
+        else {
+          e1 = 2 * dy - dz;
+          e2 = 2 * dx - dz;
+          while (z0 !== z1) {
+            z0 += sz;
+            if (e1 >= 0) {
+              y0 += sy;
+              e1 -= 2 * dz;
+            }
+            if (e2 >= 0) {
+              x0 += sx;
+              e2 -= 2 * dz;
+            }
+            e1 += 2 * dy;
+            e2 += 2 * dx;
+            result.push(new papaya.core.Coordinate(x0, y0, z0));
+          }
+        }
+    };
+    var getDistance = function (p1, p2) {
+        return Math.sqrt(Math.pow((p2.x - p1.x), 2) + Math.pow((p2.y - p1.y), 2) + Math.pow((p2.z - p1.z), 2));
+    };
+
+    // iterate through segments
+    var delta = 1;
+    var index = 0;
+    // console.log('padCoordinate', segments);
+    while (index + delta < segments.length) {
+        // console.log(index, delta);
+        var dis = getDistance(segments[index], segments[index+delta]);
+        if (dis > MIN_DISTANCE) {
+            // do stuff
+            pad(segments[index].x, segments[index].y, segments[index].z, segments[index+delta].x, segments[index+delta].y, segments[index+delta].z);
+            index += delta;
+            delta = 1;
+        } else {
+            delta++;
+        }
+    }
+    if (index < segments.length - 1) pad(segments[index].x, segments[index].y, segments[index].z, segments[segments.length - 1].x, segments[segments.length - 1].y, segments[segments.length - 1].z);
+    // result.push(new papaya.core.Coordinate(segments[segments.length - 1].x, segments[segments.length - 1].y, segments[segments.length - 1].z));
+    // console.log('padCoordinate', result);
+    return result;
+};

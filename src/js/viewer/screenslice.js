@@ -391,6 +391,10 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
     this.currentSlice = slice;
 
     this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
+    //Modified
+    // Rebuild ImageData array when slice is oblique since it will change the dimensions of the slice
+    if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_OBLIQUE) this.imageDataDraw = this.contextMain.createImageData(this.xDim, this.yDim);
+    /////////////////////
 
     if (this.contextDTILines) {
         this.contextDTILines.clearRect(0, 0, this.screenDim, this.screenDim);
@@ -819,7 +823,6 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (segment, slic
     var index, value;
     var timepoint = 0;
     var interpolation = true;
-    var pixelSpacing = this.calculateObliquePixelSpacing(sliceDirection, segment, voxelDims, imageDims);
     if (!points.length) return false;
 
     // test case where oblique rotation are not allowed, line of sights is exactly perpendicular to the default planes
@@ -857,10 +860,12 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (segment, slic
         }
     }
     this.imageData = imageData;
-    this.yDim = maxDim;
-    this.xDim = points.length;
-    this.xSize = pixelSpacing.xSize;
-    this.ySize = pixelSpacing.ySize;
+    // this.yDim = maxDim;
+    // this.xDim = points.length;
+    // this.xSize = pixelSpacing.xSize;
+    // this.ySize = pixelSpacing.ySize;
+    var pixelSpacing = this.calculateObliquePixelSpacing(sliceDirection, segment, voxelDims, imageDims);
+    this.updateDimension(points.length, maxDim, pixelSpacing.xSize, pixelSpacing.ySize);
 
     var debug = function (debug) {
         window.currentSlice = this;
@@ -871,9 +876,18 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (segment, slic
         console.log('delta', segment.delta);
         console.log('pixelSpacing', voxelDims, pixelSpacing);
     }
-    debug.call(this);
+    // debug.call(this);
 }
-
+papaya.viewer.ScreenSlice.prototype.updateDimension = function (xDim, yDim, xSize, ySize) {
+    // update image canvas dimension
+    this.canvasMain.width = xDim;
+    this.canvasMain.height = yDim;
+    // update slice dimension
+    this.yDim = yDim;
+    this.xDim = xDim;
+    this.xSize = xSize
+    this.ySize = ySize
+}
 papaya.viewer.ScreenSlice.prototype.calculateObliquePixelSpacing = function (sliceDirection, segment, voxelDims, imageDims) {
     // calculate the final image's pixel spacing
     // final image needs pixel spacing information to compute transformation matrix, if pixel spacing is incorrect, the image will be warped or distorted
@@ -885,24 +899,24 @@ papaya.viewer.ScreenSlice.prototype.calculateObliquePixelSpacing = function (sli
     var ratioX, ratioY;
     switch (sliceDirection) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
-            // ratio = (delta.x > delta.y) ? delta.y / delta.x : delta.x / delta.y;
+            ratio = (delta.x > delta.y) ? delta.y / delta.x : delta.x / delta.y;
             // ratioX = delta.x / length;
             // ratioY = delta.y / length;
-            // xSize = (delta.x > delta.y) ? (1 - ratio) * voxelDims.xSize + (ratio) * voxelDims.ySize : (1 - ratio) * voxelDims.ySize + (ratio) * voxelDims.xSize;
+            xSize = (delta.x > delta.y) ? (1 - ratio) * voxelDims.xSize + (ratio) * voxelDims.ySize : (1 - ratio) * voxelDims.ySize + (ratio) * voxelDims.xSize;
             // xSize = ratioX * voxelDims.xSize + ratioY * voxelDims.ySize;
-            xSize = voxelDims.xSize;
+            // xSize = voxelDims.xSize;
             ySize = voxelDims.zSize;
             break;
         case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
-            // ratio = (delta.z > delta.y) ? delta.y / delta.z : delta.z / delta.y;
-            // xSize = (delta.z > delta.y) ? (1 - ratio) * voxelDims.zSize + (ratio) * voxelDims.ySize : (1 - ratio) * voxelDims.ySize + (ratio) * voxelDims.zSize;
-            xSize = voxelDims.zSize;
+            ratio = (delta.z > delta.y) ? delta.y / delta.z : delta.z / delta.y;
+            xSize = (delta.z > delta.y) ? (1 - ratio) * voxelDims.zSize + (ratio) * voxelDims.ySize : (1 - ratio) * voxelDims.ySize + (ratio) * voxelDims.zSize;
+            // xSize = voxelDims.zSize;
             ySize = voxelDims.xSize;
             break;
         case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
-            // ratio = (delta.x > delta.z) ? delta.z / delta.x : delta.x / delta.z;
-            // xSize = (delta.x > delta.z) ? (1 - ratio) * voxelDims.xSize + (ratio) * voxelDims.zSize : (1 - ratio) * voxelDims.zSize + (ratio) * voxelDims.xSize;
-            xSize = voxelDims.zSize;
+            ratio = (delta.x > delta.z) ? delta.z / delta.x : delta.x / delta.z;
+            xSize = (delta.x > delta.z) ? (1 - ratio) * voxelDims.xSize + (ratio) * voxelDims.zSize : (1 - ratio) * voxelDims.zSize + (ratio) * voxelDims.xSize;
+            // xSize = voxelDims.zSize;
             ySize = voxelDims.ySize;
             break;
     }

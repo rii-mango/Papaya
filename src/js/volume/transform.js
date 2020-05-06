@@ -821,7 +821,7 @@ papaya.volume.Transform.prototype.getmmMatFromSlice = function (sliceLabel) {
             if (!this.mmMatCoronal) this.mmMatCoronal = this.getSliceImageMat(this.rotMatCoronal);
             return this.mmMatCoronal;
         default:
-            return;
+            return this.mmMat;
     }
 }
 
