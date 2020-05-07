@@ -30,6 +30,7 @@ papaya.viewer.ScreenCurve = papaya.viewer.ScreenCurve || function (viewer, slice
     this.maxPointIndex = 0;
     this.pointsNeedUpdate = false;
     this.finalTransform = slice ? slice.finalTransform.clone() : [];
+    this.initialized = false;
     // console.log('ScreenCurve imported');
 };
 // functions
@@ -84,7 +85,8 @@ papaya.viewer.ScreenCurve.prototype.addPoint = function (mouseX, mouseY, slice) 
     });
     this.maxPointIndex += 1;
     this.pointsNeedUpdate = true;
-    // console.log('point added', this.pointsRef);
+    if (this.pointsRef.length > 2) this.initialized = true;
+    // console.log('point added', this.pointsRef, this.initialized);
 };
 
 papaya.viewer.ScreenCurve.prototype.getPoint = function (pointID) {
@@ -194,10 +196,12 @@ papaya.viewer.ScreenCurve.prototype.clearPoints = function (clearAll) {
         this.maxPointIndex = 0;
         this.points = [];
         this.detectedPoint = [];
+        this.slice = null;
     } else {
         this.points = [];
     }
-    // this.pointsNeedUpdate = true;
+    this.initialized = false;
+    this.pointsNeedUpdate = true;
 };
 
 papaya.viewer.ScreenCurve.prototype.updateFinalTransform = function (slice) {

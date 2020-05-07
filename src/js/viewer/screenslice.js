@@ -67,7 +67,7 @@ papaya.viewer.ScreenSlice.DIRECTION_CORONAL = 2;
 papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL = 3;
 papaya.viewer.ScreenSlice.DIRECTION_TEMPORAL = 4;
 papaya.viewer.ScreenSlice.DIRECTION_SURFACE = 5;
-papaya.viewer.ScreenSlice.DIRECTION_OBLIQUE = 6;
+papaya.viewer.ScreenSlice.DIRECTION_CURVED = 6;
 papaya.viewer.ScreenSlice.SCREEN_PIXEL_MAX = 255;
 papaya.viewer.ScreenSlice.SCREEN_PIXEL_MIN = 0;
 papaya.viewer.ScreenSlice.GRAB_RADIUS = 5;
@@ -393,7 +393,7 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
     this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
     //Modified
     // Rebuild ImageData array when slice is oblique since it will change the dimensions of the slice
-    if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_OBLIQUE) this.imageDataDraw = this.contextMain.createImageData(this.xDim, this.yDim);
+    if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CURVED) this.imageDataDraw = this.contextMain.createImageData(this.xDim, this.yDim);
     /////////////////////
 
     if (this.contextDTILines) {
@@ -866,6 +866,7 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (segment, slic
     // this.ySize = pixelSpacing.ySize;
     var pixelSpacing = this.calculateObliquePixelSpacing(sliceDirection, segment, voxelDims, imageDims);
     this.updateDimension(points.length, maxDim, pixelSpacing.xSize, pixelSpacing.ySize);
+    // this.updateFinalTransform();
 
     var debug = function (debug) {
         window.currentSlice = this;
