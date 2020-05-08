@@ -101,11 +101,15 @@ papaya.viewer.ScreenCurve.prototype.removePoint = function (pointID) {
 };
 
 papaya.viewer.ScreenCurve.prototype.updatePointDetection = function (mouseX, mouseY) {
-    var tolerance = this.pointRadius;
+    if (!this.slice) return null;
+    var percent = 100 // relative size for each viewport
+    var toleranceX = this.pointRadius / this.slice.screenTransform[0][0];
+    var toleranceY = this.pointRadius / this.slice.screenTransform[1][1];
+    // console.log('updatePointDetection', toleranceX, toleranceY);
     this.detectedPointRef = this.pointsRef.filter(function (point) {
-        // console.log((point.value[0] - tolerance, mouseX, point.value[1] - tolerance <= mouseY <= point.value[1] + tolerance));
-        return ((point.value[0] - tolerance <= mouseX && mouseX <= point.value[0] + tolerance) &&
-        (point.value[1] - tolerance <= mouseY && mouseY <= point.value[1] + tolerance))
+        // console.log(point.value[0], point.value[1]);
+        return ((point.value[0] - toleranceX <= mouseX && mouseX <= point.value[0] + toleranceX) &&
+        (point.value[1] - toleranceY <= mouseY && mouseY <= point.value[1] + toleranceY))
     });
     // console.log(this.pointsRef, [mouseX, mouseY]);
     if (this.detectedPointRef.length > 0) {
@@ -197,10 +201,10 @@ papaya.viewer.ScreenCurve.prototype.clearPoints = function (clearAll) {
         this.points = [];
         this.detectedPoint = [];
         this.slice = null;
+        this.initialized = false;
     } else {
         this.points = [];
     }
-    this.initialized = false;
     this.pointsNeedUpdate = true;
 };
 

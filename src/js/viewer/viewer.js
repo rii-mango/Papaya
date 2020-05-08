@@ -479,7 +479,7 @@ papaya.viewer.Viewer.prototype.initializeCMPRView = function () {
     var dummyValue = 1;
 
     this.lowerImageBot2 = this.cmprSlice = new papaya.viewer.ScreenSlice(this.volume, papaya.viewer.ScreenSlice.DIRECTION_CURVED,
-        this.volume.getXDim(), this.volume.getYDim(), this.volume.getXSize(), this.volume.getYSize(),
+        1, 1, this.volume.getXSize(), this.volume.getYSize(),
         this.screenVolumes, this);
     this.cmprSlice.imageData = [];
     this.obliqueView = this.cmprSlice; // for compatibility 
@@ -2169,13 +2169,14 @@ papaya.viewer.Viewer.prototype.getTransformParameters = function (image, viewerD
     scaleY = (((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / longestDim)) *
     (image.getYSize() / longestDimSize);
 
-    if (image === this.obliqueView) {
-        console.log('getTransformParameters', scaleDimension, longestDim);
-        console.log('viewport Dimension', viewportWidth, viewportHeight);
-        console.log('image Dimension', image.canvasMain.width, image.canvasMain.height);
-        console.log('real image Dimension', image.canvasMain.width * image.screenTransform[0][0], image.canvasMain.height * image.screenTransform[1][1]);
-        console.log('scale', scaleX, scaleY);
-    }
+    // if (image === this.obliqueView) {
+    //     console.log('getTransformParameters', scaleDimension, longestDim);
+    //     console.log('viewport Dimension', viewportWidth, viewportHeight);
+    //     console.log('image Dimension', image.canvasMain.width, image.canvasMain.height);
+    //     console.log('real image Dimension', image.canvasMain.width * image.screenTransform[0][0], image.canvasMain.height * image.screenTransform[1][1]);
+    //     console.log('scale', scaleX, scaleY);
+    // }
+
     // if (image.getRealWidth() > image.getRealHeight()) {
     //     console.log('readWidth > realHeight', image);
     //     scaleX = (((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / this.longestDim) / bigScale) *
@@ -2526,7 +2527,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                     } else {
                         // this.screenCurve.addPoint(canvasLoc.x, canvasLoc.y);
                         var cursorPosition = this.getXYImageCoordinate(this.currentInteractingSlice);
-                        if (!this.screenCurve.slice) this.screenCurve.updateCurrentSlice(this.currentInteractingSlice);
+                        if (!this.screenCurve.slice || this.screenCurve.pointsRef.length < 1) this.screenCurve.updateCurrentSlice(this.currentInteractingSlice);
                         this.screenCurve.addPoint(cursorPosition.x, cursorPosition.y, this.currentInteractingSlice);
                         this.onCurveUpdated();
                         // this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.sagittalSlice.finalTransform);
@@ -4327,7 +4328,13 @@ papaya.viewer.Viewer.prototype.restoreViewer = function () {
     this.updateScreenSliceTransforms();
     this.obliqueView = null;
     this.cmprSlice = null;
+    this.mainImage = this.axialSlice;
+    this.lowerImageTop = this.sagittalSlice;
+    this.lowerImageBot = this.coronalSlice;
+    this.lowerImageBot2 = null;
+    console.log('screenLayout before', this.screenLayout);
     this.viewsChanged();
+    console.log('screenLayout after', this.screenLayout);
     this.drawViewer(true, false);
 }
 
@@ -4350,23 +4357,33 @@ papaya.viewer.Viewer.prototype.getXYImageCoordinate = function (slice) {
         case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
             coord = { x: this.cursorPosition.x, y: this.cursorPosition.z}
             return coord;
+        case papaya.viewer.ScreenSlice.DIRECTION_CURVED:
+            coord = { x: undefined, y: undefined}
+            return coord;
         default:
-            break;
+            return false;
     }
 }
 
 papaya.viewer.Viewer.prototype.onCurveUpdated = function () {
     if (!this.cmprSlice) this.initializeCMPRView();
+    // console.log('onCurveUpdated', this.screenCurve.initialized);
+    // if (this.screenCurve.initialized) {
+    //     // console.log('oncurveUpdated initialized');
+    //     this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.screenCurve.slice.finalTransform);
+    //     this.screenCurve.buildPapayaCurveSegments();
+    //     this.cmprSlice.updateObliqueSlice(this.screenCurve.papayaCoordCurveSegments, this.screenCurve.slice.sliceDirection);
+    //     this.calculateScreenSliceTransforms();
+    //     this.drawViewer();
+    // } else {
+    //     this.calculateScreenSliceTransforms(); // run again to get correct transform calculation
+    // }
     this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.screenCurve.slice.finalTransform);
     this.screenCurve.buildPapayaCurveSegments();
     this.cmprSlice.updateObliqueSlice(this.screenCurve.papayaCoordCurveSegments, this.screenCurve.slice.sliceDirection);
-    // if (this.screenCurve.papayaCoordCurveSegments.points.length > 0) {
-    //     this.cmprSlice.updateObliqueSlice(this.screenCurve.papayaCoordCurveSegments, this.screenCurve.slice.sliceDirection);
-    // }
-    // this.screenCurve.buildPapayaCurveSegments();
     this.calculateScreenSliceTransforms();
     if (!this.screenCurve.initialized) this.calculateScreenSliceTransforms(); // run again to get correct transform calculation
-    this.drawViewer();
+    if (this.screenCurve.hasPoint()) this.drawViewer(true, true);
 }
 
 papaya.viewer.Viewer.prototype.getSliceLabel = function (sliceDiretion) {

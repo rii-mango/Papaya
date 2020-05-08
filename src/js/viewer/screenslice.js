@@ -814,7 +814,8 @@ papaya.viewer.ScreenSlice.prototype.clearDTILinesImage = function () {
 papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (segment, sliceDirection) {
     // parse image along the sliceDirection line of sight (current slice's direction)
     // input points can be of a line or a curve, point must be papaya.Core.coordinate object
-    console.log('updateObliqueSlice', this);
+    // console.log('updateObliqueSlice', this);
+    // if (segment.points.length < 1) return false;
     var points = segment.points;
     var maxDim = 0; // maximum dimension along line of sight
     var voxelDims = this.screenVolumes[0].volume.header.voxelDimensions;
