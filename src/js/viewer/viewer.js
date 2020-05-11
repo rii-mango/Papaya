@@ -135,6 +135,10 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.centerCoordInverse = null;
     this.screenCurve = new papaya.viewer.ScreenCurve(this);
     this.screenLayout = [this.mainImage, this.lowerImageTop, this.lowerImageBot, this.lowerImageBot2];
+
+    ///
+    this.imageReplacedExternally = false;
+    this.mainImageChanged = false;
 };
 
 
@@ -1349,7 +1353,8 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
 
 
 
-papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMIP) {
+papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMIP, skipDrawing) {
+    console.time('drawViewer');
     var radiological = (this.container.preferences.radiological === "Yes"),
         showOrientation = (this.container.preferences.showOrientation === "Yes");
     var currentSliceDir = (this.currentInteractingSlice) ? this.currentInteractingSlice.sliceDirection : -1;
@@ -1358,11 +1363,15 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
         return;
     }
     // Modified: 12/12/2019
-    if (this.reactPapayaViewport.props.viewportSpecificData.intensityActive) {
-        if (!this.reactPapayaViewport.state.updateMIP) this.reactPapayaViewport.setState({ updateMIP: true });
-        else this.reactPapayaViewport.setState({ updateMIP: false });
+    console.log('drawViewer imageReplacedExternally', this.imageReplacedExternally);
+    if (this.imageReplacedExternally) {
+        skipUpdate = true;
     }
-    else this.reactPapayaViewport.setState({ updateMIP: false });
+    // if (this.reactPapayaViewport.props.viewportSpecificData.intensityActive) {
+    //     if (!this.reactPapayaViewport.state.updateMIP) this.reactPapayaViewport.setState({ updateMIP: true });
+    //     else this.reactPapayaViewport.setState({ updateMIP: false });
+    // }
+    // else this.reactPapayaViewport.setState({ updateMIP: false });
     // console.log('Current Coord:', this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
     //////////
     this.context.save();
@@ -1405,8 +1414,8 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
     }
 
     // draw screen slices
-    if (this.reactPapayaViewport.props.viewportSpecificData.intensityActive && forceMIP) this.drawScreenSlice(this.mainImage);
-    else if (!this.reactPapayaViewport.props.viewportSpecificData.intensityActive) this.drawScreenSlice(this.mainImage);
+    this.drawScreenSlice(this.mainImage);
+
 
     if (this.container.orthogonal) {
         this.drawScreenSlice(this.lowerImageTop);
@@ -1441,6 +1450,9 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
     if (this.container.contextManager && this.container.contextManager.drawToViewer) {
         this.container.contextManager.drawToViewer(this.context);
     }
+    this.reactPapayaViewport.setState({ onMainImageChanged: false });
+    this.imageReplacedExternally = false;
+    console.timeEnd('drawViewer');
 };
 
 
@@ -2654,6 +2666,8 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
         this.controlsHidden = false;
         this.fadeInControls();
     }
+    ///
+    if (this.mainImageChanged) this.onMainImageChanged();
 };
 
 
@@ -2789,7 +2803,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                 this.sagittalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocY, this.zoomLocZ, this.panAmountY,
                     this.panAmountZ, this);
             }
-
+            
             this.drawViewer(true);
         } else if (this.localizerDetected === 2 && this.activeTool !== "CMPR.Active") { // original: else, no if
             // console.log('mousemove CROSSHAIR');
@@ -2818,6 +2832,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                     // this.screenVolumes[0].rotateLocalizer(currentRotatingAngle, this.currentInteractingSlice.sliceDirection, this.currentCoord);
                     this.previousMousePosition.x = currentMouseX;
                     this.previousMousePosition.y = currentMouseY;
+                    this.mainImageChanged = true;
                     // console.log('localizer center: ', this.currentInteractingSlice.localizerCenter);
                     // console.log('currentCoord center: ', this.convertCoordinateToScreen(this.currentCoord, this.currentInteractingSlice));
                     this.drawViewer(true, false, false);
@@ -2841,6 +2856,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             this.screenVolumes[0].rotateLocalizer(rotateAngle + currentRotatingAngle, this.currentInteractingSlice.sliceDirection);
             this.drawViewer(true, false, false);
             if (this.hasOblique()) this.onCurveUpdated();
+            this.mainImageChanged = true;
             this.previousMousePosition.x = currentMouseX;
             this.previousMousePosition.y = currentMouseY;
             // this.drawViewer(false, false, false);
@@ -2852,6 +2868,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             var cursorPosition = this.getXYImageCoordinate(this.currentInteractingSlice);
             this.screenCurve.updatePointPosition(id, cursorPosition.x, cursorPosition.y);
             this.onCurveUpdated();
+            this.mainImageChanged = true;
         }
     } else {
         this.updateCurrentInteractingSlice(mouseX, mouseY);
@@ -3049,9 +3066,9 @@ papaya.viewer.Viewer.prototype.gotoCoordinate = function (coor, nosync) {
     } else {
         this.currentCoord.z = coor.z;
     }
-    this.reactPapayaViewport.setState({ indexChanged: true });
-    this.drawViewer(true);
-    this.reactPapayaViewport.setState({ indexChanged: false });
+    // this.reactPapayaViewport.setState({ indexChanged: true });
+    // this.drawViewer(true);
+    // this.reactPapayaViewport.setState({ indexChanged: false });
     this.updateSliceSliderControl();
 
     if (nosync) {
@@ -3059,7 +3076,8 @@ papaya.viewer.Viewer.prototype.gotoCoordinate = function (coor, nosync) {
     }
 
     this.container.coordinateChanged(this);
-    this.drawViewer(false);
+    this.onMainImageChanged();
+    this.drawViewer(true);
 };
 
 
@@ -4401,4 +4419,14 @@ papaya.viewer.Viewer.prototype.getSliceLabel = function (sliceDiretion) {
         default:
             return '';
     }
+}
+
+papaya.viewer.Viewer.prototype.onMainImageChanged = function () {
+    // console.log('set onMainImageChanged');
+    this.reactPapayaViewport.setState({ onMainImageChanged: true });
+    this.mainImageChanged = false;
+}
+
+papaya.viewer.Viewer.prototype.suspendSliceUpdate = function () {
+    this.imageReplacedExternally = true;
 }
