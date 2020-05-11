@@ -2825,6 +2825,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                 }
             }
         } else if (this.localizerDetected === 1 && this.activeTool !== "CMPR.Active") { // original: else, no if
+            // Rotate localizer
             var localizerCenter = this.currentInteractingSlice.localizerCenter;
             var oldCenter = this.convertCoordinateToScreen(this.volume.transform.centerCoord, this.currentInteractingSlice)
             // console.log('localizer center: ', localizerCenter);
@@ -2839,6 +2840,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             this.screenVolumes[0].updateCenterMat(this.currentCoord);
             this.screenVolumes[0].rotateLocalizer(rotateAngle + currentRotatingAngle, this.currentInteractingSlice.sliceDirection);
             this.drawViewer(true, false, false);
+            if (this.hasOblique()) this.onCurveUpdated();
             this.previousMousePosition.x = currentMouseX;
             this.previousMousePosition.y = currentMouseY;
             // this.drawViewer(false, false, false);
