@@ -56,6 +56,7 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
             x: null,
             y: null
         };
+        this.imageUpdated = false;
     };
 
 
@@ -105,6 +106,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, curren
         this.currentSlice = slice; // currentSlice is the Current Slice Number e.g. 32
         origin = this.screenVolumes[0].volume.header.origin;  // base image origin
         voxelDims = this.screenVolumes[0].volume.header.voxelDimensions;
+        this.imageUpdated = true; // image content is updated
         // console.log('papaya updateSlice canvasMain', this.canvasMain);
         this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
 
@@ -375,7 +377,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, curren
         if (usedRaster) {
             this.contextMain.putImageData(this.imageDataDraw, 0, 0);
         }
-    }
+    } else this.imageUpdated = false;
 };
 
 
@@ -389,7 +391,7 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
     slice = Math.round(slice);
 
     this.currentSlice = slice;
-
+    this.imageUpdated = false;
     this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
     //Modified
     // Rebuild ImageData array when slice is oblique since it will change the dimensions of the slice
