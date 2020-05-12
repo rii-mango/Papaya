@@ -4449,7 +4449,7 @@ papaya.viewer.Viewer.prototype.onMainImageChanged = function () {
     // console.log('set onMainImageChanged');
     // this function must be called before drawViewer, since it tells the viewer to decide whether to replace final image or not
     // if viewer doesnt replace image, Papaya will update the slice's content and draw image as usual
-    if (this.reactViewerConnector.PapayaViewport.props.viewportSpecificData.intensityActive) this.reactPapayaViewport.setState({ onMainImageChanged: true });
+    if (this.reactViewerConnector.PapayaViewport.props.viewportSpecificData.intensityActive) this.reactViewerConnector.PapayaViewport.setState({ onMainImageChanged: true });
     this.reactViewerConnector.mainImageChanged = false;
 }
 
