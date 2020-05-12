@@ -1368,7 +1368,7 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
 
 papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMIP, skipDrawing) {
     // console.log('drawViewer is called by ', papaya.viewer.Viewer.prototype.drawViewer.caller);
-    console.time('drawViewer');
+    // console.time('drawViewer');
     var radiological = (this.container.preferences.radiological === "Yes"),
         showOrientation = (this.container.preferences.showOrientation === "Yes");
     var currentSliceDir = (this.currentInteractingSlice) ? this.currentInteractingSlice.sliceDirection : -1;
@@ -1377,7 +1377,7 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
         return;
     }
     // Modified: 12/12/2019
-    console.log('drawViewer imageReplacedExternally', this.reactViewerConnector.imageReplacedExternally);
+    // console.log('drawViewer imageReplacedExternally', this.reactViewerConnector.imageReplacedExternally);
     if (this.reactViewerConnector.imageReplacedExternally) {
         skipUpdate = true;
     }
@@ -1466,7 +1466,7 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
     }
     this.reactViewerConnector.PapayaViewport.setState({ onMainImageChanged: false });
     this.reactViewerConnector.imageReplacedExternally = false;
-    console.timeEnd('drawViewer');
+    // console.timeEnd('drawViewer');
 };
 
 
@@ -3590,6 +3590,7 @@ papaya.viewer.Viewer.prototype.isUsingAtlas = function (name) {
 
 
 papaya.viewer.Viewer.prototype.scrolled = function (e) {
+    console.time('MiddleButtonScroll');
     var scrollSign, isSliceScroll;
 /*
     if (this.container.nestedViewer || ((papayaContainers.length > 1) && !this.container.collapsable)) {
@@ -3662,6 +3663,7 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
             this.zoomFactorPrevious = this.zoomFactor;
         }
     }
+    console.timeEnd('MiddleButtonScroll');
 };
 
 
