@@ -2554,7 +2554,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                         // this.screenCurve.addPoint(canvasLoc.x, canvasLoc.y);
                         var cursorPosition = this.getXYImageCoordinate(this.currentInteractingSlice);
                         if (!this.screenCurve.slice || this.screenCurve.pointsRef.length < 1) this.screenCurve.updateCurrentSlice(this.currentInteractingSlice);
-                        this.screenCurve.addPoint(cursorPosition.x, cursorPosition.y, this.currentInteractingSlice);
+                        this.screenCurve.addPoint(cursorPosition.x, cursorPosition.y, cursorPosition.z, this.currentInteractingSlice);
                         this.onCurveUpdated();
                         // this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.sagittalSlice.finalTransform);
                     }
@@ -4395,13 +4395,13 @@ papaya.viewer.Viewer.prototype.getXYImageCoordinate = function (slice) {
     var coord = null;
     switch (slice.sliceDirection) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
-            coord = { x: this.cursorPosition.x, y: this.cursorPosition.y}
+            coord = { x: this.cursorPosition.x, y: this.cursorPosition.y, z: this.cursorPosition.z}
             return coord;
         case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
-            coord = { x: this.cursorPosition.y, y: this.cursorPosition.z}
+            coord = { x: this.cursorPosition.y, y: this.cursorPosition.z, z: this.cursorPosition.x}
             return coord;
         case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
-            coord = { x: this.cursorPosition.x, y: this.cursorPosition.z}
+            coord = { x: this.cursorPosition.x, y: this.cursorPosition.z, z: this.cursorPosition.y}
             return coord;
         case papaya.viewer.ScreenSlice.DIRECTION_CURVED:
             coord = { x: undefined, y: undefined}

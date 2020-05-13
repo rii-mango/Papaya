@@ -14,10 +14,13 @@ papaya.viewer.ScreenCurve = papaya.viewer.ScreenCurve || function (viewer, slice
     this.viewer = viewer;
     this.slice = slice;
     this.points = []; // curve's CONTROL points, [x0, y0, x1, y1, x2, y2...], values in SCREEN COORDINATE, use this to draw
+    this.otherViewsPoints = []; // 2-D array containing static control points in other views, each array element will have this structure [x0, y0, x1, y1, x2, y2...]
     this.detectedPoint = []; // current point mouse over  [x0, y0], values in SCREEN COORDINATE, use this to draw
     this.lineWidth = 3;
     this.lineColor = "red";
+    this.lineColorAlternate = "green"
     this.fillStyle = "red"
+    this.fillStyleAlternate = "green"
     this.pointRadius = 5;
     this.tension = 0.5;
     // this.segmentResolutions = Math.floor(724*Math.sqrt(2));
@@ -37,12 +40,12 @@ papaya.viewer.ScreenCurve = papaya.viewer.ScreenCurve || function (viewer, slice
 
 papaya.viewer.ScreenCurve.prototype.drawCurve = function (context, canvas, finalTransform) {
     if (this.pointsNeedUpdate) {
-        this.buildPointsArray(finalTransform);
+        this.buildPointsArray();
         this.pointsNeedUpdate = false;
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
     // console.log(this.points);
-
+    // draw main slice's points
     if (this.points.length > 1) {
         // draw curve
         context.strokeStyle = this.lineColor;
@@ -57,6 +60,25 @@ papaya.viewer.ScreenCurve.prototype.drawCurve = function (context, canvas, final
             this.drawPoint(context, canvas, this.points[i], this.points[i+1], this.pointRadius);
         }
     }
+
+    // draw other slice's points
+    if (this.otherViewsPoints.length > 1) {
+        // draw curve
+        this.otherViewsPoints.forEach(function (points) {
+            context.strokeStyle = this.lineColorAlternate;
+            context.lineWidth = this.lineWidth;
+            context.setTransform(1, 0, 0, 1, 0, 0);
+            context.beginPath();
+            context.moveTo(points[0], points[1]);
+            context.curve(points, 0, this.segmentResolutions, this.isClosed);
+            context.stroke();
+            //draw points
+            for (var i = 0; i < this.points.length; i += 2) {
+                this.drawPoint(context, canvas, points[i], points[i+1], this.pointRadius);
+            }
+        }, this);
+    }
+
     if (this.detectedPoint.length > 1) {
         this.drawPoint(context, canvas, this.detectedPoint[0], this.detectedPoint[1], this.pointRadius*2); //draw bigger detected point
     }
@@ -74,14 +96,14 @@ papaya.viewer.ScreenCurve.prototype.drawPoint = function (context, canvas, posX,
     context.fill();
 };
 
-papaya.viewer.ScreenCurve.prototype.addPoint = function (mouseX, mouseY, slice) {
+papaya.viewer.ScreenCurve.prototype.addPoint = function (imageX, imageY, imageZ, slice) {
     // accept input that is converted to canvas coordinates
     // this.points.push([mouseX, mouseY]);
     // console.log(slice, this.slice);
     if (slice.sliceDirection !== this.slice.sliceDirection) return false;
     this.pointsRef.push({
         id: this.maxPointIndex,
-        value: [mouseX, mouseY]
+        value: [imageX, imageY, imageZ]
     });
     this.maxPointIndex += 1;
     this.pointsNeedUpdate = true;
@@ -134,28 +156,80 @@ papaya.viewer.ScreenCurve.prototype.updatePointPosition = function (pointID, mou
     })
 };
 
-papaya.viewer.ScreenCurve.prototype.buildPointsArray = function (finalTransform) {
+papaya.viewer.ScreenCurve.prototype.buildPointsArray = function () {
     // build array of points for drawing, convert papaya coordinate to screen coordinates
+    // console.log('buildPointsArray', this.slice);
+    var otherViews = this.getOtherViews(this.slice, this.viewer.screenLayout);
+    console.log(otherViews);
+    // console.log(this.pointsRef);
     var pointsArray = [];
     var detectedPoint = [];
     this.clearPoints(false);
+
     this.pointsRef.forEach(function (item, index) {
-        var screenX = finalTransform[0][2] + (item.value[0] + 0.5) * finalTransform[0][0];
-        var screenY = finalTransform[1][2] + (item.value[1] + 0.5) * finalTransform[1][1];
-        // pointsArray = pointsArray.concat(item.value);
-        pointsArray = pointsArray.concat([screenX, screenY]);
-        // console.log(pointsArray);
-    });
+        pointsArray = pointsArray.concat(this.imageCoordToScreenCoord(item.value[0], item.value[1], this.slice.finalTransform));
+    }, this);
     this.detectedPointRef.forEach(function (item, index) {
-        var screenX = finalTransform[0][2] + (item.value[0] + 0.5) * finalTransform[0][0];
-        var screenY = finalTransform[1][2] + (item.value[1] + 0.5) * finalTransform[1][1];
-        // detectedPoint.push(item.value[0], item.value[1]);[]
-        detectedPoint.push(screenX, screenY);
-    });
+        var point = this.imageCoordToScreenCoord(item.value[0], item.value[1], this.slice.finalTransform);
+        detectedPoint.push(point[0], point[1]);
+    }, this);
+    otherViews.forEach(function (view) {
+        var array = [];
+        var x;
+        var y;
+        switch (this.slice.sliceDirection) {
+            case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
+                if (view.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                    x = 1;
+                    y = 2;
+                }
+                if (view.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                    x = 0;
+                    y = 2;
+                }
+                break;
+            case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
+                if (view.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                    x = 2;
+                    y = 0;
+                }
+                if (view.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                    x = 2;
+                    y = 1;
+                }
+                break;
+            case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
+                if (view.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                    x = 0;
+                    y = 2;
+                }
+                if (view.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                    x = 2;
+                    y = 1;
+                }
+        }
+        console.log('xy selection', x, y)
+        var count = 1;
+        this.pointsRef.forEach(function (point) {
+            if (count !== 0) console.log(--count, point);
+            array = array.concat(this.imageCoordToScreenCoord(point.value[x], point.value[y], view.finalTransform));
+        }, this);
+        this.otherViewsPoints.push(array);
+    }, this);
     this.points = pointsArray;
     this.detectedPoint = detectedPoint;
+    // console.log(this.otherViewsPoints);
+    this.pointsNeedUpdate = false;
     // console.log('detectedPoint', this.detectedPoint);
 };
+
+papaya.viewer.ScreenCurve.prototype.imageCoordToScreenCoord = function (imageX, imageY, finalTransform) {
+    var screenX;
+    var screenY;
+    screenX = finalTransform[0][2] + (imageX + 0.5) * finalTransform[0][0];
+    screenY = finalTransform[1][2] + (imageY + 0.5) * finalTransform[1][1];
+    return [screenX, screenY];
+}
 
 papaya.viewer.ScreenCurve.prototype.buildPapayaCurveSegments = function () {
     // console.log('buildPapayaCurveSegments');
@@ -199,11 +273,13 @@ papaya.viewer.ScreenCurve.prototype.clearPoints = function (clearAll) {
         this.detectedPointRef = [];
         this.maxPointIndex = 0;
         this.points = [];
+        this.otherViewsPoints = [];
         this.detectedPoint = [];
         this.slice = null;
         this.initialized = false;
     } else {
         this.points = [];
+        this.otherViewsPoints = [];
     }
     this.pointsNeedUpdate = true;
 };
@@ -348,3 +424,14 @@ papaya.viewer.ScreenCurve.prototype.padCoordinate = function (segments) {
     // console.log('padCoordinate', result);
     return result;
 };
+
+//TODO: move this to viewer-utils
+papaya.viewer.ScreenCurve.prototype.getOtherViews = function (currentSlice, screenLayout) {
+    var thisDirection = currentSlice.sliceDirection;
+    return screenLayout.filter(function (slice) {
+        return (slice.sliceDirection !== thisDirection && 
+            slice.sliceDirection !== papaya.viewer.ScreenSlice.DIRECTION_CURVED && 
+            slice.sliceDirection !== papaya.viewer.ScreenSlice.DIRECTION_TEMPORAL && 
+            slice.sliceDirection !== papaya.viewer.ScreenSlice.DIRECTION_SURFACE)
+    });
+}
