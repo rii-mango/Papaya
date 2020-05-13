@@ -13,20 +13,20 @@ papaya.viewer.ScreenCurve = papaya.viewer.ScreenCurve || function (viewer, slice
 /*jslint sub: true */
     this.viewer = viewer;
     this.slice = slice;
-    this.points = [];
-    this.detectedPoint = [];
+    this.points = []; // curve's CONTROL points, [x0, y0, x1, y1, x2, y2...], values in SCREEN COORDINATE, use this to draw
+    this.detectedPoint = []; // current point mouse over  [x0, y0], values in SCREEN COORDINATE, use this to draw
     this.lineWidth = 3;
     this.lineColor = "red";
     this.fillStyle = "red"
     this.pointRadius = 5;
     this.tension = 0.5;
     // this.segmentResolutions = Math.floor(724*Math.sqrt(2));
-    this.segmentResolutions = 20;
-    this.curveSegments = null;
-    this.papayaCoordCurveSegments = {};
+    this.segmentResolutions = 20; // number of segments between 2 control points
+    this.curveSegments = null; // curve's points (including segments), [x0, y0, x1, y1, x2, y2...], values in SCREEN COORDINATE, output of Curve.js
+    this.papayaCoordCurveSegments = {}; // curve's points, [p0, p1, p2...] where p is papaya.core.Coordinate object
     this.isClosed = false;
-    (pointsRef) ? this.pointsRef = pointsRef : this.pointsRef = [];
-    this.detectedPointRef = [];
+    (pointsRef) ? this.pointsRef = pointsRef : this.pointsRef = []; // control point's information, including ID and SCREEN COORDINATE
+    this.detectedPointRef = []; // detected point's information, including ID and SCREEN COORDINATE
     this.maxPointIndex = 0;
     this.pointsNeedUpdate = false;
     this.finalTransform = slice ? slice.finalTransform.clone() : [];

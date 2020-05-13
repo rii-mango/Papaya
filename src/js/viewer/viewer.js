@@ -803,7 +803,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.eventHandler = window.setInterval(function() {
             // console.log('eventHandler');
             viewer.mouseMoveHandler = true;
-        }, 100);
+        }, 33);
     }
 };
 
