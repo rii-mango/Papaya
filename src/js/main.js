@@ -1562,7 +1562,7 @@ papaya.Container.prototype.canCurrentOverlayModulate = function () {
 
 /*** Window Events ***/
 
-window.addEventListener('resize', papaya.Container.resizePapaya, false);
+// window.addEventListener('resize', papaya.Container.resizePapaya, false);
 window.addEventListener("orientationchange", papaya.Container.reorientPapaya, false);
 window.addEventListener("load", papaya.Container.startPapaya, false);
 window.addEventListener('message', function (msg) {
