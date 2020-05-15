@@ -1111,7 +1111,7 @@ papaya.viewer.Viewer.prototype.updatePosition = function (viewer, xLoc, yLoc, cr
             rotatedAngle = viewer.volume.transform.localizerAngleSagittal * Math.PI / 180;
             var inverseRotatedCoordinate = this.getCoordinateFromRotatedSlice(-rotatedAngle, xLoc, yLoc, center.x, center.y, true);
             imageCoord = this.convertScreenToImageCoordinate(inverseRotatedCoordinate[0], inverseRotatedCoordinate[1], viewer.sagittalSlice);
-            console.log('updatePosition imageCoord', imageCoord);
+            // console.log('updatePosition imageCoord', imageCoord);
             xImageLoc = imageCoord.x;
             yImageLoc = imageCoord.y;
             zImageLoc = imageCoord.z;
@@ -1285,7 +1285,7 @@ papaya.viewer.Viewer.prototype.updateCursorPosition = function (viewer, xLoc, yL
             this.cursorPosition.x = xImageLoc;
             this.cursorPosition.y = yImageLoc;
             this.cursorPosition.z = zImageLoc;
-            this.container.display.drawDisplay(xImageLoc, yImageLoc, zImageLoc);
+            // this.container.display.drawDisplay(xImageLoc, yImageLoc, zImageLoc);
             this.drawAnnotation();
         } else {
             this.container.display.drawEmptyDisplay();
@@ -1457,9 +1457,9 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
         this.drawRuler();
     }
 
-    if (this.container.display) {
-        this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
-    }
+    // if (this.container.display) {
+    //     this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
+    // }
 
     if (this.container.contextManager && this.container.contextManager.drawToViewer) {
         this.container.contextManager.drawToViewer(this.context);
@@ -2749,22 +2749,28 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
 
     // timer to throttle mouseMoveEvent
     // console.log('this.mouseMoveHandler', this.mouseMoveHandler);
+
+    // detection loop
+    var absoluteMouseX, absoluteMouseY, zoomFactorCurrent;
+
+    papaya.Container.papayaLastHoveredViewer = this;
+
+    absoluteMouseX = papaya.utilities.PlatformUtils.getMousePositionX(me);
+    absoluteMouseY = papaya.utilities.PlatformUtils.getMousePositionY(me);
+
+    this.updateCursorPosition(this, absoluteMouseX,
+        absoluteMouseY);
+
+    var mouse = this.convertMouseCoordToCanvas(absoluteMouseX, absoluteMouseY);
+    var mouseX = mouse.x
+    var mouseY = mouse.y
+    if (this.screenCurve.hasPoint() && !this.isDragging) this.screenCurve.updatePointDetection(this.cursorPosition);
+
     if (!this.mouseMoveHandler) {
         // console.log('CANT TOUCH THIS');
         return
     }
     this.mouseMoveHandler = false;
-
-    var currentMouseX, currentMouseY, zoomFactorCurrent;
-
-    papaya.Container.papayaLastHoveredViewer = this;
-
-    currentMouseX = papaya.utilities.PlatformUtils.getMousePositionX(me);
-    currentMouseY = papaya.utilities.PlatformUtils.getMousePositionY(me);
-
-    var mouse = this.convertMouseCoordToCanvas(currentMouseX, currentMouseY);
-    var mouseX = mouse.x
-    var mouseY = mouse.y
     this.updateCurrentScreenLayout();
     // console.log(this.screenCurve.detec)
     // console.log(mouseX, mouseY);
@@ -2772,22 +2778,22 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
     if (this.isDragging) {
         if (this.localizerDetected) this.isGrabbingLocalizer = true;
         if (this.grabbedHandle || this.reactViewerConnector.activeTool === 'Ruler' && !this.isGrabbingLocalizer) {
-            if (this.isInsideMainSlice(currentMouseX, currentMouseY)) {
-                this.grabbedHandle.x = this.convertScreenToImageCoordinateX(currentMouseX - this.canvasRect.left, this.selectedSlice);
-                this.grabbedHandle.y = this.convertScreenToImageCoordinateY(currentMouseY - this.canvasRect.top, this.selectedSlice);
+            if (this.isInsideMainSlice(absoluteMouseX, absoluteMouseY)) {
+                this.grabbedHandle.x = this.convertScreenToImageCoordinateX(absoluteMouseX - this.canvasRect.left, this.selectedSlice);
+                this.grabbedHandle.y = this.convertScreenToImageCoordinateY(absoluteMouseY - this.canvasRect.top, this.selectedSlice);
                 this.drawViewer(false, true, true);
             }
         } else if (this.reactViewerConnector.activeTool === 'Window' && !this.isGrabbingLocalizer) { // original: else if (this.isWindowControl)
-            this.windowLevelChanged(this.previousMousePosition.x - currentMouseX, this.previousMousePosition.y - currentMouseY);
-            this.previousMousePosition.x = currentMouseX;
-            this.previousMousePosition.y = currentMouseY;
+            this.windowLevelChanged(this.previousMousePosition.x - absoluteMouseX, this.previousMousePosition.y - absoluteMouseY);
+            this.previousMousePosition.x = absoluteMouseX;
+            this.previousMousePosition.y = absoluteMouseY;
         // Modification 26/11/2019: add stackScroll
         } else if (this.reactViewerConnector.activeTool === 'StackScroll' && !this.isGrabbingLocalizer) {
-            var deltaY = this.previousMousePosition.y - currentMouseY;
+            var deltaY = this.previousMousePosition.y - absoluteMouseY;
             var increment;
             if (deltaY < 0) increment = false;
             else if (deltaY > 0) increment = true;
-            this.previousMousePosition.y = currentMouseY;
+            this.previousMousePosition.y = absoluteMouseY;
             if (deltaY !== 0) {
                 // console.log(deltaY);
                 if (this.selectedSlice === this.axialSlice) this.incrementAxial(increment, Math.ceil(Math.abs(deltaY/6)));
@@ -2804,19 +2810,19 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                 this.drawViewer(false, true, true);
             } else {
                 this.setCurrentPanLocation(
-                    this.convertScreenToImageCoordinateX(currentMouseX, this.selectedSlice),
-                    this.convertScreenToImageCoordinateY(currentMouseY, this.selectedSlice),
+                    this.convertScreenToImageCoordinateX(absoluteMouseX, this.selectedSlice),
+                    this.convertScreenToImageCoordinateY(absoluteMouseY, this.selectedSlice),
                     this.selectedSlice.sliceDirection
                 );
             }
         } else if (this.isZoomMode && !this.isGrabbingLocalizer) {
             if (this.selectedSlice === this.surfaceView) {
-                zoomFactorCurrent = ((this.previousMousePosition.y - currentMouseY) * 0.5) * this.surfaceView.scaleFactor;
+                zoomFactorCurrent = ((this.previousMousePosition.y - absoluteMouseY) * 0.5) * this.surfaceView.scaleFactor;
                 this.surfaceView.zoom += zoomFactorCurrent;
-                this.previousMousePosition.x = currentMouseX;
-                this.previousMousePosition.y = currentMouseY;
+                this.previousMousePosition.x = absoluteMouseX;
+                this.previousMousePosition.y = absoluteMouseY;
             } else {
-                zoomFactorCurrent = ((this.previousMousePosition.y - currentMouseY) * 0.05);
+                zoomFactorCurrent = ((this.previousMousePosition.y - absoluteMouseY) * 0.05);
                 this.setZoomFactor(this.zoomFactorPrevious - zoomFactorCurrent);
 
                 this.axialSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocY, this.panAmountX,
@@ -2835,8 +2841,8 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             if (this.selectedSlice !== null) {
                 if (this.selectedSlice === this.surfaceView) {
                     if (this.surfaceView.grabbedRulerPoint !== -1) {
-                        this.surfaceView.pickRuler(currentMouseX - this.canvasRect.left,
-                            currentMouseY - this.canvasRect.top);
+                        this.surfaceView.pickRuler(absoluteMouseX - this.canvasRect.left,
+                            absoluteMouseY - this.canvasRect.top);
                         this.drawViewer(false, true, true);
                     } else {
                         this.surfaceView.updateDynamic(papaya.utilities.PlatformUtils.getMousePositionX(me),
@@ -2849,12 +2855,12 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                     var currentRotatingAngle = this.screenVolumes[0].getSliceRotatingAngle(this.currentInteractingSlice.sliceDirection);
                     // this.screenVolumes[0].rotateLocalizer(0, this.currentInteractingSlice.sliceDirection, this.currentCoord);
                     // this.screenVolumes[0].resetSliceRotation(this.currentInteractingSlice.sliceDirection, this.currentCoord);
-                    var canvasLoc = this.convertMouseCoordToCanvas(currentMouseX, currentMouseY);
+                    var canvasLoc = this.convertMouseCoordToCanvas(absoluteMouseX, absoluteMouseY);
                     this.updatePosition(this, canvasLoc.x, canvasLoc.y, false);
                     // this.screenVolumes[0].updateCenterCoord(this.currentCoord, true);
                     // this.screenVolumes[0].rotateLocalizer(currentRotatingAngle, this.currentInteractingSlice.sliceDirection, this.currentCoord);
-                    this.previousMousePosition.x = currentMouseX;
-                    this.previousMousePosition.y = currentMouseY;
+                    this.previousMousePosition.x = absoluteMouseX;
+                    this.previousMousePosition.y = absoluteMouseY;
                     this.reactViewerConnector.mainImageChanged = true;
                     this.onMainImageChanged();
                     // console.log('localizer center: ', this.currentInteractingSlice.localizerCenter);
@@ -2871,7 +2877,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             // console.log('currentCoord center: ', this.convertCoordinateToScreen(this.currentCoord, this.currentInteractingSlice));
             // console.log('slice center: ', this.volume.transform.centerCoord);
             var currentRotatingAngle = this.screenVolumes[0].getSliceRotatingAngle(this.currentInteractingSlice.sliceDirection);
-            var rotateAngle = this.getRotatingAngle(this.currentInteractingSlice, this.previousMousePosition.x, this.previousMousePosition.y, currentMouseX, currentMouseY);
+            var rotateAngle = this.getRotatingAngle(this.currentInteractingSlice, this.previousMousePosition.x, this.previousMousePosition.y, absoluteMouseX, absoluteMouseY);
             var oldCoord = this.volume.transform.centerCoord;
             this.screenVolumes[0].updateCenterMat(this.currentCoord);
             this.screenVolumes[0].resetSliceRotation(this.currentInteractingSlice.sliceDirection);
@@ -2881,8 +2887,8 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             this.drawViewer(true, false, false);
             if (this.hasOblique()) this.onCurveUpdated();
             this.reactViewerConnector.mainImageChanged = true;
-            this.previousMousePosition.x = currentMouseX;
-            this.previousMousePosition.y = currentMouseY;
+            this.previousMousePosition.x = absoluteMouseX;
+            this.previousMousePosition.y = absoluteMouseY;
             // this.drawViewer(false, false, false);
         } else if (this.screenCurve.detectedPointRef.length && this.reactViewerConnector.activeTool === "CMPR.Active" && this.isGrabbingLocalizer) {
             // console.log('OYOYOY dragging curve');
@@ -2899,15 +2905,14 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
         if (!this.isGrabbingLocalizer) {
             if (this.reactViewerConnector.activeTool === "CMPR.Active") {
                 // var cursorPosition = this.getXYImageCoordinate(this.currentInteractingSlice);
-                this.screenCurve.updatePointDetection(this.cursorPosition);
                 this.drawAnnotation();
             } else {
                 this.localizerDetected = this.detectLocalizer(this.currentInteractingSlice, mouseX, mouseY);
                 this.changeCursor(this.localizerDetected);
             }
         }
-        this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me),
-            papaya.utilities.PlatformUtils.getMousePositionY(me));
+        // this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me),
+        //     papaya.utilities.PlatformUtils.getMousePositionY(me));
         this.isZoomMode = false;
     }
 
@@ -3053,7 +3058,7 @@ papaya.viewer.Viewer.prototype.windowLevelChanged = function (contrastChange, br
             parseFloat(maxFinal.toPrecision(7)));
     }
 
-    this.drawViewer(true);
+    this.drawViewer(false, true);
 };
 
 

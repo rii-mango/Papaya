@@ -383,7 +383,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, curren
 
 papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace) {
     /*jslint bitwise: true */
-
+    console.log('repaint', this);
     var ctr, ctrY, ctrX, value, thresholdAlpha, index = 0, layerAlpha, rgb, dti, dtiLines, dtiRGB, angle2,
         dtiXC, dtiYC, dtiX1, dtiX2, dtiY1, dtiY2, dtiX1T, dtiX2T, dtiY1T, dtiY2T, angle, s, c, dtiColors,
         valueR, valueG, valueB, dtiColorIndex = 0, readFirstRaster = false, originalVal;

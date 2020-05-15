@@ -605,7 +605,7 @@ papaya.volume.Transform.prototype.getSliceImageMat = function (rotationMat, skip
 }
 
 papaya.volume.Transform.prototype.updateCenterCoord = function (x, y, z) {
-    console.log('updateCenterCoord');
+    // console.log('updateCenterCoord');
     this.centerCoord.x = x;
     this.centerCoord.y = y;
     this.centerCoord.z = z;

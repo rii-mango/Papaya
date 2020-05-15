@@ -34,6 +34,7 @@ papaya.viewer.ScreenCurve = papaya.viewer.ScreenCurve || function (viewer, slice
     this.pointsNeedUpdate = false;
     this.finalTransform = slice ? slice.finalTransform.clone() : [];
     this.initialized = false;
+    // this.isDragging = false;
     // console.log('ScreenCurve imported');
 };
 // functions

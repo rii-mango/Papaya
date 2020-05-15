@@ -271,10 +271,11 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params,
 
         if (displayHTML) {
             displayHTML.addClass(PAPAYA_DISPLAY_CSS);
-        } else {
-            $("<div class='" + PAPAYA_DISPLAY_CSS + "' id='" +
-                PAPAYA_DEFAULT_DISPLAY_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_VIEWER_ID));
         }
+        // } else {
+        //     $("<div class='" + PAPAYA_DISPLAY_CSS + "' id='" +
+        //         PAPAYA_DEFAULT_DISPLAY_ID + "'></div>").insertAfter($("#" + PAPAYA_DEFAULT_VIEWER_ID));
+        // }
 
         console.log("This method of adding a Papaya container is deprecated.  " +
             "Try simply <div class='papaya' data-params='params'></div> instead...");
@@ -294,8 +295,8 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params,
 
         containerHTML.append("<div id='" + (PAPAYA_DEFAULT_VIEWER_ID + index) +
             "' class='" + PAPAYA_VIEWER_CSS + "'></div>");
-        containerHTML.append("<div id='" + (PAPAYA_DEFAULT_DISPLAY_ID + index) +
-            "' class='" + PAPAYA_DISPLAY_CSS + "'></div>");
+        // containerHTML.append("<div id='" + (PAPAYA_DEFAULT_DISPLAY_ID + index) +
+        //     "' class='" + PAPAYA_DISPLAY_CSS + "'></div>");
 
         if (params && params.showControlBar && ((params.showControls === undefined) || params.showControls)) {
             containerHTML.append(
@@ -858,10 +859,10 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
         this.viewer.resizeViewer(dims);
     }
 
-    this.displayHtml.css({height: papaya.viewer.Display.SIZE + "px"});
-    this.displayHtml.css({paddingLeft: padding + "px"});
-    this.displayHtml.css({paddingTop: PAPAYA_SPACING + "px"});
-    this.display.canvas.width = dims[0];
+    // this.displayHtml.css({height: papaya.viewer.Display.SIZE + "px"});
+    // this.displayHtml.css({paddingLeft: padding + "px"});
+    // this.displayHtml.css({paddingTop: PAPAYA_SPACING + "px"});
+    // this.display.canvas.width = dims[0];
 
     if (this.showControls && this.showControlBar) {
         this.sliderControlHtml.css({width: dims[0] + "px"});
