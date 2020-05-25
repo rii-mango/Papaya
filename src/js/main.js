@@ -207,6 +207,20 @@ papaya.Container.addImage = function (index, imageRef, imageParams) {
         papayaContainers[index].viewer.loadImage(imageRefs, false, true, false);
     }
 };
+//////////
+/** 
+    Using parsed Cornerstone Images
+*/
+papaya.Container.addCornerstoneImages = function (index, imageParams, cornerstoneImages, stackMetadata) {
+    console.log('addCornerstoneImages');
+    // apply custom params to container
+    if (imageParams) {
+        papayaContainers[index].params = $.extend({}, papayaContainers[index].params, imageParams);
+    }
+    // parse images
+    papayaContainers[index].viewer.loadCornerstoneImages(cornerstoneImages, stackMetadata);
+    // console.log(cornerstoneImages, metadata);
+};
 
 
 

@@ -303,6 +303,17 @@ papaya.viewer.Viewer.prototype.loadImage = function (refs, forceUrl, forceEncode
         this.loadOverlay(refs, forceUrl, forceEncode, forceBinary);
     }
 };
+/**
+ * loadCornerstoneImages
+ * @Constraints cornerstoneImages are parsed and it's metadata is available
+ * @params cornerstoneImages: array of Cornerstone Image object, metadata: array of Metadata ob
+ */
+papaya.viewer.Viewer.prototype.loadCornerstoneImages = function (cornerstoneImages, stackMetadata) {
+    if (this.screenVolumes.length === 0) {
+        this.volume = new papaya.volume.Volume(this.container.display, this, this.container.params);
+        this.volume.readCornerstoneData(cornerstoneImages, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
+    }
+};
 
 
 

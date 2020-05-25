@@ -31,6 +31,7 @@ papaya.volume.Header = papaya.volume.Header || function (pad) {
 papaya.volume.Header.HEADER_TYPE_UNKNOWN = 0;
 papaya.volume.Header.HEADER_TYPE_NIFTI = 1;
 papaya.volume.Header.HEADER_TYPE_DICOM = 2;
+papaya.volume.Header.HEADER_TYPE_CORNERSTONE = 3;
 papaya.volume.Header.ERROR_UNRECOGNIZED_FORMAT = "This format is not recognized!";
 papaya.volume.Header.INVALID_IMAGE_DIMENSIONS = "Image dimensions are not valid!";
 papaya.volume.Header.INVALID_VOXEL_DIMENSIONS = "Voxel dimensions are not valid!";
@@ -44,6 +45,9 @@ papaya.volume.Header.ORIENTATION_CERTAINTY_HIGH = 2;
 /*** Prototype Methods ***/
 
 papaya.volume.Header.prototype.findHeaderType = function (filename, data) {
+    if (filename === 'cornerstone')
+        return papaya.volume.Header.HEADER_TYPE_CORNERSTONE;
+
     if (papaya.volume.nifti.HeaderNIFTI.isThisFormat(filename, data)) {
         return papaya.volume.Header.HEADER_TYPE_NIFTI;
     } else if (papaya.Container.DICOM_SUPPORT && papaya.volume.dicom.HeaderDICOM.isThisFormat(filename, data)) {
@@ -66,6 +70,9 @@ papaya.volume.Header.prototype.readHeaderData = function (filename, data, progre
         this.fileFormat.readHeaderData(data, progressMeter, dialogHandler, papaya.utilities.ObjectUtils.bind(this, this.onFinishedHeaderRead));
     } else if (headerType === papaya.volume.Header.HEADER_TYPE_DICOM) {
         this.fileFormat = new papaya.volume.dicom.HeaderDICOM();
+        this.fileFormat.readHeaderData(data, progressMeter, dialogHandler, papaya.utilities.ObjectUtils.bind(this, this.onFinishedHeaderRead));
+    } else if (headerType === papaya.volume.Header.HEADER_TYPE_CORNERSTONE) {
+        this.fileFormat = new papaya.volume.dicom.HeaderCornerstone();
         this.fileFormat.readHeaderData(data, progressMeter, dialogHandler, papaya.utilities.ObjectUtils.bind(this, this.onFinishedHeaderRead));
     } else {
         this.error = new Error(papaya.volume.Header.ERROR_UNRECOGNIZED_FORMAT);

@@ -304,6 +304,53 @@ papaya.volume.Volume.prototype.readNextEncodedData = function (vol, index, dataR
     }
 };
 
+/**
+ * Custom read function for Cornerstone
+ */
+papaya.volume.Volume.prototype.readCornerstoneData = function (cornerstoneImages, callback) {
+    // var vol = null;
+    if (cornerstoneImages) {
+            this.fileName = 'cornerstone';
+    }
+    this.onFinishedRead = callback;
+    vol = this;
+    // try {
+    //     if (cornerstoneImages) {
+    //         this.fileName = "unknown";
+    //     }
+    //     this.onFinishedRead = callback;
+    //     vol = this;
+    //     this.fileLength = 0;
+    //     vol.readNextCornerstoneData(vol, 0, cornerstoneImages);
+    // } catch (err) {
+    //     if (vol) {
+    //         vol.error = new Error("There was a problem reading that file:\n\n" + err.message);
+    //         vol.finishedLoad();
+    //     }
+    // }
+
+    vol.header.readHeaderData(vol.fileName, cornerstoneImages, this.progressMeter, this.dialogHandler,
+        papaya.utilities.ObjectUtils.bind(this, this.finishedReadHeaderData));
+};
+
+papaya.volume.Volume.prototype.readNextCornerstoneData = function (vol, index, cornerstoneImages) {
+    if (index < cornerstoneImages.length) {
+        try {
+            console.log('readNextCornerstoneData', cornerstoneImages[index], index);
+            setTimeout(function () {vol.readNextCornerstoneData(vol, index + 1, cornerstoneImages); }, 0);
+        } catch (err) {
+            if (vol) {
+                vol.error = new Error("There was a problem reading that file:\n\n" + err.message);
+                vol.finishedLoad();
+            }
+        }
+    } else {
+        // vol.decompress(vol);
+        console.log('done');
+    }
+};
+
+////////
 
 
 papaya.volume.Volume.prototype.getVoxelAtIndexNative = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
