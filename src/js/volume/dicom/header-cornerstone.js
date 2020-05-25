@@ -102,15 +102,16 @@ papaya.volume.dicom.HeaderCornerstone.prototype.readNextHeaderData = function (d
 // functions called in header.js onFinishedHeaderRead
 papaya.volume.dicom.HeaderCornerstone.prototype.getImageType = function () {
     var littleEndian, bytesPerElement, dataTypeCode, it;
-    dataTypeCode = this.getDataType(this.series.images[0]);
-    bytesPerElement = this.getBytesPerElement(this.series.images[0]);
-    littleEndian = 'unknown'; // cant get TransferSyntaxUID from Cornerstone metadata, doesn't matter anyway
+    var image = this.series.images[0];
+    dataTypeCode = this.getDataType(image);
+    bytesPerElement = this.getBytesPerElement(image);
+    littleEndian = true ; // cant get TransferSyntaxUID from Cornerstone metadata, doesn't matter anyway
 
     it = new papaya.volume.ImageType(dataTypeCode, bytesPerElement,
         littleEndian, false);
 
     // it.rgbBySample = (this.series.images[0].getPlanarConfig() === 1);
-    console.log(it);
+    console.log('papaya-image type', it)
     return it;
 };
 
@@ -128,10 +129,10 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getImageDimensions = function ()
         this.series.images.length);
 
     for (ctr = 0; ctr < this.series.images.length; ctr += 1) {
-        imageDimensions.dataOffsets[ctr] = this.series.images[ctr].getPixelData().offsetValue || 0; // TODO: check return undefined
+        imageDimensions.dataOffsets[ctr] = 0; // TODO: check return undefined
         imageDimensions.dataLengths[ctr] = size;
     }
-    console.log(imageDimensions);
+    console.log('papaya-imageDimensions', imageDimensions);
     return imageDimensions;
 };
 
@@ -162,7 +163,7 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getVoxelDimensions = function ()
 
     voxelDimensions.spatialUnit = papaya.volume.VoxelDimensions.UNITS_MM;
     voxelDimensions.temporalUnit = papaya.volume.VoxelDimensions.UNITS_SEC;
-    console.log(voxelDimensions);
+    console.log('papaya-voxelDimensions', voxelDimensions);
     return voxelDimensions;
 };
 
@@ -177,7 +178,7 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getOrientation = function () {
     // this fixes the cross-slice orientation sense (usually)
     orientation = orientation.substring(0, 5) + (this.series.sliceSense ? '+' : '-');
     var orientationRes = new papaya.volume.Orientation(orientation);
-    console.log(orientationRes);
+    console.log('papaya-orientation', orientation);
     return orientationRes;
 };
 
@@ -322,7 +323,7 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getImageRange = function () {
 
     imageRange.validateDataScale();
 
-    console.log(imageRange);
+    console.log('papaya-image range', imageRange);
     return imageRange;
 };
 

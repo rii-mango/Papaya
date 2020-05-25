@@ -310,10 +310,10 @@ papaya.volume.Volume.prototype.readNextEncodedData = function (vol, index, dataR
 papaya.volume.Volume.prototype.readCornerstoneData = function (cornerstoneImages, callback) {
     // var vol = null;
     if (cornerstoneImages) {
-            this.fileName = 'cornerstone';
+        this.fileName = 'cornerstone';
     }
     this.onFinishedRead = callback;
-    vol = this;
+    var vol = this;
     // try {
     //     if (cornerstoneImages) {
     //         this.fileName = "unknown";

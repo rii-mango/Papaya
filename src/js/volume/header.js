@@ -61,8 +61,9 @@ papaya.volume.Header.prototype.findHeaderType = function (filename, data) {
 
 papaya.volume.Header.prototype.readHeaderData = function (filename, data, progressMeter, dialogHandler,
                                                           onFinishedFileFormatRead) {
+    console.log('readHeaderData', filename, data);
     var headerType = this.findHeaderType(filename, data);
-
+    console.log('header type', headerType);
     this.onFinishedFileFormatRead = onFinishedFileFormatRead;
 
     if (headerType === papaya.volume.Header.HEADER_TYPE_NIFTI) {
@@ -72,6 +73,7 @@ papaya.volume.Header.prototype.readHeaderData = function (filename, data, progre
         this.fileFormat = new papaya.volume.dicom.HeaderDICOM();
         this.fileFormat.readHeaderData(data, progressMeter, dialogHandler, papaya.utilities.ObjectUtils.bind(this, this.onFinishedHeaderRead));
     } else if (headerType === papaya.volume.Header.HEADER_TYPE_CORNERSTONE) {
+        console.log('create Cornerstone header');
         this.fileFormat = new papaya.volume.dicom.HeaderCornerstone();
         this.fileFormat.readHeaderData(data, progressMeter, dialogHandler, papaya.utilities.ObjectUtils.bind(this, this.onFinishedHeaderRead));
     } else {

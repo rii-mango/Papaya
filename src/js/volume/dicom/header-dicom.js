@@ -300,7 +300,7 @@ papaya.volume.dicom.HeaderDICOM.prototype.getImageDimensions = function () {
         imageDimensions.dataOffsets[ctr] = this.series.images[ctr].getPixelData().offsetValue;
         imageDimensions.dataLengths[ctr] = size;
     }
-
+    console.log('papaya-imageDimensions', imageDimensions);
     return imageDimensions;
 };
 
@@ -353,6 +353,8 @@ papaya.volume.dicom.HeaderDICOM.prototype.getVoxelDimensions = function () {
     voxelDimensions.spatialUnit = papaya.volume.VoxelDimensions.UNITS_MM;
     voxelDimensions.temporalUnit = papaya.volume.VoxelDimensions.UNITS_SEC;
 
+    console.log('papaya-voxelDimensions', voxelDimensions);
+
     return voxelDimensions;
 };
 
@@ -378,7 +380,7 @@ papaya.volume.dicom.HeaderDICOM.prototype.getImageType = function () {
         this.series.images[0].littleEndian, false);
 
     it.rgbBySample = (this.series.images[0].getPlanarConfig() === 1);
-
+    console.log('papaya-image type', it)
     return it;
 };
 
@@ -512,7 +514,7 @@ papaya.volume.dicom.HeaderDICOM.prototype.getImageRange = function () {
     }
 
     imageRange.validateDataScale();
-
+    console.log('papaya-image range', imageRange);
     return imageRange;
 };
 
@@ -528,7 +530,10 @@ papaya.volume.dicom.HeaderDICOM.prototype.getOrientation = function () {
     // this fixes the cross-slice orientation sense (usually)
     orientation = orientation.substring(0, 5) + (this.series.sliceSense ? '+' : '-');
 
-    return new papaya.volume.Orientation(orientation);
+    orientation = new papaya.volume.Orientation(orientation);
+
+    console.log('papaya-orientation', orientation);
+    return orientation;
 };
 
 
