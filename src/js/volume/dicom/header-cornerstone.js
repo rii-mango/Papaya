@@ -111,7 +111,6 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getImageType = function () {
         littleEndian, false);
 
     // it.rgbBySample = (this.series.images[0].getPlanarConfig() === 1);
-    console.log('papaya-image type', it)
     return it;
 };
 
@@ -132,7 +131,6 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getImageDimensions = function ()
         imageDimensions.dataOffsets[ctr] = 0; // TODO: check return undefined
         imageDimensions.dataLengths[ctr] = size;
     }
-    console.log('papaya-imageDimensions', imageDimensions);
     return imageDimensions;
 };
 
@@ -163,7 +161,6 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getVoxelDimensions = function ()
 
     voxelDimensions.spatialUnit = papaya.volume.VoxelDimensions.UNITS_MM;
     voxelDimensions.temporalUnit = papaya.volume.VoxelDimensions.UNITS_SEC;
-    console.log('papaya-voxelDimensions', voxelDimensions);
     return voxelDimensions;
 };
 
@@ -177,9 +174,10 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getOrientation = function () {
 
     // this fixes the cross-slice orientation sense (usually)
     orientation = orientation.substring(0, 5) + (this.series.sliceSense ? '+' : '-');
-    var orientationRes = new papaya.volume.Orientation(orientation);
-    console.log('papaya-orientation', orientation);
-    return orientationRes;
+    
+    orientation = new papaya.volume.Orientation(orientation);
+    
+    return orientation;
 };
 
 papaya.volume.dicom.HeaderCornerstone.prototype.getOrientationCertainty = function () {
@@ -323,7 +321,6 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getImageRange = function () {
 
     imageRange.validateDataScale();
 
-    console.log('papaya-image range', imageRange);
     return imageRange;
 };
 
@@ -796,10 +793,10 @@ papaya.volume.dicom.HeaderCornerstone.prototype.concatenateImageData = function 
     //     data = this.images[0].getPixelDataBytes();
     // }
     data = firstImage.getPixelData();
-    console.log('concatenateImageData', data);
     length = this.validatePixelDataLength(firstImage);
+    console.log('papaya-concatenateImageData', length,data);
     buffer = new Uint8Array(new ArrayBuffer(length * this.series.images.length));
-    buffer.set(new Uint8Array(data, 0, length), 0);
+    buffer.set(new Uint8Array(data.buffer, 0, length), 0);
 
     setTimeout(papaya.utilities.ObjectUtils.bind(this, function() { this.concatenateNextImageData(buffer, length, progressMeter, 1, onFinishedImageRead)}), 0);
 };
@@ -825,7 +822,7 @@ papaya.volume.dicom.HeaderCornerstone.prototype.concatenateNextImageData = funct
         data = this.series.images[index].getPixelData();
 
         length = this.validatePixelDataLength(this.series.images[index]);
-        buffer.set(new Uint8Array(data, 0, length), (frameSize * index));
+        buffer.set(new Uint8Array(data.buffer, 0, length), (frameSize * index));
 
         setTimeout(papaya.utilities.ObjectUtils.bind(this, function() {this.concatenateNextImageData(buffer, frameSize, progressMeter,
             index + 1, onFinishedImageRead);}), 0);

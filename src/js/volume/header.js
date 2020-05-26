@@ -89,6 +89,7 @@ papaya.volume.Header.prototype.onFinishedHeaderRead = function () {
         this.error = this.fileFormat.error;
     } else {
         this.imageType = this.fileFormat.getImageType();
+        console.log('papaya-imageType', this.imageType);
         if (!this.imageType.isValid()) {
             this.error = new Error(papaya.volume.Header.INVALID_DATATYPE);
         }
@@ -97,12 +98,13 @@ papaya.volume.Header.prototype.onFinishedHeaderRead = function () {
         if (!this.imageDimensions.isValid()) {
             this.error = new Error(papaya.volume.Header.INVALID_IMAGE_DIMENSIONS);
         }
-
+        console.log('papaya-imageDimensions', this.imageDimensions);
 
         this.voxelDimensions = this.fileFormat.getVoxelDimensions();
         if (!this.voxelDimensions.isValid()) {
             this.error = new Error(papaya.volume.Header.INVALID_VOXEL_DIMENSIONS);
         }
+        console.log('papaya-voxelDimensions', this.voxelDimensions);
 
         if (this.pad) {
             this.imageDimensions.padIsometric(this.voxelDimensions);
@@ -117,16 +119,20 @@ papaya.volume.Header.prototype.onFinishedHeaderRead = function () {
         }
 
         this.orientation.createInfo(this.imageDimensions, this.voxelDimensions);
+        console.log('papaya-orientation', this.orientation);
 
         this.origin = this.orientation.convertCoordinate(this.fileFormat.getOrigin(),
             new papaya.core.Coordinate(0, 0, 0));
+        console.log('papaya-origin', this.origin);
 
         this.imageRange = this.fileFormat.getImageRange();
         if (!this.imageRange.isValid()) {
             this.error = new Error(papaya.volume.Header.INVALID_IMAGE_RANGE);
         }
+        console.log('papaya-imageRange', this.imageRange);
 
         this.imageDescription = this.fileFormat.getImageDescription();
+        console.log('papaya-imageDescription', this.imageDescription);
     }
 
     this.onFinishedFileFormatRead();

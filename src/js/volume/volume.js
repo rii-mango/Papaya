@@ -476,6 +476,7 @@ papaya.volume.Volume.prototype.finishedReadHeaderData = function () {
 
 
 papaya.volume.Volume.prototype.finishedReadImageData = function (imageData) {
+    console.log('papaya-imageData read', imageData);
     this.imageData.readFileData(this.header, imageData, papaya.utilities.ObjectUtils.bind(this, this.finishedLoad));
 };
 
@@ -519,7 +520,7 @@ papaya.volume.Volume.prototype.getOrigin = function () {
 
 papaya.volume.Volume.prototype.applyBestTransform = function () {
     var bestXform = this.header.getBestTransform();
-
+    console.log('papaya-bestTransform', bestXform);
     if (bestXform !== null) {
         this.transform.worldMatNifti = numeric.inv(bestXform);
         this.setOrigin(this.header.getBestTransformOrigin());

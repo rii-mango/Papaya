@@ -64,7 +64,7 @@ papaya.volume.ImageData.prototype.readFileData = function (header, buffer, onRea
     } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_UNSIGNED) &&
         (header.imageType.numBytes === 2)) {
         this.data = new Uint16Array(buffer, 0, buffer.byteLength / 2);
-        console.log('ImageData', this.data);
+        console.log('papaya-ImageData converted', this.data);
     } else if ((header.imageType.datatype === papaya.volume.ImageType.DATATYPE_INTEGER_SIGNED) &&
         (header.imageType.numBytes === 4)) {
         this.data = new Int32Array(buffer, 0, buffer.byteLength / 4);
