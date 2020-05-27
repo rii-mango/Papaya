@@ -476,7 +476,7 @@ papaya.volume.Volume.prototype.finishedReadHeaderData = function () {
 
 
 papaya.volume.Volume.prototype.finishedReadImageData = function (imageData) {
-    console.log('papaya-imageData read', imageData);
+    // console.log('papaya-imageData read', imageData); // DONT LOG IN PRODUCTION OR MEM LEAK
     this.imageData.readFileData(this.header, imageData, papaya.utilities.ObjectUtils.bind(this, this.finishedLoad));
 };
 

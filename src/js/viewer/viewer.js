@@ -3258,7 +3258,14 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     this.initialized = false;
     this.loadingVolume = null;
     ////
-    this.volume = null;
+    if (this.volume) this.volume.transform = {};
+    this.currentInteractingSlice = null;
+    this.screenLayout = [];
+    if (this.screenVolumes.length > 0) {
+        for (var i = 0; i < this.screenVolumes.length; i++) {
+            this.screenVolumes[i].volume = {};
+        }
+    }
     ///
     this.volume = new papaya.volume.Volume(this.container.display, this);
     this.screenVolumes = [];
@@ -3296,6 +3303,9 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     var contextAnnotation = this.canvasAnnotation.getContext('2d');
     contextAnnotation.clearRect(0, 0, this.canvasAnnotation.width, this.canvasAnnotation.height);
     this.removeScroll();
+
+    this.canvasAnnotation.remove();
+    this.canvas.remove();
 
     this.updateTimer = null;
     this.updateTimerEvent = null;
