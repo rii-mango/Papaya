@@ -51,6 +51,21 @@ papaya.volume.dicom.HeaderCornerstone.SUPPORTED_TRANSFER_SYNTAXES = [
     // rle compressed
     "1.2.840.10008.1.2.5"
 ];
+papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_IMPLICIT_LITTLE = "1.2.840.10008.1.2";
+papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_EXPLICIT_LITTLE = "1.2.840.10008.1.2.1";
+papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_EXPLICIT_BIG = "1.2.840.10008.1.2.2";
+papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_COMPRESSION_JPEG = "1.2.840.10008.1.2.4";
+papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_COMPRESSION_JPEG_LOSSLESS = "1.2.840.10008.1.2.4.57";
+papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_COMPRESSION_JPEG_LOSSLESS_SEL1 = "1.2.840.10008.1.2.4.70";
+papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_COMPRESSION_JPEG_BASELINE_8BIT = "1.2.840.10008.1.2.4.50";
+papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_COMPRESSION_JPEG_BASELINE_12BIT = "1.2.840.10008.1.2.4.51";
+papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_COMPRESSION_JPEG_LS_LOSSLESS = "1.2.840.10008.1.2.4.80";
+papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_COMPRESSION_JPEG_LS = "1.2.840.10008.1.2.4.81";
+papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_COMPRESSION_JPEG_2000_LOSSLESS = "1.2.840.10008.1.2.4.90";
+papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_COMPRESSION_JPEG_2000 = "1.2.840.10008.1.2.4.91";
+papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_COMPRESSION_RLE = "1.2.840.10008.1.2.5";
+papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_COMPRESSION_DEFLATE = "1.2.840.10008.1.2.1.99";
+
 papaya.volume.dicom.HeaderCornerstone.SLICE_DIRECTION_UNKNOWN = -1;
 papaya.volume.dicom.HeaderCornerstone.SLICE_DIRECTION_AXIAL = 2;
 papaya.volume.dicom.HeaderCornerstone.SLICE_DIRECTION_CORONAL = 1;
@@ -81,7 +96,10 @@ papaya.volume.dicom.HeaderCornerstone.prototype.initSeries = function (series, d
     // series.sliceSense = false;
     series.sliceDir = this.getAcquiredSliceDirection(series.images[0]);
     series.sliceSense = this.calculateSliceSense(series);
+    series.littleEndian = null;
+    series.explicit = null;
     series.error = null;
+    this.updateEndianessAndExplicitness(series.images[0]);
 };
 
 papaya.volume.dicom.HeaderCornerstone.prototype.readHeaderData = function (data, progressMeter, dialogHandler,
@@ -105,10 +123,10 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getImageType = function () {
     var image = this.series.images[0];
     dataTypeCode = this.getDataType(image);
     bytesPerElement = this.getBytesPerElement(image);
-    littleEndian = true ; // cant get TransferSyntaxUID from Cornerstone metadata, doesn't matter anyway
+    // littleEndian = true ; // cant get TransferSyntaxUID from Cornerstone metadata, doesn't matter anyway
 
     it = new papaya.volume.ImageType(dataTypeCode, bytesPerElement,
-        littleEndian, false);
+        this.series.littleEndian, false);
 
     // it.rgbBySample = (this.series.images[0].getPlanarConfig() === 1);
     return it;
@@ -794,7 +812,7 @@ papaya.volume.dicom.HeaderCornerstone.prototype.concatenateImageData = function 
     // }
     data = firstImage.getPixelData();
     length = this.validatePixelDataLength(firstImage);
-    console.log('papaya-concatenateImageData', length,data);
+    // console.log('papaya-concatenateImageData', length,data);
     buffer = new Uint8Array(new ArrayBuffer(length * this.series.images.length));
     buffer.set(new Uint8Array(data.buffer, 0, length), 0);
 
@@ -848,4 +866,28 @@ papaya.volume.dicom.HeaderCornerstone.prototype.validatePixelDataLength = functi
     }
 
     return sliceLength * 1 * this.getNumberOfSamplesPerPixel(image) * this.getBytesPerElement(image);
+};
+
+papaya.volume.dicom.HeaderCornerstone.prototype.updateEndianessAndExplicitness = function (image) {
+    var transferSyntax = image.transferSyntax;
+    if (transferSyntax) {
+        if (transferSyntax === papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_IMPLICIT_LITTLE) {
+            console.log('TRANSFER_SYNTAX_IMPLICIT_LITTLE');
+            this.series.explicit = false;
+            this.series.littleEndian = true;
+        } else if (transferSyntax === papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_EXPLICIT_BIG) {
+            console.log('TRANSFER_SYNTAX_EXPLICIT_BIG');
+            this.series.explicit = true;
+            this.series.littleEndian = false;
+        } else if (transferSyntax === papaya.volume.dicom.HeaderCornerstone.TRANSFER_SYNTAX_COMPRESSION_DEFLATE) {
+            console.log('TRANSFER_SYNTAX_COMPRESSION_DEFLATE');
+            this.series.needsDeflate = true;
+            this.series.explicit = true;
+            this.series.littleEndian = true;
+        } else {
+            console.log(transferSyntax);
+            this.series.explicit = true;
+            this.series.littleEndian = true;
+        }
+    }
 };

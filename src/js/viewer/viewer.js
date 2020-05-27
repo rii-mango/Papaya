@@ -3257,6 +3257,9 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
 
     this.initialized = false;
     this.loadingVolume = null;
+    ////
+    this.volume = null;
+    ///
     this.volume = new papaya.volume.Volume(this.container.display, this);
     this.screenVolumes = [];
     this.surfaces = [];

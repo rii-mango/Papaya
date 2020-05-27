@@ -61,7 +61,7 @@ papaya.volume.Header.prototype.findHeaderType = function (filename, data) {
 
 papaya.volume.Header.prototype.readHeaderData = function (filename, data, progressMeter, dialogHandler,
                                                           onFinishedFileFormatRead) {
-    console.log('readHeaderData', filename, data);
+    // console.log('readHeaderData', filename, data);
     var headerType = this.findHeaderType(filename, data);
     console.log('header type', headerType);
     this.onFinishedFileFormatRead = onFinishedFileFormatRead;
