@@ -2190,15 +2190,13 @@ papaya.viewer.Viewer.prototype.getTransformParameters = function (image, viewerD
         return;
     }
     // test 
-    if (image === this.obliqueView) {        
-        if (imageScreenWidth >= imageScreenHeight) {
-            // scaleDimension = viewportWidth
-            longestDim = image.canvasMain.width;
-            longestDimSize = image.xSize;
-        } else {
-            longestDim = image.canvasMain.height;
-            longestDimSize = image.ySize;
-        }
+    if (imageScreenWidth >= imageScreenHeight) {
+        // scaleDimension = viewportWidth
+        longestDim = image.canvasMain.width;
+        longestDimSize = image.xSize;
+    } else {
+        longestDim = image.canvasMain.height;
+        longestDimSize = image.ySize;
     }
     // }
     scaleX = ((((lower ? scaleDimension - papaya.viewer.Viewer.GAP : scaleDimension) / longestDim) *
