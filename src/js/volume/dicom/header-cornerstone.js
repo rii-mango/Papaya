@@ -155,11 +155,17 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getImageDimensions = function ()
 papaya.volume.dicom.HeaderCornerstone.prototype.getVoxelDimensions = function () {
     // TODO: Support MOSAIC and MULTIFRAME
     var voxelDimensions, sliceSpacing, sliceDis, pixelSpacing;
-    var 
+ 
     pixelSpacing = (this.getPixelSpacing(this.series.images[0]) || [0, 0]);
 
     sliceSpacing = Math.max(this.getSliceGap(this.series.images[0]), this.getSliceThickness(this.series.images[0]));
-    console.log('sliceSpacing: ', sliceSpacing);
+    // console.log('sliceSpacing: ', this.getSliceGap(this.series.images[0]), this.getSliceThickness(this.series.images[0]));
+    if (this.series.images.length > 1) sliceDis = Math.abs(this.getSliceLocation(this.series.images[0]) - this.getSliceLocation(this.series.images[1]));
+    // console.log('sliceDis', this.getSliceLocation(this.series.images[0]), this.getSliceLocation(this.series.images[1]), sliceDis);
+    if (sliceDis) {
+        sliceSpacing = sliceDis;
+    }
+
     voxelDimensions = new papaya.volume.VoxelDimensions(pixelSpacing[1], pixelSpacing[0], sliceSpacing,
         this.getTR(this.series.images[0]) / 1000.0); 
 
@@ -475,6 +481,10 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getStudyDescription = function (
 
 papaya.volume.dicom.HeaderCornerstone.prototype.getSeriesDescription = function (image) {
     return this.getTag(image.metadata['0008103E'], 0);
+}
+
+papaya.volume.dicom.HeaderCornerstone.prototype.getSliceLocation = function (image) {
+    return this.getTag(image.metadata['00201041'], 0);
 }
 
 papaya.volume.dicom.HeaderCornerstone.prototype.getTag = function (tag, index) {
