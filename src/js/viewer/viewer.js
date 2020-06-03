@@ -311,7 +311,7 @@ papaya.viewer.Viewer.prototype.loadImage = function (refs, forceUrl, forceEncode
 papaya.viewer.Viewer.prototype.loadCornerstoneImages = function (cornerstoneImages, stackMetadata) {
     if (this.screenVolumes.length === 0) {
         this.volume = new papaya.volume.Volume(this.container.display, this, this.container.params);
-        this.volume.readCornerstoneData(cornerstoneImages, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
+        this.volume.readCornerstoneData(cornerstoneImages, stackMetadata, papaya.utilities.ObjectUtils.bind(this, this.initializeViewer));
     }
 };
 

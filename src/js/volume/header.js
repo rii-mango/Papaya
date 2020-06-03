@@ -59,7 +59,7 @@ papaya.volume.Header.prototype.findHeaderType = function (filename, data) {
 
 
 
-papaya.volume.Header.prototype.readHeaderData = function (filename, data, progressMeter, dialogHandler,
+papaya.volume.Header.prototype.readHeaderData = function (filename, data, progressMeter, dialogHandler, stackMetadata,
                                                           onFinishedFileFormatRead) {
     // console.log('readHeaderData', filename, data);
     var headerType = this.findHeaderType(filename, data);
@@ -75,7 +75,7 @@ papaya.volume.Header.prototype.readHeaderData = function (filename, data, progre
     } else if (headerType === papaya.volume.Header.HEADER_TYPE_CORNERSTONE) {
         console.log('create Cornerstone header');
         this.fileFormat = new papaya.volume.dicom.HeaderCornerstone();
-        this.fileFormat.readHeaderData(data, progressMeter, dialogHandler, papaya.utilities.ObjectUtils.bind(this, this.onFinishedHeaderRead));
+        this.fileFormat.readHeaderData(data, progressMeter, dialogHandler, stackMetadata, papaya.utilities.ObjectUtils.bind(this, this.onFinishedHeaderRead));
     } else {
         this.error = new Error(papaya.volume.Header.ERROR_UNRECOGNIZED_FORMAT);
         this.onFinishedFileFormatRead();
@@ -87,11 +87,13 @@ papaya.volume.Header.prototype.readHeaderData = function (filename, data, progre
 papaya.volume.Header.prototype.onFinishedHeaderRead = function () {
     if (this.fileFormat.hasError()) {
         this.error = this.fileFormat.error;
+        // console.log("fileFormat hasError");
     } else {
         this.imageType = this.fileFormat.getImageType();
         console.log('papaya-imageType', this.imageType);
         if (!this.imageType.isValid()) {
             this.error = new Error(papaya.volume.Header.INVALID_DATATYPE);
+            // console.log("imageType hasError");
         }
 
         this.imageDimensions = this.fileFormat.getImageDimensions();
@@ -133,6 +135,7 @@ papaya.volume.Header.prototype.onFinishedHeaderRead = function () {
 
         this.imageDescription = this.fileFormat.getImageDescription();
         console.log('papaya-imageDescription', this.imageDescription);
+        // console.log('TROI OI LOI ROI', JSON.stringify(this.error));
     }
 
     this.onFinishedFileFormatRead();
@@ -159,6 +162,8 @@ papaya.volume.Header.prototype.readImageData = function (progressMeter, onFinish
 
 
 papaya.volume.Header.prototype.hasError = function () {
+    // console.log('Header.hasError', this.error);
+    // console.log('sanity check', this.error !== null);
     return (this.error !== null);
 };
 

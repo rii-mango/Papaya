@@ -81,7 +81,7 @@ papaya.volume.dicom.HeaderCornerstone.BYTE_TYPE_FLOAT = 4;
 papaya.volume.dicom.HeaderCornerstone.BYTE_TYPE_COMPLEX = 5;
 papaya.volume.dicom.HeaderCornerstone.BYTE_TYPE_RGB = 6;
 
-papaya.volume.dicom.HeaderCornerstone.prototype.initSeries = function (series, data) {
+papaya.volume.dicom.HeaderCornerstone.prototype.initSeries = function (series, data, stackMetadata) {
     series.images = data;
     series.imagesOriginalOrder = null;
     series.isMosaic = false;
@@ -99,20 +99,22 @@ papaya.volume.dicom.HeaderCornerstone.prototype.initSeries = function (series, d
     series.littleEndian = null;
     series.explicit = null;
     series.error = null;
+    series.calculatedSpacings = stackMetadata.calculatedSpacings;
+    // series.zPosAndSpacing = this.getSeriesZPosAndSpacing(series);
     this.updateEndianessAndExplicitness(series.images[0]);
 };
 
-papaya.volume.dicom.HeaderCornerstone.prototype.readHeaderData = function (data, progressMeter, dialogHandler,
+papaya.volume.dicom.HeaderCornerstone.prototype.readHeaderData = function (data, progressMeter, dialogHandler, stackMetadata,
     onFinishedHeaderRead) {
     // 22/05/2020
     // Assign callbacks, unused at the moment but preserving Papaya structure
     this.onFinishedHeaderRead = onFinishedHeaderRead;
     this.dialogHandler = dialogHandler;
-    this.readNextHeaderData(data, papaya.utilities.ObjectUtils.bind(this, this.finishedHeaderRead));
+    this.readNextHeaderData(data, stackMetadata);
 };
 
-papaya.volume.dicom.HeaderCornerstone.prototype.readNextHeaderData = function (data) {
-    this.initSeries(this.series, data);
+papaya.volume.dicom.HeaderCornerstone.prototype.readNextHeaderData = function (data, stackMetadata) {
+    this.initSeries(this.series, data, stackMetadata);
     console.log(this.series);
     this.onFinishedHeaderRead();
 }
@@ -155,16 +157,18 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getImageDimensions = function ()
 papaya.volume.dicom.HeaderCornerstone.prototype.getVoxelDimensions = function () {
     // TODO: Support MOSAIC and MULTIFRAME
     var voxelDimensions, sliceSpacing, sliceDis, pixelSpacing;
- 
     pixelSpacing = (this.getPixelSpacing(this.series.images[0]) || [0, 0]);
 
-    sliceSpacing = Math.max(this.getSliceGap(this.series.images[0]), this.getSliceThickness(this.series.images[0]));
-    // console.log('sliceSpacing: ', this.getSliceGap(this.series.images[0]), this.getSliceThickness(this.series.images[0]));
-    if (this.series.images.length > 1) sliceDis = Math.abs(this.getSliceLocation(this.series.images[0]) - this.getSliceLocation(this.series.images[1]));
-    // console.log('sliceDis', this.getSliceLocation(this.series.images[0]), this.getSliceLocation(this.series.images[1]), sliceDis);
-    if (sliceDis) {
-        sliceSpacing = sliceDis;
-    }
+    // sliceSpacing = Math.max(this.getSliceGap(this.series.images[0]), this.getSliceThickness(this.series.images[0]));
+
+    // // console.log('sliceSpacing: ', this.series.zPosAndSpacing.spacings);
+    // if (this.series.images.length > 1) sliceDis = Math.abs(this.getSliceLocation(this.series.images[0]) - this.getSliceLocation(this.series.images[1]));
+    // // console.log('sliceDis', this.getSliceLocation(this.series.images[0]), this.getSliceLocation(this.series.images[1]), sliceDis);
+    // if (sliceDis) {
+    //     sliceSpacing = sliceDis;
+    // }
+
+    sliceSpacing = this.series.calculatedSpacings.mostUnique;
 
     voxelDimensions = new papaya.volume.VoxelDimensions(pixelSpacing[1], pixelSpacing[0], sliceSpacing,
         this.getTR(this.series.images[0]) / 1000.0); 
@@ -399,9 +403,10 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getDataType = function (image) {
     // return image data type for Cornerstone image
     // Possible data type: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays
     var pixelData = image.getPixelData();
-    var dataType = pixelData.constructor.name; // Ex: Uint16Array
+    var dataType = this.getFunctionNameFromToString(pixelData.constructor.toString()); // Ex: Uint16Array
     if (dataType === 'undefined') throw Error('Header-Cornerstone: Can not get Image data type');
-
+    console.log('HeaderCornerstone getDataType dataType', typeof (dataType), dataType);
+    console.log('HeaderCornerstone getDataType pixelData', typeof (pixelData));
     if (dataType === 'Int8Array' || dataType === 'Int16Array' || dataType === 'Int32Array') 
         return papaya.volume.ImageType.DATATYPE_INTEGER_SIGNED;
     else if (dataType === 'Uint8Array' || dataType === 'Uint8ClampedArray' || dataType === 'Uint16Array' || dataType === 'Uint32Array')
@@ -439,7 +444,7 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getTR = function (image) {
     return this.getTag(image.metadata['00180080'], 0);
 };
 
-papaya.volume.dicom.HeaderCornerstone.prototype.getImageDirections = function (image) {
+papaya.volume.dicom.HeaderCornerstone.prototype.getImageOrientation = function (image) {
     return this.getTag(image.metadata['00200037'], 'all');
 };
 
@@ -508,7 +513,7 @@ papaya.volume.dicom.HeaderCornerstone.prototype.hasError = function () {
  */
 papaya.volume.dicom.HeaderCornerstone.prototype.getOrientationString = function (image) {
     var orientation = null,
-        dirCos = this.getImageDirections(image),
+        dirCos = this.getImageOrientation(image),
         ctr,
         spacing,
         rowSpacing,
@@ -731,7 +736,7 @@ papaya.volume.dicom.HeaderCornerstone.prototype.calculateSliceSense = function (
 papaya.volume.dicom.HeaderCornerstone.prototype.getAcquiredSliceDirection = function (image) {
     var dirCos, rowAxis, colAxis, label;
 
-    dirCos = this.getImageDirections(image);
+    dirCos = this.getImageOrientation(image);
 
     if (!dirCos || (dirCos.length !== 6)) {
         return papaya.volume.dicom.HeaderCornerstone.SLICE_DIRECTION_UNKNOWN;
@@ -791,7 +796,7 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getMajorAxisFromPatientRelativeD
 };
 
 papaya.volume.dicom.HeaderCornerstone.prototype.getBestTransform = function () {
-    var cosines = this.getImageDirections(this.series.images[0]),
+    var cosines = this.getImageOrientation(this.series.images[0]),
         m = null;
 
     if (cosines) {
@@ -901,3 +906,33 @@ papaya.volume.dicom.HeaderCornerstone.prototype.updateEndianessAndExplicitness =
         }
     }
 };
+
+///////////
+// Supporting functions
+papaya.volume.dicom.HeaderCornerstone.prototype.getFunctionNameFromToString = function (string) {
+    // return function name to use in getImageType
+    // use this function as a subtitute for Function.name because Chrome mobile doesnt support Function.name because Javascript (*&!@#*$&!@*#&@!4)
+    // https://stackoverflow.com/questions/3178892/get-function-name-in-javascript/3178932
+    var ret;
+    ret = string.substr('function '.length);
+    ret = ret.substr(0, ret.indexOf('('));
+    return ret;
+};
+
+papaya.volume.dicom.HeaderCornerstone.prototype.getSeriesZPosAndSpacing = function (series) {
+    var positions = [];
+    var spacing = [];
+    var round = function roundToTwo(num) {    
+        return +(Math.round(num + "e+2")  + "e-2");
+    }
+    for (var i = 0; i < series.images.length; i++) {
+        var trueZpos = papaya.utilities.ViewerUtils.getZPosAlongPlaneDirection(this.getImagePosition(series.images[i]), this.getImageOrientation(series.images[i]));
+        positions.push(trueZpos);
+        if (i > 0) {
+            var val = round(Math.abs(positions[i] - positions[i-1]));
+            spacing.push(val);
+        }
+    }
+    console.log('getSeriesZPos', positions, spacing);
+    return { positions: positions, spacings: spacing };
+}

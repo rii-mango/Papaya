@@ -307,7 +307,7 @@ papaya.volume.Volume.prototype.readNextEncodedData = function (vol, index, dataR
 /**
  * Custom read function for Cornerstone
  */
-papaya.volume.Volume.prototype.readCornerstoneData = function (cornerstoneImages, callback) {
+papaya.volume.Volume.prototype.readCornerstoneData = function (cornerstoneImages, stackMetadata, callback) {
     // var vol = null;
     if (cornerstoneImages) {
         this.fileName = 'cornerstone';
@@ -329,7 +329,7 @@ papaya.volume.Volume.prototype.readCornerstoneData = function (cornerstoneImages
     //     }
     // }
 
-    vol.header.readHeaderData(vol.fileName, cornerstoneImages, this.progressMeter, this.dialogHandler,
+    vol.header.readHeaderData(vol.fileName, cornerstoneImages, this.progressMeter, this.dialogHandler, stackMetadata,
         papaya.utilities.ObjectUtils.bind(this, this.finishedReadHeaderData));
 };
 
@@ -456,6 +456,7 @@ papaya.volume.Volume.prototype.finishedReadHeaderData = function () {
     this.rawData = null;
 
     if (this.header.hasError()) {
+        // console.log('TROI OI LOI ROI', JSON.stringify(this.header.error));
         this.error = this.header.error;
         console.error(this.error.stack);
         this.onFinishedRead(this);
