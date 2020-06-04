@@ -1406,15 +1406,15 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
         this.coronalSlice.repaint(this.currentCoord.y, force, this.worldSpace);
         this.sagittalSlice.repaint(this.currentCoord.x, force, this.worldSpace);
     } else {
-        if (force || (this.currentInteractingSlice.sliceDirection !== papaya.viewer.ScreenSlice.DIRECTION_AXIAL)) {
+        if (force || (this.currentInteractingSlice.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL)) {
             this.axialSlice.updateSlice(this.currentCoord.z, force, currentSliceDir);
         }
 
-        if (force || (this.currentInteractingSlice.sliceDirection !== papaya.viewer.ScreenSlice.DIRECTION_CORONAL)) {
+        if (force || (this.currentInteractingSlice.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL)) {
             this.coronalSlice.updateSlice(this.currentCoord.y, force, currentSliceDir);
         }
 
-        if (force || (this.currentInteractingSlice.sliceDirection !== papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL)) {
+        if (force || (this.currentInteractingSlice.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL)) {
             this.sagittalSlice.updateSlice(this.currentCoord.x, force, currentSliceDir);
         }
     }
@@ -3116,7 +3116,7 @@ papaya.viewer.Viewer.prototype.gotoCoordinate = function (coor, nosync) {
 
     this.container.coordinateChanged(this);
     this.onMainImageChanged();
-    this.drawViewer(true);
+    this.drawViewer(false);
 };
 
 

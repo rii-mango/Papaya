@@ -105,7 +105,7 @@ papaya.Container.DICOM_SUPPORT = true;
 
 papaya.Container.syncViewers = false;
 papaya.Container.syncViewersWorld = false;
-papaya.Container.allowPropagation = false;
+papaya.Container.allowPropagation = true;
 papaya.Container.papayaLastHoveredViewer = null;
 papaya.Container.ignorePatterns = [/^[.]/];
 papaya.Container.atlas = null;
