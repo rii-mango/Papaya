@@ -1464,9 +1464,9 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
     // duplicate drawCurve in drawAnnotation to keep curve on screen when dragging
     if (this.screenCurve.hasPoint()) this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.screenCurve.slice.finalTransform);
 
-    if (this.container.preferences.showRuler === "Yes") {
-        this.drawRuler();
-    }
+    // if (this.container.preferences.showRuler === "Yes") {
+    //     this.drawRuler(); //draw Ruler is now merged in drawAnnotation
+    // }
 
     // if (this.container.display) {
     //     this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
@@ -1649,15 +1649,18 @@ papaya.viewer.Viewer.prototype.drawAnnotation = function () {
         this.contextAnnotation.fillStyle = this.getOrientationCertaintyColor();
         this.contextAnnotation.fillText(text, papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE * 0.5, orientEndY - (papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE * 0.5));
     }
+    if (this.container.preferences.showRuler === "Yes") {
+        this.drawRuler();
+    }
 };
 
 papaya.viewer.Viewer.prototype.drawRuler = function () {
     var ruler1x, ruler1y, ruler2x, ruler2y, text, metrics, textWidth, textHeight, padding, xText, yText;
     var displacement = 40;
-    if (this.mainImage === this.surfaceView) {
+    if (this.mainImage === this.surfaceView || this.mainImage === this.obliqueView) {
         return;
     }
-
+    this.contextAnnotation.save()
     if (this.mainImage === this.axialSlice) {
         if (!this.axialSlice.rulerPoints[0] || !this.axialSlice.rulerPoints[1]) return;
         ruler1x = (this.axialSlice.finalTransform[0][2] + (this.axialSlice.rulerPoints[0].x) *
@@ -1668,6 +1671,8 @@ papaya.viewer.Viewer.prototype.drawRuler = function () {
             this.axialSlice.finalTransform[0][0]);
         ruler2y = (this.axialSlice.finalTransform[1][2] + (this.axialSlice.rulerPoints[1].y) *
             this.axialSlice.finalTransform[1][1]);
+        this.contextAnnotation.rect(this.axialSlice.screenOffsetX, this.axialSlice.screenOffsetY, this.axialSlice.screenWidth, this.axialSlice.screenHeight);
+        this.contextAnnotation.clip();
     } else if (this.mainImage === this.coronalSlice) {
         if (!this.coronalSlice.rulerPoints[0] || !this.coronalSlice.rulerPoints[1]) return;
         ruler1x = (this.coronalSlice.finalTransform[0][2] + (this.coronalSlice.rulerPoints[0].x) *
@@ -1678,6 +1683,8 @@ papaya.viewer.Viewer.prototype.drawRuler = function () {
             this.coronalSlice.finalTransform[0][0]);
         ruler2y = (this.coronalSlice.finalTransform[1][2] + (this.coronalSlice.rulerPoints[1].z) *
             this.coronalSlice.finalTransform[1][1]);
+        this.contextAnnotation.rect(this.coronalSlice.screenOffsetX, this.coronalSlice.screenOffsetY, this.coronalSlice.screenWidth, this.coronalSlice.screenHeight);
+        this.contextAnnotation.clip();
     } else if (this.mainImage === this.sagittalSlice) {
         if (!this.sagittalSlice.rulerPoints[0] || !this.sagittalSlice.rulerPoints[1]) return;
         ruler1x = (this.sagittalSlice.finalTransform[0][2] + (this.sagittalSlice.rulerPoints[0].y) *
@@ -1688,24 +1695,24 @@ papaya.viewer.Viewer.prototype.drawRuler = function () {
             this.sagittalSlice.finalTransform[0][0]);
         ruler2y = (this.sagittalSlice.finalTransform[1][2] + (this.sagittalSlice.rulerPoints[1].z) *
             this.sagittalSlice.finalTransform[1][1]);
+        this.contextAnnotation.rect(this.sagittalSlice.screenOffsetX, this.sagittalSlice.screenOffsetY, this.sagittalSlice.screenWidth, this.sagittalSlice.screenHeight);
+        this.contextAnnotation.clip();
     }
+    this.contextAnnotation.setTransform(1, 0, 0, 1, 0, 0);
+    this.contextAnnotation.strokeStyle = "#FF1493";
+    this.contextAnnotation.fillStyle = "#FF1493";
+    this.contextAnnotation.lineWidth = 2.0;
+    this.contextAnnotation.beginPath();
+    this.contextAnnotation.moveTo(ruler1x, ruler1y);
+    this.contextAnnotation.lineTo(ruler2x, ruler2y);
+    this.contextAnnotation.stroke();
+    this.contextAnnotation.closePath();
 
-    this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.strokeStyle = "#FF1493";
-    this.context.fillStyle = "#FF1493";
-    this.context.lineWidth = 2.0;
-    this.context.save();
-    this.context.beginPath();
-    this.context.moveTo(ruler1x, ruler1y);
-    this.context.lineTo(ruler2x, ruler2y);
-    this.context.stroke();
-    this.context.closePath();
-
-    this.context.beginPath();
-    this.context.arc(ruler1x, ruler1y, 3, 0, 2 * Math.PI, false);
-    this.context.arc(ruler2x, ruler2y, 3, 0, 2 * Math.PI, false);
-    this.context.fill();
-    this.context.closePath();
+    this.contextAnnotation.beginPath();
+    this.contextAnnotation.arc(ruler1x, ruler1y, 3, 0, 2 * Math.PI, false);
+    this.contextAnnotation.arc(ruler2x, ruler2y, 3, 0, 2 * Math.PI, false);
+    this.contextAnnotation.fill();
+    this.contextAnnotation.closePath();
 
     text = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
         this.mainImage.rulerPoints[0].x * this.mainImage.xSize,
@@ -1713,20 +1720,21 @@ papaya.viewer.Viewer.prototype.drawRuler = function () {
         this.mainImage.rulerPoints[1].x * this.mainImage.xSize,
         this.mainImage.rulerPoints[1].y * this.mainImage.ySize), false);
     text = text + " mm"; // template literals are not possible!
-    metrics = this.context.measureText(text);
+    metrics = this.contextAnnotation.measureText(text);
     textWidth = metrics.width;
     textHeight = 14;
     padding = 2;
     xText = parseInt((ruler1x + ruler2x) / 2) - (textWidth / 2) + displacement;
     yText = parseInt((ruler1y + ruler2y) / 2) + (textHeight / 2) + displacement;
 
-    this.context.fillStyle = "#FFFFFF";
-    papaya.viewer.Viewer.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight+ (padding * 2), 5, true, false);
+    this.contextAnnotation.fillStyle = "#FFFFFF";
+    papaya.viewer.Viewer.drawRoundRect(this.contextAnnotation, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight+ (padding * 2), 5, true, false);
 
-    this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
-    this.context.strokeStyle = "#FF1493";
-    this.context.fillStyle = "#FF1493";
-    this.context.fillText(text, xText, yText);
+    this.contextAnnotation.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
+    this.contextAnnotation.strokeStyle = "#FF1493";
+    this.contextAnnotation.fillStyle = "#FF1493";
+    this.contextAnnotation.fillText(text, xText, yText);
+    this.contextAnnotation.restore();
 };
 /* ORIGINAL drawCrosshairs method
 papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
@@ -2837,6 +2845,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                 this.setZoomFactor(zoomFactorCurrent, this.currentInteractingSlice);
                 // this.currentInteractingSlice.zoomFactor = this.zoomFactorPrevious - zoomFactorCurrent;
                 this.currentInteractingSlice.updateZoomTransform();
+                if (this.screenCurve.hasPoint()) this.screenCurve.buildPointsArray();
                 // this.axialSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocY, this.panAmountX,
                 //     this.panAmountY, this);
                 // this.coronalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocX, this.zoomLocZ, this.panAmountX,
@@ -3796,7 +3805,6 @@ papaya.viewer.Viewer.prototype.setZoomFactor = function (delta, slice) {
     // this.sagittalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocY, this.zoomLocZ, this.panAmountY,
     //     this.panAmountZ, this);
     // this.drawViewer(false, true);
-
     this.updateWindowTitle();
 };
 
@@ -3899,9 +3907,9 @@ papaya.viewer.Viewer.prototype.setCurrentPanLocation = function (imageCoord, sli
     //     this.panAmountZ, this);
     // this.sagittalSlice.updateZoomTransform(this.zoomFactor, this.zoomLocY, this.zoomLocZ, this.panAmountY,
     //     this.panAmountZ, this);
-    this.drawViewer(false, true);
     updatePanAmmount(slice);
     slice.updateZoomTransform();
+    if (this.screenCurve.hasPoint()) this.screenCurve.buildPointsArray();
     this.drawViewer(false, true);
     // console.log('panAmount', [this.panAmountX, this.panAmountY, this.panAmountZ]);
     // console.log('panLoc', [this.panLocX, this.panLocY, this.panLocZ]);
