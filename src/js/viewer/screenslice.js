@@ -680,6 +680,8 @@ papaya.viewer.ScreenSlice.prototype.updateZoomTransform = function (zoomFactor, 
                                                                     yPanTrans, viewer) {
     var xTrans, yTrans, maxTranslateX, maxTranslateY;
     var zoomFactor, xZoomTrans, yZoomTrans, xPanTrans, yPanTrans;
+    var prevXtrans = this.zoomTransform[0][2];
+    var prevYtrans = this.zoomTransform[1][2];
     zoomFactor = this.zoomFactor;
     /*
      I don't understand why Papaya does this when Panning * Zooming only take account for X and Y
@@ -702,29 +704,30 @@ papaya.viewer.ScreenSlice.prototype.updateZoomTransform = function (zoomFactor, 
         xPanTrans = this.panAmountY;
         yPanTrans = this.panAmountZ;
     }
-    xZoomTrans = (xZoomTrans + 0.5) * (zoomFactor - 1.0) * -1;
-    yZoomTrans = (yZoomTrans + 0.5) * (zoomFactor - 1.0) * -1;
+    // console.log('updateZoomTransform', [prevXtrans, prevYtrans]);
+    // console.log('updateZoomTransform', [this.panAmountX, this.panAmountY]);
+    xZoomTrans = (xZoomTrans) * (zoomFactor - 1.0) * -1;
+    yZoomTrans = (yZoomTrans) * (zoomFactor - 1.0) * -1;
     xPanTrans = xPanTrans * (zoomFactor - 1.0);
     yPanTrans = yPanTrans * (zoomFactor - 1.0);
 
     // limit pan translation such that it cannot pan out of bounds of image
     xTrans = xZoomTrans + xPanTrans;
     // console.log('pre xTrans', xTrans);
-    maxTranslateX = -1 * (zoomFactor - 1.0) * this.xDim;
-    if (xTrans > 0) {
-        xTrans = 0;
-    } else if (xTrans < maxTranslateX) {
-        xTrans = maxTranslateX;
-    }
+    // maxTranslateX = -1 * (zoomFactor - 1.0) * this.xDim;
+    // if (xTrans > 0) {
+    //     xTrans = 0;
+    // } else if (xTrans < maxTranslateX) {
+    //     xTrans = maxTranslateX;
+    // }
     yTrans = yZoomTrans + yPanTrans;
     // console.log('pre yTrans', yTrans);
-    maxTranslateY = -1 * (zoomFactor - 1.0) * this.yDim;
-    if (yTrans > 0) {
-        yTrans = 0;
-    } else if (yTrans < maxTranslateY) {
-        yTrans = maxTranslateY;
-    }
-
+    // maxTranslateY = -1 * (zoomFactor - 1.0) * this.yDim;
+    // if (yTrans > 0) {
+    //     yTrans = 0;
+    // } else if (yTrans < maxTranslateY) {
+    //     yTrans = maxTranslateY;
+    // }
     // update parent viewer with pan translation (may have been limited by step above)
     // if (zoomFactor > 1) {
     //     if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {

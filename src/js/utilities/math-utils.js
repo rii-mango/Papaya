@@ -72,7 +72,11 @@ papaya.utilities.MathUtils.getPowerOfTwo = function (value, pow) {
     return pow;
 };
 
-
+papaya.utilities.MathUtils.clip = function (val, max, min) {
+    if (val > max) val = max;
+    else if (val < min) val = min;
+    return val;
+};
 
 function papayaRoundFast(val) {
     /*jslint bitwise: true */
