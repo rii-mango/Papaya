@@ -40,8 +40,9 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
         this.imageData = [];
         this.imageData2 = [];
         this.manager = manager;
-        this.rulerPoints = [new papaya.core.Point(parseInt(width * 0.25), parseInt(height * 0.25)),
-            new papaya.core.Point(parseInt(width * 0.75), parseInt(height * 0.75))];
+        // this.rulerPoints = [new papaya.core.Point(parseInt(width * 0.25), parseInt(height * 0.25)),
+        //     new papaya.core.Point(parseInt(width * 0.75), parseInt(height * 0.75))];
+        this.rulerPoints = [null, null]
         this.tempPoint = new papaya.core.Point();
         this.canvasDTILines = null;
         this.contextDTILines = null;
@@ -57,6 +58,18 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
             y: null
         };
         this.imageUpdated = false;
+
+        // add custom zoom value for each slice
+        this.zoomFactor = 1;
+        this.zoomLocX = 0;
+        this.zoomLocY = 0;
+        this.zoomLocZ = 0;
+        this.panLocX = 0;
+        this.panLocY = 0;
+        this.panLocZ = 0;
+        this.panAmountX = 0;
+        this.panAmountY = 0;
+        this.panAmountZ = 0;
     };
 
 
@@ -643,48 +656,93 @@ papaya.viewer.ScreenSlice.prototype.getCenter = function (volume, isAbsolute) {
     return {x: xCenter, y: yCenter};
 }
 
+papaya.viewer.ScreenSlice.prototype.resetZoomTransform = function () {
+    this.zoomFactor = 1;
+    this.zoomLocX = 0;
+    this.zoomLocY = 0;
+    this.zoomLocZ = 0;
+    this.panLocX = 0;
+    this.panLocY = 0;
+    this.panLocZ = 0;
+    this.panAmountX = 0;
+    this.panAmountY = 0;
+    this.panAmountZ = 0;
+    this.zoomTransform[0][0] = this.zoomFactor;
+    this.zoomTransform[0][1] = 0;
+    this.zoomTransform[0][2] = 0;
+    this.zoomTransform[1][0] = 0;
+    this.zoomTransform[1][1] = this.zoomFactor;
+    this.zoomTransform[1][2] = 0;
+}
 
 
 papaya.viewer.ScreenSlice.prototype.updateZoomTransform = function (zoomFactor, xZoomTrans, yZoomTrans, xPanTrans,
                                                                     yPanTrans, viewer) {
     var xTrans, yTrans, maxTranslateX, maxTranslateY;
-
-    xZoomTrans = (xZoomTrans + 0.5) * (zoomFactor - 1) * -1;
-    yZoomTrans = (yZoomTrans + 0.5) * (zoomFactor - 1) * -1;
-    xPanTrans = xPanTrans * (zoomFactor - 1);
-    yPanTrans = yPanTrans * (zoomFactor - 1);
+    var zoomFactor, xZoomTrans, yZoomTrans, xPanTrans, yPanTrans;
+    var prevXtrans = this.zoomTransform[0][2];
+    var prevYtrans = this.zoomTransform[1][2];
+    zoomFactor = this.zoomFactor;
+    /*
+     I don't understand why Papaya does this when Panning * Zooming only take account for X and Y
+     TODO: rewrite this to only take account for (x, y) mouse coordinate delta
+     */
+    // dirty test 
+    if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+        xZoomTrans = this.zoomLocX;                                         
+        yZoomTrans = this.zoomLocY;
+        xPanTrans = this.panAmountX;
+        yPanTrans = this.panAmountY;
+    } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+        xZoomTrans = this.zoomLocX;                                         
+        yZoomTrans = this.zoomLocZ;
+        xPanTrans = this.panAmountX;
+        yPanTrans = this.panAmountZ;
+    } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+        xZoomTrans = this.zoomLocY;                                         
+        yZoomTrans = this.zoomLocZ;
+        xPanTrans = this.panAmountY;
+        yPanTrans = this.panAmountZ;
+    }
+    // console.log('updateZoomTransform', [prevXtrans, prevYtrans]);
+    // console.log('updateZoomTransform', [this.panAmountX, this.panAmountY]);
+    xZoomTrans = (xZoomTrans) * (zoomFactor - 1.0) * -1;
+    yZoomTrans = (yZoomTrans) * (zoomFactor - 1.0) * -1;
+    xPanTrans = xPanTrans * (zoomFactor - 1.0);
+    yPanTrans = yPanTrans * (zoomFactor - 1.0);
 
     // limit pan translation such that it cannot pan out of bounds of image
     xTrans = xZoomTrans + xPanTrans;
-    maxTranslateX = -1 * (zoomFactor - 1.0) * this.xDim;
-    if (xTrans > 0) {
-        xTrans = 0;
-    } else if (xTrans < maxTranslateX) {
-        xTrans = maxTranslateX;
-    }
-
+    // console.log('pre xTrans', xTrans);
+    // maxTranslateX = -1 * (zoomFactor - 1.0) * this.xDim;
+    // if (xTrans > 0) {
+    //     xTrans = 0;
+    // } else if (xTrans < maxTranslateX) {
+    //     xTrans = maxTranslateX;
+    // }
     yTrans = yZoomTrans + yPanTrans;
-    maxTranslateY = -1 * (zoomFactor - 1.0) * this.yDim;
-    if (yTrans > 0) {
-        yTrans = 0;
-    } else if (yTrans < maxTranslateY) {
-        yTrans = maxTranslateY;
-    }
-
+    // console.log('pre yTrans', yTrans);
+    // maxTranslateY = -1 * (zoomFactor - 1.0) * this.yDim;
+    // if (yTrans > 0) {
+    //     yTrans = 0;
+    // } else if (yTrans < maxTranslateY) {
+    //     yTrans = maxTranslateY;
+    // }
     // update parent viewer with pan translation (may have been limited by step above)
-    if (zoomFactor > 1) {
-        if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
-            viewer.panAmountX = (Math.round((xTrans - xZoomTrans) / (zoomFactor - 1)));
-            viewer.panAmountY = (Math.round((yTrans - yZoomTrans) / (zoomFactor - 1)));
-        } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
-            viewer.panAmountX = (Math.round((xTrans - xZoomTrans) / (zoomFactor - 1)));
-            viewer.panAmountZ = (Math.round((yTrans - yZoomTrans) / (zoomFactor - 1)));
-        } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
-            viewer.panAmountY = (Math.round((xTrans - xZoomTrans) / (zoomFactor - 1)));
-            viewer.panAmountZ = (Math.round((yTrans - yZoomTrans) / (zoomFactor - 1)));
-        }
-    }
+    // if (zoomFactor > 1) {
+    //     if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+    //         viewer.panAmountX = (Math.round((xTrans - xZoomTrans) / (zoomFactor - 1)));
+    //         viewer.panAmountY = (Math.round((yTrans - yZoomTrans) / (zoomFactor - 1)));
+    //     } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+    //         viewer.panAmountX = (Math.round((xTrans - xZoomTrans) / (zoomFactor - 1)));
+    //         viewer.panAmountZ = (Math.round((yTrans - yZoomTrans) / (zoomFactor - 1)));
+    //     } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+    //         viewer.panAmountY = (Math.round((xTrans - xZoomTrans) / (zoomFactor - 1)));
+    //         viewer.panAmountZ = (Math.round((yTrans - yZoomTrans) / (zoomFactor - 1)));
+    //     }
+    // }
 
+    // console.log('updateZoomTransform trans', [xTrans, yTrans] );
     // update transform
     this.zoomTransform[0][0] = zoomFactor;
     this.zoomTransform[0][1] = 0;
@@ -900,42 +958,68 @@ papaya.viewer.ScreenSlice.prototype.calculateObliquePixelSpacing = function (sli
     var delta = segment.delta;
     var length = segment.points.length;
     var ratio;
-    var ratioX, ratioY;
+    var sinAlpha, cosAlpha;
+    var deltaXY, xSizeComponent, ySizeComponent;
+
+    var getXYratio = function (sinAlpha, cosAlpha) {
+        var xRatio, yRatio;
+        var maxSinCos = Math.SQRT2 / 2;
+        if (sinAlpha === cosAlpha) xRatio = yRatio = 1;
+        else if (cosAlpha > sinAlpha) {
+            xRatio = 1;
+            yRatio = sinAlpha / maxSinCos;
+        } else if (cosAlpha < sinAlpha) {
+            xRatio = cosAlpha / maxSinCos;
+            yRatio = 1;
+        }
+        return { x: xRatio, y: yRatio }
+    };
     switch (sliceDirection) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
-            ratio = (delta.x > delta.y) ? delta.y / delta.x : delta.x / delta.y;
-            // ratioX = delta.x / length;
-            // ratioY = delta.y / length;
-            xSize = (delta.x > delta.y) ? (1 - ratio) * voxelDims.xSize + (ratio) * voxelDims.ySize : (1 - ratio) * voxelDims.ySize + (ratio) * voxelDims.xSize;
-            // xSize = ratioX * voxelDims.xSize + ratioY * voxelDims.ySize;
-            // xSize = voxelDims.xSize;
+            deltaXY = Math.sqrt(delta.x * delta.x + delta.y * delta.y) ;
+            cosAlpha = delta.x / deltaXY;
+            sinAlpha = delta.y / deltaXY;
+            ratio = getXYratio(sinAlpha, cosAlpha);
+            xSizeComponent = voxelDims.xSize * ratio.x;
+            ySizeComponent = voxelDims.ySize * ratio.y;
+            xSize = Math.sqrt(xSizeComponent * xSizeComponent + ySizeComponent * ySizeComponent);
             ySize = voxelDims.zSize;
             break;
         case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
-            ratio = (delta.z > delta.y) ? delta.y / delta.z : delta.z / delta.y;
-            xSize = (delta.z > delta.y) ? (1 - ratio) * voxelDims.zSize + (ratio) * voxelDims.ySize : (1 - ratio) * voxelDims.ySize + (ratio) * voxelDims.zSize;
-            // xSize = voxelDims.zSize;
+            deltaXY = Math.sqrt(delta.z * delta.z + delta.y * delta.y) ;
+            cosAlpha = delta.z / deltaXY;
+            sinAlpha = delta.y / deltaXY;
+            ratio = getXYratio(sinAlpha, cosAlpha);
+            xSizeComponent = voxelDims.zSize * ratio.x;
+            ySizeComponent = voxelDims.ySize * ratio.y;
+            xSize = Math.sqrt(xSizeComponent * xSizeComponent + ySizeComponent * ySizeComponent);
             ySize = voxelDims.xSize;
             break;
         case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
-            ratio = (delta.x > delta.z) ? delta.z / delta.x : delta.x / delta.z;
-            xSize = (delta.x > delta.z) ? (1 - ratio) * voxelDims.xSize + (ratio) * voxelDims.zSize : (1 - ratio) * voxelDims.zSize + (ratio) * voxelDims.xSize;
-            // xSize = voxelDims.zSize;
+            deltaXY = Math.sqrt(delta.x * delta.x + delta.z * delta.z) ;
+            cosAlpha = delta.x / deltaXY;
+            sinAlpha = delta.z / deltaXY;
+            ratio = getXYratio(sinAlpha, cosAlpha);
+            xSizeComponent = voxelDims.xSize * ratio.x;
+            ySizeComponent = voxelDims.zSize * ratio.y;
+            xSize = Math.sqrt(xSizeComponent * xSizeComponent + ySizeComponent * ySizeComponent);
             ySize = voxelDims.ySize;
             break;
     }
 
     var debug = function (debug) {
         window.currentSlice = this;
-        console.log('segment', delta, length);
+        console.log('segment', segment);
         console.log('voxelDims', voxelDims);
-        console.log('ratio', ratio, ratioX, ratioY);
+        console.log('ratio', ratio, cosAlpha, sinAlpha);
         console.log('spacing', xSize, ySize);
         console.log('finalTransform', this.finalTransform);
-    }
+    };
+
     // debug.call(this);
     return {xSize: xSize, ySize: ySize};
 }
+
 
 papaya.viewer.ScreenSlice.prototype.repaintTest = function (slice, force, worldSpace) {
     /*jslint bitwise: true */

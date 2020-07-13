@@ -45,12 +45,17 @@ papaya.viewer.ScreenCurve.prototype.drawCurve = function (context, canvas, final
         this.pointsNeedUpdate = false;
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
+    var otherViews = papaya.utilities.ViewerUtils.getOtherViews(this.slice, this.viewer.screenLayout);
+    var thisView = this.slice;
     // console.log('draw curve', this.points);
     // draw main slice's points
     if (this.points.length > 1) {
         // draw curve
         context.strokeStyle = this.lineColor;
         context.lineWidth = this.lineWidth;
+        context.save();
+        context.rect(thisView.screenOffsetX, thisView.screenOffsetY, thisView.screenWidth, thisView.screenHeight);
+        context.clip();
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.beginPath();
         context.moveTo(this.points[0], this.points[1]);
@@ -60,24 +65,32 @@ papaya.viewer.ScreenCurve.prototype.drawCurve = function (context, canvas, final
         for (var i = 0; i < this.points.length; i += 2) {
             this.drawPoint(context, canvas, this.points[i], this.points[i+1], this.pointRadius);
         }
+        context.restore();
     }
 
     // draw other slice's points
-    if (this.otherViewsPoints.length > 1) {
+    if (this.otherViewsPoints.length > 2) {
         // draw curve
-        this.otherViewsPoints.forEach(function (points) {
+        for (var i = 1; i < this.otherViewsPoints.length; i++) {
+            var otherView = this.otherViewsPoints[0][i-1];
+            var otherViewPoints = this.otherViewsPoints[i];
             context.strokeStyle = this.lineColorAlternate;
             context.lineWidth = this.lineWidth;
+            context.save();
+            context.rect(otherView.screenOffsetX, otherView.screenOffsetY, otherView.screenWidth, otherView.screenHeight);
+            context.clip();
             context.setTransform(1, 0, 0, 1, 0, 0);
             context.beginPath();
-            context.moveTo(points[0], points[1]);
-            context.curve(points, 0, this.segmentResolutions, this.isClosed);
+            context.moveTo(otherViewPoints[0], otherViewPoints[1]);
+            context.curve(otherViewPoints, 0, this.segmentResolutions, this.isClosed);
             context.stroke();
             //draw points
-            for (var i = 0; i < this.points.length; i += 2) {
-                this.drawPoint(context, canvas, points[i], points[i+1], this.pointRadius);
+            for (var j = 0; j < otherViewPoints.length; j += 2) {
+                this.drawPoint(context, canvas, otherViewPoints[j], otherViewPoints[j+1], this.pointRadius);
             }
-        }, this);
+            context.restore();
+
+        }
     }
 
     if (this.detectedPoint.length > 1) {
@@ -191,8 +204,10 @@ papaya.viewer.ScreenCurve.prototype.buildPointsArray = function () {
         var point = papaya.utilities.ViewerUtils.convertImageToScreenCoordinate(this.slice, point.value);
         detectedPoint.push(point[0], point[1]);
     }, this);
+    this.otherViewsPoints[0] = [];
     otherViews.forEach(function (view) {
         var array = [];
+        this.otherViewsPoints[0].push(view);
         this.pointsRef.forEach(function (point) {
             // if (count !== 0) console.log(--count, point);
             array = array.concat(papaya.utilities.ViewerUtils.convertImageToScreenCoordinate(view, point.value));

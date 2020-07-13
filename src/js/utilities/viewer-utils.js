@@ -114,3 +114,11 @@ papaya.utilities.ViewerUtils.getZPosAlongPlaneDirection = function (imagePos, im
     var newZ = dst_normal_IOP_x * xPos + dst_normal_IOP_y * yPos + dst_normal_IOP_z * zPos;
     return newZ;
 }
+
+papaya.utilities.ViewerUtils.get3DSpacing = function (volume) {
+    return {
+        x: volume.getXSize(),
+        y: volume.getYSize(),
+        z: volume.getZSize(),
+    }
+}
