@@ -216,6 +216,9 @@ papaya.volume.VoxelValue.prototype.workerGetVoxelAtMM = function (worker, worker
         xIncrement: this.orientation.xIncrement,
         yIncrement: this.orientation.yIncrement,
         zIncrement: this.orientation.zIncrement,
+        stackXDim: this.xDim,
+        stackYDim: this.yDim,
+        stackZDim: this.zDim,
         imageData: this.imageData
     }
     worker.postMessage(payload);

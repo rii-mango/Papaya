@@ -73,7 +73,7 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
 
         // init worker
         this.workerPool = [];
-        this.numOfWorkers = 4;
+        this.numOfWorkers = 1;
         this.workersFinished = 0;
         this.initWebWorkers(this.numOfWorkers);
 };
@@ -169,8 +169,9 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                 // test new multithread op
                 // console.log('CHECK shared', this.screenVolumes[0].volume.header.hasSharedArrayBuffer);
                 this.workersFinished = 0;
+                this.imageData[0] = [];
                 // console.time(('allocateWorker' + this.sliceDirection));
-                var segments = this.initWorkerSegments();
+                var segments = this.initWorkerSegments(this.xDim);
                 for (var i = 0; i < this.workerPool.length; i++) {
                     var workerProps = {
                         yDim: this.yDim,
@@ -1276,16 +1277,18 @@ papaya.viewer.ScreenSlice.prototype.handleWorkerFinished = function (message) {
         console.log('finished for slice', this.sliceDirection);
         console.log('imageData', this.imageData);
         // console.timeEnd(('allocateWorker' + this.sliceDirection));
-        // this.repaint(this.currentSlice);
+        this.repaint(this.currentSlice);
+        this.manager.drawViewer(false, true);
     }
 }
 
-papaya.viewer.ScreenSlice.prototype.initWorkerSegments = function () {
+papaya.viewer.ScreenSlice.prototype.initWorkerSegments = function (axis) {
+    // split the images according to x-axis or y-axis depending on input
     var segments = [0];
     for (var i = 0; i < this.numOfWorkers; i++) {
-        segments.push(Math.round(this.xDim / this.numOfWorkers));
+        segments.push(Math.round(axis / this.numOfWorkers));
     }
-    segments[segments.length - 1] += this.xDim % this.numOfWorkers; // cover cases where xDim is not divisible by numOfWorkers
+    segments[segments.length - 1] += axis % this.numOfWorkers; // cover cases where xDim is not divisible by numOfWorkers
     for (var i = 0; i < segments.length - 1; i++) {
         segments[i + 1] += segments[i];
     }
