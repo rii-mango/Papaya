@@ -36,10 +36,6 @@ papaya.volume.VoxelValue = papaya.volume.VoxelValue || function (imageData, imag
     this.interpFirstPass = [[0, 0], [0, 0]];
     this.interpSecondPass = [0, 0];
     this.forceABS = false;
-
-    this.testWorker = new Worker('/papayaWorker.js');
-    if (this.testWorker) console.log('Worker Created');
-    this.initWebWorker()
 };
 
 
@@ -201,17 +197,26 @@ papaya.volume.VoxelValue.prototype.checkSwap = function (val) {
     return val;
 };
 
-papaya.volume.VoxelValue.prototype.initWebWorker = function () {
-        // test worker
-
-        // this.testWorker.addEventListener('message', this.handleWorkerMessage);
-        this.testWorker.postMessage(this.imageData);
-        this.testWorker.onmessage = function (event) {
-            console.log('received in main thread', event.data);
-        }
-        // must specify a list of data to pass to webWorker
-
-        // testWorker.onmessage = function (event) {
-        //     console.log('WORKER', event.data);
-        // };
+papaya.volume.VoxelValue.prototype.workerGetVoxelAtMM = function (worker, workerProps, mat) {
+    // console.log('VoxelValue workerGetVoxelAtMM', workerProps, mat);
+    // these data are needed to compute pixel value
+    var payload = {
+        sliceProps: workerProps,
+        mat: mat,
+        swap16: this.swap16,
+        swap32: this.swap32,
+        volSize: this.volSize,
+        usesGlobalDataScale: this.usesGlobalDataScale,
+        globalDataScaleSlope: this.globalDataScaleSlope,
+        globalDataScaleIntercept: this.globalDataScaleIntercept,
+        dataScaleSlopes: this.dataScaleSlopes,
+        dataScaleIntercepts: this.dataScaleIntercepts,
+        sliceSize: this.sliceSize,
+        forceABS: this.forceABS,
+        xIncrement: this.orientation.xIncrement,
+        yIncrement: this.orientation.yIncrement,
+        zIncrement: this.orientation.zIncrement,
+        imageData: this.imageData
+    }
+    worker.postMessage(payload);
 }

@@ -17,6 +17,7 @@ papaya.volume.dicom.HeaderCornerstone = papaya.volume.dicom.HeaderCornerstone ||
     this.error = null;
     this.onFinishedHeaderRead = null;
     this.dialogHandler = null;
+    this.hasSharedArrayBuffer = true;
     // console.log('HeaderCornerstone co roi mai fen');
 };
 
@@ -828,7 +829,13 @@ papaya.volume.dicom.HeaderCornerstone.prototype.concatenateImageData = function 
     data = firstImage.getPixelData();
     length = this.validatePixelDataLength(firstImage);
     // console.log('papaya-concatenateImageData', length,data);
-    buffer = new Uint8Array(new SharedArrayBuffer(length * this.series.images.length));
+    // FIXME: check browser agent to allocate shared buffer or not
+    try {
+        buffer = new Uint8Array(new SharedArrayBuffer(length * this.series.images.length));
+    } catch (err) {
+        buffer = new Uint8Array(new ArrayBuffer(length * this.series.images.length));
+        this.hasSharedArrayBuffer = false;
+    }
     buffer.set(new Uint8Array(data.buffer, 0, length), 0);
 
     setTimeout(papaya.utilities.ObjectUtils.bind(this, function() { this.concatenateNextImageData(buffer, length, progressMeter, 1, onFinishedImageRead)}), 0);

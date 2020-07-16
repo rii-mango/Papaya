@@ -23,6 +23,7 @@ papaya.volume.Header = papaya.volume.Header || function (pad) {
     this.pad = pad;
     this.orientationCertainty = papaya.volume.Header.ORIENTATION_CERTAINTY_UNKNOWN;
     this.onFinishedFileFormatRead = null;
+    this.hasSharedArrayBuffer = null;
 };
 
 
@@ -135,6 +136,7 @@ papaya.volume.Header.prototype.onFinishedHeaderRead = function () {
 
         this.imageDescription = this.fileFormat.getImageDescription();
         console.log('papaya-imageDescription', this.imageDescription);
+        this.hasSharedArrayBuffer = this.fileFormat.hasSharedArrayBuffer;
         // console.log('TROI OI LOI ROI', JSON.stringify(this.error));
     }
 

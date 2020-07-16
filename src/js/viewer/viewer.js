@@ -3133,6 +3133,8 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     ////
     if (this.volume) this.volume.transform = {};
     this.currentInteractingSlice = null;
+    // clear slices
+
     this.screenLayout = [];
     if (this.screenVolumes.length > 0) {
         for (var i = 0; i < this.screenVolumes.length; i++) {
@@ -3145,9 +3147,14 @@ papaya.viewer.Viewer.prototype.resetViewer = function () {
     this.surfaces = [];
     this.surfaceView = null;
     this.currentScreenVolume = null;
+    if (this.axialSlice) this.axialSlice.terminateWebWorkers();
+    if (this.coronalSlice) this.coronalSlice.terminateWebWorkers();
+    if (this.sagittalSlice) this.sagittalSlice.terminateWebWorkers();
+    if (this.cmprSlice) this.cmprSlice.terminateWebWorkers();
     this.axialSlice = null;
     this.coronalSlice = null;
     this.sagittalSlice = null;
+    this.cmprSlice = null;
     this.mainImage = null;
     this.lowerImageBot2 = null;
     this.lowerImageBot = null;

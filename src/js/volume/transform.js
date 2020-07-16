@@ -807,6 +807,17 @@ papaya.volume.Transform.prototype.getVoxelAtMM = function (xLoc, yLoc, zLoc, tim
     return this.voxelValue.getVoxelAtIndexNative(xTrans, yTrans, zTrans, timepoint, useNN);
 };
 
+papaya.volume.Transform.prototype.workerGetVoxelAtMM = function (worker, workerProps) {
+    var mat;
+    mat = this.getmmMatFromSlice(workerProps.sliceDirection);
+
+    // xTrans = ((xLoc * mat[0][0]) + (yLoc * mat[0][1]) + (zLoc * mat[0][2]) + (mat[0][3]));
+    // yTrans = ((xLoc * mat[1][0]) + (yLoc * mat[1][1]) + (zLoc * mat[1][2]) + (mat[1][3]));
+    // zTrans = ((xLoc * mat[2][0]) + (yLoc * mat[2][1]) + (zLoc * mat[2][2]) + (mat[2][3]));
+
+    this.voxelValue.workerGetVoxelAtMM(worker, workerProps, mat);
+};
+
 // Modified 13/01/2020: add getVoxelAtMM method based on slice
 
 papaya.volume.Transform.prototype.getmmMatFromSlice = function (sliceLabel) {
