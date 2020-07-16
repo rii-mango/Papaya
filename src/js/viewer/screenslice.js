@@ -70,7 +70,28 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
         this.panAmountX = 0;
         this.panAmountY = 0;
         this.panAmountZ = 0;
-    };
+
+    // init worker
+
+    // this.initWebWorker();
+    // this.transferObject = {
+    //     imageData: this.imageData,
+    //     swap16: this.swap16,
+    //     swap32: this.swap32,
+    //     usesGlobalDataScale: this.usesGlobalDataScale,
+    //     globalDataScaleSlope: this.globalDataScaleSlope,
+    //     globalDataScaleIntercept: this.globalDataScaleIntercept,
+    //     sliceSize: this.sliceSize,
+    //     dataScaleSlopes: this.dataScaleSlopes,
+    //     dataScaleIntercepts: this.dataScaleIntercepts
+    // };
+    // this.value = null;
+    // this.handleWorkerMessage = function (message, val) {
+    //     console.log('handleWorkerMessage', message);
+    //     this.transferObject = message.data;
+    //     this.value = message.data.value;
+    // };
+};
 
 
 /*** Static Pseudo-constants ***/

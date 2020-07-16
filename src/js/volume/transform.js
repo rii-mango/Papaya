@@ -59,8 +59,6 @@ papaya.volume.Transform = papaya.volume.Transform || function (mat, volume) {
     };
     this.updateTransforms(mat);
     // console.log([this.mmMatAxial, this.mmMatCoronal, this.mmMatSagittal]);
-    var testWorker = new Worker('../workers/testWorker.js');
-    testWorker.postMessage('Hello world!')
 };
 
 

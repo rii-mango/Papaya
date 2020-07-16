@@ -828,7 +828,7 @@ papaya.volume.dicom.HeaderCornerstone.prototype.concatenateImageData = function 
     data = firstImage.getPixelData();
     length = this.validatePixelDataLength(firstImage);
     // console.log('papaya-concatenateImageData', length,data);
-    buffer = new Uint8Array(new ArrayBuffer(length * this.series.images.length));
+    buffer = new Uint8Array(new SharedArrayBuffer(length * this.series.images.length));
     buffer.set(new Uint8Array(data.buffer, 0, length), 0);
 
     setTimeout(papaya.utilities.ObjectUtils.bind(this, function() { this.concatenateNextImageData(buffer, length, progressMeter, 1, onFinishedImageRead)}), 0);

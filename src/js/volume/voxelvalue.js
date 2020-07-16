@@ -36,6 +36,10 @@ papaya.volume.VoxelValue = papaya.volume.VoxelValue || function (imageData, imag
     this.interpFirstPass = [[0, 0], [0, 0]];
     this.interpSecondPass = [0, 0];
     this.forceABS = false;
+
+    this.testWorker = new Worker('/papayaWorker.js');
+    if (this.testWorker) console.log('Worker Created');
+    this.initWebWorker()
 };
 
 
@@ -76,7 +80,6 @@ papaya.volume.VoxelValue.prototype.getVoxelAtOffset = function (volOffset, timep
     if ((xLoc < 0) || (xLoc >= this.xDim) || (yLoc < 0) || (yLoc >= this.yDim) || (zLoc < 0) || (zLoc >= this.zDim)) {
         return 0;
     }
-
     if (this.usesGlobalDataScale) {
         value = (this.checkSwap(this.imageData.data[offset]) * this.globalDataScaleSlope) +
             this.globalDataScaleIntercept;
@@ -197,3 +200,18 @@ papaya.volume.VoxelValue.prototype.checkSwap = function (val) {
 
     return val;
 };
+
+papaya.volume.VoxelValue.prototype.initWebWorker = function () {
+        // test worker
+
+        // this.testWorker.addEventListener('message', this.handleWorkerMessage);
+        this.testWorker.postMessage(this.imageData);
+        this.testWorker.onmessage = function (event) {
+            console.log('received in main thread', event.data);
+        }
+        // must specify a list of data to pass to webWorker
+
+        // testWorker.onmessage = function (event) {
+        //     console.log('WORKER', event.data);
+        // };
+}
