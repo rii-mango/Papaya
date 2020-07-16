@@ -123,6 +123,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
 
     if (force || (this.currentSlice !== slice)) {
         this.currentSlice = slice; // currentSlice is the Current Slice Number e.g. 32
+        console.time(('allocateWorker' + this.sliceDirection));
         origin = this.screenVolumes[0].volume.header.origin;  // base image origin
         voxelDims = this.screenVolumes[0].volume.header.voxelDimensions;
         this.imageUpdated = true; // image content is updated
@@ -1268,17 +1269,17 @@ papaya.viewer.ScreenSlice.prototype.terminateWebWorkers = function () {
 papaya.viewer.ScreenSlice.prototype.handleWorkerFinished = function (message) {
     // message is data received back from worker
     // console.log('hello from main thread:', message.data);
-    console.log('handleWorkerFinished', this.sliceDirection, message.data);
+    // console.log('handleWorkerFinished', this.sliceDirection, message.data);
     if (message.data.sliceProps.sliceDirection === this.sliceDirection) {
         this.workersFinished++;
         this.imageData[0] = this.imageData[0].concat(message.data.imageSegment);
     }
     if (this.workersFinished === this.numOfWorkers) {
         console.log('finished for slice', this.sliceDirection);
-        console.log('imageData', this.imageData);
-        // console.timeEnd(('allocateWorker' + this.sliceDirection));
+        // console.log('imageData', this.imageData);
         this.repaint(this.currentSlice);
         this.manager.drawViewer(false, true);
+        console.timeEnd(('allocateWorker' + this.sliceDirection));
     }
 }
 
