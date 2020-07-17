@@ -73,7 +73,7 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
 
         // init worker
         this.workerPool = [];
-        this.numOfWorkers = 8;
+        this.numOfWorkers = window.navigator.hardwareConcurrency;
         this.workersFinished = 0;
         this.initWebWorkers(this.numOfWorkers);
         if (this.screenVolumes[0].volume.header.hasSharedArrayBuffer)
