@@ -1439,12 +1439,12 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
     }
 
     // draw screen slices
-    this.drawScreenSlice(this.mainImage);
+    // this.drawScreenSlice(this.mainImage);
 
 
     if (this.container.orthogonal) {
-        this.drawScreenSlice(this.lowerImageTop);
-        this.drawScreenSlice(this.lowerImageBot);
+        // this.drawScreenSlice(this.lowerImageTop);
+        // this.drawScreenSlice(this.lowerImageBot);
 
         if (this.hasSurface() || this.hasOblique()) {
             this.drawScreenSlice(this.lowerImageBot2);

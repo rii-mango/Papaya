@@ -73,7 +73,7 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
 
         // init worker
         this.workerPool = [];
-        this.numOfWorkers = 1;
+        this.numOfWorkers = 4;
         this.workersFinished = 0;
         this.initWebWorkers(this.numOfWorkers);
 };
@@ -173,11 +173,13 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                 this.imageData[0] = [];
                 // console.time(('allocateWorker' + this.sliceDirection));
                 var segments = this.initWorkerSegments(this.xDim);
+                var ySegments = this.initWorkerSegments(this.yDim);
                 for (var i = 0; i < this.workerPool.length; i++) {
                     var workerProps = {
                         yDim: this.yDim,
                         xDim: this.xDim,
-                        xSegments: [segments[i], segments[i+1]],
+                        xSegments: [segments[i], segments[i+1]], // split vertically
+                        ySegments: [ySegments[i], ySegments[i+1]], // split horizontally
                         xSize: voxelDims.xSize,
                         ySize: voxelDims.ySize,
                         zSize: voxelDims.zSize,
@@ -453,6 +455,10 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
     }
 
     if (this.imageData.length === this.screenVolumes.length) {
+        if (this.imageData[0].length > 0 && this.imageData[0].length < (this.xDim * this.yDim * 4)) {
+            // FIXME quick hack to convert outsite processed image to Papaya format
+            this.imageData[0] = papaya.utilities.ArrayUtils.convertToPapayaImage(this.imageData[0]);
+        }
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
             if (this.screenVolumes[ctr].hidden) {
                 continue;
@@ -1278,7 +1284,8 @@ papaya.viewer.ScreenSlice.prototype.handleWorkerFinished = function (message) {
         console.log('finished for slice', this.sliceDirection);
         // console.log('imageData', this.imageData);
         this.repaint(this.currentSlice);
-        this.manager.drawViewer(false, true);
+        this.manager.drawScreenSlice(this);
+        this.manager.drawViewer(false, false);
         console.timeEnd(('allocateWorker' + this.sliceDirection));
     }
 }
