@@ -1377,7 +1377,7 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
 
 
 
-papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMIP, skipDrawing) {
+papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
     // console.log('drawViewer is called by ', papaya.viewer.Viewer.prototype.drawViewer.caller);
     // console.time('drawViewer');
     var radiological = (this.container.preferences.radiological === "Yes"),
@@ -1439,12 +1439,12 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate, forceMI
     }
 
     // draw screen slices
-    // this.drawScreenSlice(this.mainImage);
+    this.drawScreenSlice(this.mainImage);
 
 
     if (this.container.orthogonal) {
-        // this.drawScreenSlice(this.lowerImageTop);
-        // this.drawScreenSlice(this.lowerImageBot);
+        this.drawScreenSlice(this.lowerImageTop);
+        this.drawScreenSlice(this.lowerImageBot);
 
         if (this.hasSurface() || this.hasOblique()) {
             this.drawScreenSlice(this.lowerImageBot2);
@@ -3572,7 +3572,7 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
             this.zoomFactorPrevious = this.zoomFactor;
         }
     }
-    console.timeEnd('MiddleButtonScroll');
+    // console.timeEnd('MiddleButtonScroll');
 };
 
 

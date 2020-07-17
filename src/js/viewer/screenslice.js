@@ -73,9 +73,11 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
 
         // init worker
         this.workerPool = [];
-        this.numOfWorkers = 4;
+        this.numOfWorkers = 8;
         this.workersFinished = 0;
         this.initWebWorkers(this.numOfWorkers);
+        if (this.screenVolumes[0].volume.header.hasSharedArrayBuffer)
+            this.workerOutputImage = new Int16Array(new SharedArrayBuffer(4 * 2 * this.xDim * this.yDim));
 };
 
 
@@ -123,7 +125,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
 
     if (force || (this.currentSlice !== slice)) {
         this.currentSlice = slice; // currentSlice is the Current Slice Number e.g. 32
-        console.time(('allocateWorker' + this.sliceDirection));
+        // console.time(('allocateWorker' + this.sliceDirection));
         origin = this.screenVolumes[0].volume.header.origin;  // base image origin
         voxelDims = this.screenVolumes[0].volume.header.voxelDimensions;
         this.imageUpdated = true; // image content is updated
@@ -187,6 +189,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                         sliceDirection: this.sliceDirection,
                         timepoint: timepoint,
                         interpolation: interpolation,
+                        imageData: this.workerOutputImage
                     };
                     this.screenVolumes[ctr].volume.workerGetVoxelAtMM(this.workerPool[i], workerProps);
                 };
@@ -455,10 +458,10 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
     }
 
     if (this.imageData.length === this.screenVolumes.length) {
-        if (this.imageData[0].length > 0 && this.imageData[0].length < (this.xDim * this.yDim * 4)) {
-            // FIXME quick hack to convert outsite processed image to Papaya format
-            this.imageData[0] = papaya.utilities.ArrayUtils.convertToPapayaImage(this.imageData[0]);
-        }
+        // if (this.imageData[0].length > 0 && this.imageData[0].length < (this.xDim * this.yDim * 4)) {
+        //     // FIXME quick hack to convert outsite processed image to Papaya format
+        //     this.imageData[0] = papaya.utilities.ArrayUtils.convertToPapayaImage(this.imageData[0]);
+        // }
         for (ctr = 0; ctr < this.screenVolumes.length; ctr += 1) {
             if (this.screenVolumes[ctr].hidden) {
                 continue;
@@ -1263,7 +1266,7 @@ papaya.viewer.ScreenSlice.prototype.initWebWorkers = function (numOfWorkers) {
         }
     } else throw Error('Web Workers are not supported in this browser');
 
-    console.log('Worker created', this.sliceDirection, this.workerPool);
+    console.log('Using', this.numOfWorkers, 'per slice');
 }
 
 papaya.viewer.ScreenSlice.prototype.terminateWebWorkers = function () {
@@ -1278,15 +1281,17 @@ papaya.viewer.ScreenSlice.prototype.handleWorkerFinished = function (message) {
     // console.log('handleWorkerFinished', this.sliceDirection, message.data);
     if (message.data.sliceProps.sliceDirection === this.sliceDirection) {
         this.workersFinished++;
-        this.imageData[0] = this.imageData[0].concat(message.data.imageSegment);
+        // this.imageData[0] = this.imageData[0].concat(message.data.imageSegment);
     }
     if (this.workersFinished === this.numOfWorkers) {
-        console.log('finished for slice', this.sliceDirection);
+        // console.log('finished for slice', this.sliceDirection);
+        // console.log('message', message);
+        this.imageData[0] = message.data.sliceProps.imageData;
         // console.log('imageData', this.imageData);
         this.repaint(this.currentSlice);
         this.manager.drawScreenSlice(this);
-        this.manager.drawViewer(false, false);
-        console.timeEnd(('allocateWorker' + this.sliceDirection));
+        // this.manager.drawViewer(false, false);
+        console.timeEnd('MiddleButtonScroll');
     }
 }
 
