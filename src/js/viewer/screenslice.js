@@ -73,7 +73,8 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
 
         // init worker
         this.workerPool = [];
-        this.numOfWorkers = window.navigator.hardwareConcurrency;
+        // this.numOfWorkers = window.navigator.hardwareConcurrency;
+        this.numOfWorkers = 2;
         this.workersFinished = 0;
         this.initWebWorkers(this.numOfWorkers);
         if (this.screenVolumes[0].volume.header.hasSharedArrayBuffer)
@@ -100,7 +101,7 @@ papaya.viewer.ScreenSlice.DTI_COLORS = ['#ff0000', '#00ff00', '#0000ff'];
 
 papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
     /*jslint bitwise: true */   
-    console.log('updateSlice', this.sliceDirection);
+    // console.log('updateSlice', slice, this.sliceDirection);
     var origin, voxelDims, ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha, timepoint, rgb, dti, valueA,
         dtiLines, dtiX1, dtiY1, dtiX2, dtiY2, dtiX1T, dtiY1T, dtiX2T, dtiY2T, dtiXC, dtiYC, valueR, valueG, valueB,
         angle, s, c, dtiColors, dtiLocX, dtiLocY, dtiLocZ, dtiRGB, angle2, dtiAlphaFactor, readFirstRaster = false,
@@ -431,6 +432,10 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
 
         if (usedRaster) {
             this.contextMain.putImageData(this.imageDataDraw, 0, 0);
+        }
+        // testing
+        if (this.manager.isPerformanceTest) {
+            this.manager.onTestEnd();
         }
     } else this.imageUpdated = false;
 };
@@ -1290,8 +1295,11 @@ papaya.viewer.ScreenSlice.prototype.handleWorkerFinished = function (message) {
         // console.log('imageData', this.imageData);
         this.repaint(this.currentSlice);
         this.manager.drawScreenSlice(this);
+        if (this.manager.isPerformanceTest) {
+            this.manager.onTestEnd();
+        }
         // this.manager.drawViewer(false, false);
-        console.timeEnd('MiddleButtonScroll');
+        // console.timeEnd('MiddleButtonScroll');
     }
 }
 
