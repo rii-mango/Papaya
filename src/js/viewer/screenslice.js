@@ -74,10 +74,10 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
         // init worker
         this.workerPool = [];
         this.numOfWorkers = window.navigator.hardwareConcurrency;
-        // this.numOfWorkers = 4;
+        // this.numOfWorkers = 1;
         this.workersFinished = 0;
         this.initWebWorkers(this.numOfWorkers);
-        if (this.screenVolumes[0].volume.header.hasSharedArrayBuffer)
+        if (papaya.volume.Header.HAS_SHARED_BUFFER)
             this.workerOutputImage = new Int16Array(new SharedArrayBuffer(4 * 2 * this.xDim * this.yDim));
 };
 
@@ -99,7 +99,7 @@ papaya.viewer.ScreenSlice.DTI_COLORS = ['#ff0000', '#00ff00', '#0000ff'];
 
 /*** Prototype Methods ***/
 
-papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
+papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, returnSliceImageData) {
     /*jslint bitwise: true */   
     // console.log('updateSlice', slice, this.sliceDirection);
     var origin, voxelDims, ctr, ctrY, ctrX, value, thresholdAlpha, index, layerAlpha, timepoint, rgb, dti, valueA,
@@ -169,7 +169,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                 }
             }
 
-            if (this.workerPool.length && this.screenVolumes[ctr].volume.header.hasSharedArrayBuffer) {
+            if (this.workerPool.length && papaya.volume.Header.HAS_SHARED_BUFFER) {
                 // test new multithread op
                 // console.log('CHECK shared', this.screenVolumes[0].volume.header.hasSharedArrayBuffer);
                 this.workersFinished = 0;
@@ -190,6 +190,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                         sliceDirection: this.sliceDirection,
                         timepoint: timepoint,
                         interpolation: interpolation,
+                        returnSliceImageData: returnSliceImageData,
                         imageData: this.workerOutputImage
                     };
                     this.screenVolumes[ctr].volume.workerGetVoxelAtMM(this.workerPool[i], workerProps);
@@ -419,6 +420,10 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                         }
                     }
                 }
+                        // testing
+                if (this.manager.isPerformanceTest) {
+                    this.manager.onTestEnd();
+                }
             }
 
             if (!dtiColors) {
@@ -432,10 +437,6 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
 
         if (usedRaster) {
             this.contextMain.putImageData(this.imageDataDraw, 0, 0);
-        }
-        // testing
-        if (this.manager.isPerformanceTest) {
-            this.manager.onTestEnd();
         }
     } else this.imageUpdated = false;
 };
@@ -1289,15 +1290,19 @@ papaya.viewer.ScreenSlice.prototype.handleWorkerFinished = function (message) {
         // this.imageData[0] = this.imageData[0].concat(message.data.imageSegment);
     }
     if (this.workersFinished === this.numOfWorkers) {
-        // console.log('finished for slice', this.sliceDirection);
+        // console.log('finished for slice', message.data.sliceProps.slice);
+        // console.log('finished for direction', message.data.sliceProps.sliceDirection);
         // console.log('message', message);
         this.imageData[0] = message.data.sliceProps.imageData;
         // console.log('imageData', this.imageData);
         this.repaint(this.currentSlice);
         this.manager.drawScreenSlice(this);
+        this.manager.drawOverlay();
+        // this.manager.drawViewer(false, true);
         if (this.manager.isPerformanceTest) {
             this.manager.onTestEnd();
         }
+        this.workersFinished = 0;
         // this.manager.drawViewer(false, false);
         // console.timeEnd('MiddleButtonScroll');
     }

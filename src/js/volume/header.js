@@ -23,7 +23,6 @@ papaya.volume.Header = papaya.volume.Header || function (pad) {
     this.pad = pad;
     this.orientationCertainty = papaya.volume.Header.ORIENTATION_CERTAINTY_UNKNOWN;
     this.onFinishedFileFormatRead = null;
-    this.hasSharedArrayBuffer = null;
 };
 
 
@@ -41,7 +40,16 @@ papaya.volume.Header.INVALID_IMAGE_RANGE = "Image range is not valid!";
 papaya.volume.Header.ORIENTATION_CERTAINTY_UNKNOWN = 0;
 papaya.volume.Header.ORIENTATION_CERTAINTY_LOW = 1;
 papaya.volume.Header.ORIENTATION_CERTAINTY_HIGH = 2;
-
+papaya.volume.Header.HAS_SHARED_BUFFER = function () {
+    var ret = false;
+    try {
+        buffer = new SharedArrayBuffer(1);
+        ret = true;
+    } catch (err) {
+        ret = false;
+    }
+    return ret;
+}.call();
 
 /*** Prototype Methods ***/
 
@@ -136,7 +144,7 @@ papaya.volume.Header.prototype.onFinishedHeaderRead = function () {
 
         this.imageDescription = this.fileFormat.getImageDescription();
         console.log('papaya-imageDescription', this.imageDescription);
-        this.hasSharedArrayBuffer = this.fileFormat.hasSharedArrayBuffer;
+
         // console.log('TROI OI LOI ROI', JSON.stringify(this.error));
     }
 
@@ -185,4 +193,4 @@ papaya.volume.Header.prototype.getBestTransformOrigin = function () {
 
 papaya.volume.Header.prototype.toString = function () {
     return this.fileFormat.toString();
-}
+};

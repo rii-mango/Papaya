@@ -146,6 +146,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
 
     // mouse move handler
     this.mouseMoveHandler = false;
+    this.throttleAmount = 33; // in ms
     // use for performance testing
     this.updateSliceCount = 0;
     this.isPerformanceTest = false;
@@ -817,7 +818,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
         this.eventHandler = window.setInterval(function() {
             // console.log('eventHandler');
             viewer.mouseMoveHandler = true;
-        }, 16);
+        }, this.throttleAmount);
     }
 };
 
@@ -1480,7 +1481,20 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
     // console.timeEnd('drawViewer');
 };
 
-
+papaya.viewer.Viewer.prototype.drawOverlay = function () {
+    // since drawViewer function is not very flexible, I splitted the function into images and annotations/ruler/curves
+    // keep the drawViewer function for compability
+    // call this after using drawScreenSlice separately and dont use with the old drawViewer
+    var radiological = (this.container.preferences.radiological === "Yes"),
+    showOrientation = (this.container.preferences.showOrientation === "Yes");
+    if (showOrientation || radiological) {
+        this.drawOrientation();
+    }
+    this.drawAnnotation();
+    if (this.screenCurve.hasPoint()) this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.screenCurve.slice.finalTransform);
+    this.reactViewerConnector.PapayaViewport.setState({ onMainImageChanged: false });
+    this.reactViewerConnector.imageReplacedExternally = false;
+};
 
 papaya.viewer.Viewer.prototype.hasSurface = function () {
     return (this.container.hasSurface() && this.surfaceView && this.surfaceView.initialized);
