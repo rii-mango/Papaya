@@ -4424,7 +4424,7 @@ papaya.viewer.Viewer.prototype.updateSliceTest = function () {
     console.log('Numbers of worker:', this.axialSlice.numOfWorkers ? this.axialSlice.numOfWorkers : 0);
     console.log('Num of images:', maxDim);
     console.time('updateAllSlices');
-    this.axialSlice.updateSlice(0);
+    this.axialSlice.updateSlice(0, true);
 }
 
 papaya.viewer.Viewer.prototype.onTestEnd = function () {
@@ -4436,5 +4436,5 @@ papaya.viewer.Viewer.prototype.onTestEnd = function () {
         this.isPerformanceTest = false;
         this.updateSliceCount = 0;
         return;
-    } else this.axialSlice.updateSlice(this.updateSliceCount);
+    } else this.axialSlice.updateSlice(this.updateSliceCount, true);
 }
