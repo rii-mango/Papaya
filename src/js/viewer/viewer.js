@@ -141,7 +141,8 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
         PapayaViewport: null,
         imageReplacedExternally: false,
         mainImageChanged: false,
-        activeTool: null
+        activeTool: null,
+        returnSliceDataCallback: null
     }
 
     // mouse move handler

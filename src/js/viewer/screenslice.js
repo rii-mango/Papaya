@@ -175,31 +175,10 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
                 this.workersFinished = 0;
                 this.imageData[0] = [];
                 // console.time(('allocateWorker' + this.sliceDirection));
-                var segments = this.initWorkerSegments(this.xDim);
-                var ySegments = this.initWorkerSegments(this.yDim);
                 for (var i = 0; i < this.workerPool.length; i++) {
-                    var workerProps = {
-                        yDim: this.yDim,
-                        xDim: this.xDim,
-                        xSegments: [segments[i], segments[i+1]], // split vertically
-                        ySegments: [ySegments[i], ySegments[i+1]], // split horizontally
-                        xSize: voxelDims.xSize,
-                        ySize: voxelDims.ySize,
-                        zSize: voxelDims.zSize,
-                        slice: slice,
-                        sliceDirection: this.sliceDirection,
-                        timepoint: timepoint,
-                        interpolation: interpolation,
-                        returnSliceImageData: returnSliceImageData,
-                        imageData: this.workerOutputImage
-                    };
-                    this.screenVolumes[ctr].volume.workerGetVoxelAtMM(this.workerPool[i], workerProps);
+                    // var sliceProps = this.getWorkerSliceProps(i);
+                    this.screenVolumes[ctr].volume.workerGetVoxelAtMM(this.workerPool[i], this.getWorkerSliceProps(i, this.screenVolumes[ctr], slice));
                 };
-                var debug = function () {
-                    console.log('segments', segments);
-                    console.log('ctrX, ctrY', [ctrX, ctrY]);
-                }
-                // debug.call(this);
             } else {
                 // revert to old single thread op
                 for (ctrY = 0; ctrY < this.yDim; ctrY += 1) {
@@ -1293,18 +1272,24 @@ papaya.viewer.ScreenSlice.prototype.handleWorkerFinished = function (message) {
         // console.log('finished for slice', message.data.sliceProps.slice);
         // console.log('finished for direction', message.data.sliceProps.sliceDirection);
         // console.log('message', message);
-        this.imageData[0] = message.data.sliceProps.imageData;
-        // console.log('imageData', this.imageData);
-        this.repaint(this.currentSlice);
-        this.manager.drawScreenSlice(this);
-        this.manager.drawOverlay();
-        // this.manager.drawViewer(false, true);
-        if (this.manager.isPerformanceTest) {
-            this.manager.onTestEnd();
-        }
+        // this.imageData[0] = papaya.utilities.ArrayUtils.convertToPapayaImage(message.data.sliceProps.imageData);
+        if (!message.data.sliceProps.returnSliceData) this.updateImageOnViewer(message.data.sliceProps.imageData);
+        else this.manager.reactViewerConnector.returnSliceDataCallback(message.data.sliceProps.imageData);
         this.workersFinished = 0;
         // this.manager.drawViewer(false, false);
         // console.timeEnd('MiddleButtonScroll');
+    }
+}
+
+papaya.viewer.ScreenSlice.prototype.updateImageOnViewer = function (imageData) {
+    this.imageData[0] = imageData;
+    // console.log('imageData', this.imageData);
+    this.repaint(this.currentSlice);
+    this.manager.drawScreenSlice(this);
+    this.manager.drawOverlay();
+    // this.manager.drawViewer(false, true);
+    if (this.manager.isPerformanceTest) {
+        this.manager.onTestEnd();
     }
 }
 
@@ -1320,3 +1305,29 @@ papaya.viewer.ScreenSlice.prototype.initWorkerSegments = function (axis) {
     }
     return segments;
 }
+
+papaya.viewer.ScreenSlice.prototype.getWorkerSliceProps = function (workerIndex, screenVol, slice, returnSliceData) {
+    var voxelDims = screenVol.volume.header.voxelDimensions;
+    var timepoint = screenVol.currentTimepoint;
+    var xSegments = this.initWorkerSegments(this.xDim);
+    var ySegments = this.initWorkerSegments(this.yDim);
+    var interpolation = ((ctr === 0) || screenVol.interpolation);
+    interpolation &= (this.manager.container.preferences.smoothDisplay === "Yes");
+    var sliceProps = {
+        yDim: this.yDim,
+        xDim: this.xDim,
+        xSegments: [xSegments[workerIndex], xSegments[workerIndex+1]], // split vertically
+        ySegments: [ySegments[workerIndex], ySegments[workerIndex+1]], // split horizontally
+        xSize: voxelDims.xSize,
+        ySize: voxelDims.ySize,
+        zSize: voxelDims.zSize,
+        slice: slice,
+        sliceDirection: this.sliceDirection,
+        returnSliceData: returnSliceData,
+        timepoint: timepoint,
+        interpolation: interpolation,
+        imageData: this.workerOutputImage
+    };
+    return sliceProps;
+}
+

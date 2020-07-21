@@ -817,7 +817,6 @@ papaya.volume.Transform.prototype.workerGetVoxelAtMM = function (worker, workerP
 
     this.voxelValue.workerGetVoxelAtMM(worker, workerProps, mat);
 };
-
 // Modified 13/01/2020: add getVoxelAtMM method based on slice
 
 papaya.volume.Transform.prototype.getmmMatFromSlice = function (sliceLabel) {

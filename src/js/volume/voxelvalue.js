@@ -203,6 +203,13 @@ papaya.volume.VoxelValue.prototype.workerGetVoxelAtMM = function (worker, worker
     var payload = {
         sliceProps: workerProps,
         mat: mat,
+        stackProps: this.getWorkerStackProps()
+    }
+    worker.postMessage(payload);
+};
+
+papaya.volume.VoxelValue.prototype.getWorkerStackProps = function () {
+    var stackProps = {
         swap16: this.swap16,
         swap32: this.swap32,
         volSize: this.volSize,
@@ -221,5 +228,5 @@ papaya.volume.VoxelValue.prototype.workerGetVoxelAtMM = function (worker, worker
         stackZDim: this.zDim,
         imageData: this.imageData
     }
-    worker.postMessage(payload);
+    return stackProps;
 }

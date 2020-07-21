@@ -577,3 +577,4 @@ papaya.volume.Volume.prototype.reset = function (centerCoord) {
 papaya.volume.Volume.prototype.workerGetVoxelAtMM = function (worker, workerProps) {
     this.transform.workerGetVoxelAtMM(worker, workerProps);
 }
+
