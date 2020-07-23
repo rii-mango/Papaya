@@ -47,6 +47,7 @@ papaya.volume.Header.HAS_SHARED_BUFFER = function () {
         ret = true;
     } catch (err) {
         ret = false;
+        console.warn('Cannot create SharedArrayBuffer, operating in single thread mode');
     }
     return ret;
 }.call();

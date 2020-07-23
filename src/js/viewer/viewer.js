@@ -2689,7 +2689,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
         if (this.reactViewerConnector.activeTool === 'Ruler' && !this.isGrabbingLocalizer) {
             this.currentInteractingSlice.rulerPoints[1] = papaya.utilities.ViewerUtils.convertScreenToImageCoordinate(this.currentInteractingSlice, [canvasMouseX, canvasMouseY]);
             this.drawViewer(false, true);
-        } else if (this.reactViewerConnector.activeTool === 'Window' && !this.isGrabbingLocalizer) { // original: else if (this.isWindowControl)
+        } else if ((this.reactViewerConnector.activeTool === 'Window' && !this.isGrabbingLocalizer) || me.which === 2) { // original: else if (this.isWindowControl)
             this.windowLevelChanged(this.previousMousePosition.x - absoluteMouseX, this.previousMousePosition.y - absoluteMouseY);
             this.previousMousePosition.x = absoluteMouseX;
             this.previousMousePosition.y = absoluteMouseY;

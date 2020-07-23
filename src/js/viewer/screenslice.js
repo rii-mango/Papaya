@@ -78,7 +78,7 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
         this.workersFinished = 0;
         this.initWebWorkers(this.numOfWorkers);
         if (papaya.volume.Header.HAS_SHARED_BUFFER)
-            this.workerOutputImage = new Int16Array(new SharedArrayBuffer(4 * 2 * this.xDim * this.yDim));
+            this.workerOutputImage = new Int32Array(new SharedArrayBuffer(4 * 4 * this.xDim * this.yDim));
 };
 
 
