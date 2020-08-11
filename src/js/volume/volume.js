@@ -571,3 +571,10 @@ papaya.volume.Volume.prototype.reset = function (centerCoord) {
     this.transform.updateRollImageMat(0, 1);
     this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
 }
+
+// modification 16/07/2020: add get voxel by worker
+
+papaya.volume.Volume.prototype.workerGetVoxelAtMM = function (worker, workerProps) {
+    this.transform.workerGetVoxelAtMM(worker, workerProps);
+}
+

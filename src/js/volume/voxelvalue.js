@@ -76,7 +76,6 @@ papaya.volume.VoxelValue.prototype.getVoxelAtOffset = function (volOffset, timep
     if ((xLoc < 0) || (xLoc >= this.xDim) || (yLoc < 0) || (yLoc >= this.yDim) || (zLoc < 0) || (zLoc >= this.zDim)) {
         return 0;
     }
-
     if (this.usesGlobalDataScale) {
         value = (this.checkSwap(this.imageData.data[offset]) * this.globalDataScaleSlope) +
             this.globalDataScaleIntercept;
@@ -197,3 +196,37 @@ papaya.volume.VoxelValue.prototype.checkSwap = function (val) {
 
     return val;
 };
+
+papaya.volume.VoxelValue.prototype.workerGetVoxelAtMM = function (worker, workerProps, mat) {
+    // console.log('VoxelValue workerGetVoxelAtMM', workerProps, mat);
+    // these data are needed to compute pixel value
+    var payload = {
+        sliceProps: workerProps,
+        mat: mat,
+        stackProps: this.getWorkerStackProps()
+    }
+    worker.postMessage(payload);
+};
+
+papaya.volume.VoxelValue.prototype.getWorkerStackProps = function () {
+    var stackProps = {
+        swap16: this.swap16,
+        swap32: this.swap32,
+        volSize: this.volSize,
+        usesGlobalDataScale: this.usesGlobalDataScale,
+        globalDataScaleSlope: this.globalDataScaleSlope,
+        globalDataScaleIntercept: this.globalDataScaleIntercept,
+        dataScaleSlopes: this.dataScaleSlopes,
+        dataScaleIntercepts: this.dataScaleIntercepts,
+        sliceSize: this.sliceSize,
+        forceABS: this.forceABS,
+        xIncrement: this.orientation.xIncrement,
+        yIncrement: this.orientation.yIncrement,
+        zIncrement: this.orientation.zIncrement,
+        stackXDim: this.xDim,
+        stackYDim: this.yDim,
+        stackZDim: this.zDim,
+        imageData: this.imageData
+    }
+    return stackProps;
+}

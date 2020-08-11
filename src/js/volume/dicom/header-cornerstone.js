@@ -828,7 +828,25 @@ papaya.volume.dicom.HeaderCornerstone.prototype.concatenateImageData = function 
     data = firstImage.getPixelData();
     length = this.validatePixelDataLength(firstImage);
     // console.log('papaya-concatenateImageData', length,data);
-    buffer = new Uint8Array(new ArrayBuffer(length * this.series.images.length));
+    // FIXME: check browser agent to allocate shared buffer or not
+    // buffer = new SharedArrayBuffer(length * this.series.images.length);
+    // if (!buffer) {
+    //     buffer = new ArrayBuffer(length * this.series.images.length);
+    //     this.hasSharedArrayBuffer = false;
+    // }
+    // buffer = new Uint8Array(buffer);
+    // try {
+    //     buffer = new Uint8Array(new SharedArrayBuffer(length * this.series.images.length));
+    //     this.hasSharedArrayBuffer = true;
+    // } catch (err) {
+    //     buffer = new Uint8Array(new ArrayBuffer(length * this.series.images.length));
+    //     this.hasSharedArrayBuffer = false;
+    // }
+    if (papaya.volume.Header.HAS_SHARED_BUFFER) {
+        buffer = new Uint8Array(new SharedArrayBuffer(length * this.series.images.length));
+    } else buffer = new Uint8Array(new ArrayBuffer(length * this.series.images.length));
+    // console.log('hasSharedArrayBuffer', this.hasSharedArrayBuffer);
+    // buffer = new Uint8Array(new ArrayBuffer(length * this.series.images.length));
     buffer.set(new Uint8Array(data.buffer, 0, length), 0);
 
     setTimeout(papaya.utilities.ObjectUtils.bind(this, function() { this.concatenateNextImageData(buffer, length, progressMeter, 1, onFinishedImageRead)}), 0);

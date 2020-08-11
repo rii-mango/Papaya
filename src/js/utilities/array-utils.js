@@ -81,3 +81,12 @@ Array.prototype.clone = function () {
 
     return arr;
 };
+
+papaya.utilities.ArrayUtils.convertToPapayaImage = function (inputImage) {
+    // rearrange image to match with Papaya Image data
+    var image = [];
+    for (var i = 0; i < inputImage.length; i++) {
+        image[i * 4] = inputImage[i];
+    }
+    return image;
+};
