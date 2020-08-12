@@ -398,3 +398,17 @@ papaya.viewer.ScreenCurve.prototype.padCoordinate = function (segments) {
     // console.log('padCoordinate', result);
     return result;
 };
+
+papaya.viewer.ScreenCurve.prototype.getAxisVector = function () {
+    var firstPoint = this.papayaCoordCurveSegments.points[0];
+    var lastPoint = this.papayaCoordCurveSegments.points[this.papayaCoordCurveSegments.points.length - 1];
+    return [lastPoint.x - firstPoint.x, lastPoint.y - firstPoint.y, lastPoint.z - firstPoint.z];
+};
+
+papaya.viewer.ScreenCurve.prototype.getAxisCenter = function () {
+    console.log('getAxisCenter', this.papayaCoordCurveSegments);
+    var firstPoint = this.papayaCoordCurveSegments.points[0];
+    var lastPoint = this.papayaCoordCurveSegments.points[this.papayaCoordCurveSegments.points.length - 1];
+    console.log('getAxisCenter', firstPoint, lastPoint);
+    return new papaya.core.Coordinate((lastPoint.x + firstPoint.x) / 2, (lastPoint.y + firstPoint.y) / 2, (lastPoint.z + firstPoint.z) / 2);
+};

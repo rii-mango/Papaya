@@ -78,6 +78,13 @@ papaya.utilities.MathUtils.clip = function (val, max, min) {
     return val;
 };
 
+// mod
+papaya.utilities.MathUtils.normalizeVector = function (vector) {
+    var vectorLength = Math.sqrt((vector[0] * vector[0]) + (vector[1] * vector[1]) + (vector[2] * vector[2]));
+    var normalized = [vector[0] / vectorLength, vector[1] / vectorLength, vector[2] / vectorLength]
+    return normalized;
+};
+
 function papayaRoundFast(val) {
     /*jslint bitwise: true */
     if (val > 0) {

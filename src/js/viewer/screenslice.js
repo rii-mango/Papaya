@@ -935,15 +935,15 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (segment, slic
             switch (sliceDirection) {
                 case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
                     value = this.screenVolumes[0].volume.getVoxelAtMM(points[j].x * voxelDims.xSize, points[j].y *
-                        voxelDims.ySize, i * voxelDims.zSize, timepoint, !interpolation, sliceDirection);
+                        voxelDims.ySize, i * voxelDims.zSize, timepoint, !interpolation, papaya.viewer.ScreenSlice.DIRECTION_OBLIQUE);
                     break;
                 case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
                     value = this.screenVolumes[0].volume.getVoxelAtMM(i * voxelDims.xSize, points[j].y *
-                        voxelDims.ySize, points[j].z * voxelDims.zSize, timepoint, !interpolation, sliceDirection);
+                        voxelDims.ySize, points[j].z * voxelDims.zSize, timepoint, !interpolation, papaya.viewer.ScreenSlice.DIRECTION_OBLIQUE);
                     break;
                 case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
                     value = this.screenVolumes[0].volume.getVoxelAtMM(points[j].x * voxelDims.xSize, i *
-                        voxelDims.ySize, points[j].z * voxelDims.zSize, timepoint, !interpolation, sliceDirection);
+                        voxelDims.ySize, points[j].z * voxelDims.zSize, timepoint, !interpolation, papaya.viewer.ScreenSlice.DIRECTION_OBLIQUE);
                     break;
             }
             index = ((i * points.length) + j) * 4;

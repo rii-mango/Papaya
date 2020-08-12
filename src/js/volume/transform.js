@@ -39,15 +39,18 @@ papaya.volume.Transform = papaya.volume.Transform || function (mat, volume) {
     this.rotMatAxial = papaya.volume.Transform.IDENTITY.clone();
     this.rotMatSagittal = papaya.volume.Transform.IDENTITY.clone();
     this.rotMatCoronal = papaya.volume.Transform.IDENTITY.clone();
-    
+    this.rotMatOblique = papaya.volume.Transform.IDENTITY.clone();
+
     this.mmMatAxial = papaya.volume.Transform.IDENTITY.clone();
     this.mmMatSagittal = papaya.volume.Transform.IDENTITY.clone();
     this.mmMatCoronal = papaya.volume.Transform.IDENTITY.clone();
+    this.mmMatOblique = papaya.volume.Transform.IDENTITY.clone();
 
     this.indexMatAxial = papaya.volume.Transform.IDENTITY.clone();
     this.indexMatSagittal = papaya.volume.Transform.IDENTITY.clone();
     this.indexMatCoronal = papaya.volume.Transform.IDENTITY.clone();
-    
+    this.indexMatOblique = papaya.volume.Transform.IDENTITY.clone();
+
     this.localizerAngleAxial = 0;
     this.localizerAngleSagittal = 0;
     this.localizerAngleCoronal = 0;
@@ -766,7 +769,30 @@ papaya.volume.Transform.prototype.updateRollTransforms = function (imageMats) {
     this.updateMmTransform();
 };
 
+papaya.volume.Transform.prototype.rotateObliqueSlice = function (angle, axis) {
+    // FIX ME: temporary test function
+    // this.updateMat(imageMats[0]);
+    var directions = {
+        x: [],
+        y: [],
+        z: []
+    };
+    // var rotateDirection = axis;
+    var tempRotMat = this.applyRotation(axis, angle, this.rotMatOblique);
+    this.rotMatOblique = tempRotMat;
+    // this.rotMat = tempRotMat.clone();
+    // directions.x = [this.rotMat[0][0], this.rotMat[0][1], this.rotMat[0][2]];
+    // directions.y = [this.rotMat[1][0], this.rotMat[1][1], this.rotMat[1][2]];
+    // directions.z = [this.rotMat[2][0], this.rotMat[2][1], this.rotMat[2][2]];
 
+    var imageMat = this.getSliceImageMat(tempRotMat);
+
+    this.updateSizeMat();
+    this.updateOrientMat();
+    this.updateOriginMat();
+    this.indexMatOblique = papaya.utilities.MatrixUtils.multiplyMatrices(this.orientMat, imageMat);
+    this.mmMatOblique = papaya.utilities.MatrixUtils.multiplyMatrices(this.indexMatOblique, this.sizeMatInverse);
+};
 
 papaya.volume.Transform.prototype.getVoxelAtIndexNative = function (ctrX, ctrY, ctrZ, timepoint, useNN) {
     return this.voxelValue.getVoxelAtIndexNative(ctrX, ctrY, ctrZ, timepoint, useNN);
@@ -830,6 +856,9 @@ papaya.volume.Transform.prototype.getmmMatFromSlice = function (sliceLabel) {
         case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
             if (!this.mmMatCoronal) this.mmMatCoronal = this.getSliceImageMat(this.rotMatCoronal);
             return this.mmMatCoronal;
+        case papaya.viewer.ScreenSlice.DIRECTION_OBLIQUE:
+            if (!this.mmMatOblique) this.mmMatOblique = this.getSliceImageMat(this.rotMatOblique);
+            return this.mmMatOblique;
         default:
             return this.mmMat;
     }
@@ -887,4 +916,24 @@ papaya.volume.Transform.prototype.reset = function () {
     this.localizerAngleAxial = 0;
     this.localizerAngleSagittal = 0;
     this.localizerAngleCoronal = 0;
+}
+
+papaya.volume.Transform.prototype.setObliqueMat = function (sliceDirection) {
+    // var transform = this.screenVolumes[0].volume.transform;
+    switch (sliceDirection) {
+        case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
+            this.rotMatOblique = this.rotMatAxial;
+            this.mmMatOblique = this.mmMatAxial;
+            break;
+        case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
+            this.rotMatOblique = this.rotMatCoronal;
+            this.mmMatOblique = this.mmMatCoronal;
+            break;
+        case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
+            this.rotMatOblique = this.rotMatSagittal;
+            this.mmMatOblique = this.mmMatSagittal;
+            break;
+        default:
+            break;
+    }
 }

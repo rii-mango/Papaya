@@ -514,44 +514,6 @@ papaya.viewer.Viewer.prototype.initializeCMPRView = function () {
     // this.surfaces.push(dummyValue);
     this.container.resizeViewerComponents(true);
     this.viewsChanged();
-
-    // if (!surface.error) {
-    //     while (currentSurface !== null) {
-    //         this.surfaces.push(currentSurface);
-    //         currentSurface = currentSurface.nextSurface;
-    //     }
-
-    //     if (this.surfaceView === null) {
-    //         this.lowerImageBot2 = this.surfaceView = new papaya.viewer.ScreenSurface(this.volume, this.surfaces, this, this.container.params);
-    //         this.container.resizeViewerComponents(true);
-    //     } else {
-    //         currentSurface = surface;
-
-    //         while (currentSurface !== null) {
-    //             this.surfaceView.initBuffers(this.surfaceView.context, currentSurface);
-    //             currentSurface = currentSurface.nextSurface;
-    //         }
-    //     }
-
-    //     if (this.container.params.mainView && (this.container.params.mainView.toLowerCase() === "surface")) {
-    //         this.mainImage = this.surfaceView;
-    //         this.lowerImageTop = this.axialSlice;
-    //         this.lowerImageBot = this.sagittalSlice;
-    //         this.lowerImageBot2 = this.coronalSlice;
-    //         this.viewsChanged();
-    //     }
-
-    //     this.container.toolbar.buildToolbar();
-    //     this.container.toolbar.updateImageButtons();
-
-    //     if (this.container.hasMoreToLoad()) {
-    //         this.container.loadNext();
-    //     } else {
-    //         this.finishedLoading();
-    //     }
-    // } else if (surface.error) {
-    //     this.container.display.drawError(surface.error);
-    // }
 };
 
 
@@ -4395,6 +4357,7 @@ papaya.viewer.Viewer.prototype.onCurveUpdated = function () {
     // } else {
     //     this.calculateScreenSliceTransforms(); // run again to get correct transform calculation
     // }
+    this.screenVolumes[0].volume.transform.setObliqueMat(this.screenCurve.slice.sliceDirection);
     this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.screenCurve.slice.finalTransform);
     this.screenCurve.buildPapayaCurveSegments();
     this.cmprSlice.updateObliqueSlice(this.screenCurve.papayaCoordCurveSegments, this.screenCurve.slice.sliceDirection);
@@ -4452,4 +4415,35 @@ papaya.viewer.Viewer.prototype.onTestEnd = function () {
         this.updateSliceCount = 0;
         return;
     } else this.axialSlice.updateSlice(this.updateSliceCount, true);
+}
+
+papaya.viewer.Viewer.prototype.testRotateOblique = function (angle) {
+    
+    var transform = this.screenVolumes[0].volume.transform;
+    var axis = papaya.utilities.MathUtils.normalizeVector(this.screenCurve.getAxisVector());
+    var centerCoord = this.screenCurve.getAxisCenter();
+    if (!this.cmprSlice.curveSegments) this.cmprSlice.curveSegments = this.screenCurve.papayaCoordCurveSegments;
+    console.log('Rotate axis', axis);
+    console.log('Center coord', centerCoord);
+    console.log('Curve segments', this.screenCurve.papayaCoordCurveSegments);
+    this.screenVolumes[0].updateCenterMat(centerCoord);
+    // copy the first 3 rows and columns of rotation mat
+    transform.rotateObliqueSlice(angle, axis);
+    var rotMat = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    for (var i = 0; i < 3; i++) {
+        for (var j = 0; j < 3; j++) {
+            rotMat[i][j] = transform.rotMatOblique[i][j];
+        }
+    }
+    console.log('Rotation mat', rotMat);
+    for (var i = 0; i < this.cmprSlice.curveSegments.points.length; i++) {
+        var pointVector = [[this.cmprSlice.curveSegments.points[i].x], [this.cmprSlice.curveSegments.points[i].y], [this.cmprSlice.curveSegments.points[i].z]];
+        var rotatedPoint = papaya.utilities.MatrixUtils.multiplyMatrices(rotMat, pointVector);
+        this.cmprSlice.curveSegments.points[i] = new papaya.core.Coordinate(rotatedPoint[0], rotatedPoint[1], rotatedPoint[2]);
+    }
+    console.log('Curve segments after', this.cmprSlice.curveSegments);
+    this.cmprSlice.updateObliqueSlice(this.cmprSlice.curveSegments, this.screenCurve.slice.sliceDirection);
+    this.calculateScreenSliceTransforms();
+    if (!this.screenCurve.initialized) this.calculateScreenSliceTransforms(); // run again to get correct transform calculation
+    if (this.screenCurve.hasPoint()) this.drawViewer(true, true);
 }

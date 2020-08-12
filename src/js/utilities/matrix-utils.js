@@ -32,16 +32,16 @@ papaya.utilities.MatrixUtils.rotateOnAxis = function (axis, angle) {
     var sinTheta = Math.sin(theta);
 //  https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
     rotationMatrix[0][0] = cosTheta + axis[0]*axis[0]*(1 - cosTheta);
-    rotationMatrix[1][0] = axis[1]*axis[0]*(1 - cosTheta) + axis[2]*sinTheta;
-    rotationMatrix[2][0] = axis[2]*axis[0]*(1 - cosTheta) - axis[1]*sinTheta;
+    rotationMatrix[1][0] = axis[1] * axis[0] * (1 - cosTheta) + axis[2] * sinTheta;
+    rotationMatrix[2][0] = axis[2] * axis[0] * (1 - cosTheta) - axis[1] * sinTheta;
 
-    rotationMatrix[0][1] = axis[0]*axis[1]*(1 - cosTheta) - axis[2]*sinTheta;
-    rotationMatrix[1][1] = cosTheta + axis[1]*axis[1]*(1 - cosTheta);
-    rotationMatrix[2][1] = axis[2]*axis[1]*(1 - cosTheta) + axis[0]*sinTheta;
+    rotationMatrix[0][1] = axis[0] * axis[1] * (1 - cosTheta) - axis[2] * sinTheta;
+    rotationMatrix[1][1] = cosTheta + axis[1] * axis[1] * (1 - cosTheta);
+    rotationMatrix[2][1] = axis[2] * axis[1] * (1 - cosTheta) + axis[0] * sinTheta;
 
-    rotationMatrix[0][2] = axis[0]*axis[2]*(1 - cosTheta) + axis[1]*sinTheta;
-    rotationMatrix[1][2] = axis[1]*axis[2]*(1 - cosTheta) - axis[0]*sinTheta;
-    rotationMatrix[2][2] = cosTheta + axis[2]*axis[2]*(1 - cosTheta);
+    rotationMatrix[0][2] = axis[0] * axis[2] * (1 - cosTheta) + axis[1] * sinTheta;
+    rotationMatrix[1][2] = axis[1] * axis[2] * (1 - cosTheta) - axis[0] * sinTheta;
+    rotationMatrix[2][2] = cosTheta + axis[2] * axis[2] * (1 - cosTheta);
 
     return rotationMatrix;
 }
