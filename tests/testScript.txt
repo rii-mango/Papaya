@@ -1,0 +1,8 @@
+// Test script
+// Rotate oblique
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+step = 2;
+for (let i = step; i <= 360; i+= step) {papayaContainers[0].viewer.testRotateOblique(step); await sleep(50);}

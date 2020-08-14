@@ -406,7 +406,7 @@ papaya.viewer.ScreenCurve.prototype.getAxisVector = function () {
 };
 
 papaya.viewer.ScreenCurve.prototype.getAxisCenter = function () {
-    console.log('getAxisCenter', this.papayaCoordCurveSegments);
+    // console.log('getAxisCenter', this.papayaCoordCurveSegments);
     var firstPoint = this.papayaCoordCurveSegments.points[0];
     var lastPoint = this.papayaCoordCurveSegments.points[this.papayaCoordCurveSegments.points.length - 1];
     console.log('getAxisCenter', firstPoint, lastPoint);

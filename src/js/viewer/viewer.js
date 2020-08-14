@@ -4421,6 +4421,7 @@ papaya.viewer.Viewer.prototype.testRotateOblique = function (angle) {
     
     var transform = this.screenVolumes[0].volume.transform;
     var axis = papaya.utilities.MathUtils.normalizeVector(this.screenCurve.getAxisVector());
+    // var axis = [1, 0 ,0];
     var centerCoord = this.screenCurve.getAxisCenter();
     if (!this.cmprSlice.curveSegments) this.cmprSlice.curveSegments = this.screenCurve.papayaCoordCurveSegments;
     console.log('Rotate axis', axis);
@@ -4429,18 +4430,24 @@ papaya.viewer.Viewer.prototype.testRotateOblique = function (angle) {
     this.screenVolumes[0].updateCenterMat(centerCoord);
     // copy the first 3 rows and columns of rotation mat
     transform.rotateObliqueSlice(angle, axis);
-    var rotMat = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    console.log('rotMatOblique', transform.rotMatOblique);
+    console.log('mmMatOblique', transform.mmMatOblique);
+
+    var rotMat3 = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    var rotMat4 = papaya.utilities.MatrixUtils.rotateOnAxis(axis, angle);
     for (var i = 0; i < 3; i++) {
         for (var j = 0; j < 3; j++) {
-            rotMat[i][j] = transform.rotMatOblique[i][j];
+            rotMat3[i][j] = rotMat4[i][j];
         }
     }
-    console.log('Rotation mat', rotMat);
+    console.log('Rotation mat', rotMat3);
     for (var i = 0; i < this.cmprSlice.curveSegments.points.length; i++) {
-        var pointVector = [[this.cmprSlice.curveSegments.points[i].x], [this.cmprSlice.curveSegments.points[i].y], [this.cmprSlice.curveSegments.points[i].z]];
-        var rotatedPoint = papaya.utilities.MatrixUtils.multiplyMatrices(rotMat, pointVector);
-        this.cmprSlice.curveSegments.points[i] = new papaya.core.Coordinate(rotatedPoint[0], rotatedPoint[1], rotatedPoint[2]);
+        var pointVector = [[this.cmprSlice.curveSegments.points[i].x - centerCoord.x], [this.cmprSlice.curveSegments.points[i].y - centerCoord.y], [this.cmprSlice.curveSegments.points[i].z - centerCoord.z]];
+        var rotatedPoint = papaya.utilities.MatrixUtils.multiplyMatrices(rotMat3, pointVector);
+        // console.log('rotatedPoint', rotatedPoint);
+        this.cmprSlice.curveSegments.points[i] = new papaya.core.Coordinate(rotatedPoint[0][0] + centerCoord.x, rotatedPoint[1][0] + centerCoord.y, rotatedPoint[2][0] + centerCoord.z);
     }
+
     console.log('Curve segments after', this.cmprSlice.curveSegments);
     this.cmprSlice.updateObliqueSlice(this.cmprSlice.curveSegments, this.screenCurve.slice.sliceDirection);
     this.calculateScreenSliceTransforms();
