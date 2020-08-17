@@ -2779,13 +2779,15 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             // this.drawViewer(false, false, false);
         } else if (this.screenCurve.detectedPointRef.length && this.reactViewerConnector.activeTool === "CMPR.Active" && this.isGrabbingLocalizer) {
             // console.log('OYOYOY dragging curve');
-            var id = this.screenCurve.detectedPointRef[0].id;
-            this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me),
-            papaya.utilities.PlatformUtils.getMousePositionY(me));
-            // var cursorPosition = this.getXYImageCoordinate(this.currentInteractingSlice);
-            this.screenCurve.updatePointPosition(id, this.cursorPosition);
-            this.onCurveUpdated();
-            this.reactViewerConnector.mainImageChanged = true;
+            if (this.currentInteractingSlice.sliceDirection === this.screenCurve.slice.sliceDirection) {
+                var id = this.screenCurve.detectedPointRef[0].id;
+                this.updateCursorPosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me),
+                papaya.utilities.PlatformUtils.getMousePositionY(me));
+                // var cursorPosition = this.getXYImageCoordinate(this.currentInteractingSlice);
+                this.screenCurve.updatePointPosition(id, this.cursorPosition);
+                this.onCurveUpdated();
+                this.reactViewerConnector.mainImageChanged = true;
+            }
         } else if (this.currentInteractingSlice.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CURVED) {
             var deltaY = this.previousMousePosition.y - absoluteMouseY;
             this.previousMousePosition.y = absoluteMouseY;

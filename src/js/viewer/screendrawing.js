@@ -138,9 +138,9 @@ papaya.viewer.ScreenCurve.prototype.removePoint = function (pointID) {
 
 papaya.viewer.ScreenCurve.prototype.updatePointDetection = function (mouseImageCoord) {
     if (!this.slice) return null;
-    var pad = 10 // relative size for each viewport
-    var toleranceX = (this.pointRadius + pad) / this.slice.screenTransform[0][0];
-    var toleranceY = (this.pointRadius + pad) / this.slice.screenTransform[1][1];
+    var pad = 2 // relative size for each viewport
+    var toleranceX = (this.pointRadius) / this.slice.screenTransform[0][0] + pad;
+    var toleranceY = (this.pointRadius) / this.slice.screenTransform[1][1] + pad;
     // console.log('updatePointDetection', toleranceX, toleranceY);
     var mouseScreenCoord = papaya.utilities.ViewerUtils.convertImageToScreenCoordinate(this.slice, mouseImageCoord);
     this.detectedPointRef = this.pointsRef.filter(function (point) {
