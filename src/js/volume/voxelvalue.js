@@ -73,9 +73,9 @@ papaya.volume.VoxelValue.prototype.getVoxelAtOffset = function (volOffset, timep
     var dataScaleIndex,
         offset = volOffset + (this.volSize * timepoint), value;
 
-    // if ((xLoc < 0) || (xLoc >= this.xDim) || (yLoc < 0) || (yLoc >= this.yDim) || (zLoc < 0) || (zLoc >= this.zDim)) {
-    //     return 0;
-    // }
+    if ((xLoc < 0) || (xLoc >= this.xDim) || (yLoc < 0) || (yLoc >= this.yDim) || (zLoc < 0) || (zLoc >= this.zDim)) {
+        return 0;
+    }
     if (this.usesGlobalDataScale) {
         value = (this.checkSwap(this.imageData.data[offset]) * this.globalDataScaleSlope) +
             this.globalDataScaleIntercept;

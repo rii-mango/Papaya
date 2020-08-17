@@ -5,4 +5,4 @@ function sleep(ms) {
 };
 
 step = 2;
-for (let i = step; i <= 360; i+= step) {papayaContainers[0].viewer.testRotateOblique(step); await sleep(50);}
+for (let i = step; i <= 360; i+= step) {papayaContainers[0].viewer.rotateObliqueSlice(step); await sleep(50);}

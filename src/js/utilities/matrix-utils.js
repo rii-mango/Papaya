@@ -45,3 +45,31 @@ papaya.utilities.MatrixUtils.rotateOnAxis = function (axis, angle) {
 
     return rotationMatrix;
 }
+
+// Mod
+papaya.utilities.MatrixUtils.trimMatrix = function (shape, matrix) {
+    // Trim a matrix based on input shape
+    // shape dimension must be smaller than input matrix
+    if (shape.length !== 2) throw Error('Input shape must be 2 dimensional');
+    else if (shape[0].length > matrix[0].length || shape[1].length > matrix[1].length) throw Error('Input shape must not exceed original matrix shape');
+    var outputMatrix = papaya.utilities.MatrixUtils.zeros(shape);
+    for (var i = 0; i < shape[0]; i++) {
+        for (var j = 0; j < shape[1]; j++) {
+            outputMatrix[i][j] = matrix[i][j];
+        }
+    }
+    return outputMatrix;
+}
+
+papaya.utilities.MatrixUtils.zeros = function (shape) {
+    // Create an zeros matrix based on input shape
+    if (shape.length !== 2) throw Error('Input shape must be 2 dimensional');
+    var out = [];
+    for (var i = 0; i < shape[0]; i++) {
+        out.push(new Array(shape[1]));
+        for (var j = 0; j < shape[1]; j++) {
+            out[i][j] = 0;
+        }
+    }
+    return out;
+}

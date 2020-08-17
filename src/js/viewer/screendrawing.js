@@ -138,9 +138,9 @@ papaya.viewer.ScreenCurve.prototype.removePoint = function (pointID) {
 
 papaya.viewer.ScreenCurve.prototype.updatePointDetection = function (mouseImageCoord) {
     if (!this.slice) return null;
-    var percent = 100 // relative size for each viewport
-    var toleranceX = this.pointRadius / this.slice.screenTransform[0][0];
-    var toleranceY = this.pointRadius / this.slice.screenTransform[1][1];
+    var pad = 10 // relative size for each viewport
+    var toleranceX = (this.pointRadius + pad) / this.slice.screenTransform[0][0];
+    var toleranceY = (this.pointRadius + pad) / this.slice.screenTransform[1][1];
     // console.log('updatePointDetection', toleranceX, toleranceY);
     var mouseScreenCoord = papaya.utilities.ViewerUtils.convertImageToScreenCoordinate(this.slice, mouseImageCoord);
     this.detectedPointRef = this.pointsRef.filter(function (point) {
@@ -409,6 +409,6 @@ papaya.viewer.ScreenCurve.prototype.getAxisCenter = function () {
     // console.log('getAxisCenter', this.papayaCoordCurveSegments);
     var firstPoint = this.papayaCoordCurveSegments.points[0];
     var lastPoint = this.papayaCoordCurveSegments.points[this.papayaCoordCurveSegments.points.length - 1];
-    console.log('getAxisCenter', firstPoint, lastPoint);
+    // console.log('getAxisCenter', firstPoint, lastPoint);
     return new papaya.core.Coordinate((lastPoint.x + firstPoint.x) / 2, (lastPoint.y + firstPoint.y) / 2, (lastPoint.z + firstPoint.z) / 2);
 };

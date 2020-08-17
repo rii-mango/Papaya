@@ -169,7 +169,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
                 }
             }
 
-            if (this.workerPool.length && papaya.volume.Header.HAS_SHARED_BUFFER) {
+            if (this.workerPool.length && papaya.volume.Header.HAS_SHARED_BUFFER && this.sliceDirection !== papaya.viewer.ScreenSlice.DIRECTION_CURVED) {
                 // test new multithread op
                 // console.log('CHECK shared', this.screenVolumes[0].volume.header.hasSharedArrayBuffer);
                 this.workersFinished = 0;

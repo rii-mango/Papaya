@@ -568,7 +568,7 @@ papaya.volume.Volume.prototype.reset = function (centerCoord) {
     centerZ = centerCoord.z * this.header.voxelDimensions.zSize;
 
     this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
-    this.transform.updateRollImageMat(0, 1);
+    this.transform.rotateOrthogonalSlices(0, 1);
     this.transform = new papaya.volume.Transform(papaya.volume.Transform.IDENTITY.clone(), this);
 }
 
