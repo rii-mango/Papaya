@@ -915,7 +915,8 @@ papaya.viewer.ScreenSlice.prototype.updateObliqueSlice = function (segment, slic
     var index, value;
     var timepoint = 0;
     var interpolation = true;
-    if (!points.length) return false;
+    if (!points) return;
+    if (!points.length) return;
 
     // test case where oblique rotation are not allowed, line of sights is exactly perpendicular to the default planes
     switch (sliceDirection) {

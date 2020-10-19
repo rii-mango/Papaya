@@ -40,6 +40,8 @@ papaya.viewer.ScreenCurve = papaya.viewer.ScreenCurve || function (viewer, slice
 // functions
 
 papaya.viewer.ScreenCurve.prototype.drawCurve = function (context, canvas, finalTransform) {
+    // console.log('drawCurve', this.viewer.reactViewerConnector);
+    if (!this.viewer.reactViewerConnector.customParams.showAnnotation) return;
     if (this.pointsNeedUpdate) {
         this.buildPointsArray();
         this.pointsNeedUpdate = false;
@@ -113,6 +115,7 @@ papaya.viewer.ScreenCurve.prototype.drawPoint = function (context, canvas, posX,
 papaya.viewer.ScreenCurve.prototype.addPoint = function (imageCoord, slice) {
     // this.points.push([mouseX, mouseY]);
     // console.log(slice, this.slice);
+    if (!this.viewer.reactViewerConnector.customParams.showAnnotation) return;
     console.log('adding Point', imageCoord);
     if (slice.sliceDirection !== this.slice.sliceDirection) return false;
     this.pointsRef.push({
@@ -231,6 +234,7 @@ papaya.viewer.ScreenCurve.prototype.imageCoordToScreenCoord = function (imageX, 
 
 papaya.viewer.ScreenCurve.prototype.buildPapayaCurveSegments = function () {
     // console.log('buildPapayaCurveSegments');
+    if (!this.curveSegments) return;
     var point, papayaCoord;
     var roundResult = true;
     var min = [Infinity, Infinity, Infinity];
