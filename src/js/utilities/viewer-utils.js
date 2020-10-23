@@ -40,8 +40,8 @@ papaya.utilities.ViewerUtils.convertImageToScreenCoordinate = function (slice, i
         default:
             return;
     }
-    screenX = slice.finalTransform[0][2] + (imageX + 0.5) * slice.finalTransform[0][0];
-    screenY = slice.finalTransform[1][2] + (imageY + 0.5) * slice.finalTransform[1][1];
+    screenX = slice.finalTransform[0][2] + (imageX + 0.5) * (slice.finalTransform[0][0] * slice.scaleFactor);
+    screenY = slice.finalTransform[1][2] + (imageY + 0.5) * (slice.finalTransform[1][1] * slice.scaleFactor);
     return [screenX, screenY];
 }
 
@@ -51,22 +51,22 @@ papaya.utilities.ViewerUtils.convertScreenToImageCoordinate = function (slice, s
     var xImage, yImage, zImage;
     switch (slice.sliceDirection) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
-            xImage = (screenCoord[0] - slice.finalTransform[0][2]) / slice.finalTransform[0][0];
-            yImage = (screenCoord[1] - slice.finalTransform[1][2]) / slice.finalTransform[1][1];
+            xImage = (screenCoord[0] - slice.finalTransform[0][2]) / (slice.finalTransform[0][0] * slice.scaleFactor);
+            yImage = (screenCoord[1] - slice.finalTransform[1][2]) / (slice.finalTransform[1][1] * slice.scaleFactor);
             zImage = slice.currentSlice;
             break;
         case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
-            yImage = (screenCoord[0] - slice.finalTransform[0][2]) / slice.finalTransform[0][0];
-            zImage = (screenCoord[1] - slice.finalTransform[1][2]) / slice.finalTransform[1][1];
+            yImage = (screenCoord[0] - slice.finalTransform[0][2]) / (slice.finalTransform[0][0] * slice.scaleFactor);
+            zImage = (screenCoord[1] - slice.finalTransform[1][2]) / (slice.finalTransform[1][1] * slice.scaleFactor);
             xImage = slice.currentSlice;
             break;
         case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
-            xImage = (screenCoord[0] - slice.finalTransform[0][2]) / slice.finalTransform[0][0];
-            zImage = (screenCoord[1] - slice.finalTransform[1][2]) / slice.finalTransform[1][1];
+            xImage = (screenCoord[0] - slice.finalTransform[0][2]) / (slice.finalTransform[0][0] * slice.scaleFactor);
+            zImage = (screenCoord[1] - slice.finalTransform[1][2]) / (slice.finalTransform[1][1] * slice.scaleFactor);
             yImage = slice.currentSlice;
             break;
     }
-    if (roundResult) return new papaya.core.Coordinate(Math.round(xImage), Math.round(yImage), Math.round(zImage));
+    if (roundResult) return new papaya.core.Coordinate(Math.floor(xImage), Math.floor(yImage), Math.floor(zImage));
     else return new papaya.core.Coordinate(xImage, yImage, zImage);
 }
 
@@ -122,3 +122,18 @@ papaya.utilities.ViewerUtils.get3DSpacing = function (volume) {
         z: volume.getZSize(),
     }
 }
+
+papaya.utilities.ViewerUtils.debounce = function (func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};

@@ -232,7 +232,7 @@ papaya.viewer.ScreenCurve.prototype.imageCoordToScreenCoord = function (imageX, 
     return [screenX, screenY];
 }
 
-papaya.viewer.ScreenCurve.prototype.buildPapayaCurveSegments = function () {
+papaya.viewer.ScreenCurve.prototype.buildPapayaCurveSegments = function (scaleFactor) {
     // console.log('buildPapayaCurveSegments');
     if (!this.curveSegments) return;
     var point, papayaCoord;
@@ -265,7 +265,7 @@ papaya.viewer.ScreenCurve.prototype.buildPapayaCurveSegments = function () {
     this.papayaCoordCurveSegments.delta.y = max[1] - min[1];
     this.papayaCoordCurveSegments.delta.z = max[2] - min[2];
     // pad points between segments
-    this.papayaCoordCurveSegments.points = this.padCoordinate(this.papayaCoordCurveSegments.points);
+    this.papayaCoordCurveSegments.points = this.padCoordinate(this.papayaCoordCurveSegments.points, scaleFactor);
     // console.log(this.papayaCoordCurveSegments);
 };
 
@@ -302,21 +302,22 @@ papaya.viewer.ScreenCurve.prototype.hasPoint = function () {
 };
 
 
-papaya.viewer.ScreenCurve.prototype.padCoordinate = function (segments) {
+papaya.viewer.ScreenCurve.prototype.padCoordinate = function (segments, scaleFactor) {
     // fill coordinates between 2 distance point
     // we need to create a continuos line of coordinates between each point
     // using Bresenham line drawing algorithm, the resulting line will always be 1 pixel thick
     var MIN_DISTANCE = 5; // minimum segment distance
     var result = [];
+    var stepping = 1 / scaleFactor;
     var pad = function (x0, y0, z0, x1, y1, z1) {
         // Bresenham line 3D
         result.push(new papaya.core.Coordinate(x0, y0, z0));
         var dx = Math.abs(x1 - x0);
         var dy = Math.abs(y1 - y0);
         var dz = Math.abs(z1 - z0);
-        var sx = x1 > x0 ? 1 : -1;
-        var sy = y1 > y0 ? 1 : -1;
-        var sz = z1 > z0 ? 1 : -1;
+        var sx = x1 > x0 ? stepping : -stepping;
+        var sy = y1 > y0 ? stepping : -stepping;
+        var sz = z1 > z0 ? stepping : -stepping;
         var e1;
         var e2;
         // Driving axis is X-axis

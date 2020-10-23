@@ -204,8 +204,24 @@ papaya.volume.dicom.HeaderCornerstone.prototype.getOrientation = function () {
     orientation = orientation.substring(0, 5) + (this.series.sliceSense ? '+' : '-');
     
     orientation = new papaya.volume.Orientation(orientation);
+    orientation.originalSliceDir = this.mapSliceDirToPapayaSliceDir(this.series.sliceDir);
     
     return orientation;
+};
+
+papaya.volume.dicom.HeaderCornerstone.prototype.mapSliceDirToPapayaSliceDir = function (headerSliceDir) {
+    switch (headerSliceDir) {
+        case papaya.volume.dicom.HeaderCornerstone.SLICE_DIRECTION_AXIAL:
+            return papaya.viewer.ScreenSlice.DIRECTION_AXIAL;
+        case papaya.volume.dicom.HeaderCornerstone.SLICE_DIRECTION_SAGITTAL:
+            return papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL;
+        case papaya.volume.dicom.HeaderCornerstone.SLICE_DIRECTION_CORONAL:
+            return papaya.viewer.ScreenSlice.DIRECTION_CORONAL;
+        default:
+            // don't include Oblique case since 3 original viewports doesn't have Oblique
+            // default to AXIAL
+            return papaya.viewer.ScreenSlice.DIRECTION_AXIAL;
+    }
 };
 
 papaya.volume.dicom.HeaderCornerstone.prototype.getOrientationCertainty = function () {

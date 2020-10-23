@@ -860,8 +860,8 @@ papaya.volume.Transform.prototype.workerGetVoxelAtMM = function (worker, workerP
 };
 // Modified 13/01/2020: add getVoxelAtMM method based on slice
 
-papaya.volume.Transform.prototype.getmmMatFromSlice = function (sliceLabel) {
-    switch (sliceLabel) {
+papaya.volume.Transform.prototype.getmmMatFromSlice = function (sliceDir) {
+    switch (sliceDir) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
             if (!this.mmMatAxial) this.mmMatAxial = this.getSliceImageMat(this.rotMatAxial);
             return this.mmMatAxial;
@@ -879,8 +879,8 @@ papaya.volume.Transform.prototype.getmmMatFromSlice = function (sliceLabel) {
     }
 }
 
-papaya.volume.Transform.prototype.getSliceDirections = function (sliceLabel) {
-    switch (sliceLabel) {
+papaya.volume.Transform.prototype.getSliceDirections = function (sliceDir) {
+    switch (sliceDir) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
             return [0, 0, 1];
         case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
@@ -892,8 +892,8 @@ papaya.volume.Transform.prototype.getSliceDirections = function (sliceLabel) {
     }
 }
 
-papaya.volume.Transform.prototype.getRotationMat = function (sliceLabel) {
-    switch (sliceLabel) {
+papaya.volume.Transform.prototype.getRotationMat = function (sliceDir) {
+    switch (sliceDir) {
         case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
             return this.rotMatAxial;
         case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
@@ -902,6 +902,19 @@ papaya.volume.Transform.prototype.getRotationMat = function (sliceLabel) {
             return this.rotMatCoronal;
         default:
             return this.rotMat;
+    }
+}
+
+papaya.volume.Transform.prototype.getLocalizerAngle = function (sliceDir) {
+    switch (sliceDir) {
+        case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
+            return this.localizerAngleAxial;
+        case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
+            return this.localizerAngleSagittal;
+        case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
+            return this.localizerAngleCoronal;
+        default:
+            return 0;
     }
 }
 
