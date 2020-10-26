@@ -410,6 +410,10 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
                 if (this.manager.isPerformanceTest) {
                     this.manager.onTestEnd();
                 }
+
+                if (usedRaster) {
+                    this.contextMain.putImageData(this.imageDataDraw, 0, 0);
+                }
             }
 
             if (!dtiColors) {
@@ -421,25 +425,23 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
             }
         }
 
-        if (usedRaster) {
-            this.contextMain.putImageData(this.imageDataDraw, 0, 0);
-        }
+
     } else this.imageUpdated = false;
 };
 
 
 papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace) {
     /*jslint bitwise: true */
-    console.log('repaint is called');
+    // console.log('repaint is called', this.sliceDirection);
     var ctr, ctrY, ctrX, value, thresholdAlpha, index = 0, layerAlpha, rgb, dti, dtiLines, dtiRGB, angle2,
         dtiXC, dtiYC, dtiX1, dtiX2, dtiY1, dtiY2, dtiX1T, dtiX2T, dtiY1T, dtiY2T, angle, s, c, dtiColors,
         valueR, valueG, valueB, dtiColorIndex = 0, readFirstRaster = false, originalVal;
 
-    slice = Math.round(slice);
+    // slice = Math.round(slice);
 
-    this.currentSlice = slice;
+    // this.currentSlice = slice;
     this.imageUpdated = false;
-    if (!this.imageData[0].length || !this.repaintReady) return;
+    if (!this.repaintReady) return;
     // this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
     //Modified
     // Rebuild ImageData array when slice is oblique since it will change the dimensions of the slice
@@ -626,9 +628,10 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
         //     // console.log('screenDim', this.screenDim);
         //     this.saveImage(this.canvasMain.toDataURL('image/png'));
         // }
-    } else {
-        this.updateSlice(slice, true);
-    }
+    } 
+    // else {
+    //     this.updateSlice(slice, true);
+    // }
 };
 
 
@@ -1381,10 +1384,10 @@ papaya.viewer.ScreenSlice.prototype.getCrosshairColor = function () {
     }
 }
 
-papaya.viewer.ScreenSlice.prototype.setScaleFactor = function (customScale) {
+papaya.viewer.ScreenSlice.prototype.setScaleFactor = function (customScale, force) {
     // console.time('setScaleFactor');
     var scale = customScale ? customScale : papaya.viewer.ScreenSlice.DEFAULT_SCALE;
-    if (scale !== this.scaleFactor && this.sliceDirection !== this.originalSliceDir) {
+    if (scale !== this.scaleFactor && (this.sliceDirection !== this.originalSliceDir || force)) {
         this.scaleFactor = scale;
         this.canvasMain.width = this.xDim * this.scaleFactor;
         this.canvasMain.height = this.yDim * this.scaleFactor;

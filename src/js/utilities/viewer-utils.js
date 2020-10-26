@@ -137,3 +137,34 @@ papaya.utilities.ViewerUtils.debounce = function (func, wait, immediate) {
 		if (callNow) func.apply(context, args);
 	};
 };
+
+papaya.utilities.ViewerUtils.convertStringToSliceDirection = function (string) {
+    if (typeof string === 'number') return string; // input is already a slice direction
+    
+    switch (string) {
+        case 'AXIAL':
+            return papaya.viewer.ScreenSlice.DIRECTION_AXIAL;
+        case 'SAGITTAL':
+            return papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL;
+        case 'CORONAL':
+            return papaya.viewer.ScreenSlice.DIRECTION_CORONAL;
+        case 'OBLIQUE':
+            return papaya.viewer.ScreenSlice.DIRECTION_OBLIQUE;
+        default:
+            return 0;
+    }
+};
+
+papaya.utilities.ViewerUtils.convertImageCoordToSliceNumber = function (slice, imageCoord) {
+
+    switch (slice.sliceDirection) {
+        case papaya.viewer.ScreenSlice.DIRECTION_AXIAL:
+            return imageCoord.z;
+        case papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL:
+            return imageCoord.x;
+        case papaya.viewer.ScreenSlice.DIRECTION_CORONAL:
+            return imageCoord.y;
+        default:
+            return;
+    }
+};
