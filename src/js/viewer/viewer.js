@@ -15,6 +15,9 @@ var PAPAYA_BUILD_NUM = PAPAYA_BUILD_NUM || "0";
 
 /*** Constructor ***/
 papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, height, params) {
+    // Mod 27/10/2020
+    // check for multithreading capabilities
+    this.canUseMultithreading = papaya.volume.Header.HAS_SHARED_BUFFER && window.Worker;
     this.container = container;
     this.canvas = document.createElement("canvas");
     this.canvas.width = width;
@@ -143,7 +146,8 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
         activeTool: null,
         returnSliceDataCallback: null,
         customParams: {
-            showAnnotation: true
+            showAnnotation: true,
+            scaleFactor: this.canUseMultithreading ? 2 : 1
         }
     }
 
@@ -154,9 +158,10 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.updateSliceCount = 0;
     this.isPerformanceTest = false;
     // watch scale change
-    this.scaleFactor = 4;
+    // this.scaleFactor = 4;
     this.movingScaleFactor = 0.5;
     this.scaleChanged = false;
+
 };
 
 
@@ -602,7 +607,7 @@ papaya.viewer.Viewer.prototype.initializeViewer = function () {
             this.lowerImageBot = this.coronalSlice;
         }
         this.updateCurrentScreenLayout();
-        this.updateScreenSliceScale(null, this.scaleFactor);
+        this.updateScreenSliceScale(null, this.canUseMultithreading ? this.reactViewerConnector.customParams.scaleFactor : 1);
 
         this.canvasAnnotation.addEventListener("mousemove", this.listenerMouseMove, false);
         this.canvasAnnotation.addEventListener("mousedown", this.listenerMouseDown, false);
@@ -1352,6 +1357,10 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, params) {
     *  @param skipSliceDirection number or string, skip sampling of that slice, take precedence over onlySliceDirection
     *  @param onlySliceDirection number or string, sample ONLY that slice
     */
+    if (this.scaleChanged) {
+        this.calculateScreenSliceTransforms();
+        this.scaleChanged = false;
+    }
     if (!params) params = {}; // compatibility
     var skipUpdate = params.skipUpdate;
     var forceUpdate = params.forceUpdate;
@@ -1360,10 +1369,9 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, params) {
     var currentSliceDir = (this.currentInteractingSlice) ? this.currentInteractingSlice.sliceDirection : -1;
     var slices = []; // list of slices to process
     this.updateCurrentScreenLayout();
-    if (this.scaleChanged) {
-        this.calculateScreenSliceTransforms();
-        this.scaleChanged = false;
-    }
+    // if (this.scaleChanged) {
+    //     this.calculateScreenSliceTransforms();
+    // }
     var radiological = (this.container.preferences.radiological === "Yes"),
         showOrientation = (this.container.preferences.showOrientation === "Yes");
     if (!this.initialized) {
@@ -1481,6 +1489,7 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, params) {
     this.reactViewerConnector.PapayaViewport.setState({ onMainImageChanged: false });
     this.reactViewerConnector.imageReplacedExternally = false;
     // console.timeEnd('drawViewer');
+    // console.log('Viewer scales', this.scale);
     var debug = function (debug) {
         console.log('drawViewer params', force, params);
         // console.log('drawViewer layout', this.screenLayout);
@@ -1520,6 +1529,7 @@ papaya.viewer.Viewer.prototype.hasOblique = function () {
 papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
     var textWidth, textWidthExample, offset, padding = 5;
     // console.log('papaya drawScreenSlice', slice.sliceDirection);
+    if (!slice.drawReady) return;
 
     if (slice === this.surfaceView) {
         this.context.fillStyle = this.surfaceView.getBackgroundColor();
@@ -1544,7 +1554,6 @@ papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
         this.context.setTransform(1, 0, 0, 1, 0, 0);
         // this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
         // console.log('papaya drawScreenSlice with', slice.screenOffsetX, slice.screenOffsetY, slice.screenWidth, slice.screenHeight)
-        if (slice.repaintReady) {
             this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenWidth, slice.screenHeight);
             this.context.save();
             this.context.beginPath();
@@ -1554,8 +1563,6 @@ papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
             this.context.setTransform(slice.finalTransform[0][0], 0, 0, slice.finalTransform[1][1], slice.finalTransform[0][2], slice.finalTransform[1][2]);
             this.context.drawImage(slice.canvasMain, 0, 0);
             this.context.restore();
-        }
-
         if (slice.canvasDTILines) {
             this.context.drawImage(slice.canvasDTILines, slice.screenOffsetX, slice.screenOffsetY);
         }
@@ -3667,6 +3674,7 @@ papaya.viewer.Viewer.prototype.scrolled = function (e) {
     scrollSign = papaya.utilities.PlatformUtils.getScrollSign(e, !isSliceScroll);
 
     if (isSliceScroll) {
+        // this.setMovingScreenSliceScale({ onlySliceDirection: this.currentInteractingSlice.sliceDirection });
         if (scrollSign < 0) {
             if (this.currentInteractingSlice.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
                 this.incrementAxial(false, Math.abs(scrollSign));
@@ -4507,13 +4515,14 @@ papaya.viewer.Viewer.prototype.getXYImageCoordinate = function (slice) {
 
 papaya.viewer.Viewer.prototype.onCurveUpdated = function (skipDraw) {
     if (!this.cmprSlice) this.initializeCMPRView();
-    console.log('onCurveUpdated', this.cmprSlice.scaleFactor);
+    // console.log('onCurveUpdated', this.cmprSlice.scaleFactor);
     this.screenVolumes[0].volume.transform.setObliqueMat(this.screenCurve.slice.sliceDirection);
     this.screenCurve.drawCurve(this.contextAnnotation, this.canvasAnnotation, this.screenCurve.slice.finalTransform);
     this.screenCurve.buildPapayaCurveSegments(this.cmprSlice.scaleFactor);
     this.cmprSlice.updateObliqueSlice(this.screenCurve.papayaCoordCurveSegments, this.screenCurve.slice.sliceDirection);
     this.calculateScreenSliceTransforms();
     if (!this.screenCurve.initialized) this.calculateScreenSliceTransforms(); // run again to get correct transform calculation
+    this.cmprSlice.drawReady = true;
     if (this.screenCurve.hasPoint() && !skipDraw) this.drawViewer(false, { skipUpdate: true, skipSliceDirection: this.currentInteractingSlice.sliceDirection });
 }
 
@@ -4622,10 +4631,11 @@ papaya.viewer.Viewer.prototype.setMovingScreenSliceScale = function (params) {
 }
 
 papaya.viewer.Viewer.prototype.setNormalScreenSliceScale = papaya.utilities.ViewerUtils.debounce(function (slices) {
-    this.updateScreenSliceScale(null, this.scaleFactor, true, true); // reset original direction scale
-    this.updateScreenSliceScale(slices, this.scaleFactor);
+    var scale = this.reactViewerConnector.customParams.scaleFactor;
+    this.updateScreenSliceScale(null, scale, true, true); // reset original direction scale
+    this.updateScreenSliceScale(slices, scale);
     this.drawViewer(true, { forceUpdate: true });
     if (this.hasOblique()) {
         this.onCurveUpdated();
     }
-}, 150);
+}, 300);

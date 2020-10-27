@@ -61,7 +61,6 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
             x: null,
             y: null
         };
-        this.imageUpdated = false;
 
         // add custom zoom value for each slice
         this.zoomFactor = 1;
@@ -77,12 +76,12 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
 
         // init worker
         this.workerPool = [];
-        this.numOfWorkers = window.navigator.hardwareConcurrency;
+        this.numOfWorkers = this.manager.canUseMultithreading ? window.navigator.hardwareConcurrency : 0;
         // this.numOfWorkers = 1;
         this.workersFinished = 0;
         this.initWebWorkers(this.numOfWorkers);
-        this.repaintReady = true;
-        if (papaya.volume.Header.HAS_SHARED_BUFFER)
+        this.drawReady = false;
+        if (this.manager.canUseMultithreading)
         this.workerOutputImage = new Int32Array(new SharedArrayBuffer(4 * 4 * this.xDim * this.yDim * this.scaleFactor * this.scaleFactor));
 };
 
@@ -131,10 +130,10 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
 
     if (force || (this.currentSlice !== slice)) {
         this.currentSlice = slice; // currentSlice is the Current Slice Number e.g. 32
+        this.drawReady = false;
         // console.time(('allocateWorker' + this.sliceDirection));
         origin = this.screenVolumes[0].volume.header.origin;  // base image origin
         voxelDims = this.screenVolumes[0].volume.header.voxelDimensions;
-        this.imageUpdated = true; // image content is updated
         // console.log('papaya updateSlice canvasMain', this.canvasMain);
         // this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
 
@@ -174,12 +173,12 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
                 }
             }
 
-            if (this.workerPool.length && papaya.volume.Header.HAS_SHARED_BUFFER && this.sliceDirection !== papaya.viewer.ScreenSlice.DIRECTION_CURVED) {
+            if (this.manager.canUseMultithreading && this.sliceDirection !== papaya.viewer.ScreenSlice.DIRECTION_CURVED) {
                 // test new multithread op
                 // console.log('CHECK shared', this.screenVolumes[0].volume.header.hasSharedArrayBuffer);
                 this.workersFinished = 0;
                 this.imageData[0] = [];
-                this.repaintReady = false;
+
                 // console.time(('allocateWorker' + this.sliceDirection));
                 for (var i = 0; i < this.workerPool.length; i++) {
                     // var sliceProps = this.getWorkerSliceProps(i);
@@ -187,9 +186,10 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
                 };
             } else {
                 // revert to old single thread op
-                this.scaleFactor = 1;
-                for (ctrY = 0; ctrY < this.yDim; ctrY += 1) {
-                    for (ctrX = 0; ctrX < this.xDim; ctrX += 1) {
+                // this.scaleFactor = 1;
+                var stepping = 1 / this.scaleFactor;
+                for (ctrY = 0; ctrY < this.yDim; ctrY += stepping) {
+                    for (ctrX = 0; ctrX < this.xDim; ctrX += stepping) {
                         value = 0;
                         thresholdAlpha = 255;
                         layerAlpha = this.screenVolumes[ctr].alpha;
@@ -203,7 +203,8 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
                                 value = this.screenVolumes[ctr].volume.getVoxelAtIndex(slice, ctrX, ctrY, timepoint, true);
                             }
     
-                            index = ((ctrY * this.xDim) + ctrX) * 4;
+                            // index = ((ctrY * this.xDim) + ctrX) * 4;
+                            index = ((papayaRoundFast(ctrY * this.scaleFactor) * papayaRoundFast(this.xDim * this.scaleFactor)) + papayaRoundFast(ctrX * this.scaleFactor)) * 4;
                             this.imageData[ctr][index] = value;
     
                             this.imageDataDraw.data[index] = (value >> 16) & 0xff;
@@ -257,8 +258,9 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
                                 }
                             }
     
-                            index = ((ctrY * this.xDim) + ctrX) * 4;
-    
+                            // index = ((ctrY * this.xDim) + ctrX) * 4;
+                            index = ((papayaRoundFast(ctrY * this.scaleFactor) * papayaRoundFast(this.xDim * this.scaleFactor)) + papayaRoundFast(ctrX * this.scaleFactor)) * 4;
+
                             if (dtiLines) {
                                 if ((valueR !== 0) || (valueG !== 0) || (valueB !== 0)) {
                                     if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
@@ -372,7 +374,8 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
                                 }
                             }
     
-                            index = ((ctrY * this.xDim) + ctrX) * 4;
+                            // index = ((ctrY * this.xDim) + ctrX) * 4;
+                            index = ((papayaRoundFast(ctrY * this.scaleFactor) * papayaRoundFast(this.xDim * this.scaleFactor)) + papayaRoundFast(ctrX * this.scaleFactor)) * 4;
                             originalVal = value;
                             this.imageData[ctr][index] = value;
     
@@ -413,6 +416,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
 
                 if (usedRaster) {
                     this.contextMain.putImageData(this.imageDataDraw, 0, 0);
+                    this.drawReady = true;
                 }
             }
 
@@ -426,7 +430,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
         }
 
 
-    } else this.imageUpdated = false;
+    }
 };
 
 
@@ -440,14 +444,22 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
     // slice = Math.round(slice);
 
     // this.currentSlice = slice;
-    this.imageUpdated = false;
-    if (!this.repaintReady) return;
-    // this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
+    if (!this.drawReady) return;
+    // if (this.imageDataDraw.data.length !== this.workerOutputImage.length) {
+    //     console.log('ImageDataDraw length', this.imageDataDraw.data.length);
+    //     console.log('WorkerOutputImage length', this.workerOutputImage.length);
+    // }
     //Modified
     // Rebuild ImageData array when slice is oblique since it will change the dimensions of the slice
     if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CURVED) this.imageDataDraw = this.contextMain.createImageData(this.xDim * this.scaleFactor, this.yDim * this.scaleFactor);
     // console.log('sliceDirection', this.sliceDirection);
-    // console.log('scaleFactor', this.scaleFactor);
+    // var expectedImageSize = this.xDim * this.scaleFactor * this.yDim * this.scaleFactor * 4;
+    // if (expectedImageSize !== this.imageDataDraw.data.length) {
+    //     console.log('scaleFactor', this.scaleFactor);
+    //     console.log('ImageDataDraw length', this.imageDataDraw.data.length);
+    //     console.log('WorkerOutputImage length', this.workerOutputImage.length);
+    //     console.log('expected imageDataDrawSize', expectedImageSize);
+    // }
     // console.log('imageDataDraw', this.imageDataDraw.data.length);
     // console.log('workerOutputImage', this.workerOutputImage.length);
     // console.log('sliceSize', this.xSize, this.ySize);
@@ -1310,7 +1322,7 @@ papaya.viewer.ScreenSlice.prototype.handleWorkerFinished = function (message) {
         // console.log('finished for direction', message.data.sliceProps.sliceDirection);
         // console.log('message', message);
         // this.imageData[0] = papaya.utilities.ArrayUtils.convertToPapayaImage(message.data.sliceProps.imageData);
-        this.repaintReady = true;
+        this.drawReady = true;
         if (!message.data.sliceProps.returnSliceData) this.updateImageOnViewer(message.data.sliceProps.imageData);
         else this.manager.reactViewerConnector.returnSliceDataCallback(message.data.sliceProps.imageData);
         this.workersFinished = 0;
@@ -1321,8 +1333,15 @@ papaya.viewer.ScreenSlice.prototype.handleWorkerFinished = function (message) {
 }
 
 papaya.viewer.ScreenSlice.prototype.updateImageOnViewer = function (imageData) {
+    var comingScaleFactor = Math.sqrt(imageData.length / (this.xDim * this.yDim * 4));
+    if (comingScaleFactor !== this.scaleFactor) {
+        // console.log('imageDataLength', imageData.length);
+        // console.log('scaleFactor squared', comingScaleFactor);
+        // console.log('this scaleFactor', this.scaleFactor);
+        console.warn('Scalefactor mismatch, skipping drawing. This behavior is normal in Multithreading mode');
+        return;
+    }
     this.imageData[0] = imageData;
-    // console.log('imageData', this.imageData);
     this.repaint(this.currentSlice);
     this.manager.drawScreenSlice(this);
     this.manager.drawOverlay();
@@ -1388,14 +1407,20 @@ papaya.viewer.ScreenSlice.prototype.setScaleFactor = function (customScale, forc
     // console.time('setScaleFactor');
     var scale = customScale ? customScale : papaya.viewer.ScreenSlice.DEFAULT_SCALE;
     if (scale !== this.scaleFactor && (this.sliceDirection !== this.originalSliceDir || force)) {
+        this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
         this.scaleFactor = scale;
         this.canvasMain.width = this.xDim * this.scaleFactor;
         this.canvasMain.height = this.yDim * this.scaleFactor;
         this.imageDataDraw = this.contextMain.createImageData(this.xDim * this.scaleFactor, this.yDim * this.scaleFactor);
         this.radiologicalTransform = [[-1, 0, this.xDim * this.scaleFactor], [0, 1, 0], [0, 0, 1]];
-        if (papaya.volume.Header.HAS_SHARED_BUFFER)
-        this.workerOutputImage = new Int32Array(new SharedArrayBuffer(4 * 4 * this.xDim * this.yDim * this.scaleFactor * this.scaleFactor));
+        if (this.manager.canUseMultithreading) {
+            this.workerOutputImage = [];
+            this.workerOutputImage = new Int32Array(new SharedArrayBuffer(4 * 4 * this.xDim * this.yDim * this.scaleFactor * this.scaleFactor));
+        }
         this.manager.scaleChanged = true;
+        // this.updateFinalTransform();
+        // this.manager.calculateScreenSliceTransforms();
+        // this.manager.scaleChanged = false;
     }
     // console.timeEnd('setScaleFactor');
 }
