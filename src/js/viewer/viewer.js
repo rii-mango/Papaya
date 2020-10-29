@@ -1554,15 +1554,16 @@ papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
         this.context.setTransform(1, 0, 0, 1, 0, 0);
         // this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
         // console.log('papaya drawScreenSlice with', slice.screenOffsetX, slice.screenOffsetY, slice.screenWidth, slice.screenHeight)
-            this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenWidth, slice.screenHeight);
-            this.context.save();
-            this.context.beginPath();
-            // this.context.rect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
-            this.context.rect(slice.screenOffsetX, slice.screenOffsetY, slice.screenWidth, slice.screenHeight);
-            this.context.clip();
-            this.context.setTransform(slice.finalTransform[0][0], 0, 0, slice.finalTransform[1][1], slice.finalTransform[0][2], slice.finalTransform[1][2]);
-            this.context.drawImage(slice.canvasMain, 0, 0);
-            this.context.restore();
+        this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenWidth, slice.screenHeight);
+        this.context.save();
+        this.context.beginPath();
+        // this.context.rect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
+        this.context.rect(slice.screenOffsetX, slice.screenOffsetY, slice.screenWidth, slice.screenHeight);
+        this.context.clip();
+        this.context.setTransform(slice.finalTransform[0][0], 0, 0, slice.finalTransform[1][1], slice.finalTransform[0][2], slice.finalTransform[1][2]);
+        // this.context.setTransform(slice.finalTransform[0][0], 0, 0, 1, slice.finalTransform[0][2], slice.finalTransform[1][2]);
+        this.context.drawImage(slice.canvasMain, 0, 0);
+        this.context.restore();
         if (slice.canvasDTILines) {
             this.context.drawImage(slice.canvasDTILines, slice.screenOffsetX, slice.screenOffsetY);
         }

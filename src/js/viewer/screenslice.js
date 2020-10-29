@@ -76,8 +76,8 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
 
         // init worker
         this.workerPool = [];
-        this.numOfWorkers = this.manager.canUseMultithreading ? window.navigator.hardwareConcurrency : 0;
-        // this.numOfWorkers = 1;
+        // this.numOfWorkers = this.manager.canUseMultithreading ? window.navigator.hardwareConcurrency : 0;
+        this.numOfWorkers = 1;
         this.workersFinished = 0;
         this.initWebWorkers(this.numOfWorkers);
         this.drawReady = false;
@@ -466,7 +466,8 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
 
     // var debugIndexes = [];
     /////////////////////
-
+    var testImageData = this.contextMain.createImageData(this.canvasMain.width, this.canvasMain.height);
+    // this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
     if (this.contextDTILines) {
         this.contextDTILines.clearRect(0, 0, this.screenDim, this.screenDim);
     }
@@ -608,6 +609,11 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                             this.imageDataDraw.data[index + 1] = this.screenVolumes[ctr].colorTable.lookupGreen(value, originalVal) * layerAlpha;
                             this.imageDataDraw.data[index + 2] = this.screenVolumes[ctr].colorTable.lookupBlue(value, originalVal) * layerAlpha;
                             this.imageDataDraw.data[index + 3] = thresholdAlpha;
+
+                            testImageData.data[index] = this.screenVolumes[ctr].colorTable.lookupRed(value, originalVal) * layerAlpha;
+                            testImageData.data[index + 1] = this.screenVolumes[ctr].colorTable.lookupGreen(value, originalVal) * layerAlpha;
+                            testImageData.data[index + 2] = this.screenVolumes[ctr].colorTable.lookupBlue(value, originalVal) * layerAlpha;
+                            testImageData.data[index + 3] = thresholdAlpha;
                         } else if (thresholdAlpha > 0) {
                             this.imageDataDraw.data[index] = (this.imageDataDraw.data[index] * (1 - layerAlpha) +
                             this.screenVolumes[ctr].colorTable.lookupRed(value, originalVal) * layerAlpha);
@@ -616,6 +622,14 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
                             this.imageDataDraw.data[index + 2] = (this.imageDataDraw.data[index + 2] * (1 - layerAlpha) +
                             this.screenVolumes[ctr].colorTable.lookupBlue(value, originalVal) * layerAlpha);
                             this.imageDataDraw.data[index + 3] = thresholdAlpha;
+
+                            testImageData.data[index] = (testImageData.data[index] * (1 - layerAlpha) +
+                            this.screenVolumes[ctr].colorTable.lookupRed(value, originalVal) * layerAlpha);
+                            testImageData.data[index + 1] = (testImageData.data[index + 1] * (1 - layerAlpha) +
+                            this.screenVolumes[ctr].colorTable.lookupGreen(value, originalVal) * layerAlpha);
+                            testImageData.data[index + 2] = (testImageData.data[index + 2] * (1 - layerAlpha) +
+                            this.screenVolumes[ctr].colorTable.lookupBlue(value, originalVal) * layerAlpha);
+                            testImageData.data[index + 3] = thresholdAlpha;
                         }
                     }
                 }
@@ -630,7 +644,22 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
             }
         }
         // console.log('repaint imageData', this.imageData[0]);
-        this.contextMain.putImageData(this.imageDataDraw, 0, 0);
+        // test pad last row
+        // if (this.scaleFactor === 0.5) {
+        //     for (var x = 0; x < this.xDim * this.scaleFactor; x += 1) {
+        //         var index = (papayaRoundFast(this.yDim * this.scaleFactor) * papayaRoundFast(this.xDim * this.scaleFactor) + x) * 4;
+        //         // var index = x * 4;
+        //         testImageData.data[index] = 248;
+        //         testImageData.data[index + 1] = 24;
+        //         testImageData.data[index + 2] = 148;
+        //     }
+        //     console.log(testImageData.data.length / (this.xDim * this.scaleFactor * 4));
+        //     // console.log(this.imageDataDraw.data.length / (this.xDim * this.scaleFactor * 4));
+        //     this.contextMain.putImageData(testImageData, 0, 0);
+        //     console.log(this.canvasMain.height);
+        // }
+        // else this.contextMain.putImageData(this.imageDataDraw, 0, 0);
+        this.contextMain.putImageData(this.imageDataDraw, 0, +this.scaleFactor);
         // console.log('canvasDim width', this.canvasMain.width);
         // console.log('canvasDim height', this.canvasMain.height);
         // console.log('indexes', debugIndexes);
@@ -1407,17 +1436,32 @@ papaya.viewer.ScreenSlice.prototype.setScaleFactor = function (customScale, forc
     // console.time('setScaleFactor');
     var scale = customScale ? customScale : papaya.viewer.ScreenSlice.DEFAULT_SCALE;
     if (scale !== this.scaleFactor && (this.sliceDirection !== this.originalSliceDir || force)) {
-        this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
-        this.scaleFactor = scale;
-        this.canvasMain.width = this.xDim * this.scaleFactor;
-        this.canvasMain.height = this.yDim * this.scaleFactor;
-        this.imageDataDraw = this.contextMain.createImageData(this.xDim * this.scaleFactor, this.yDim * this.scaleFactor);
-        this.radiologicalTransform = [[-1, 0, this.xDim * this.scaleFactor], [0, 1, 0], [0, 0, 1]];
-        if (this.manager.canUseMultithreading) {
-            this.workerOutputImage = [];
-            this.workerOutputImage = new Int32Array(new SharedArrayBuffer(4 * 4 * this.xDim * this.yDim * this.scaleFactor * this.scaleFactor));
-        }
-        this.manager.scaleChanged = true;
+        // if (scale === 0.5) {
+        //     this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
+        //     this.scaleFactor = scale;
+        //     this.canvasMain.width = this.xDim * this.scaleFactor;
+        //     this.canvasMain.height = this.yDim * this.scaleFactor + 1;
+        //     // this.imageDataDraw = this.contextMain.createImageData(this.canvasMain.width, this.yDim * this.scaleFactor);
+        //     this.radiologicalTransform = [[-1, 0, this.xDim * this.scaleFactor], [0, 1, 0], [0, 0, 1]];
+        //     if (this.manager.canUseMultithreading) {
+        //         this.workerOutputImage = [];
+        //         this.workerOutputImage = new Int32Array(new SharedArrayBuffer(4 * 4 * this.xDim * this.yDim * this.scaleFactor * this.scaleFactor));
+        //     }
+        //     this.manager.scaleChanged = true;
+        // } else {
+            this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
+            this.scaleFactor = scale;
+            this.canvasMain.width = this.xDim * this.scaleFactor;
+            this.canvasMain.height = this.yDim * this.scaleFactor;
+            this.imageDataDraw = this.contextMain.createImageData(this.canvasMain.width, this.yDim * this.scaleFactor);
+            this.radiologicalTransform = [[-1, 0, this.xDim * this.scaleFactor], [0, 1, 0], [0, 0, 1]];
+            if (this.manager.canUseMultithreading) {
+                this.workerOutputImage = [];
+                this.workerOutputImage = new Int32Array(new SharedArrayBuffer(4 * 4 * this.xDim * this.yDim * this.scaleFactor * this.scaleFactor));
+            }
+            this.manager.scaleChanged = true;
+        // }
+
         // this.updateFinalTransform();
         // this.manager.calculateScreenSliceTransforms();
         // this.manager.scaleChanged = false;
