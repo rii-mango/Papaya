@@ -647,22 +647,25 @@ papaya.viewer.ScreenSlice.prototype.repaint = function (slice, force, worldSpace
         // test pad last row
         // if (this.scaleFactor === 0.5) {
         //     for (var x = 0; x < this.xDim * this.scaleFactor; x += 1) {
-        //         var index = (papayaRoundFast(this.yDim * this.scaleFactor) * papayaRoundFast(this.xDim * this.scaleFactor) + x) * 4;
+        //         var index = (papayaRoundFast(this.yDim * this.scaleFactor ) * papayaRoundFast(this.xDim * this.scaleFactor) + x) * 4;
         //         // var index = x * 4;
         //         testImageData.data[index] = 248;
         //         testImageData.data[index + 1] = 24;
         //         testImageData.data[index + 2] = 148;
         //     }
-        //     console.log(testImageData.data.length / (this.xDim * this.scaleFactor * 4));
-        //     // console.log(this.imageDataDraw.data.length / (this.xDim * this.scaleFactor * 4));
+        //     console.log('test length', testImageData.data.length / (this.xDim * this.scaleFactor * 4));
+        //     console.log('normal lenght', this.imageDataDraw.data.length / (this.xDim * this.scaleFactor * 4));
         //     this.contextMain.putImageData(testImageData, 0, 0);
         //     console.log(this.canvasMain.height);
         // }
         // else this.contextMain.putImageData(this.imageDataDraw, 0, 0);
-        this.contextMain.putImageData(this.imageDataDraw, 0, +this.scaleFactor);
-        // console.log('canvasDim width', this.canvasMain.width);
-        // console.log('canvasDim height', this.canvasMain.height);
-        // console.log('indexes', debugIndexes);
+        // this.contextMain.putImageData(this.imageDataDraw, 0, 0);
+        // var drawOffsetY = this.scaleFactor === 0.5 ? -0.5 : 0
+
+        // Do khi thay doi scaleFactor thi hinh anh co ve bi lech sau khi render
+        // dung drawOffsetY de can chinh lai do lech ve huong Y
+        var drawOffsetY = this.scaleFactor / 2;
+        this.contextMain.putImageData(this.imageDataDraw, 0, drawOffsetY);
 
         // save test image
         // if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
@@ -1436,19 +1439,6 @@ papaya.viewer.ScreenSlice.prototype.setScaleFactor = function (customScale, forc
     // console.time('setScaleFactor');
     var scale = customScale ? customScale : papaya.viewer.ScreenSlice.DEFAULT_SCALE;
     if (scale !== this.scaleFactor && (this.sliceDirection !== this.originalSliceDir || force)) {
-        // if (scale === 0.5) {
-        //     this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
-        //     this.scaleFactor = scale;
-        //     this.canvasMain.width = this.xDim * this.scaleFactor;
-        //     this.canvasMain.height = this.yDim * this.scaleFactor + 1;
-        //     // this.imageDataDraw = this.contextMain.createImageData(this.canvasMain.width, this.yDim * this.scaleFactor);
-        //     this.radiologicalTransform = [[-1, 0, this.xDim * this.scaleFactor], [0, 1, 0], [0, 0, 1]];
-        //     if (this.manager.canUseMultithreading) {
-        //         this.workerOutputImage = [];
-        //         this.workerOutputImage = new Int32Array(new SharedArrayBuffer(4 * 4 * this.xDim * this.yDim * this.scaleFactor * this.scaleFactor));
-        //     }
-        //     this.manager.scaleChanged = true;
-        // } else {
             this.contextMain.clearRect(0, 0, this.canvasMain.width, this.canvasMain.height);
             this.scaleFactor = scale;
             this.canvasMain.width = this.xDim * this.scaleFactor;
@@ -1460,13 +1450,7 @@ papaya.viewer.ScreenSlice.prototype.setScaleFactor = function (customScale, forc
                 this.workerOutputImage = new Int32Array(new SharedArrayBuffer(4 * 4 * this.xDim * this.yDim * this.scaleFactor * this.scaleFactor));
             }
             this.manager.scaleChanged = true;
-        // }
-
-        // this.updateFinalTransform();
-        // this.manager.calculateScreenSliceTransforms();
-        // this.manager.scaleChanged = false;
     }
-    // console.timeEnd('setScaleFactor');
 }
 
 papaya.viewer.ScreenSlice.prototype.saveImage = function (base64Img) {
