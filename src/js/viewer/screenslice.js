@@ -76,8 +76,8 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
 
         // init worker
         this.workerPool = [];
-        // this.numOfWorkers = this.manager.canUseMultithreading ? window.navigator.hardwareConcurrency : 0;
-        this.numOfWorkers = 1;
+        this.numOfWorkers = this.manager.canUseMultithreading ? window.navigator.hardwareConcurrency : 0;
+        // this.numOfWorkers = 1;
         this.workersFinished = 0;
         this.initWebWorkers(this.numOfWorkers);
         this.drawReady = false;
