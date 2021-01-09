@@ -224,14 +224,6 @@ papaya.viewer.ScreenCurve.prototype.buildPointsArray = function () {
     // console.log('detectedPoint', this.detectedPoint);
 };
 
-papaya.viewer.ScreenCurve.prototype.imageCoordToScreenCoord = function (imageX, imageY, finalTransform) {
-    var screenX;
-    var screenY;
-    screenX = finalTransform[0][2] + (imageX + 0.5) * finalTransform[0][0];
-    screenY = finalTransform[1][2] + (imageY + 0.5) * finalTransform[1][1];
-    return [screenX, screenY];
-}
-
 papaya.viewer.ScreenCurve.prototype.buildPapayaCurveSegments = function (scaleFactor) {
     // console.log('buildPapayaCurveSegments');
     if (!this.curveSegments) return;
