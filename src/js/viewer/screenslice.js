@@ -83,6 +83,9 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
         this.drawReady = false;
         if (this.manager.canUseMultithreading)
         this.workerOutputImage = new Int32Array(new SharedArrayBuffer(4 * 4 * this.xDim * this.yDim * this.scaleFactor * this.scaleFactor));
+
+        // measurements
+        this.measurements = new papaya.viewer.ScreenMeasurements(manager, this);
 };
 
 

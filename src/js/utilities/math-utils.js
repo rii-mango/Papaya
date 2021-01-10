@@ -80,9 +80,26 @@ papaya.utilities.MathUtils.clip = function (val, max, min) {
 
 // mod
 papaya.utilities.MathUtils.normalizeVector = function (vector) {
-    var vectorLength = Math.sqrt((vector[0] * vector[0]) + (vector[1] * vector[1]) + (vector[2] * vector[2]));
-    var normalized = [vector[0] / vectorLength, vector[1] / vectorLength, vector[2] / vectorLength]
+    if (!vector.length) return;
+    var vectorDim = vector.length;
+    var vectorLength = 0;
+    var normalized = [];
+    for (var i = 0; i < vectorDim; ++i) {
+        vectorLength += vector[i] * vector[i];
+    }
+    vectorLength = Math.sqrt(vectorLength);
+
+    for (var i = 0; i < vectorDim; ++i) {
+        normalized.push(vector[i] / vectorLength);
+    }
+
+    // var vectorLength = Math.sqrt((vector[0] * vector[0]) + (vector[1] * vector[1]) + (vector[2] * vector[2]));
+    // var normalized = [vector[0] / vectorLength, vector[1] / vectorLength, vector[2] / vectorLength]
     return normalized;
+};
+
+papaya.utilities.MathUtils.roundToTwo = function (num) {    
+    return +(Math.round(num + "e+2")  + "e-2");
 };
 
 function papayaRoundFast(val) {
@@ -94,9 +111,8 @@ function papayaRoundFast(val) {
     return (val - 0.5) | 0;
 }
 
-
-
 function papayaFloorFast(val) {
     /*jslint bitwise: true */
     return val | 0;
 }
+

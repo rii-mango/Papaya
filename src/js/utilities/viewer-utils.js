@@ -168,3 +168,35 @@ papaya.utilities.ViewerUtils.convertImageCoordToSliceNumber = function (slice, i
             return;
     }
 };
+
+papaya.utilities.ViewerUtils.drawFloatingTextBox = function (context, canvas, slice, drawOptions) {
+    var text = drawOptions.text ? drawOptions.text : '';
+    var textMetrics = context.measureText(text);
+    var textWidth = textMetrics.width;
+    var textHeight = drawOptions.textHeight ? drawOptions.textHeight : 14;
+    var padding = drawOptions.padding ? drawOptions.padding : 2;
+    // define text box origin
+    var originX = drawOptions.originX ? drawOptions.originX : canvas.width / 2; 
+    var originY = drawOptions.originY ? drawOptions.originY : canvas.height / 2; 
+    var displacement = drawOptions.displacement ? drawOptions.displacement : 40; 
+
+    originX = originX - (textWidth / 2) + displacement;
+    originY = originY - (textHeight / 2) + displacement;
+    originX = papaya.utilities.MathUtils.clip(originX, slice.screenOffsetX + slice.screenWidth - textWidth, slice.screenOffsetX);
+    originY = papaya.utilities.MathUtils.clip(originY, slice.screenOffsetY + slice.screenHeight - textHeight, slice.screenOffsetY + textHeight);
+    context.fillStyle = "#FFFFFF";
+    papaya.viewer.Viewer.drawRoundRect(context, originX - padding, originY - textHeight - padding + 1, textWidth + (padding * 2), textHeight+ (padding * 2), 5, true, false);
+    context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
+    context.strokeStyle = "green";
+    context.fillStyle = "green";
+    context.fillText(text, originX, originY);
+};
+
+papaya.utilities.ViewerUtils.checkEqualPoints = function (p1, p2) {
+    var res = false;
+    var diffX = papaya.utilities.MathUtils.essentiallyEqual(p1.x, p2.x);
+    var diffY = papaya.utilities.MathUtils.essentiallyEqual(p1.x, p2.x);
+    var diffZ = papaya.utilities.MathUtils.essentiallyEqual(p1.x, p2.x);
+    if (diffX && diffY && diffZ) res = true;
+    return res;
+};
