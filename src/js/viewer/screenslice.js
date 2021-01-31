@@ -191,8 +191,10 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
                 // revert to old single thread op
                 // this.scaleFactor = 1;
                 var stepping = 1 / this.scaleFactor;
-                for (ctrY = 0; ctrY < this.yDim; ctrY += stepping) {
-                    for (ctrX = 0; ctrX < this.xDim; ctrX += stepping) {
+                var roundedXDim = (this.xDim * this.scaleFactor) % 1 ? this.xDim - 1 : this.xDim;
+                var roundedYDim = (this.yDim * this.scaleFactor) % 1 ? this.yDim - 1 : this.yDim;
+                for (ctrY = 0; ctrY < roundedYDim; ctrY += stepping) {
+                    for (ctrX = 0; ctrX < roundedXDim; ctrX += stepping) {
                         value = 0;
                         thresholdAlpha = 255;
                         layerAlpha = this.screenVolumes[ctr].alpha;
@@ -207,7 +209,7 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
                             }
     
                             // index = ((ctrY * this.xDim) + ctrX) * 4;
-                            index = ((papayaRoundFast(ctrY * this.scaleFactor) * papayaRoundFast(this.xDim * this.scaleFactor)) + papayaRoundFast(ctrX * this.scaleFactor)) * 4;
+                            index = ((papayaRoundFast(ctrY * this.scaleFactor) * papayaRoundFast(roundedXDim * this.scaleFactor)) + papayaRoundFast(ctrX * this.scaleFactor)) * 4;
                             this.imageData[ctr][index] = value;
     
                             this.imageDataDraw.data[index] = (value >> 16) & 0xff;
@@ -261,8 +263,8 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
                                 }
                             }
     
-                            // index = ((ctrY * this.xDim) + ctrX) * 4;
-                            index = ((papayaRoundFast(ctrY * this.scaleFactor) * papayaRoundFast(this.xDim * this.scaleFactor)) + papayaRoundFast(ctrX * this.scaleFactor)) * 4;
+                            // index = ((ctrY * roundedXDim) + ctrX) * 4;
+                            index = ((papayaRoundFast(ctrY * this.scaleFactor) * papayaRoundFast(roundedXDim * this.scaleFactor)) + papayaRoundFast(ctrX * this.scaleFactor)) * 4;
 
                             if (dtiLines) {
                                 if ((valueR !== 0) || (valueG !== 0) || (valueB !== 0)) {
@@ -377,8 +379,8 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force, return
                                 }
                             }
     
-                            // index = ((ctrY * this.xDim) + ctrX) * 4;
-                            index = ((papayaRoundFast(ctrY * this.scaleFactor) * papayaRoundFast(this.xDim * this.scaleFactor)) + papayaRoundFast(ctrX * this.scaleFactor)) * 4;
+                            // index = ((ctrY * roundedXDim) + ctrX) * 4;
+                            index = ((papayaRoundFast(ctrY * this.scaleFactor) * papayaRoundFast(roundedXDim * this.scaleFactor)) + papayaRoundFast(ctrX * this.scaleFactor)) * 4;
                             originalVal = value;
                             this.imageData[ctr][index] = value;
     
