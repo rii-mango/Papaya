@@ -49,7 +49,17 @@ papaya.surface.SurfaceGIFTI.prototype.readDataPoints = function (surf, progress)
     } else {
         surf.error = new Error("Surface is missing point information!");
     }
-
+    if (surf.gii.getPointsDataArray().attributes.ArrayIndexingOrder === 'ColumnMajorOrder') {
+        //transpose points, xx..xyy..yzz..z -> xyzxyz.. 
+        let ps = surf.pointData.slice();
+        let np = ps.length / 3;
+        let j = 0;
+        for (var p = 0; p < np; p++) 
+          for (var i = 0; i < 3; i++) {
+            surf.pointData[j] = ps[(i * np)+p]
+            j++;
+          }
+    }
     setTimeout(function() { surf.readDataNormals(surf, progress); }, 0);
 };
 
@@ -75,7 +85,18 @@ papaya.surface.SurfaceGIFTI.prototype.readDataTriangles = function (surf, progre
     } else {
         surf.error = Error("Surface is missing triangle information!");
     }
-
+    if (surf.gii.getTrianglesDataArray().attributes.ArrayIndexingOrder === 'ColumnMajorOrder') {
+        //https://github.com/rii-mango/GIFTI-Reader-JS/issues/2
+        //transpose indices, xx..xyy..yzz..z -> xyzxyz..
+        let ps = surf.triangleData.slice();
+        let np = ps.length / 3;
+        let j = 0;
+        for (var p = 0; p < np; p++) 
+          for (var i = 0; i < 3; i++) {
+            surf.triangleData[j] = ps[(i * np)+p]
+            j++;
+          }
+    }
     setTimeout(function() { surf.readDataColors(surf, progress); }, 0);
 };
 
