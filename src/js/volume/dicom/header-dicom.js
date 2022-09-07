@@ -614,8 +614,8 @@ papaya.volume.dicom.HeaderDICOM.prototype.getBestTransform = function () {
         var cosz = [cosx[1] * cosy[2] - cosx[2] * cosy[1],
             cosx[2] * cosy[0] - cosx[0] * cosy[2],
             cosx[0] * cosy[1] - cosx[1] * cosy[0]];
-        m = [ [cosx[0] * vs.colSize * -1, cosy[0] * vs.rowSize, cosz[0] * vs.sliceSize, -1 * coord[0]],
-            [cosx[1] * vs.colSize, cosy[1] * vs.rowSize * -1, cosz[1] * vs.sliceSize, -1 * coord[1]],
+        m = [ [cosx[0] * vs.colSize * -1, cosy[0] * vs.rowSize * -1, cosz[0] * vs.sliceSize * -1, -1 * coord[0]],
+            [cosx[1] * vs.colSize * -1, cosy[1] * vs.rowSize * -1, cosz[1] * vs.sliceSize * -1, -1 * coord[1]],
             [cosx[2] * vs.colSize, cosy[2] * vs.rowSize, cosz[2] * vs.sliceSize, coord[2]],
             [0,       0,       0,       1] ];
     }
