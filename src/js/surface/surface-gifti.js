@@ -51,9 +51,9 @@ papaya.surface.SurfaceGIFTI.prototype.readDataPoints = function (surf, progress)
     }
     if (surf.gii.getPointsDataArray().attributes.ArrayIndexingOrder === 'ColumnMajorOrder') {
         //transpose points, xx..xyy..yzz..z -> xyzxyz.. 
-        let ps = surf.pointData.slice();
-        let np = ps.length / 3;
-        let j = 0;
+        var ps = surf.pointData.slice();
+        var np = ps.length / 3;
+        var j = 0;
         for (var p = 0; p < np; p++) 
           for (var i = 0; i < 3; i++) {
             surf.pointData[j] = ps[(i * np)+p]
@@ -88,9 +88,9 @@ papaya.surface.SurfaceGIFTI.prototype.readDataTriangles = function (surf, progre
     if (surf.gii.getTrianglesDataArray().attributes.ArrayIndexingOrder === 'ColumnMajorOrder') {
         //https://github.com/rii-mango/GIFTI-Reader-JS/issues/2
         //transpose indices, xx..xyy..yzz..z -> xyzxyz..
-        let ps = surf.triangleData.slice();
-        let np = ps.length / 3;
-        let j = 0;
+        var ps = surf.triangleData.slice();
+        var np = ps.length / 3;
+        var j = 0;
         for (var p = 0; p < np; p++) 
           for (var i = 0; i < 3; i++) {
             surf.triangleData[j] = ps[(i * np)+p]
