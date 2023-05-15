@@ -1,6 +1,6 @@
 {
   "name": "papaya-viewer",
-  "version": "1.0.1449",
+  "version": "1.0.1455",
   "description": "A JavaScript medical image viewer.",
   "main": "src/js/main.js",
   "scripts": {
