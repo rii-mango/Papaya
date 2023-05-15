@@ -18,7 +18,6 @@
 /*** Imports ***/
 var papaya = papaya || {};
 
-var xss = xss || ((typeof require !== 'undefined') ? require('xss') : null);
 
 /*** Global Fields ***/
 var papayaContainers = [];
