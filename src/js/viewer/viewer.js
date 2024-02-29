@@ -86,6 +86,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.crossHairSagitalGreen = $("#crossHairSagitalGreen");
     this.crossHairCoronalBlue = $("#crossHairCoronalBlue");
 
+    this.paddingTop = 0;
 
     this.listenerContextMenu = function (me) { me.preventDefault(); return false; };
     this.listenerMouseMove = papaya.utilities.ObjectUtils.bind(this, this.mouseMoveEvent);
@@ -1188,6 +1189,9 @@ papaya.viewer.Viewer.prototype.drawEmptyViewer = function () {
 
 
 papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
+
+    this.paddingTop = parseFloat($("."+ PAPAYA_VIEWER_CSS).offset().top);
+
     var radiological = (this.container.preferences.radiological === "Yes"),
         showOrientation = (this.container.preferences.showOrientation === "Yes");
 
@@ -1264,33 +1268,33 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
     }
 
     if (this.mainImage.sliceDirection == 1) {
-        this.crossHairAxialRed.css("position", "absolute").css("top", this.mainImage.screenOffsetY + parseFloat($('.papaya-toolbar').height()) + 23).css("left", parseFloat($(".papaya-viewer").css("padding-left")) + 8).css('height', '5px').css('width', this.mainImage.screenDim + "px");
+        this.crossHairAxialRed.css("position", "absolute").css("top", this.paddingTop).css("left", parseFloat($(".papaya-viewer").css("padding-left")) + 8).css('height', '5px').css('width', this.mainImage.screenDim + "px");
 
     } else if (this.mainImage.sliceDirection == 2) {
-        this.crossHairCoronalBlue.css("position", "absolute").css("top", this.mainImage.screenOffsetY + parseFloat($('.papaya-toolbar').height()) + 23).css("left", parseFloat($(".papaya-viewer").css("padding-left")) + 8).css('height', '5px').css('width', this.mainImage.screenDim + "px");
+        this.crossHairCoronalBlue.css("position", "absolute").css("top", this.paddingTop).css("left", parseFloat($(".papaya-viewer").css("padding-left")) + 8).css('height', '5px').css('width', this.mainImage.screenDim + "px");
 
     } else {
-        this.crossHairSagitalGreen.css("position", "absolute").css("top", this.mainImage.screenOffsetY + parseFloat($('.papaya-toolbar').height()) + 23).css("left", parseFloat($(".papaya-viewer").css("padding-left")) + 8).css('height', '5px').css('width', this.mainImage.screenDim + "px");
+        this.crossHairSagitalGreen.css("position", "absolute").css("top", this.paddingTop).css("left", parseFloat($(".papaya-viewer").css("padding-left")) + 8).css('height', '5px').css('width', this.mainImage.screenDim + "px");
 
     }
     if (this.lowerImageTop.sliceDirection == 1) {
-        this.crossHairAxialRed.css("position", "absolute").css("top", this.lowerImageTop.screenOffsetY + parseFloat($('.papaya-toolbar').height()) + 23).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageTop.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageTop.screenDim + 'px');
+        this.crossHairAxialRed.css("position", "absolute").css("top",this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageTop.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageTop.screenDim + 'px');
 
     } else if (this.lowerImageTop.sliceDirection == 2) {
-        this.crossHairCoronalBlue.css("position", "absolute").css("top", this.lowerImageTop.screenOffsetY + parseFloat($('.papaya-toolbar').height()) + 23).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageTop.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageTop.screenDim + 'px');
+        this.crossHairCoronalBlue.css("position", "absolute").css("top", this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageTop.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageTop.screenDim + 'px');
 
     } else {
-        this.crossHairSagitalGreen.css("position", "absolute").css("top", this.lowerImageTop.screenOffsetY + parseFloat($('.papaya-toolbar').height()) + 23).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageTop.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageTop.screenDim + 'px');
+        this.crossHairSagitalGreen.css("position", "absolute").css("top", this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageTop.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageTop.screenDim + 'px');
 
     }
     if (this.lowerImageBot.sliceDirection == 1) {
-        this.crossHairAxialRed.css("position", "absolute").css("top", this.lowerImageBot.screenOffsetY + parseFloat($('.papaya-toolbar').height()) + 23).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageBot.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageBot.screenDim + 'px');
+        this.crossHairAxialRed.css("position", "absolute").css("top", this.lowerImageBot.screenOffsetY + this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageBot.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageBot.screenDim + 'px');
 
     } else if (this.lowerImageBot.sliceDirection == 2) {
-        this.crossHairCoronalBlue.css("position", "absolute").css("top", this.lowerImageBot.screenOffsetY + parseFloat($('.papaya-toolbar').height()) + 23).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageBot.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageBot.screenDim + 'px');
+        this.crossHairCoronalBlue.css("position", "absolute").css("top", this.lowerImageBot.screenOffsetY + this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageBot.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageBot.screenDim + 'px');
 
     } else {
-        this.crossHairSagitalGreen.css("position", "absolute").css("top", this.lowerImageBot.screenOffsetY + parseFloat($('.papaya-toolbar').height()) + 23).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageBot.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageBot.screenDim + 'px');
+        this.crossHairSagitalGreen.css("position", "absolute").css("top", this.lowerImageBot.screenOffsetY + this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageBot.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageBot.screenDim + 'px');
 
     }
 };
