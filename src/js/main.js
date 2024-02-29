@@ -328,11 +328,11 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params,
             $("." + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS).prop('disabled', true);
             $("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS).prop('disabled', true);
         } else if (params && ((params.showControls === undefined ) || params.showControls)) {
-            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + "'>+</button> ");
-            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + "'>-</button> ");
-            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + "'>Swap View</button> ");
-            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + "'>Go To Center</button> ");
-            containerHTML.append("<button type='button' id='"+ (PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + "'>Go To Origin</button> ");
+            containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + "'><span class='fas fa-plus'></span></button> ");
+            containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + "'><span class='fas fa-minus'></span></button> ");
+            containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + "' title='Swap Views'><span class='fas fa-refresh'></span></button> ");
+            containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + "' title='GoTo Center'><span class='fas fa-compress-alt'></span></button> ");
+            containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + "' title='GoTo Origin'><span class='fas fa-expand-alt'></span></button> ");
 
             $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + index).css({display: "none"});
             $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + index).css({display: "none"});
@@ -341,6 +341,7 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params,
             $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + index).css({display: "none"});
         }
     }
+     this.CreateSideNevigation(containerHTML);
 
     return viewerHTML;
 };
@@ -448,6 +449,30 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
 };
 
 
+papaya.Container.CreateSideNevigation = function (containerHTML) {
+
+    containerHTML.append('<div class="side-navbar"></div>')
+
+    $("."+ PAPAYA_SIDENAVIGATION_CSS).append("<button class='selected' id='drawCrossHairImages' title='Crosshair Tool'><span class='fas fa-pen-fancy fa-2x'></span></button>");
+    $("."+ PAPAYA_SIDENAVIGATION_CSS).append("<button id='stackImages' title='Stack Tool'><span class='fas fa-layer-group fa-2x'></span></button>");
+    $("."+ PAPAYA_SIDENAVIGATION_CSS).append("<button id='windowLevelImages' title='Window Level Tool'> <span class='fas fa-qrcode fa-2x'></span></button>");
+    $("."+ PAPAYA_SIDENAVIGATION_CSS).append("<button id='zoomImages' title='Zoom Tool'><span class='fas fa-search-plus fa-2x'></span></button>");
+    $("."+ PAPAYA_SIDENAVIGATION_CSS).append("<button id='panImages' title='Pan Tool'><span class='fas fa-arrows-alt fa-2x'></span></button>");
+
+    $("."+ PAPAYA_SIDENAVIGATION_CSS + " button").on("click", function (event) {
+        $("button.selected").removeClass("selected");
+        $(this).addClass("selected");
+        var button =  $(this).attr("id");
+
+        if(button != "drawCrossHairImages" ){
+             papayaContainers[0].preferences.showCrosshairs = "No";
+        }else{
+            papayaContainers[0].preferences.showCrosshairs = "Yes";
+        }
+        papayaContainers[0].viewer.drawViewer(true, true);
+    });
+};
+
 
 papaya.Container.prototype.rebuildContainer = function (params, index) {
     this.containerHtml.empty();
@@ -499,6 +524,8 @@ papaya.Container.buildAllContainers = function () {
 
         papayaContainers[0].resizeViewerComponents(true);
     }
+    $(".side-navbar").css("top", parseFloat($('.papaya-toolbar').height()) + 23).css("height", parseFloat($(".papaya-display").height()) + 3 + parseFloat($(".papaya-viewer").height()) + "px").css("left", parseFloat($(".papaya-viewer").css("padding-left")) - 45 + "px");
+
 };
 
 

@@ -53,6 +53,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.isZoomMode = false;
     this.isContextMode = false;
     this.isPanning = false;
+    this.isStackMode = false;
     this.didLongTouch = false;
     this.isLongTouch = false;
     this.zoomFactor = papaya.viewer.Viewer.ZOOM_FACTOR_MIN;
@@ -78,9 +79,10 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.loadingDTI = false;
     this.loadingDTIModRef = null;
     this.tempCoor = new papaya.core.Coordinate();
-    $(container.containerHtml).append('<div id="crossHairAxialRed" style="background-color:red;z-index:100;"></div>');
-    $(container.containerHtml).append('<div id="crossHairSagitalGreen" style="background-color:blue;z-index:100;"></div>');
-    $(container.containerHtml).append('<div id="crossHairCoronalBlue" style="background-color:green;z-index:100;"></div>');
+    this.Tools = new papaya.viewer.Tools();
+    $(container.containerHtml).append('<div id="crossHairAxialRed" style="background-color:red;z-index:90;"></div>');
+    $(container.containerHtml).append('<div id="crossHairSagitalGreen" style="background-color:blue;z-index:90;"></div>');
+    $(container.containerHtml).append('<div id="crossHairCoronalBlue" style="background-color:green;z-index:90;"></div>');
 
     this.crossHairAxialRed = $("#crossHairAxialRed");
     this.crossHairSagitalGreen = $("#crossHairSagitalGreen");
@@ -1138,10 +1140,18 @@ papaya.viewer.Viewer.prototype.insideScreenSlice = function (screenSlice, xLoc, 
         yStart = screenSlice.screenOffsetY;
         yEnd = screenSlice.screenOffsetY + screenSlice.screenDim;
     } else {
-        xStart = papayaRoundFast(screenSlice.screenTransform[0][2]);
-        xEnd = papayaRoundFast(screenSlice.screenTransform[0][2] + xBound * screenSlice.screenTransform[0][0]);
-        yStart = papayaRoundFast(screenSlice.screenTransform[1][2]);
-        yEnd = papayaRoundFast(screenSlice.screenTransform[1][2] + yBound * screenSlice.screenTransform[1][1]);
+       if (this.isStackMode) {
+            xStart = screenSlice.screenOffsetX;
+            xEnd = screenSlice.screenOffsetX + screenSlice.screenDim;
+            yStart = screenSlice.screenOffsetY;
+            yEnd = screenSlice.screenOffsetY + screenSlice.screenDim;
+        }
+        else {
+            xStart = papayaRoundFast(screenSlice.screenTransform[0][2]);
+            xEnd = papayaRoundFast(screenSlice.screenTransform[0][2] + xBound * screenSlice.screenTransform[0][0]);
+            yStart = papayaRoundFast(screenSlice.screenTransform[1][2]);
+            yEnd = papayaRoundFast(screenSlice.screenTransform[1][2] + yBound * screenSlice.screenTransform[1][1]);
+        }
     }
 
     return ((xLoc >= xStart) && (xLoc < xEnd) && (yLoc >= yStart) && (yLoc < yEnd));
@@ -1979,6 +1989,7 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
 
             this.findClickedSlice(this, this.previousMousePosition.x, this.previousMousePosition.y);
 
+            if (me.button == 2) {
             if (((me.button === 2) || this.isControlKeyDown || this.isLongTouch) && this.container.contextManager && (this.selectedSlice === this.mainImage) && (this.mainImage === this.surfaceView)) {
                 this.contextMenuMousePositionX = this.previousMousePosition.x - this.canvasRect.left;
                 this.contextMenuMousePositionY = this.previousMousePosition.y - this.canvasRect.top;
@@ -2063,7 +2074,13 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
                     this.container.display.drawEmptyDisplay();
                 }
             }
-
+            }
+           else if(me.button == 1){
+           
+           }else{
+               var buttonID = $('.selected').attr('id');
+               this.Tools.GetToolOnMouseDown(buttonID, this, me);
+            }
             this.isDragging = draggingStarted;
             me.handled = true;
         }
@@ -2091,7 +2108,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
 
     if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
         if (me.handled !== true) {
-            if (!this.isWindowControl && !this.isZoomMode && !this.isContextMode && (this.grabbedHandle === null) && (!this.surfaceView || (this.surfaceView.grabbedRulerPoint === -1))) {
+            if (!this.isWindowControl && !this.isZoomMode && !this.isStackMode && !this.isContextMode && (this.grabbedHandle === null) && (!this.surfaceView || (this.surfaceView.grabbedRulerPoint === -1))) {
                 this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
             }
 
@@ -2106,6 +2123,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
             this.isPanning = false;
             this.selectedSlice = null;
             this.controlsHiddenPrimed = false;
+            this.isStackMode = false;
 
             me.handled = true;
         }
@@ -2248,7 +2266,80 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             }
 
             this.drawViewer(true);
-        } else {
+        } else if (this.isStackMode) {
+            if (this.lastY != undefined) {
+                var deltaY;
+                if (event.offsetY != undefined) {
+                    deltaY = this.lastY - event.offsetY;
+                } else {
+                    var rect = me.target.getBoundingClientRect();
+                    var x = me.targetTouches[0].pageX - rect.left;
+                    var y = me.targetTouches[0].pageY - rect.top;
+                    deltaY = this.lastY - y;
+                }
+                this.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
+                this.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
+
+                this.findClickedSlice(this, this.previousMousePosition.x, this.previousMousePosition.y);
+                if (this.selectedSlice == undefined) {
+                    return;
+                }
+
+                var imagePerPixel = (this.selectedSlice.screenDim) / Math.max(this.selectedSlice.sliceCounts, 8);
+                var imageDelta = Math.round(deltaY / imagePerPixel);
+                var imageIdIndexOffset = imageDelta;
+                var imageDeltaMod = deltaY % imagePerPixel;
+
+                // console.log("Stack :" + imageIdIndexOffset);
+                //var scrollSign = me.data.deltaY //= e.data.deltaY || 0;
+
+                if (deltaY < 0 && this.selectedSlice != null) {
+                    if ($('#papayaSliceSlider0series').css('display') == 'inline' && this.selectedSlice.sliceCounts === 1) {
+                        $('#seriesNext').trigger('click');
+                    } else {
+                        if (this.selectedSlice.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                            this.incrementAxial(true, Math.abs(imageIdIndexOffset));
+                            //this.axialSlice.curre    
+                        } else if (this.selectedSlice.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                            this.incrementCoronal(true, Math.abs(imageIdIndexOffset));
+                            //this.coronalSlice = null;
+                        } else if (this.selectedSlice.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                            this.incrementSagittal(true, Math.abs(imageIdIndexOffset));
+                            //this.sagittalSlice = null;
+                        }
+                    }
+                    //this.gotoCoordinate(this.currentCoord);
+                } else if (deltaY > 0 && this.selectedSlice != null) {
+                    if ($('#papayaSliceSlider0series').css('display') == 'inline' && this.selectedSlice.sliceCounts === 1) {
+                        $('#seriesPrev').trigger('click');
+                    } else {
+                        if (this.selectedSlice.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
+                            this.incrementAxial(false, Math.abs(imageIdIndexOffset));
+                        } else if (this.selectedSlice.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
+                            this.incrementCoronal(false, Math.abs(imageIdIndexOffset));
+                        } else if (this.selectedSlice.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
+                            this.incrementSagittal(false, Math.abs(imageIdIndexOffset));
+                        }
+                    }
+
+                    //this.gotoCoordinate(this.currentCoord);
+                }
+            }
+            if (imageIdIndexOffset == 0) {
+            }
+            else if (me.offsetY != undefined) {
+                this.lastY = me.offsetY;
+            }
+
+            else {
+                var rect = me.target.getBoundingClientRect();
+                var x = me.targetTouches[0].pageX - rect.left;
+                var y = me.targetTouches[0].pageY - rect.top;
+                this.lastY = y;
+            }
+
+        }
+        else {
             this.resetUpdateTimer(null);
 
             if (this.selectedSlice !== null) {
