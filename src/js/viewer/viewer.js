@@ -115,7 +115,10 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
 
 papaya.viewer.Viewer.GAP = PAPAYA_SPACING;  // padding between slice views
 papaya.viewer.Viewer.BACKGROUND_COLOR = "rgba(0, 0, 0, 255)";
-papaya.viewer.Viewer.CROSSHAIRS_COLOR = "rgba(28, 134, 238, 255)";
+papaya.viewer.Viewer.CROSSHAIRS_COLOR_RED = "rgba(255, 0, 0, 1)";
+papaya.viewer.Viewer.CROSSHAIRS_COLOR_GREEN = "rgba(0, 135, 0, 1)";
+papaya.viewer.Viewer.CROSSHAIRS_COLOR_BLUE = "rgba(0, 0, 255, 1)";
+
 papaya.viewer.Viewer.KEYCODE_ROTATE_VIEWS = 32;
 papaya.viewer.Viewer.KEYCODE_CENTER = 67;
 papaya.viewer.Viewer.KEYCODE_ORIGIN = 79;
@@ -1499,7 +1502,6 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
     // initialize crosshairs
     this.context.setTransform(1, 0, 0, 1, 0, 0);
-    //this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR;
     this.context.lineWidth = 1.0;
 
     if ((this.mainImage !== this.axialSlice) || this.toggleMainCrosshairs) {
@@ -1521,7 +1523,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
 
         this.context.moveTo(xLoc, yStart);
         this.context.lineTo(xLoc, yEnd);
-        this.context.strokeStyle = "blue";
+        this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR_BLUE;
         this.context.closePath();
         this.context.stroke();
 
@@ -1532,7 +1534,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         xEnd = (this.axialSlice.finalTransform[0][2] + this.axialSlice.xDim * this.axialSlice.finalTransform[0][0]);
         this.context.moveTo(xStart, yLoc);
         this.context.lineTo(xEnd, yLoc);
-        this.context.strokeStyle = "Green";
+        this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR_GREEN;
         this.context.closePath();
         this.context.stroke();
         this.context.restore();
@@ -1558,7 +1560,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
             this.coronalSlice.finalTransform[1][1]);
         this.context.moveTo(xLoc, yStart);
         this.context.lineTo(xLoc, yEnd);
-        this.context.strokeStyle = "Blue";
+        this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR_BLUE;
         this.context.closePath();
         this.context.stroke();
         this.context.beginPath();
@@ -1570,7 +1572,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
             this.coronalSlice.finalTransform[0][0]);
         this.context.moveTo(xStart, yLoc);
         this.context.lineTo(xEnd, yLoc);
-        this.context.strokeStyle = "Red";
+        this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR_RED;
         this.context.closePath();
         this.context.stroke();
         this.context.restore();
@@ -1594,7 +1596,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
             this.sagittalSlice.finalTransform[1][1]);
         this.context.moveTo(xLoc, yStart);
         this.context.lineTo(xLoc, yEnd);
-        this.context.strokeStyle = "Green";
+        this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR_GREEN;
         this.context.closePath();
         this.context.stroke();
         this.context.beginPath();
@@ -1605,7 +1607,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
             this.sagittalSlice.finalTransform[0][0]);
         this.context.moveTo(xStart, yLoc);
         this.context.lineTo(xEnd, yLoc);
-        this.context.strokeStyle = "Red";
+        this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR_RED;
         this.context.closePath();
         this.context.stroke();
         this.context.restore();
