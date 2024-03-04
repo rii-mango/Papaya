@@ -28,6 +28,7 @@ var PAPAYA_TOOLBAR_CSS = "papaya-toolbar",
     PAPAYA_TITLEBAR_CSS = "papaya-titlebar",
     PAPAYA_SLIDER_CSS = "papaya-slider-slice",
     PAPAYA_KIOSK_CONTROLS_CSS = "papaya-kiosk-controls";
+    PAPAYA_SIDENAVIGATION_CSS ="side-navbar";
 
 
 // Display CSS classes

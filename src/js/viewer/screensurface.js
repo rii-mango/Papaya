@@ -222,10 +222,10 @@ papaya.viewer.ScreenSurface.DEFAULT_ORIENTATION = [ -0.015552218963737041, 0.094
                                                     0.24400145970103732, 0.965822108594413, 0.0874693978960848, 0,
                                                     0, 0, 0, 1];
 papaya.viewer.ScreenSurface.MOUSE_SENSITIVITY = 0.3;
-papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND = [0.5, 0.5, 0.5];
+papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND = [1, 1, 1];
 papaya.viewer.ScreenSurface.TEXT_SIZE = 50;
 papaya.viewer.ScreenSurface.ORIENTATION_SIZE = 10;
-papaya.viewer.ScreenSurface.RULER_COLOR = [1, 0.078, 0.576];
+papaya.viewer.ScreenSurface.RULER_COLOR = [0, 0, 0];
 papaya.viewer.ScreenSurface.RULER_NUM_LINES = 25;
 papaya.viewer.ScreenSurface.RULER_RADIUS = 1;
 

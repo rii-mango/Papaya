@@ -1,0 +1,25 @@
+.side-navbar {
+    width: 50px;
+    position: absolute;
+    background-color: black;
+    color: gold;
+    text-align: center;
+    border: 1px solid white;
+}
+
+    .side-navbar button {
+        width: 40px;
+        padding: 2px;
+        height: 40px;
+        margin: 4px auto;
+        padding: 2px;
+        cursor: pointer;
+        color: white;
+        background-color:darkgoldenrod;
+        border: 1px solid white;
+    }
+
+        .side-navbar button.selected {
+            background-color:red;
+            color: white;
+        }
