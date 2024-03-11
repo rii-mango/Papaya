@@ -74,6 +74,7 @@
     background-color: black;
     color: gold;
     text-align: center;
+    display:none;
     border: 1px solid white;
     overflow-y:scroll;
     word-wrap:break-word;
@@ -87,4 +88,21 @@
 
 .side-description div {
     padding: 5px;
+}
+.vertical-text {  
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    white-space: nowrap;
+    display: block;
+    z-index:110;
+    background-color:black;
+    border-radius:5px;
+    color:white;
+    padding:5px;
+    position:absolute;
+    width: 160px;
+    
 }

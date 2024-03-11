@@ -30,8 +30,8 @@ var PAPAYA_TOOLBAR_CSS = "papaya-toolbar",
     PAPAYA_KIOSK_CONTROLS_CSS = "papaya-kiosk-controls",
     PAPAYA_SIDENAVIGATION_CSS = "side-navbar",
     PAPAYA_SIDENAVPANEL_CSS = "side-navpanel",
-    PAPAYA_SIDEDESCRIPTION_CSS = "side-description";
-
+    PAPAYA_SIDEDESCRIPTION_CSS = "side-description",
+    PAPAYA_VERTICLE_TEXT_BUTTON_TEXT = "vertical-text";
 // Display CSS classes
 var PAPAYA_DISPLAY_CSS = "papaya-display";
 

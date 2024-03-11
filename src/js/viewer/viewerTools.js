@@ -24,7 +24,7 @@ var papaya = papaya || {};
 papaya.viewer = papaya.viewer || {};
 
 papaya.viewer.Tools = papaya.viewer.Tools || function () {
-
+   
 
 }
 
@@ -81,9 +81,22 @@ papaya.viewer.Tools.prototype.GetToolOnMouseDown = function (button, viewer, me)
 
                 break;
             case 'magnifyImages':
-                this.MagnifyToolEvent(viewer,me);
+                this.MagnifyToolEvent(viewer, me);
                 break;
+             
+
+
+
         }
+        //else {
+        //    action = "ColorTable-Grayscale-0";
+        //    colorTableName = action.substring(action.indexOf("-") + 1, action.lastIndexOf("-"));
+        //    imageIndex = action.substring(action.lastIndexOf("-") + 1);
+        //    that.screenVolumes[0].changeColorTable(tempViewer, colorTableName);
+        //    this.isInvert = 0;
+        //}
+
+
     } else {
         viewer.isCrosshairMode = true;
         viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
