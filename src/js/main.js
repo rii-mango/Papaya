@@ -1014,14 +1014,16 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
     }
 
     this.titlebarHtml.css({ width: dims[0] + "px", top: (0) });
-    $("." + PAPAYA_SIDENAVIGATION_CSS).css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 45 + "px");
-    $("." + PAPAYA_SIDEDESCRIPTION_CSS).css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("max-height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) + parseFloat($("." + PAPAYA_VIEWER_CSS).width()) + 10 + "px").css("width", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 25 + "px");
-    //  $("#buttonViewDiscription").css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("max-height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) + parseFloat($("." + PAPAYA_VIEWER_CSS).width()) + 10 + "px").css("width", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 25 + "px");
-    $("." + PAPAYA_VERTICLE_TEXT_BUTTON_TEXT).css("top", parseFloat($("#playClipSlider").offset().top - 100)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).width()) - 7 - (parseFloat($("." + PAPAYA_SIDENAVPANEL_CSS).width()) / 2) + "px");
+    if (params.imageTools) {
+        $("." + PAPAYA_SIDENAVIGATION_CSS).css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 45 + "px");
+        $("." + PAPAYA_SIDEDESCRIPTION_CSS).css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("max-height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) + parseFloat($("." + PAPAYA_VIEWER_CSS).width()) + 10 + "px").css("width", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 25 + "px");
+        //  $("#buttonViewDiscription").css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("max-height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) + parseFloat($("." + PAPAYA_VIEWER_CSS).width()) + 10 + "px").css("width", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 25 + "px");
+        $("." + PAPAYA_VERTICLE_TEXT_BUTTON_TEXT).css("top", parseFloat($("#playClipSlider").offset().top - 100)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).width()) - 7 - (parseFloat($("." + PAPAYA_SIDENAVPANEL_CSS).width()) / 2) + "px");
 
 
-    if ($("." + PAPAYA_SIDENAVPANEL_CSS).css("display") == "block") {
-        $("." + PAPAYA_SIDENAVPANEL_CSS).css("top", parseFloat($("#playClipSlider").offset().top)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).width()) - (parseFloat($("." + PAPAYA_SIDENAVPANEL_CSS).width()) / 2) + "px");
+        if ($("." + PAPAYA_SIDENAVPANEL_CSS).css("display") == "block") {
+            $("." + PAPAYA_SIDENAVPANEL_CSS).css("top", parseFloat($("#playClipSlider").offset().top)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).width()) - (parseFloat($("." + PAPAYA_SIDENAVPANEL_CSS).width()) / 2) + "px");
+        }
     }
 };
 
