@@ -167,8 +167,8 @@ papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
 
 papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA = {
     "items": [
-        {"label": "Show Header", "action": "ShowHeader"},
-        {"label": "Show Image Info", "action": "ImageInfo"},
+        //{"label": "Show Header", "action": "ShowHeader"},
+        //{"label": "Show Image Info", "action": "ImageInfo"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
             papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items[6],
         {"label": "Rotation", "action": "Rotation", "items": [
@@ -806,7 +806,8 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             }
 
             dialog.showDialog();
-        } else if (action.startsWith("SurfaceInfo")) {
+        }
+        else if (action.startsWith("SurfaceInfo")) {
             imageIndex = action.substring(action.lastIndexOf("-") + 1);
 
             dialog = new papaya.ui.Dialog(this.container, "Surface Info", papaya.ui.Toolbar.SURFACE_INFO_DATA,

@@ -199,7 +199,7 @@ papaya.Container.addImage = function (index, imageRef, imageParams) {
 
     if (papayaContainers[index].params.images) {
         papayaContainers[index].viewer.loadImage(imageRefs, true, false, false);
-    } else if(papayaContainers[index].params.binaryImages) {
+    } else if (papayaContainers[index].params.binaryImages) {
         papayaContainers[index].viewer.loadImage(imageRefs, false, false, true);
     } else if (papayaContainers[index].params.encodedImages) {
         papayaContainers[index].viewer.loadImage(imageRefs, false, true, false);
@@ -287,7 +287,7 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params,
 
         if (!params || (params.kioskMode === undefined) || !params.kioskMode) {
             containerHTML.append("<div id='" + (PAPAYA_DEFAULT_TOOLBAR_ID + index) +
-            "' class='" + PAPAYA_TOOLBAR_CSS + "'></div>");
+                "' class='" + PAPAYA_TOOLBAR_CSS + "'></div>");
         }
 
         containerHTML.append("<div id='" + (PAPAYA_DEFAULT_VIEWER_ID + index) +
@@ -299,23 +299,23 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params,
             containerHTML.append(
                 "<div id='" + PAPAYA_KIOSK_CONTROLS_CSS + index + "' class='" + PAPAYA_KIOSK_CONTROLS_CSS + "'>" +
                 "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + index) + "main" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_MAIN_SLIDER + "'>" +
-                "<span class='" + PAPAYA_CONTROL_BAR_LABELS_CSS+ "'>Slice: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> "  +
+                "<span class='" + PAPAYA_CONTROL_BAR_LABELS_CSS + "'>Slice: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " +
                 "</div>" +
 
                 "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + index) + "axial" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
-                "<span class='" + PAPAYA_CONTROL_BAR_LABELS_CSS+ "'>Axial: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " +
+                "<span class='" + PAPAYA_CONTROL_BAR_LABELS_CSS + "'>Axial: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " +
                 "</div>" +
 
                 "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + index) + "coronal" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
-                "<span class='" + PAPAYA_CONTROL_BAR_LABELS_CSS+ "'>Coronal: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>"+ " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> "  +
+                "<span class='" + PAPAYA_CONTROL_BAR_LABELS_CSS + "'>Coronal: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " +
                 "</div>" +
 
                 "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + index) + "sagittal" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
-                "<span class='" + PAPAYA_CONTROL_BAR_LABELS_CSS+ "'>Sagittal: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>"+ " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> "  +
+                "<span class='" + PAPAYA_CONTROL_BAR_LABELS_CSS + "'>Sagittal: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>+</button>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>-</button> " +
                 "</div>" +
 
                 "<div id='" + (PAPAYA_DEFAULT_SLIDER_ID + index) + "series" + "' class='" + PAPAYA_SLIDER_CSS + " " + PAPAYA_CONTROL_DIRECTION_SLIDER + "'>" +
-                "<span class='" + PAPAYA_CONTROL_BAR_LABELS_CSS+ "'>Series: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>&lt;</button>"+ " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>&gt;</button> "  +
+                "<span class='" + PAPAYA_CONTROL_BAR_LABELS_CSS + "'>Series: </span>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>&lt;</button>" + " <button type='button' class='" + PAPAYA_CONTROL_INCREMENT_BUTTON_CSS + "'>&gt;</button> " +
                 "</div>" +
                 "&nbsp;&nbsp;&nbsp;" +
                 "<button type='button' " + ((params.kioskMode && ((params.showImageButtons === undefined) || params.showImageButtons)) ? "" : "style='float:right;margin-left:5px;' ") + "class='" + PAPAYA_CONTROL_SWAP_BUTTON_CSS + "'>Swap View</button> " +
@@ -327,21 +327,23 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params,
             $("." + PAPAYA_CONTROL_SWAP_BUTTON_CSS).prop('disabled', true);
             $("." + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS).prop('disabled', true);
             $("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS).prop('disabled', true);
-        } else if (params && ((params.showControls === undefined ) || params.showControls)) {
+        } else if (params && ((params.showControls === undefined) || params.showControls)) {
             containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + "'><span class='fas fa-plus'></span></button> ");
             containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + "'><span class='fas fa-minus'></span></button> ");
             containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + "' title='Swap Views'><span class='fas fa-refresh'></span></button> ");
             containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + "' title='GoTo Center'><span class='fas fa-compress-alt'></span></button> ");
             containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + "' title='GoTo Origin'><span class='fas fa-expand-alt'></span></button> ");
 
-            $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + index).css({display: "none"});
-            $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + index).css({display: "none"});
-            $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + index).css({display: "none"});
-            $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + index).css({display: "none"});
-            $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + index).css({display: "none"});
+            $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + index).css({ display: "none" });
+            $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + index).css({ display: "none" });
+            $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + index).css({ display: "none" });
+            $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + index).css({ display: "none" });
+            $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + index).css({ display: "none" });
         }
     }
-     this.CreateSideNevigation(containerHTML);
+    if (params.imageTools) {
+        this.CreateSideNevigation(containerHTML);
+    }
 
     return viewerHTML;
 };
@@ -420,7 +422,7 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
             }
 
             container.viewer.loadImage(imageRefs, false, true, false);
-        } else if(container.params.binaryImages) {
+        } else if (container.params.binaryImages) {
             imageRefs = container.params.binaryImages[0];
             container.viewer.loadImage(imageRefs, false, false, true);
         } else if (container.params.files) {
@@ -451,25 +453,49 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
 
 papaya.Container.CreateSideNevigation = function (containerHTML) {
 
-    containerHTML.append('<div class="side-navbar"></div>')
+    containerHTML.append('<div class="side-navbar"></div>');
+    containerHTML.append('<div class="side-navpanel" style="display:none">Cene Controls </hr><button id="reverseCene" title="Reverse Cene"><span class="fas fa-backward fa-2x"></span></button><div><input class="input-range" orient="vertical" type="range" step="1" value="5" min="1" max="100"> <span class="range-value"></span></div><button id="repeatCene" title="Repeat Cene"><span class="fas fa-refresh fa-2x"></span></button></div>');
+    containerHTML.append('<div class="side-description" id="img-description"><div>Image Header </div> <hr /><div id="imageHeader"></div><hr/><div>Image Information</div><hr/><div id="imageInfo"></div></div>');
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button class='selected' id='drawCrossHairImages' title='Crosshair Tool'><span class='fas fa-pen-fancy fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='stackImages' title='Stack Tool'><span class='fas fa-layer-group fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='windowLevelImages' title='Window Level Tool'> <span class='fas fa-qrcode fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='zoomImages' title='Zoom Tool'><span class='fas fa-search-plus fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='panImages' title='Pan Tool'><span class='fas fa-arrows-alt fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='magnifyImages' title='Magnify Tool'><span class='fas fa-binoculars fa-2x'></span></button>");
+    //  $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='playClipImages' title='Play Cene Tool'><span class='fas fa-play fa-2x'></span></button>");
+    //  $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='playClipSlider' title='Play Cene Opyions'><span class='fas fa-sliders-h fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS + " button").on("click", function (event) {
+        var button = $(this).attr("id");
+        if (button == "playClipSlider") {
+            //papayaContainers[0].preferences.showCrosshairs = "No";
+            if ($("." + PAPAYA_SIDENAVPANEL_CSS).css("display") == "none") {
+                $("." + PAPAYA_SIDENAVPANEL_CSS).css("display", "block");
+                $("." + PAPAYA_SIDENAVPANEL_CSS).css("top", parseFloat($("#playClipSlider").offset().top)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).width()) - (parseFloat($("." + PAPAYA_SIDENAVPANEL_CSS).width()) / 2) + "px")
 
-    $("."+ PAPAYA_SIDENAVIGATION_CSS).append("<button class='selected' id='drawCrossHairImages' title='Crosshair Tool'><span class='fas fa-pen-fancy fa-2x'></span></button>");
-    $("."+ PAPAYA_SIDENAVIGATION_CSS).append("<button id='stackImages' title='Stack Tool'><span class='fas fa-layer-group fa-2x'></span></button>");
-    $("."+ PAPAYA_SIDENAVIGATION_CSS).append("<button id='windowLevelImages' title='Window Level Tool'> <span class='fas fa-qrcode fa-2x'></span></button>");
-    $("."+ PAPAYA_SIDENAVIGATION_CSS).append("<button id='zoomImages' title='Zoom Tool'><span class='fas fa-search-plus fa-2x'></span></button>");
-    $("."+ PAPAYA_SIDENAVIGATION_CSS).append("<button id='panImages' title='Pan Tool'><span class='fas fa-arrows-alt fa-2x'></span></button>");
-
-    $("."+ PAPAYA_SIDENAVIGATION_CSS + " button").on("click", function (event) {
-        $("button.selected").removeClass("selected");
-        $(this).addClass("selected");
-        var button =  $(this).attr("id");
-
-        if(button != "drawCrossHairImages" ){
-             papayaContainers[0].preferences.showCrosshairs = "No";
-        }else{
+            } else {
+                $("." + PAPAYA_SIDENAVPANEL_CSS).css("display", "none");
+            }
+        }
+        else if (button == "drawCrossHairImages") {
             papayaContainers[0].preferences.showCrosshairs = "Yes";
+            $("button.selected").removeClass("selected");
+            $(this).addClass("selected");
+        }
+        else {
+            papayaContainers[0].preferences.showCrosshairs = "No";
+            $("button.selected").removeClass("selected");
+            $(this).addClass("selected");
         }
         papayaContainers[0].viewer.drawViewer(true, true);
+    });
+
+    var range = $('.input-range'),
+        value = $('.range-value');
+
+    value.html(range.attr('value'));
+
+    range.on('input', function () {
+        value.html(this.value);
     });
 };
 
@@ -509,7 +535,7 @@ papaya.Container.buildAllContainers = function () {
                 params.fullScreenPadding = false;
                 params.kioskMode = true;
                 params.showControlBar = false;
-                $('body').css({"background-color":"black"});
+                $('body').css({ "background-color": "black" });
             }
 
             papaya.Container.fillContainerHTML($(this), false, params);
@@ -525,7 +551,6 @@ papaya.Container.buildAllContainers = function () {
         papayaContainers[0].resizeViewerComponents(true);
     }
     $("." + PAPAYA_SIDENAVIGATION_CSS).css("top", parseFloat($('.papaya-toolbar').height()) + 23).css("height", parseFloat($(".papaya-display").height()) + 3 + parseFloat($(".papaya-viewer").height()) + "px").css("left", parseFloat($(".papaya-viewer").css("padding-left")) - 45 + "px");
-
 };
 
 
@@ -535,7 +560,7 @@ papaya.Container.startPapaya = function () {
         window.scrollTo(0, 0);
     }, 0);
 
-    papaya.Container.DICOM_SUPPORT = (typeof(daikon) !== "undefined");
+    papaya.Container.DICOM_SUPPORT = (typeof (daikon) !== "undefined");
 
     papaya.Container.buildAllContainers();
 };
@@ -688,9 +713,9 @@ papaya.Container.reorientPapaya = function () {
 /*** Prototype Methods ***/
 
 papaya.Container.prototype.resetComponents = function () {
-    this.containerHtml.css({height: "auto"});
-    this.containerHtml.css({width: "auto"});
-    this.containerHtml.css({margin: "auto"});
+    this.containerHtml.css({ height: "auto" });
+    this.containerHtml.css({ width: "auto" });
+    this.containerHtml.css({ margin: "auto" });
     $('head').append("<style>div#papayaViewer:before{ content:'' }</style>");
 };
 
@@ -712,7 +737,7 @@ papaya.Container.prototype.getViewerDimensions = function () {
     if (this.orthogonalTall || !this.orthogonal) {
         height = (this.collapsable ? window.innerHeight : this.containerHtml.parent().height()) - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
             PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding && !this.nestedViewer ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
-            (this.showControlBar ? 2*papaya.ui.Toolbar.SIZE : 0);
+            (this.showControlBar ? 2 * papaya.ui.Toolbar.SIZE : 0);
 
         width = papayaRoundFast(height / ratio);
     } else {
@@ -734,7 +759,7 @@ papaya.Container.prototype.getViewerDimensions = function () {
 
             maxHeight = window.innerHeight - (papaya.viewer.Display.SIZE + (this.kioskMode ? 0 : (papaya.ui.Toolbar.SIZE +
                 PAPAYA_SPACING)) + PAPAYA_SPACING + (this.fullScreenPadding ? (2 * PAPAYA_CONTAINER_PADDING_TOP) : 0)) -
-                (this.showControlBar ? 2*papaya.ui.Toolbar.SIZE : 0);
+                (this.showControlBar ? 2 * papaya.ui.Toolbar.SIZE : 0);
             if (height > maxHeight) {
                 height = maxHeight;
                 width = papayaRoundFast(height * ratio);
@@ -760,7 +785,7 @@ papaya.Container.prototype.getViewerPadding = function () {
 
 
 
-papaya.Container.prototype.readGlobalParams = function() {
+papaya.Container.prototype.readGlobalParams = function () {
     this.kioskMode = (this.params.kioskMode === true) || papaya.utilities.PlatformUtils.smallScreen;
     this.combineParametric = (this.params.combineParametric === true);
 
@@ -862,27 +887,27 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
     dims = this.getViewerDimensions();
     padding = this.getViewerPadding();
 
-    this.toolbarHtml.css({width: dims[0] + "px"});
-    this.toolbarHtml.css({height: papaya.ui.Toolbar.SIZE + "px"});
-    this.toolbarHtml.css({paddingLeft: padding + "px"});
-    this.toolbarHtml.css({paddingBottom: PAPAYA_SPACING + "px"});
+    this.toolbarHtml.css({ width: dims[0] + "px" });
+    this.toolbarHtml.css({ height: papaya.ui.Toolbar.SIZE + "px" });
+    this.toolbarHtml.css({ paddingLeft: padding + "px" });
+    this.toolbarHtml.css({ paddingBottom: PAPAYA_SPACING + "px" });
 
-    this.viewerHtml.css({width: dims[0] + "px"});
-    this.viewerHtml.css({height: dims[1] + "px"});
-    this.viewerHtml.css({paddingLeft: padding + "px"});
+    this.viewerHtml.css({ width: dims[0] + "px" });
+    this.viewerHtml.css({ height: dims[1] + "px" });
+    this.viewerHtml.css({ paddingLeft: padding + "px" });
 
     if (resize) {
         this.viewer.resizeViewer(dims);
     }
 
-    this.displayHtml.css({height: papaya.viewer.Display.SIZE + "px"});
-    this.displayHtml.css({paddingLeft: padding + "px"});
-    this.displayHtml.css({paddingTop: PAPAYA_SPACING + "px"});
+    this.displayHtml.css({ height: papaya.viewer.Display.SIZE + "px" });
+    this.displayHtml.css({ paddingLeft: padding + "px" });
+    this.displayHtml.css({ paddingTop: PAPAYA_SPACING + "px" });
     this.display.canvas.width = dims[0];
 
     if (this.showControls && this.showControlBar) {
-        this.sliderControlHtml.css({width: dims[0] + "px"});
-        this.sliderControlHtml.css({height: papaya.viewer.Display.SIZE + "px"});
+        this.sliderControlHtml.css({ width: dims[0] + "px" });
+        this.sliderControlHtml.css({ height: papaya.viewer.Display.SIZE + "px" });
 
         if (this.kioskMode) {
             diff += 0;
@@ -897,63 +922,63 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
         }
 
         if (dims[0] < (775 + diff)) {
-            $("." + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS).css({display: "none"});
-            $("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS).css({display: "none"});
+            $("." + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS).css({ display: "none" });
+            $("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS).css({ display: "none" });
         } else {
-            $("." + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS).css({display: "inline"});
-            $("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS).css({display: "inline"});
+            $("." + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS).css({ display: "inline" });
+            $("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS).css({ display: "inline" });
         }
 
         if (dims[0] < (600 + diff)) {
-            $("." + PAPAYA_CONTROL_DIRECTION_SLIDER).css({display: "none"});
-            $("." + PAPAYA_CONTROL_MAIN_SLIDER).css({display: "inline"});
+            $("." + PAPAYA_CONTROL_DIRECTION_SLIDER).css({ display: "none" });
+            $("." + PAPAYA_CONTROL_MAIN_SLIDER).css({ display: "inline" });
         } else {
-            $("." + PAPAYA_CONTROL_DIRECTION_SLIDER).css({display: "inline"});
-            $("." + PAPAYA_CONTROL_MAIN_SLIDER).css({display: "none"});
+            $("." + PAPAYA_CONTROL_DIRECTION_SLIDER).css({ display: "inline" });
+            $("." + PAPAYA_CONTROL_MAIN_SLIDER).css({ display: "none" });
         }
 
         if (this.viewer.hasSeries && (dims[0] < (450 + diff))) {
-            $("." + PAPAYA_CONTROL_MAIN_SLIDER).css({display: "none"});
+            $("." + PAPAYA_CONTROL_MAIN_SLIDER).css({ display: "none" });
         }
 
         if (dims[0] < 200) {
-            $("." + PAPAYA_CONTROL_SWAP_BUTTON_CSS).css({display: "none"});
+            $("." + PAPAYA_CONTROL_SWAP_BUTTON_CSS).css({ display: "none" });
         } else {
-            $("." + PAPAYA_CONTROL_SWAP_BUTTON_CSS).css({display: "inline"});
+            $("." + PAPAYA_CONTROL_SWAP_BUTTON_CSS).css({ display: "inline" });
         }
 
         if (this.viewer.hasSeries) {
-            $("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(3).css({display: "inline"});
+            $("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(3).css({ display: "inline" });
         } else {
-            $("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(3).css({display: "none"});
+            $("." + PAPAYA_CONTROL_DIRECTION_SLIDER).eq(3).css({ display: "none" });
         }
     } else if (this.showControls && this.viewer.initialized) {
         if (dims[0] < 600) {
-            $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.containerIndex).css({display: "none"});
-            $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + this.containerIndex).css({display: "none"});
+            $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.containerIndex).css({ display: "none" });
+            $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + this.containerIndex).css({ display: "none" });
         } else if (!this.viewer.controlsHidden) {
-            $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.containerIndex).css({display: "inline"});
-            $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + this.containerIndex).css({display: "inline"});
+            $("#" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + this.containerIndex).css({ display: "inline" });
+            $("#" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + this.containerIndex).css({ display: "inline" });
         }
     }
 
     if (this.isDesktopMode()) {
         if (dims[0] < 600) {
-            this.titlebarHtml.css({visibility: "hidden"});
+            this.titlebarHtml.css({ visibility: "hidden" });
         } else {
-            this.titlebarHtml.css({visibility: "visible"});
+            this.titlebarHtml.css({ visibility: "visible" });
         }
     }
 
     if ((!this.nestedViewer || this.collapsable) && this.fullScreenPadding) {
-        this.containerHtml.css({paddingTop: PAPAYA_CONTAINER_PADDING_TOP + "px"});
+        this.containerHtml.css({ paddingTop: PAPAYA_CONTAINER_PADDING_TOP + "px" });
     } else {
-        this.containerHtml.css({paddingTop: "0"});
+        this.containerHtml.css({ paddingTop: "0" });
     }
 
     if (this.fullScreenPadding) {
-        this.containerHtml.css({paddingLeft: PAPAYA_PADDING + "px"});
-        this.containerHtml.css({paddingRight: PAPAYA_PADDING + "px"});
+        this.containerHtml.css({ paddingLeft: PAPAYA_PADDING + "px" });
+        this.containerHtml.css({ paddingRight: PAPAYA_PADDING + "px" });
     }
 
     if (this.viewer.initialized) {
@@ -964,8 +989,13 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
     }
 
     this.titlebarHtml.css({ width: dims[0] + "px", top: (0) });
-    $("." + PAPAYA_SIDENAVIGATION_CSS).css("top", parseFloat($('.papaya-toolbar').height()) + 23).css("height", parseFloat($(".papaya-display").height()) + 3 + parseFloat($(".papaya-viewer").height()) + "px").css("left", parseFloat($(".papaya-viewer").css("padding-left")) - 45 + "px");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 45 + "px");
+    $("." + PAPAYA_SIDEDESCRIPTION_CSS).css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("max-height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) + parseFloat($("." + PAPAYA_VIEWER_CSS).width()) + 10 + "px").css("width", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 25 + "px");
 
+
+    if ($("." + PAPAYA_SIDENAVPANEL_CSS).css("display") == "block") {
+        $("." + PAPAYA_SIDENAVPANEL_CSS).css("top", parseFloat($("#playClipSlider").offset().top)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).width()) - (parseFloat($("." + PAPAYA_SIDENAVPANEL_CSS).width()) / 2) + "px");
+    }
 };
 
 
@@ -1018,8 +1048,8 @@ papaya.Container.prototype.buildToolbar = function () {
 
 
 
-papaya.Container.prototype.readFile = function(fileEntry, callback) {
-    fileEntry.file(function(callback, file){
+papaya.Container.prototype.readFile = function (fileEntry, callback) {
+    fileEntry.file(function (callback, file) {
         if (callback) {
             if (file.name.charAt(0) !== '.') {
                 callback(file);
@@ -1030,16 +1060,16 @@ papaya.Container.prototype.readFile = function(fileEntry, callback) {
 
 
 
-papaya.Container.prototype.readDir = function(itemEntry) {
+papaya.Container.prototype.readDir = function (itemEntry) {
     this.readDirNextEntries(itemEntry.createReader());
 };
 
 
 
-papaya.Container.prototype.readDirNextEntries = function(dirReader) {
+papaya.Container.prototype.readDirNextEntries = function (dirReader) {
     var container = this;
 
-    dirReader.readEntries(function(entries) {
+    dirReader.readEntries(function (entries) {
         var len = entries.length,
             ctr, entry;
 
@@ -1099,12 +1129,12 @@ papaya.Container.prototype.setUpDnD = function () {
                     len = items.length,
                     ctr, entry;
 
-                for (ctr = 0; ctr<len; ctr += 1) {
+                for (ctr = 0; ctr < len; ctr += 1) {
                     entry = items[ctr];
 
                     if (entry.getAsEntry) {
                         entry = entry.getAsEntry();
-                    } else if(entry.webkitGetAsEntry) {
+                    } else if (entry.webkitGetAsEntry) {
                         entry = entry.webkitGetAsEntry();
                     }
 
@@ -1179,7 +1209,7 @@ papaya.Container.prototype.hasMoreToLoad = function () {
 papaya.Container.prototype.hasImageToLoad = function () {
     if (this.params.images) {
         return (this.loadingImageIndex < this.params.images.length);
-    } else if(this.params.binaryImages) {
+    } else if (this.params.binaryImages) {
         return (this.loadingImageIndex < this.params.binaryImages.length);
     } else if (this.params.encodedImages) {
         return (this.loadingImageIndex < this.params.encodedImages.length);
@@ -1269,7 +1299,7 @@ papaya.Container.prototype.loadNextImage = function () {
             this.params.loadedImages = this.params.images;
             this.params.images = [];
         }
-    } else if(this.params.binaryImages) {
+    } else if (this.params.binaryImages) {
         if (this.loadingImageIndex < this.params.binaryImages.length) {
             loadingNext = true;
             imageRefs = this.params.binaryImages[this.loadingImageIndex];
@@ -1328,11 +1358,11 @@ papaya.Container.prototype.readyForDnD = function () {
     return !this.kioskMode && ((this.params.images === undefined) ||
         (this.loadingImageIndex >= this.params.images.length)) &&
         ((this.params.binaryImages === undefined) ||
-        (this.loadingImageIndex >= this.params.binaryImages.length)) &&
+            (this.loadingImageIndex >= this.params.binaryImages.length)) &&
         ((this.params.encodedImages === undefined) ||
-        (this.loadingImageIndex >= this.params.encodedImages.length)) &&
+            (this.loadingImageIndex >= this.params.encodedImages.length)) &&
         ((this.params.encodedSurfaces === undefined) ||
-        (this.loadingSurfaceIndex >= this.params.encodedSurfaces.length));
+            (this.loadingSurfaceIndex >= this.params.encodedSurfaces.length));
 };
 
 
@@ -1355,7 +1385,7 @@ papaya.Container.prototype.findLoadableImage = function (name, surface) {
     }
 
     if (window[name] !== undefined) {
-        return {encode:name};
+        return { encode: name };
     }
 
     return null;

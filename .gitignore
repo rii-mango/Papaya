@@ -8,3 +8,4 @@ release.sh
 /tests/build/**/
 .jshint*
 juelich/
+/.vs

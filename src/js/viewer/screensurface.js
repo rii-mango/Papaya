@@ -225,7 +225,7 @@ papaya.viewer.ScreenSurface.MOUSE_SENSITIVITY = 0.3;
 papaya.viewer.ScreenSurface.DEFAULT_BACKGROUND = [1, 1, 1];
 papaya.viewer.ScreenSurface.TEXT_SIZE = 50;
 papaya.viewer.ScreenSurface.ORIENTATION_SIZE = 10;
-papaya.viewer.ScreenSurface.RULER_COLOR = [0, 0, 0];
+papaya.viewer.ScreenSurface.RULER_COLOR = [1, 0, 1];
 papaya.viewer.ScreenSurface.RULER_NUM_LINES = 25;
 papaya.viewer.ScreenSurface.RULER_RADIUS = 1;
 
