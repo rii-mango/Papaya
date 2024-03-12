@@ -80,7 +80,9 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.loadingDTI = false;
     this.loadingDTIModRef = null;
     this.tempCoor = new papaya.core.Coordinate();
-    this.Tools = new papaya.viewer.Tools();
+    if (this.container.params.imageTools) {
+        this.Tools = new papaya.viewer.Tools();
+    }
     this.temMagnifyCanvas = document.createElement("canvas");
     this.magnifyCanvas = null;
     this.magnifyCanvasContext = null;
@@ -2136,8 +2138,35 @@ papaya.viewer.Viewer.prototype.mouseDownEvent = function (me) {
             else if (me.button == 1) {
 
             } else {
-                var buttonID = $('.selected').attr('id');
-                this.Tools.GetToolOnMouseDown(buttonID, this, me);
+                if (this.container.params.imageTools) {
+                    var buttonID = $('.selected').attr('id');
+                    this.Tools.GetToolOnMouseDown(buttonID, this, me);
+                } else {
+                    this.isCrosshairMode = true;
+                    this.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
+                    this.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
+                    this.container.preferences.showCrosshairs = "Yes";
+                    this.findClickedSlice(this, this.previousMousePosition.x, this.previousMousePosition.y);
+                    if (this.selectedSlice && (this.selectedSlice !== this.surfaceView)) {
+                        this.grabbedHandle = this.selectedSlice.findProximalRulerHandle(this.convertScreenToImageCoordinateX(this.previousMousePosition.x - this.canvasRect.left, this.selectedSlice),
+                            this.convertScreenToImageCoordinateY(this.previousMousePosition.y - this.canvasRect.top, this.selectedSlice));
+
+                        if (this.grabbedHandle === null) {
+                            this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me), false);
+                            this.resetUpdateTimer(me);
+                        }
+                    } else if (this.selectedSlice && (this.selectedSlice === this.surfaceView)) {
+                        if (this.surfaceView.findProximalRulerHandle(this.previousMousePosition.x - this.canvasRect.left,
+                            this.previousMousePosition.y - this.canvasRect.top)) {
+
+                        } else {
+                            this.isPanning = this.isShiftKeyDown;
+                            this.surfaceView.setStartDynamic(this.previousMousePosition.x, this.previousMousePosition.y);
+                        }
+
+                        this.container.display.drawEmptyDisplay();
+                    }
+                }
             }
             this.isDragging = draggingStarted;
             me.handled = true;

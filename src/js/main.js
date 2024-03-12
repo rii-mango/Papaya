@@ -329,12 +329,20 @@ papaya.Container.fillContainerHTML = function (containerHTML, isDefault, params,
             $("." + PAPAYA_CONTROL_GOTO_CENTER_BUTTON_CSS).prop('disabled', true);
             $("." + PAPAYA_CONTROL_GOTO_ORIGIN_BUTTON_CSS).prop('disabled', true);
         } else if (params && ((params.showControls === undefined) || params.showControls)) {
-            containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + "'><span class='fas fa-plus'></span></button> ");
-            containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + "'><span class='fas fa-minus'></span></button> ");
-            containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + "' title='Swap Views'><span class='fas fa-refresh'></span></button> ");
-            containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + "' title='GoTo Center'><span class='fas fa-compress-alt'></span></button> ");
-            containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + "' title='GoTo Origin'><span class='fas fa-expand-alt'></span></button> ");
+            if (params.imageTools) {
+                containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + "'><span class='fas fa-plus'></span></button> ");
+                containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + "'><span class='fas fa-minus'></span></button> ");
+                containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + "' title='Swap Views'><span class='fas fa-refresh'></span></button> ");
+                containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + "' title='GoTo Center'><span class='fas fa-compress-alt'></span></button> ");
+                containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + "' title='GoTo Origin'><span class='fas fa-expand-alt'></span></button> ");
+            } else {
+                containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + "'>+</button> ");
+                containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + "'>-</button> ");
+                containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + "' title='Swap Views'>Swap View</button> ");
+                containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_CENTER_BUTTON_CSS + "' title='GoTo Center'>Goto Center</button> ");
+                containerHTML.append("<button type='button' id='" + (PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + index) + "' class='" + PAPAYA_CONTROL_MAIN_GOTO_ORIGIN_BUTTON_CSS + "' title='GoTo Origin'>Goto Origin</button> ");
 
+            }
             $("#" + PAPAYA_CONTROL_MAIN_INCREMENT_BUTTON_CSS + index).css({ display: "none" });
             $("#" + PAPAYA_CONTROL_MAIN_DECREMENT_BUTTON_CSS + index).css({ display: "none" });
             $("#" + PAPAYA_CONTROL_MAIN_SWAP_BUTTON_CSS + index).css({ display: "none" });
