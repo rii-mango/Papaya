@@ -464,9 +464,6 @@ papaya.Container.CreateSideNevigation = function (containerHTML) {
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='zoomImages' title='Zoom Tool'><span class='fas fa-search-plus fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='panImages' title='Pan Tool'><span class='fas fa-arrows-alt fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='magnifyImages' title='Magnify Tool'><span class='fas fa-binoculars fa-2x'></span></button>");
-    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='invertImageTool' title='Invert Image Tool'><span class='fas fa-adjust fa-2x'></span></button>");
-    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='playClipImages' title='Play Cene Tool'><span class='fas fa-play fa-2x'></span></button>");
-    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='playClipSlider' title='Play Cene Opyions'><span class='fas fa-sliders-h fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS + " button").on("click", function (event) {
         var button = $(this).attr("id");
         if (button == "playClipSlider") {
