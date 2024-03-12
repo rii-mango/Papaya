@@ -58,9 +58,9 @@ papaya.ui.Menu.doShowMenu = function (viewer, el, menu, right) {
     left = pos.left - parentPos.left + (right ? ((-1 * mWidth) + eWidth) : 0) + "px";
 
     if (viewer.container.showControlBar && viewer.container.kioskMode && viewer.container.showImageButtons) {
-        top = (-1 * PAPAYA_SPACING - mHeight) + "px";
+        top = (-1 * PAPAYA_MENU_SPACING - mHeight) + "px";
     } else {
-        top = ($(el).outerHeight() + (right ? 0 : PAPAYA_SPACING)) + "px";
+        top = ($(el).outerHeight() + (right ? 20 : PAPAYA_MENU_SPACING)) + "px";
     }
 
     //show the menu directly over the placeholder
@@ -204,7 +204,8 @@ papaya.ui.Menu.prototype.setMenuButton = function (buttonId) {
 papaya.ui.Menu.prototype.buildMenu = function () {
     var ctr, html, buttonHtml;
 
-    html = "<ul id='" + this.menuId + "' class='" + PAPAYA_MENU_CSS + "'></ul>";
+    html = "<ul id='" + this.menuId + "' class='" + 
+    PAPAYA_MENU_CSS + "'></ul>";
     this.htmlParent.append(html);
 
     if (this.viewer.container.contextManager && papaya.utilities.PlatformUtils.smallScreen) {

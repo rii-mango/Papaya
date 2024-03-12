@@ -167,8 +167,8 @@ papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA = {
 
 papaya.ui.Toolbar.BASE_IMAGE_MENU_DATA = {
     "items": [
-        //{"label": "Show Header", "action": "ShowHeader"},
-        //{"label": "Show Image Info", "action": "ImageInfo"},
+        {"label": "Show Header", "action": "ShowHeader"},
+        {"label": "Show Image Info", "action": "ImageInfo"},
         {"label": "DisplayRange", "action": "ChangeRange", "type": "displayrange", "method": "getRange"},
             papaya.ui.Toolbar.OVERLAY_IMAGE_MENU_DATA.items[6],
         {"label": "Rotation", "action": "Rotation", "items": [

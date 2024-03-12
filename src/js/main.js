@@ -463,9 +463,9 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
 papaya.Container.CreateSideNevigation = function (containerHTML) {
 
     containerHTML.append('<div class="side-navbar"></div>');
-    containerHTML.append('<div class="side-navpanel" style="display:none">Cene Controls </hr><button id="reverseCene" title="Reverse Cene"><span class="fas fa-backward fa-2x"></span></button><div><input class="input-range" orient="vertical" type="range" step="1" value="5" min="1" max="100"> <span class="range-value"></span></div><button id="repeatCene" title="Repeat Cene"><span class="fas fa-refresh fa-2x"></span></button></div>');
-    containerHTML.append('<div class="side-description" id="img-description"><div>Image Header </div> <hr /><div id="imageHeader"></div><hr/><div>Image Information</div><hr/><div id="imageInfo"></div></div>');
-    containerHTML.append('<button class="vertical-text"> <span>Show Image Description</span></button>');
+    //  containerHTML.append('<div class="side-navpanel" style="display:none">Cene Controls </hr><button id="reverseCene" title="Reverse Cene"><span class="fas fa-backward fa-2x"></span></button><div><input class="input-range" orient="vertical" type="range" step="1" value="5" min="1" max="100"> <span class="range-value"></span></div><button id="repeatCene" title="Repeat Cene"><span class="fas fa-refresh fa-2x"></span></button></div>');
+    //  containerHTML.append('<div class="side-description" id="img-description"><div>Image Header </div> <hr /><div id="imageHeader"></div><hr/><div>Image Information</div><hr/><div id="imageInfo"></div></div>');
+    // containerHTML.append('<button class="vertical-text"> <span>Show Image Description</span></button>');
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button class='selected' id='drawCrossHairImages' title='Crosshair Tool'><span class='fas fa-pen-fancy fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='stackImages' title='Stack Tool'><span class='fas fa-layer-group fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='windowLevelImages' title='Window Level Tool'> <span class='fas fa-qrcode fa-2x'></span></button>");
@@ -511,22 +511,22 @@ papaya.Container.CreateSideNevigation = function (containerHTML) {
         papayaContainers[0].viewer.drawViewer(true, true);
     });
 
-    $("." + PAPAYA_VERTICLE_TEXT_BUTTON_TEXT).on("click", function () {
-        if ($("#img-description").css("display") == "none") {
-            $("#img-description").css("display", "block");
-        } else {
-            $("#img-description").css("display", "none");
-        }
-    });
+    //$("." + PAPAYA_VERTICLE_TEXT_BUTTON_TEXT).on("click", function () {
+    //    if ($("#img-description").css("display") == "none") {
+    //        $("#img-description").css("display", "block");
+    //    } else {
+    //        $("#img-description").css("display", "none");
+    //    }
+    //});
 
-    var range = $('.input-range'),
-        value = $('.range-value');
+    //var range = $('.input-range'),
+    //    value = $('.range-value');
 
-    value.html(range.attr('value'));
+    //value.html(range.attr('value'));
 
-    range.on('input', function () {
-        value.html(this.value);
-    });
+    //range.on('input', function () {
+    //    value.html(this.value);
+    //});
 };
 
 
@@ -1019,17 +1019,17 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
     }
 
     this.titlebarHtml.css({ width: dims[0] + "px", top: (0) });
-    if (params.imageTools) {
-        $("." + PAPAYA_SIDENAVIGATION_CSS).css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 45 + "px");
-        $("." + PAPAYA_SIDEDESCRIPTION_CSS).css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("max-height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) + parseFloat($("." + PAPAYA_VIEWER_CSS).width()) + 10 + "px").css("width", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 25 + "px");
-        //  $("#buttonViewDiscription").css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("max-height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) + parseFloat($("." + PAPAYA_VIEWER_CSS).width()) + 10 + "px").css("width", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 25 + "px");
-        $("." + PAPAYA_VERTICLE_TEXT_BUTTON_TEXT).css("top", parseFloat($("#playClipSlider").offset().top - 100)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).width()) - 7 - (parseFloat($("." + PAPAYA_SIDENAVPANEL_CSS).width()) / 2) + "px");
+    //if (params.imageTools) {
+    //    $("." + PAPAYA_SIDENAVIGATION_CSS).css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 45 + "px");
+    //    $("." + PAPAYA_SIDEDESCRIPTION_CSS).css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("max-height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) + parseFloat($("." + PAPAYA_VIEWER_CSS).width()) + 10 + "px").css("width", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 25 + "px");
+    //    //  $("#buttonViewDiscription").css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("max-height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) + parseFloat($("." + PAPAYA_VIEWER_CSS).width()) + 10 + "px").css("width", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 25 + "px");
+    //    $("." + PAPAYA_VERTICLE_TEXT_BUTTON_TEXT).css("top", parseFloat($("#playClipSlider").offset().top - 100)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).width()) - 7 - (parseFloat($("." + PAPAYA_SIDENAVPANEL_CSS).width()) / 2) + "px");
 
 
-        if ($("." + PAPAYA_SIDENAVPANEL_CSS).css("display") == "block") {
-            $("." + PAPAYA_SIDENAVPANEL_CSS).css("top", parseFloat($("#playClipSlider").offset().top)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).width()) - (parseFloat($("." + PAPAYA_SIDENAVPANEL_CSS).width()) / 2) + "px");
-        }
-    }
+    //    if ($("." + PAPAYA_SIDENAVPANEL_CSS).css("display") == "block") {
+    //        $("." + PAPAYA_SIDENAVPANEL_CSS).css("top", parseFloat($("#playClipSlider").offset().top)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).width()) - (parseFloat($("." + PAPAYA_SIDENAVPANEL_CSS).width()) / 2) + "px");
+    //    }
+    //}
 };
 
 

@@ -1342,9 +1342,9 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
             }
         }
 
-        $("#imageHeader").html(this.getHeaderDescription());
-        var imagedata = "<span style='color: #B5CBD3'>File Name : </span>" + this.getFilename(0) + "<br/><span style='color: #B5CBD3'>Byte Description : </span>" + this.getByteTypeDescription(0) + "<br/> <span style='color: #B5CBD3'>Image Diamentions : </span>" + this.getImageDimensionsDescription(0) + "<br/><span style='color: #B5CBD3'> Voxel Dimention : </span>" + this.getVoxelDimensionsDescription(0) + "<br/><span style='color: #B5CBD3'> Orientations : </span>" + this.getOrientationDescription(0) + "<br/><span style='color: #B5CBD3'> Image Description :</span> " + this.getImageDescription(0);
-        $("#imageInfo").html(imagedata);
+       // $("#imageHeader").html(this.getHeaderDescription());
+       // var imagedata = "<span style='color: #B5CBD3'>File Name : </span>" + this.getFilename(0) + "<br/><span style='color: #B5CBD3'>Byte Description : </span>" + this.getByteTypeDescription(0) + "<br/> <span style='color: #B5CBD3'>Image Diamentions : </span>" + this.getImageDimensionsDescription(0) + "<br/><span style='color: #B5CBD3'> Voxel Dimention : </span>" + this.getVoxelDimensionsDescription(0) + "<br/><span style='color: #B5CBD3'> Orientations : </span>" + this.getOrientationDescription(0) + "<br/><span style='color: #B5CBD3'> Image Description :</span> " + this.getImageDescription(0);
+       // $("#imageInfo").html(imagedata);
     }
 };
 

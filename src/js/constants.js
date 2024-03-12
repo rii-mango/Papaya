@@ -31,7 +31,7 @@ var PAPAYA_TOOLBAR_CSS = "papaya-toolbar",
     PAPAYA_SIDENAVIGATION_CSS = "side-navbar",
     PAPAYA_SIDENAVPANEL_CSS = "side-navpanel",
     PAPAYA_SIDEDESCRIPTION_CSS = "side-description",
-    PAPAYA_VERTICLE_TEXT_BUTTON_TEXT = "vertical-text";
+    PAPAYA_VERTICLE_TEXT_BUTTON_TEXT = "vertical-button";
 // Display CSS classes
 var PAPAYA_DISPLAY_CSS = "papaya-display";
 
@@ -98,6 +98,7 @@ var PAPAYA_DEFAULT_VIEWER_ID = "papayaViewer",
 // Misc constants
 var PAPAYA_SPACING = 3,
     PAPAYA_PADDING = 8,
+    PAPAYA_MENU_SPACING = 25,
     PAPAYA_CONTAINER_PADDING = 20,
     PAPAYA_CONTAINER_PADDING_TOP = PAPAYA_CONTAINER_PADDING,
     PAPAYA_MANGO_INSTALLED = "mangoinstalled",
