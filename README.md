@@ -55,7 +55,27 @@ Build using npm: `npm run build`
 <div class="papaya" data-params="params"></div>
 
 ```
+#### To automatically load images and configure other options with Tools like Zoom,PAN,STACK and Magnify
+```html
+<head>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+   <script type="text/javascript" src="../src/js/viewer/viewerTools.js"></script>
+    ...
+    <script type="text/javascript">
+        var params = [];
+        params["imageTools"] = true;
+        params["images"] = ["data/myBaseImage.nii.gz", "data/myOverlayImage.nii.gz"];
+        params["surfaces"] = ["data/mySurface.surf.gii"];
+        params["myOverlayImage.nii.gz"] = {"min": 4, "max": 10};
+    </script>
+</head>
 
+...
+
+<div class="papaya" data-params="params"></div>
+
+
+```
 Acknowledgments
 -----
 Papaya uses:
