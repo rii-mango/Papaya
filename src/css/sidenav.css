@@ -1,0 +1,108 @@
+.side-navbar {
+    width: 50px;
+    position: absolute;
+    background-color: black;
+    color: gold;
+    text-align: center;
+    border: 1px solid white;
+}
+
+    .side-navbar button {
+        width: 40px;
+        padding: 2px;
+        height: 40px;
+        margin: 4px auto;
+        padding: 2px;
+        cursor: pointer;
+        color: white;
+        background-color: darkgoldenrod;
+        border: 1px solid white;
+    }
+
+        .side-navbar button.selected {
+            background-color: red;
+            color: white;
+        }
+
+.side-navpanel {
+    width: 75px;
+    background-color: black;
+    color: darkgoldenrod;
+    text-align: center;
+    border: 1px solid white;
+    position: absolute;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+    .side-navpanel button {
+        width: 40px;
+        padding: 2px;
+        height: 40px;
+        margin: 4px auto;
+        padding: 2px;
+        cursor: pointer;
+        color: white;
+        background-color: darkgoldenrod;
+        border: 1px solid white;
+    }
+
+.input-range {
+    -webkit-appearance: none;
+    height: 200px;
+    border-radius: 5px;
+    background: #ccc;
+    outline: none;
+    writing-mode: bt-lr;
+    -webkit-appearance: slider-vertical;
+    width: 10px;
+}
+
+.range-value {
+    position: absolute;
+    top: 50%;
+    font-weight: bolder;
+    font-size: medium;
+    margin-left: 5px;
+    border: 1px solid white;
+    padding: 2px;
+}
+
+.side-description {
+    z-index: 100;
+    position: absolute;
+    background-color: black;
+    color: gold;
+    text-align: center;
+    display:none;
+    border: 1px solid white;
+    overflow-y:scroll;
+    word-wrap:break-word;
+}
+
+#imageHeader, #imageInfo {
+    text-align: left;
+    padding: 10px;
+    line-height:18px;
+}
+
+.side-description div {
+    padding: 5px;
+}
+.vertical-text {  
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    white-space: nowrap;
+    display: block;
+    z-index:110;
+    background-color:black;
+    border-radius:5px;
+    color:white;
+    padding:5px;
+    position:absolute;
+    width: 160px;
+    
+}

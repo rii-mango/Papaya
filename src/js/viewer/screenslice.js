@@ -27,6 +27,7 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
         this.screenOffsetX = 0;
         this.screenOffsetY = 0;
         this.screenDim = 0;
+        this.sliceCounts = 0;
         this.screenTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
         this.zoomTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
         this.finalTransform = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
@@ -43,6 +44,7 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
         this.tempPoint = new papaya.core.Point();
         this.canvasDTILines = null;
         this.contextDTILines = null;
+        this.viewer = papayaContainers[0].viewer;
     };
 
 
@@ -296,12 +298,15 @@ papaya.viewer.ScreenSlice.prototype.updateSlice = function (slice, force) {
                             if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_AXIAL) {
                                 value = this.screenVolumes[ctr].volume.getVoxelAtMM(ctrX * voxelDims.xSize, ctrY *
                                     voxelDims.ySize, slice * voxelDims.zSize, timepoint, !interpolation);
+                                this.sliceCounts = this.viewer.axialSlice.screenVolumes[0].volume.header.imageDimensions.zDim
                             } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_CORONAL) {
                                 value = this.screenVolumes[ctr].volume.getVoxelAtMM(ctrX * voxelDims.xSize, slice *
                                     voxelDims.ySize, ctrY * voxelDims.zSize, timepoint, !interpolation);
+                                this.sliceCounts = this.viewer.axialSlice.screenVolumes[0].volume.header.imageDimensions.yDim
                             } else if (this.sliceDirection === papaya.viewer.ScreenSlice.DIRECTION_SAGITTAL) {
                                 value = this.screenVolumes[ctr].volume.getVoxelAtMM(slice * voxelDims.xSize, ctrX *
                                     voxelDims.ySize, ctrY * voxelDims.zSize, timepoint, !interpolation);
+                                this.sliceCounts = this.viewer.axialSlice.screenVolumes[0].volume.header.imageDimensions.xDim
                             }
                         }
 

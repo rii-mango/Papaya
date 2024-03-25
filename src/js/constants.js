@@ -27,9 +27,11 @@ var PAPAYA_VIEWER_CSS = "papaya-viewer";
 var PAPAYA_TOOLBAR_CSS = "papaya-toolbar",
     PAPAYA_TITLEBAR_CSS = "papaya-titlebar",
     PAPAYA_SLIDER_CSS = "papaya-slider-slice",
-    PAPAYA_KIOSK_CONTROLS_CSS = "papaya-kiosk-controls";
-
-
+    PAPAYA_KIOSK_CONTROLS_CSS = "papaya-kiosk-controls",
+    PAPAYA_SIDENAVIGATION_CSS = "side-navbar",
+    PAPAYA_SIDENAVPANEL_CSS = "side-navpanel",
+    PAPAYA_SIDEDESCRIPTION_CSS = "side-description",
+    PAPAYA_VERTICLE_TEXT_BUTTON_TEXT = "vertical-button";
 // Display CSS classes
 var PAPAYA_DISPLAY_CSS = "papaya-display";
 
@@ -86,7 +88,7 @@ var PAPAYA_UTILS_CHECKFORJS_CSS = "checkForJS",
 
 
 // Deprecated IDs
-var PAPAYA_DEFAULT_VIEWER_ID  = "papayaViewer",
+var PAPAYA_DEFAULT_VIEWER_ID = "papayaViewer",
     PAPAYA_DEFAULT_DISPLAY_ID = "papayaDisplay",
     PAPAYA_DEFAULT_TOOLBAR_ID = "papayaToolbar",
     PAPAYA_DEFAULT_CONTAINER_ID = "papayaContainer",
@@ -96,6 +98,7 @@ var PAPAYA_DEFAULT_VIEWER_ID  = "papayaViewer",
 // Misc constants
 var PAPAYA_SPACING = 3,
     PAPAYA_PADDING = 8,
+    PAPAYA_MENU_SPACING = 25,
     PAPAYA_CONTAINER_PADDING = 20,
     PAPAYA_CONTAINER_PADDING_TOP = PAPAYA_CONTAINER_PADDING,
     PAPAYA_MANGO_INSTALLED = "mangoinstalled",

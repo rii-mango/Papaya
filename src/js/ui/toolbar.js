@@ -806,7 +806,8 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             }
 
             dialog.showDialog();
-        } else if (action.startsWith("SurfaceInfo")) {
+        }
+        else if (action.startsWith("SurfaceInfo")) {
             imageIndex = action.substring(action.lastIndexOf("-") + 1);
 
             dialog = new papaya.ui.Dialog(this.container, "Surface Info", papaya.ui.Toolbar.SURFACE_INFO_DATA,
