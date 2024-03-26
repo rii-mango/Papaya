@@ -74,22 +74,23 @@
     background-color: black;
     color: gold;
     text-align: center;
-    display:none;
+    display: none;
     border: 1px solid white;
-    overflow-y:scroll;
-    word-wrap:break-word;
+    overflow-y: scroll;
+    word-wrap: break-word;
 }
 
 #imageHeader, #imageInfo {
     text-align: left;
     padding: 10px;
-    line-height:18px;
+    line-height: 18px;
 }
 
 .side-description div {
     padding: 5px;
 }
-.vertical-text {  
+
+.vertical-text {
     -webkit-transform: rotate(-90deg);
     -moz-transform: rotate(-90deg);
     -o-transform: rotate(-90deg);
@@ -97,12 +98,135 @@
     transform: rotate(-90deg);
     white-space: nowrap;
     display: block;
-    z-index:110;
-    background-color:black;
-    border-radius:5px;
-    color:white;
-    padding:5px;
-    position:absolute;
+    z-index: 110;
+    background-color: black;
+    border-radius: 5px;
+    color: white;
+    padding: 5px;
+    position: absolute;
     width: 160px;
-    
+}
+
+.side-nav-tools-config {
+    width: 150px;
+    background-color: black;
+    color: white;
+    text-align: center;
+    border: 1px solid white;
+    position: absolute;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+    .side-nav-tools-config div {
+        text-align: left;
+        padding: 5px;
+        color: darkgoldenrod;
+    }
+
+        .side-nav-tools-config div select {
+            display: block;
+            width: 100%;
+            padding: 6px 0px;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #555;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: left;
+        }
+
+.overlays {
+    color: #e4ad00;
+    cursor: default; /* prevents cursor from changing to the i bar on the overlays*/
+    pointer-events: none;
+    text-overflow: ellipsis;
+    max-width: 48%;
+    font-size: 11px;
+    white-space: nowrap; /* overflow: hidden;*/
+    z-index: 3;
+    line-height: 15px;
+}
+
+#crossHairAxialRed {
+    background-color: red;
+    z-index: 90;
+}
+
+#crossHairCoronalGreen {
+    background-color: green;
+    z-index: 90
+}
+
+#crossHairSagitalBlue {
+    background-color: blue;
+    z-index: 90;
+}
+
+#crossHairSurfaceYellow {
+    background-color: yellow;
+    z-index: 90;
+}
+
+#selectedSliceAxialRed {
+    background-color: red;
+    z-index: 90;
+    height: 20px;
+    width: 70px;
+    border: 2px solid white;
+    color: white;
+    display: none;
+    text-align: center;
+}
+
+#selectedSliceCoronalGreen {
+    background-color: green;
+    z-index: 90;
+    height: 20px;
+    width: 70px;
+    border: 2px solid white;
+    display: none;
+    color: white;
+    text-align: center;
+}
+
+#selectedSliceSagitalBlue {
+    background-color: blue;
+    z-index: 90;
+    height: 20px;
+    width: 70px;
+    border: 2px solid white;
+    display: none;
+    color: white;
+    text-align: center;
+}
+
+#selectedSliceSurfaceYellow {
+    background-color: yellow;
+    z-index: 90;
+    height: 20px;
+    width: 70px;
+    border: 2px solid white;
+    display: none;
+    color: red;
+    text-align: center;
+}
+
+#mainImageOverlaysTopLeft {
+    text-align: left;
+    display: none;
+}
+#mainImageOverlaysTopRight {
+    text-align: right;
+    display: none;
+}
+#mainImageOverlaysBottomLeft {
+    text-align: left;
+    display: none;
+}
+#mainImageOverlaysBottomRight {
+    text-align: right;
+    display: none;
 }

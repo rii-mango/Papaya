@@ -463,70 +463,53 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
 papaya.Container.CreateSideNevigation = function (containerHTML) {
 
     containerHTML.append('<div class="side-navbar"></div>');
-    //  containerHTML.append('<div class="side-navpanel" style="display:none">Cene Controls </hr><button id="reverseCene" title="Reverse Cene"><span class="fas fa-backward fa-2x"></span></button><div><input class="input-range" orient="vertical" type="range" step="1" value="5" min="1" max="100"> <span class="range-value"></span></div><button id="repeatCene" title="Repeat Cene"><span class="fas fa-refresh fa-2x"></span></button></div>');
+    containerHTML.append('<div class="side-navpanel" style="display:none">Cene Controls <hr/><button id="reverseCene" title="Reverse Cene"><span class="fas fa-backward fa-2x"></span></button><div><input class="input-range" orient="vertical" type="range" step="1" value="10" min="1" max="100"> <span class="range-value"></span></div><button id="repeatCene" style="background-color:green;" title="Repeat Cene"><span class="fas fa-refresh fa-2x"></span></button></div>');
+    var rulerLineSize = "<div>Line Size : <select id='" + PAPAYA_RULER_LINE_WIDTH + "'><option value='1' selected=selected>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option></select></div>";
+    var rulerFontSize = "<div>Font Size : <select id='" + PAPAYA_RULER_FONT_SIZE + "'><option value='14' selected=selected>14</option><option value='16'>16</option><option value='18'>18</option><option value='20'>20</option><option value='25'>25</option></select></div>";
+    var rulerLengthSize = "<div>Length Size : <select id='" + PAPAYA_RULER_LENGTH_UNIT + "'><option value='mm' selected=selected>Milimeters</option>" +
+        '<option value = "cm" > Centimeters</option >' +
+        '<option value="inches">Inches</option>' +
+        '<option value="feet">Feet</option>' +
+        '<option value="micrometer">Micrometers</option>' +
+        '<option value="meter">Meters</option>' +
+        '<option value="yd">Yards</option></select></div>';
+
+    var rulerColor = "<div>Ruler Color : <select id='" + PAPAYA_RULER_COLOR + "'>" +
+        '<option value = "red"> Red</option>' +
+        '<option value = "white" > White</option>' +
+        '<option value="yellow">Yellow</option>' +
+        '<option value="blue">Blue</option>' +
+        '<option value="#FF1493" selected = selected >Pink</option>' +
+        '<option value="green">Green</option>' +
+        '<option value="yellowgreen" >Yellowish Green</option>' +
+        '<option value="maroon">Maroon</option></select></div>';
+
+    var rulerActiveColor = "<div>Active Ruler Color : <select id='" + PAPAYA_RULER_ACTIVE_COLOR + "'>" +
+        '<option value = "red"> Red</option>' +
+        '<option value = "white" > White</option>' +
+        '<option value="yellow" selected = selected>Yellow</option>' +
+        '<option value="blue">Blue</option>' +
+        '<option value="#FF1493" >Pink</option>' +
+        '<option value="green">Green</option>' +
+        '<option value="yellowgreen" >Yellowish Green</option>' +
+        '<option value="maroon">Maroon</option></select></div>';
+
+    containerHTML.append('<div class="' + PAPAYA_SIDETOOL_CONFIGURATION_CSS + '" style="display:none"><strong>Tool Configuration </strong><hr/>' + rulerLineSize + rulerFontSize + rulerLengthSize + rulerColor + rulerActiveColor + '</div>');
     //  containerHTML.append('<div class="side-description" id="img-description"><div>Image Header </div> <hr /><div id="imageHeader"></div><hr/><div>Image Information</div><hr/><div id="imageInfo"></div></div>');
     // containerHTML.append('<button class="vertical-text"> <span>Show Image Description</span></button>');
-    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button class='selected' id='drawCrossHairImages' title='Crosshair Tool'><span class='fas fa-pen-fancy fa-2x'></span></button>");
-    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='stackImages' title='Stack Tool'><span class='fas fa-layer-group fa-2x'></span></button>");
-    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='windowLevelImages' title='Window Level Tool'> <span class='fas fa-qrcode fa-2x'></span></button>");
-    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='zoomImages' title='Zoom Tool'><span class='fas fa-search-plus fa-2x'></span></button>");
-    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='panImages' title='Pan Tool'><span class='fas fa-arrows-alt fa-2x'></span></button>");
-    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='magnifyImages' title='Magnify Tool'><span class='fas fa-binoculars fa-2x'></span></button>");
-    $("." + PAPAYA_SIDENAVIGATION_CSS + " button").on("click", function (event) {
-        var button = $(this).attr("id");
-        if (button == "playClipSlider") {
-            //papayaContainers[0].preferences.showCrosshairs = "No";
-            if ($("." + PAPAYA_SIDENAVPANEL_CSS).css("display") == "none") {
-                $("." + PAPAYA_SIDENAVPANEL_CSS).css("display", "block");
-                $("." + PAPAYA_SIDENAVPANEL_CSS).css("top", parseFloat($("#playClipSlider").offset().top)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).width()) - (parseFloat($("." + PAPAYA_SIDENAVPANEL_CSS).width()) / 2) + "px")
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button class='selected' id='" + PAPAYA_SIDENAV_BUTTON_CROSSHAIR + "' title='Crosshair Tool'><span class='fas fa-pen-fancy fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_STACK + "' title='Stack Tool'><span class='fas fa-layer-group fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_WINDOWLEVEL + "' title='Window Level Tool'> <span class='fas fa-qrcode fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_ZOOM + "' title='Zoom Tool'><span class='fas fa-search-plus fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_PAN + "' title='Pan Tool'><span class='fas fa-arrows-alt fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_MAGNIFY + "' title='Magnify Tool'><span class='fas fa-binoculars fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_INVERT + "' title='Invert Tool'><span class='fas fa-adjust fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_PLAYCENE + "' title='Play Clip Tool'><span class='fas fa-play fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_RULER + "' name='drawtool' title='Draw Ruler Tool'><span class='fas fa-pencil-ruler fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_RESET + "' title='Reset Tool'><span class='fas fa-redo fa-2x'></span></button>");
 
-            } else {
-                $("." + PAPAYA_SIDENAVPANEL_CSS).css("display", "none");
-            }
-        }
-        else if (button == "drawCrossHairImages") {
-            papayaContainers[0].preferences.showCrosshairs = "Yes";
-            $("button.selected").removeClass("selected");
-            $(this).addClass("selected");
-        }
-
-        else if (button == "invertImageTool") {
-            var action;
-            if (this.isInvert == 0) {
-                action = "ColorTable-Inverted-0";
-                this.isInvert = 1;
-            } else {
-                action = "ColorTable-Grayscale-0";
-                this.isInvert = 0;
-            }
-            var colorTableName = action.substring(action.indexOf("-") + 1, action.lastIndexOf("-"));
-            // imageIndex = action.substring(action.lastIndexOf("-") + 1);
-            papayaContainers[0].viewer.screenVolumes[0].changeColorTable(papayaContainers[0].viewer, colorTableName);
-        }
-        else {
-            papayaContainers[0].preferences.showCrosshairs = "No";
-            $("button.selected").removeClass("selected");
-            $(this).addClass("selected");
-        }
-        papayaContainers[0].viewer.drawViewer(true, true);
-    });
-
-    //$("." + PAPAYA_VERTICLE_TEXT_BUTTON_TEXT).on("click", function () {
-    //    if ($("#img-description").css("display") == "none") {
-    //        $("#img-description").css("display", "block");
-    //    } else {
-    //        $("#img-description").css("display", "none");
-    //    }
-    //});
-
-    //var range = $('.input-range'),
-    //    value = $('.range-value');
-
-    //value.html(range.attr('value'));
-
-    //range.on('input', function () {
-    //    value.html(this.value);
-    //});
+    var viwerTool = new papaya.viewer.Tools();
+    viwerTool.ButtonClickEvent();
 };
 
 
@@ -580,7 +563,8 @@ papaya.Container.buildAllContainers = function () {
 
         papayaContainers[0].resizeViewerComponents(true);
     }
-    $("." + PAPAYA_SIDENAVIGATION_CSS).css("top", parseFloat($('.papaya-toolbar').height()) + 23).css("height", parseFloat($(".papaya-display").height()) + 3 + parseFloat($(".papaya-viewer").height()) + "px").css("left", parseFloat($(".papaya-viewer").css("padding-left")) - 45 + "px");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 45 + "px");
+
 };
 
 
@@ -1021,14 +1005,8 @@ papaya.Container.prototype.resizeViewerComponents = function (resize) {
     this.titlebarHtml.css({ width: dims[0] + "px", top: (0) });
     if (params.imageTools) {
         $("." + PAPAYA_SIDENAVIGATION_CSS).css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 45 + "px");
-        //$("." + PAPAYA_SIDEDESCRIPTION_CSS).css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("max-height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) + parseFloat($("." + PAPAYA_VIEWER_CSS).width()) + 10 + "px").css("width", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 25 + "px");
-        ////  $("#buttonViewDiscription").css("top", parseFloat($('.' + PAPAYA_TOOLBAR_CSS).height()) + 23).css("height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("max-height", parseFloat($("." + PAPAYA_DISPLAY_CSS).height()) + 3 + parseFloat($("." + PAPAYA_VIEWER_CSS).height()) + "px").css("left", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) + parseFloat($("." + PAPAYA_VIEWER_CSS).width()) + 10 + "px").css("width", parseFloat($("." + PAPAYA_VIEWER_CSS).css("padding-left")) - 25 + "px");
-        //$("." + PAPAYA_VERTICLE_TEXT_BUTTON_TEXT).css("top", parseFloat($("#playClipSlider").offset().top - 100)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).width()) - 7 - (parseFloat($("." + PAPAYA_SIDENAVPANEL_CSS).width()) / 2) + "px");
-
-
-        //if ($("." + PAPAYA_SIDENAVPANEL_CSS).css("display") == "block") {
-        //    $("." + PAPAYA_SIDENAVPANEL_CSS).css("top", parseFloat($("#playClipSlider").offset().top)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).width()) - (parseFloat($("." + PAPAYA_SIDENAVPANEL_CSS).width()) / 2) + "px");
-        //}
+        $("." + PAPAYA_SIDENAVPANEL_CSS).css("top", parseFloat($("#" + PAPAYA_SIDENAV_BUTTON_PLAYCENE).offset().top)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).width()) - (parseFloat($("." + PAPAYA_SIDENAVPANEL_CSS).width()) / 2) + "px")
+        $("." + PAPAYA_SIDETOOL_CONFIGURATION_CSS).css("top", parseFloat($("#" + PAPAYA_SIDENAV_BUTTON_RULER).offset().top)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - (parseFloat($("." + PAPAYA_SIDETOOL_CONFIGURATION_CSS).width()) + 12) + "px");
     }
 };
 

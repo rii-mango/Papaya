@@ -113,7 +113,8 @@ papaya.ui.Toolbar.MENU_DATA = {
             "items": [
                 {"label": "Orientation", "action": "ShowOrientation", "type": "checkbox", "method": "isShowingOrientation"},
                 {"label": "Crosshairs", "action": "ShowCrosshairs", "type": "checkbox", "method": "isShowingCrosshairs"},
-                {"label": "Ruler", "action": "ShowRuler", "type": "checkbox", "method": "isShowingRuler"},
+                { "label": "Ruler", "action": "ShowRuler", "type": "checkbox", "method": "isShowingRuler" },
+                { "label": "Overlays", "action": "ShowOverlays", "type": "checkbox", "method": "isShowingOverlays" },
                 {"type": "spacer", "required": "hasSurface"},
                 {"label": "Surface Planes", "action": "ShowSurfacePlanes", "type": "checkbox", "method": "isShowingSurfacePlanes", "required" : "hasSurface"}
             ]
@@ -835,7 +836,18 @@ papaya.ui.Toolbar.prototype.doAction = function (action, file, keepopen) {
             }
             this.viewer.drawViewer();
             this.closeAllMenus();
-        } else if (action.startsWith("ShowOrientation")) {
+        } else if (action.startsWith("ShowOverlays")) {
+            if (this.container.preferences.showOverlays === "Yes") {
+                this.container.preferences.updatePreference("showOverlays", "No");
+            } else {
+                this.container.preferences.updatePreference("showOverlays", "Yes");
+            }
+            this.viewer.drawViewer();
+            this.closeAllMenus();
+
+        }
+        
+        else if (action.startsWith("ShowOrientation")) {
             if (this.container.preferences.showOrientation === "Yes") {
                 this.container.preferences.updatePreference("showOrientation", "No");
             } else {
