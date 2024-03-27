@@ -616,33 +616,33 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
             var nearbyHandle = this.getToolHandleNearToImagePoint(imgaeTooldata[i].rulerHandles, pointsCordOne, 5);
             if (nearbyHandle !== undefined) {
                 this.selectedIndexLength = i;
-                nearbyHandle.rulerActive = true;
-                imgaeTooldata[i].rulerActive = true;
+                nearbyHandle.toolActive = true;
+                imgaeTooldata[i].toolActive = true;
                 nearbyHandle.xCord = pointsCordOne.xCord
                 nearbyHandle.yCord = pointsCordOne.yCord;
                 nearbyHandle.zCord = pointsCordOne.zCord;
                 this.imageNeedsUpdateForRuler = true;
             }
             if (activeHandle != undefined && activeHandle != nearbyHandle)
-                activeHandle.rulerActive = false;
+                activeHandle.toolActive = false;
         }
     }
     if (!this.imageNeedsUpdateForRuler) {
 
         var toolObj = {
-            rulerActive: true,
+            toolActive: true,
             rulerHandles: {
                 rulerStart: {
                     xCord: CordOne.x,
                     yCord: CordOne.y,
                     zCord: CordOne.z,
-                    rulerActive: false
+                    toolActive: false
                 },
                 rulerEnd: {
                     xCord: CordOne.x,
                     yCord: CordOne.y,
                     zCord: CordOne.z,
-                    rulerActive: true
+                    toolActive: true
                 }
             }
         }
@@ -707,7 +707,7 @@ papaya.viewer.Tools.prototype.getActiveToolHandle = function (toolHandles) {
 
     Object.keys(toolHandles).forEach(function (toolHandleName) {
         var toolHandleName = toolHandles[toolHandleName];
-        if (toolHandleName.active === true) {
+        if (toolHandleName.toolActive === true) {
             activeToolHandle = toolHandleName;
             return;
         }

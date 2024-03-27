@@ -1508,20 +1508,22 @@ papaya.viewer.Viewer.prototype.drawRuler = function () {
     this.drawRulerOnSelectedScreenSlice(this.mainImage);
     this.drawRulerOnSelectedScreenSlice(this.lowerImageTop);
     this.drawRulerOnSelectedScreenSlice(this.lowerImageBot);
+    this.drawRulerOnSelectedScreenSlice(this.lowerImageBot2);
 };
 
 papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screenSlice) {
     var ruler1x, ruler1y, ruler2x, ruler2y, text, metrics, textWidth, textHeight, padding, xText, yText;
 
-    this.clipCanvas(screenSlice);
 
     if (screenSlice === this.surfaceView) {
         return;
     }
     var imageTooldata = screenSlice.getImageToolState('ruler');
     if (imageTooldata === undefined || imageTooldata.imageDatas === undefined || imageTooldata.imageDatas.length === 0) {
+        return;
     }
     else {
+        this.clipCanvas(screenSlice);
         var imageTooldata = imageTooldata.imageDatas;
 
         for (var i = 0; i < imageTooldata.length; i++) {
@@ -1575,7 +1577,7 @@ papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screen
 
             this.context.setTransform(1, 0, 0, 1, 0, 0);
             var color;
-            if (imageTooldata[i].rulerActive) {
+            if (imageTooldata[i].toolActive) {
                 color = this.activeRulerColor;
             }
             else {
@@ -1651,8 +1653,9 @@ papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screen
 
             this.context.fillText(text + suffix, xText, yText);
         }
+        this.context.restore();
     }
-    this.context.restore();
+
 };
 
 papaya.viewer.Viewer.prototype.clipCanvas = function (currentSlice) {
@@ -2322,7 +2325,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
             var tooldata = this.selectedSlice.getImageToolState('ruler').imageDatas;
 
             if (tooldata[this.Tools.selectedIndexLength] != undefined)
-                tooldata[this.Tools.selectedIndexLength].rulerActive = false;
+                tooldata[this.Tools.selectedIndexLength].toolActive = false;
         }
     }
 
@@ -2601,7 +2604,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                     var toolHandles = tooldata[this.Tools.selectedIndexLength].rulerHandles;
                     Object.keys(toolHandles).forEach(function (name) {
                         var rulerHandle = toolHandles[name];
-                        if (rulerHandle.rulerActive == true) {
+                        if (rulerHandle.toolActive == true) {
                             rulerHandle.xCord = returnCords.x;
                             rulerHandle.yCord = returnCords.y;
                             rulerHandle.zCord = returnCords.z;
