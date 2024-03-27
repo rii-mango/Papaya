@@ -45,6 +45,11 @@ papaya.viewer.ScreenSlice = papaya.viewer.ScreenSlice || function (vol, dir, wid
         this.canvasDTILines = null;
         this.contextDTILines = null;
         this.viewer = papayaContainers[0].viewer;
+        this.imageToolTypes = [];
+        this.imageToolState = {}; 
+        this.imageSliceToolState = {};
+
+
     };
 
 
@@ -752,4 +757,102 @@ papaya.viewer.ScreenSlice.prototype.updateDTILinesImage = function () {
 papaya.viewer.ScreenSlice.prototype.clearDTILinesImage = function () {
     this.canvasDTILines = null;
     this.contextDTILines = null;
+};
+
+//Set Image Tool State is referenced from conrnerstone tools library.
+papaya.viewer.ScreenSlice.prototype.setImageToolState = function (imageToolType, toolData) {
+
+    if (this.imageToolTypes.indexOf(imageToolType) >= 0) {
+        if (this.imageToolState.hasOwnProperty(imageToolType) === false) {
+            this.imageToolState[imageToolType] = {
+                imageDatas: []
+            };
+        }
+
+        var imagetoolData = this.imageToolState[imageToolType];
+        imagetoolData.imageDatas.push(toolData);
+    }
+    else {
+        if (this.imageSliceToolState.hasOwnProperty(this.currentSlice) === false) {
+            this.imageSliceToolState[this.currentSlice] = {};
+        }
+
+        var imageIdToolState = this.imageSliceToolState[this.currentSlice];
+
+        // if we don't have tool state for this type of tool, add an empty object
+        if (imageIdToolState.hasOwnProperty(imageToolType) === false) {
+            imageIdToolState[imageToolType] = {
+                imageDatas: []
+            };
+        }
+
+        var imageToolData = imageIdToolState[imageToolType];
+
+        // finally, add this new tool to the state
+        imageToolData.imageDatas.push(toolData);
+    }
+
+};
+
+papaya.viewer.ScreenSlice.prototype.removeImageToolState = function (imageToolType, toolData) {
+    var imageToolData = this.getImageToolState(imageToolType);
+    // find this tool data
+    var indexOfImageData = -1;
+    for (var i = 0; i < imageToolData.imageDatas.length; i++) {
+        if (imageToolData.imageDatas[i] === toolData) {
+            indexOfImageData = i;
+        }
+    }
+
+    if (indexOfImageData !== -1) {
+        imageToolData.imageDatas.splice(indexOfImageData, 1);
+    }
+}
+
+papaya.viewer.ScreenSlice.prototype.getImageToolState = function (imageToolType) {
+    if (this.imageToolTypes.indexOf(imageToolType) >= 0) {
+        if (this.imageToolState.hasOwnProperty(imageToolType) === false) {
+            this.imageToolState[imageToolType] = {
+                imageDatas: []
+            };
+        }
+
+        var imageToolData = this.imageToolState[imageToolType];
+        return imageToolData;
+    }
+    else {
+
+        if (this.imageSliceToolState.hasOwnProperty(this.currentSlice) === false) {
+            return;
+        }
+
+        var imageIdToolState = this.imageSliceToolState[this.currentSlice];
+
+        // if we don't have tool state for this type of tool, return undefined
+        if (imageIdToolState.hasOwnProperty(imageToolType) === false) {
+            return;
+        }
+
+        var imageToolData = imageIdToolState[imageToolType];
+        return imageToolData;
+
+    }
+};
+
+papaya.viewer.ScreenSlice.prototype.clearImageToolState = function (imageToolType) {
+
+    if (this.imageToolTypes.indexOf(imageToolType) >= 0) {
+        var imageIoolData = this.imageToolState[imageToolType];
+        // If any toolData actually exists, clear it
+        if (imageIoolData !== undefined) {
+            imageIoolData.imageDatas = [];
+        }
+    }
+    else {
+
+        if (this.imageSliceToolState.hasOwnProperty(this.currentSlice) === false) {
+            return;
+        }
+        this.imageSliceToolState = [];
+    }
 };

@@ -31,7 +31,7 @@ var PAPAYA_TOOLBAR_CSS = "papaya-toolbar",
     PAPAYA_SIDENAVIGATION_CSS = "side-navbar",
     PAPAYA_SIDENAVPANEL_CSS = "side-navpanel",
     PAPAYA_SIDEDESCRIPTION_CSS = "side-description",
-    PAPAYA_VERTICLE_TEXT_BUTTON_TEXT = "vertical-button";
+    PAPAYA_SIDETOOL_CONFIGURATION_CSS = "side-nav-tools-config";
 // Display CSS classes
 var PAPAYA_DISPLAY_CSS = "papaya-display";
 
@@ -107,3 +107,45 @@ var PAPAYA_SPACING = 3,
 // GZIP constants
 var GUNZIP_MAGIC_COOKIE1 = 31,
     GUNZIP_MAGIC_COOKIE2 = 139;
+
+// RULER constants
+var PAPAYA_RULER_FONT_SIZE = "rulerFontSize",
+    PAPAYA_RULER_LINE_WIDTH = "rulerLineWidth",
+    PAPAYA_RULER_COLOR = "rulerColor",
+    PAPAYA_RULER_LENGTH_UNIT = "rulerLengthUnit",
+    PAPAYA_RULER_ACTIVE_COLOR = "activeRulerColor";
+
+//Crosshair div constant
+var PAPAYA_CROSSHAIR_DIV_AXIAL_RED = "crossHairAxialRed",
+    PAPAYA_CROSSHAIR_DIV_CORONAL_GREEN = "crossHairCoronalGreen",
+    PAPAYA_CROSSHAIR_DIV_SAGITTAL_BLUE = "crossHairSagitalBlue",
+    PAPAYA_CROSSHAIR_DIV_SURFACE_YELLOW = "crossHairSurfaceYellow";
+
+//Selected Slice DIV
+var PAPAYA_SELECTED_SLICE_DIV_AXIAL_RED = "selectedSliceAxialRed",
+    PAPAYA_SELECTED_SLICE_DIV_CORONAL_GREEN = "selectedSliceCoronalGreen",
+    PAPAYA_SELECTED_SLICE_DIV_SAGITTAL_BLUE = "selectedSliceSagitalBlue",
+    PAPAYA_SELECTED_SLICE_DIV_SURFACE_YELLOW = "selectedSliceSurfaceYellow";
+
+//MainImage Overlays
+var PAPAYA_MAIN_IMAGE_OVERLAYS_TOP_LEFT = "mainImageOverlaysTopLeft",
+    PAPAYA_MAIN_IMAGE_OVERLAYS_TOP_RIGHT = "mainImageOverlaysTopRight",
+    PAPAYA_MAIN_IMAGE_OVERLAYS_BOTTOM_LEFT = "mainImageOverlaysBottomLeft",
+    PAPAYA_MAIN_IMAGE_OVERLAYS_BOTTOM_RIGHT = "mainImageOverlaysBottomRight";
+
+//Buttons Side Nav
+var PAPAYA_SIDENAV_BUTTON_CROSSHAIR = "drawCrossHairImages",
+    PAPAYA_SIDENAV_BUTTON_STACK = "stackImages",
+    PAPAYA_SIDENAV_BUTTON_WINDOWLEVEL = "windowLevelImages",
+    PAPAYA_SIDENAV_BUTTON_ZOOM = "zoomImages",
+    PAPAYA_SIDENAV_BUTTON_PAN = "panImages",
+    PAPAYA_SIDENAV_BUTTON_MAGNIFY = "magnifyImages",
+    PAPAYA_SIDENAV_BUTTON_INVERT = "invertImageTool",
+    PAPAYA_SIDENAV_BUTTON_PLAYCENE = "playClipImages",
+    PAPAYA_SIDENAV_BUTTON_RULER = "drawRulerOnImages",
+    PAPAYA_SIDENAV_BUTTON_RESET = "resetImages";
+
+//Button Side Nav Panel
+var PAPAYA_NAVPANEL_BUTTON_REVERSE = "reverseCene",
+    PAPAYA_NAVPANEL_BUTTON_REPEAT = "repeatCene";
+
