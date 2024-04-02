@@ -55,6 +55,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.isMagnifyMode = false;
     this.isPanning = false;
     this.isStackMode = false;
+    this.isRulerMode = false;
     this.didLongTouch = false;
     this.isLongTouch = false;
     this.zoomFactor = papaya.viewer.Viewer.ZOOM_FACTOR_MIN;
@@ -82,19 +83,43 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.tempCoor = new papaya.core.Coordinate();
     if (this.container.params.imageTools) {
         this.Tools = new papaya.viewer.Tools();
-    }
-    this.temMagnifyCanvas = document.createElement("canvas");
-    this.magnifyCanvas = null;
-    this.magnifyCanvasContext = null;
-    $(container.containerHtml).append('<div id="crossHairAxialRed" style="background-color:red;z-index:90;"></div>');
-    $(container.containerHtml).append('<div id="crossHairSagitalGreen" style="background-color:blue;z-index:90;"></div>');
-    $(container.containerHtml).append('<div id="crossHairCoronalBlue" style="background-color:green;z-index:90;"></div>');
-    $(container.containerHtml).append('<div id="crossHairSurfaceYellow" style="background-color:yellow;z-index:90;"></div>');
+        this.rulerFontSize = $("#" + PAPAYA_RULER_FONT_SIZE).val();
+        this.rulerWidth = $("#" + PAPAYA_RULER_LINE_WIDTH).val();
+        this.rulerColor = $("#" + PAPAYA_RULER_COLOR).val();
+        this.rulerUnit = $("#" + PAPAYA_RULER_LENGTH_UNIT).val();
+        this.activeRulerColor = $("#" + PAPAYA_RULER_ACTIVE_COLOR).val();
 
-    this.crossHairAxialRed = $("#crossHairAxialRed");
-    this.crossHairSagitalGreen = $("#crossHairSagitalGreen");
-    this.crossHairCoronalBlue = $("#crossHairCoronalBlue");
-    this.crossHairSurfaceYellow = $("#crossHairSurfaceYellow");
+        this.temMagnifyCanvas = document.createElement("canvas");
+        this.magnifyCanvas = null;
+        this.magnifyCanvasContext = null;
+        $(container.containerHtml).append('<div id="' + PAPAYA_CROSSHAIR_DIV_AXIAL_RED + '"></div>');
+        $(container.containerHtml).append('<div id="' + PAPAYA_CROSSHAIR_DIV_SAGITTAL_BLUE + '"></div>');
+        $(container.containerHtml).append('<div id="' + PAPAYA_CROSSHAIR_DIV_CORONAL_GREEN + '"></div>');
+        $(container.containerHtml).append('<div id="' + PAPAYA_CROSSHAIR_DIV_SURFACE_YELLOW + '"></div>');
+        $(container.containerHtml).append('<div id="' + PAPAYA_SELECTED_SLICE_DIV_AXIAL_RED + '">Axial</div>');
+        $(container.containerHtml).append('<div id="' + PAPAYA_SELECTED_SLICE_DIV_SAGITTAL_BLUE + '">Sagittal</div>');
+        $(container.containerHtml).append('<div id="' + PAPAYA_SELECTED_SLICE_DIV_CORONAL_GREEN + '">Coronal</div>');
+        $(container.containerHtml).append('<div id="' + PAPAYA_SELECTED_SLICE_DIV_SURFACE_YELLOW + '">Surface</div>');
+        $(container.containerHtml).append('<div id="' + PAPAYA_MAIN_IMAGE_OVERLAYS_TOP_LEFT + '" class="overlays"></div>');
+        $(container.containerHtml).append('<div id="' + PAPAYA_MAIN_IMAGE_OVERLAYS_TOP_RIGHT + '" class="overlays"></div>');
+        $(container.containerHtml).append('<div id="' + PAPAYA_MAIN_IMAGE_OVERLAYS_BOTTOM_LEFT + '" class="overlays"></div>');
+        $(container.containerHtml).append('<div id="' + PAPAYA_MAIN_IMAGE_OVERLAYS_BOTTOM_RIGHT + '" class="overlays"></div>');
+        //Crosshairs
+        this.crossHairAxialRed = $("#" + PAPAYA_CROSSHAIR_DIV_AXIAL_RED);
+        this.crossHairSagitalGreen = $("#" + PAPAYA_CROSSHAIR_DIV_SAGITTAL_BLUE);
+        this.crossHairCoronalBlue = $("#" + PAPAYA_CROSSHAIR_DIV_CORONAL_GREEN);
+        this.crossHairSurfaceYellow = $("#" + PAPAYA_CROSSHAIR_DIV_SURFACE_YELLOW);
+        //Selected Slice
+        this.selectedSliceAxialRed = $("#" + PAPAYA_SELECTED_SLICE_DIV_AXIAL_RED);
+        this.selectedSliceSagitalGreen = $("#" + PAPAYA_SELECTED_SLICE_DIV_SAGITTAL_BLUE);
+        this.selectedSliceCoronalBlue = $("#" + PAPAYA_SELECTED_SLICE_DIV_CORONAL_GREEN);
+        this.selectedSliceSurfaceYellow = $("#" + PAPAYA_SELECTED_SLICE_DIV_SURFACE_YELLOW);
+        //Main Image Overlays
+        this.mainImageOverlaysTopLeft = $("#" + PAPAYA_MAIN_IMAGE_OVERLAYS_TOP_LEFT);
+        this.mainImageOverlaysTopRight = $("#" + PAPAYA_MAIN_IMAGE_OVERLAYS_TOP_RIGHT);
+        this.mainImageOverlaysBottomLeft = $("#" + PAPAYA_MAIN_IMAGE_OVERLAYS_BOTTOM_LEFT);
+        this.mainImageOverlaysBottomRight = $("#" + PAPAYA_MAIN_IMAGE_OVERLAYS_BOTTOM_RIGHT);
+    }
     this.paddingTop = 0;
 
     this.listenerContextMenu = function (me) { me.preventDefault(); return false; };
@@ -1287,65 +1312,75 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
     if (this.container.contextManager && this.container.contextManager.drawToViewer) {
         this.container.contextManager.drawToViewer(this.context);
     }
+
     if (this.container.params.imageTools) {
-        if (this.mainImage.sliceDirection == 1) {
-            this.crossHairAxialRed.css("position", "absolute").css("top", this.paddingTop).css("left", parseFloat($(".papaya-viewer").css("padding-left")) + 8).css('height', '5px').css('width', this.mainImage.screenDim + "px");
+        if (this.container.preferences.showOverlays === "Yes") {
 
-        } else if (this.mainImage.sliceDirection == 2) {
-            this.crossHairCoronalBlue.css("position", "absolute").css("top", this.paddingTop).css("left", parseFloat($(".papaya-viewer").css("padding-left")) + 8).css('height', '5px').css('width', this.mainImage.screenDim + "px");
+            this.Tools.DrawMarkerForScreenSlice(this);
+            var span = this.getHeaderDescription();
 
-        } else if (this.mainImage.sliceDirection == 3) {
-            this.crossHairSagitalGreen.css("position", "absolute").css("top", this.paddingTop).css("left", parseFloat($(".papaya-viewer").css("padding-left")) + 8).css('height', '5px').css('width', this.mainImage.screenDim + "px");
-        }
-        else {
-            this.crossHairSurfaceYellow.css("position", "absolute").css("top", this.paddingTop).css("left", parseFloat($(".papaya-viewer").css("padding-left")) + 8).css('height', '5px').css('width', this.mainImage.screenDim + "px");
+            var spanData = span.split("<br />");
+            var divCount = Math.round((spanData.length / 4));
+            var divContent = "";
+            for (var i = 0; i < divCount; i++) {
 
-        }
-        if (this.lowerImageTop.sliceDirection == 1) {
-            this.crossHairAxialRed.css("position", "absolute").css("top", this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageTop.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageTop.screenDim + 'px');
+                divContent += "<div></div>";
 
-        } else if (this.lowerImageTop.sliceDirection == 2) {
-            this.crossHairCoronalBlue.css("position", "absolute").css("top", this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageTop.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageTop.screenDim + 'px');
+            }
+            this.mainImageOverlaysTopLeft.html(divContent).css("display", "block");
+            this.mainImageOverlaysTopRight.html(divContent).css("display", "block");
+            this.mainImageOverlaysBottomLeft.html(divContent).css("display", "block");
+            this.mainImageOverlaysBottomRight.html(divContent).css("display", "block");
 
-        } else if (this.lowerImageTop.sliceDirection == 3) {
-            this.crossHairSagitalGreen.css("position", "absolute").css("top", this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageTop.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageTop.screenDim + 'px');
-        }
-        else {
-            this.crossHairSurfaceYellow.css("position", "absolute").css("top", this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageTop.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageTop.screenDim + 'px');
-        }
+            var leftTop = this.mainImageOverlaysTopLeft.find("div");
+            var spanCount = 0;
+            for (var i = 0; i < leftTop.length - 1; i++) {
+                leftTop[i].innerHTML = spanData[spanCount];
+                spanCount++;
+            }
 
-        if (this.lowerImageBot.sliceDirection == 1) {
-            this.crossHairAxialRed.css("position", "absolute").css("top", this.lowerImageBot.screenOffsetY + this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageBot.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageBot.screenDim + 'px');
+            var rightTop = this.mainImageOverlaysTopRight.find("div");
 
-        } else if (this.lowerImageBot.sliceDirection == 2) {
-            this.crossHairCoronalBlue.css("position", "absolute").css("top", this.lowerImageBot.screenOffsetY + this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageBot.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageBot.screenDim + 'px');
+            for (var i = 0; i < rightTop.length - 1; i++) {
+                rightTop[i].innerHTML = spanData[spanCount];
+                spanCount++;
+            }
 
-        } else if (this.lowerImageBot.sliceDirection == 3) {
-            this.crossHairSagitalGreen.css("position", "absolute").css("top", this.lowerImageBot.screenOffsetY + this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageBot.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageBot.screenDim + 'px');
+            var leftBottom = this.mainImageOverlaysBottomLeft.find("div");
+            for (var i = 0; i < leftBottom.length - 1; i++) {
+                leftBottom[i].innerHTML = spanData[spanCount];
+                spanCount++;
+            }
 
-        } else {
-            this.crossHairSurfaceYellow.css("position", "absolute").css("top", this.lowerImageBot.screenOffsetY + this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageBot.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageBot2.screenDim + 'px');
-        }
-
-        if (this.lowerImageBot2 != null) {
-            if (this.lowerImageBot2.sliceDirection == 1) {
-                this.crossHairAxialRed.css("position", "absolute").css("top", this.lowerImageBot2.screenOffsetY + this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageBot2.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageBot2.screenDim + 'px');
-
-            } else if (this.lowerImageBot2.sliceDirection == 2) {
-                this.crossHairCoronalBlue.css("position", "absolute").css("top", this.lowerImageBot2.screenOffsetY + this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageBot2.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageBot2.screenDim + 'px');
-
-            } else if (this.lowerImageBot2.sliceDirection == 3) {
-                this.crossHairSagitalGreen.css("position", "absolute").css("top", this.lowerImageBot2.screenOffsetY + this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageBot2.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageBot2.screenDim + 'px');
-
+            var rightBottom = this.mainImageOverlaysBottomRight.find("div");
+            for (var i = 0; i < rightBottom.length - 1; i++) {
+                rightBottom[i].innerHTML = spanData[spanCount];
+                spanCount++;
+            }
+            var imageLocation;
+            if (this.mainImage.sliceDirection == this.axialSlice.sliceDirection) {
+                imageLocation = '<span style="color:#B5CBD3">Image Counts </span><span style="color:gray"> : </span> <span style="width:20px;">' + this.mainImage.currentSlice + "</span> of " + this.mainImage.sliceCounts;
+            } else if (this.mainImage.sliceDirection == this.coronalSlice.sliceDirection) {
+                imageLocation = '<span style="color:#B5CBD3">Image Counts </span><span style="color:gray"> : </span><span style="width:20px;">' + this.mainImage.currentSlice + "</span> of " + this.mainImage.sliceCounts;;
             } else {
-                this.crossHairSurfaceYellow.css("position", "absolute").css("top", this.lowerImageBot2.screenOffsetY + this.paddingTop).css("left", (parseFloat($(".papaya-viewer").css("padding-left")) + (this.lowerImageBot2.screenOffsetX) + 8)).css('height', '5px').css('width', this.lowerImageBot2.screenDim + 'px');
+                imageLocation = '<span style="color:#B5CBD3">Image Counts </span><span style="color:gray"> : </span><span style="width:20px;">' + this.mainImage.currentSlice + "</span> of " + this.mainImage.sliceCounts;
+            }
+            if (this.surfaceView == null || this.mainImage.sliceDirection != this.surfaceView.sliceDirection) {
+                if (rightBottom[rightBottom.length - 1].innerText == "") {
+                    rightBottom[rightBottom.length - 1].innerHTML = "<div> " + imageLocation + "</div>";
+                } else {
+                    this.mainImageOverlaysBottomRight.append("<div>" + imageLocation + "</div>");;
+                }
             }
         }
-
-       // $("#imageHeader").html(this.getHeaderDescription());
-       // var imagedata = "<span style='color: #B5CBD3'>File Name : </span>" + this.getFilename(0) + "<br/><span style='color: #B5CBD3'>Byte Description : </span>" + this.getByteTypeDescription(0) + "<br/> <span style='color: #B5CBD3'>Image Diamentions : </span>" + this.getImageDimensionsDescription(0) + "<br/><span style='color: #B5CBD3'> Voxel Dimention : </span>" + this.getVoxelDimensionsDescription(0) + "<br/><span style='color: #B5CBD3'> Orientations : </span>" + this.getOrientationDescription(0) + "<br/><span style='color: #B5CBD3'> Image Description :</span> " + this.getImageDescription(0);
-       // $("#imageInfo").html(imagedata);
+        else {
+            this.mainImageOverlaysTopLeft.css("display", "none");
+            this.mainImageOverlaysTopRight.css("display", "none");
+            this.mainImageOverlaysBottomLeft.css("display", "none");
+            this.mainImageOverlaysBottomRight.css("display", "none");
+        }
     }
+
 };
 
 
@@ -1364,19 +1399,19 @@ papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
         this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
         this.context.drawImage(slice.canvas, slice.screenOffsetX, slice.screenOffsetY);
 
-        if (this.container.preferences.showRuler === "Yes") {
-            if (this.surfaceView === this.mainImage) {
-                this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
-                textWidth = this.context.measureText("Ruler Length: ").width;
-                textWidthExample = this.context.measureText("Ruler Length: 000.00").width;
-                offset = (textWidthExample / 2);
+        //if (this.container.preferences.showRuler === "Yes") {
+        //    if (this.surfaceView === this.mainImage) {
+        //        this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
+        //        textWidth = this.context.measureText("Ruler Length: ").width;
+        //        textWidthExample = this.context.measureText("Ruler Length: 000.00").width;
+        //        offset = (textWidthExample / 2);
 
-                this.context.fillStyle = "#ffb3db";
-                this.context.fillText("Ruler Length:  ", slice.screenDim / 2 - (offset / 2), papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + padding);
-                this.context.fillStyle = "#FFFFFF";
-                this.context.fillText(this.surfaceView.getRulerLength().toFixed(2), (slice.screenDim / 2) + textWidth - (offset / 2), papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + padding);
-            }
-        }
+        //        this.context.fillStyle = "#ffb3db";
+        //        this.context.fillText("Ruler Length:  ", slice.screenDim / 2 - (offset / 2), papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + padding);
+        //        this.context.fillStyle = "#FFFFFF";
+        //        this.context.fillText(this.surfaceView.getRulerLength().toFixed(2), (slice.screenDim / 2) + textWidth - (offset / 2), papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + padding);
+        //    }
+        //}
     } else {
         this.context.fillStyle = papaya.viewer.Viewer.BACKGROUND_COLOR;
         this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -1467,81 +1502,171 @@ papaya.viewer.Viewer.prototype.drawOrientation = function () {
 
 
 
+
 papaya.viewer.Viewer.prototype.drawRuler = function () {
-    var ruler1x, ruler1y, ruler2x, ruler2y, text, metrics, textWidth, textHeight, padding, xText, yText;
 
-    if (this.mainImage === this.surfaceView) {
-        return;
-    }
-
-    if (this.mainImage === this.axialSlice) {
-        ruler1x = (this.axialSlice.finalTransform[0][2] + (this.axialSlice.rulerPoints[0].x + 0.5) *
-            this.axialSlice.finalTransform[0][0]);
-        ruler1y = (this.axialSlice.finalTransform[1][2] + (this.axialSlice.rulerPoints[0].y + 0.5) *
-            this.axialSlice.finalTransform[1][1]);
-        ruler2x = (this.axialSlice.finalTransform[0][2] + (this.axialSlice.rulerPoints[1].x + 0.5) *
-            this.axialSlice.finalTransform[0][0]);
-        ruler2y = (this.axialSlice.finalTransform[1][2] + (this.axialSlice.rulerPoints[1].y + 0.5) *
-            this.axialSlice.finalTransform[1][1]);
-    } else if (this.mainImage === this.coronalSlice) {
-        ruler1x = (this.coronalSlice.finalTransform[0][2] + (this.coronalSlice.rulerPoints[0].x + 0.5) *
-            this.coronalSlice.finalTransform[0][0]);
-        ruler1y = (this.coronalSlice.finalTransform[1][2] + (this.coronalSlice.rulerPoints[0].y + 0.5) *
-            this.coronalSlice.finalTransform[1][1]);
-        ruler2x = (this.coronalSlice.finalTransform[0][2] + (this.coronalSlice.rulerPoints[1].x + 0.5) *
-            this.coronalSlice.finalTransform[0][0]);
-        ruler2y = (this.coronalSlice.finalTransform[1][2] + (this.coronalSlice.rulerPoints[1].y + 0.5) *
-            this.coronalSlice.finalTransform[1][1]);
-    } else if (this.mainImage === this.sagittalSlice) {
-        ruler1x = (this.sagittalSlice.finalTransform[0][2] + (this.sagittalSlice.rulerPoints[0].x + 0.5) *
-            this.sagittalSlice.finalTransform[0][0]);
-        ruler1y = (this.sagittalSlice.finalTransform[1][2] + (this.sagittalSlice.rulerPoints[0].y + 0.5) *
-            this.sagittalSlice.finalTransform[1][1]);
-        ruler2x = (this.sagittalSlice.finalTransform[0][2] + (this.sagittalSlice.rulerPoints[1].x + 0.5) *
-            this.sagittalSlice.finalTransform[0][0]);
-        ruler2y = (this.sagittalSlice.finalTransform[1][2] + (this.sagittalSlice.rulerPoints[1].y + 0.5) *
-            this.sagittalSlice.finalTransform[1][1]);
-    }
-
-    this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.strokeStyle = "#FF1493";
-    this.context.fillStyle = "#FF1493";
-    this.context.lineWidth = 2.0;
-    this.context.save();
-    this.context.beginPath();
-    this.context.moveTo(ruler1x, ruler1y);
-    this.context.lineTo(ruler2x, ruler2y);
-    this.context.stroke();
-    this.context.closePath();
-
-    this.context.beginPath();
-    this.context.arc(ruler1x, ruler1y, 3, 0, 2 * Math.PI, false);
-    this.context.arc(ruler2x, ruler2y, 3, 0, 2 * Math.PI, false);
-    this.context.fill();
-    this.context.closePath();
-
-    text = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
-        this.mainImage.rulerPoints[0].x * this.mainImage.xSize,
-        this.mainImage.rulerPoints[0].y * this.mainImage.ySize,
-        this.mainImage.rulerPoints[1].x * this.mainImage.xSize,
-        this.mainImage.rulerPoints[1].y * this.mainImage.ySize), false);
-    metrics = this.context.measureText(text);
-    textWidth = metrics.width;
-    textHeight = 14;
-    padding = 2;
-    xText = parseInt((ruler1x + ruler2x) / 2) - (textWidth / 2);
-    yText = parseInt((ruler1y + ruler2y) / 2) + (textHeight / 2);
-
-    this.context.fillStyle = "#FFFFFF";
-    papaya.viewer.Viewer.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight + (padding * 2), 5, true, false);
-
-    this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
-    this.context.strokeStyle = "#FF1493";
-    this.context.fillStyle = "#FF1493";
-    this.context.fillText(text, xText, yText);
+    this.drawRulerOnSelectedScreenSlice(this.mainImage);
+    this.drawRulerOnSelectedScreenSlice(this.lowerImageTop);
+    this.drawRulerOnSelectedScreenSlice(this.lowerImageBot);
+    this.drawRulerOnSelectedScreenSlice(this.lowerImageBot2);
 };
 
+papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screenSlice) {
+    var ruler1x, ruler1y, ruler2x, ruler2y, text, metrics, textWidth, textHeight, padding, xText, yText;
 
+
+    if (screenSlice === this.surfaceView) {
+        return;
+    }
+    var imageTooldata = screenSlice.getImageToolState('ruler');
+    if (imageTooldata === undefined || imageTooldata.imageDatas === undefined || imageTooldata.imageDatas.length === 0) {
+        return;
+    }
+    else {
+        this.clipCanvas(screenSlice);
+        var imageTooldata = imageTooldata.imageDatas;
+
+        for (var i = 0; i < imageTooldata.length; i++) {
+
+            if (screenSlice === this.axialSlice) {
+                ruler1x = (this.axialSlice.finalTransform[0][2] + (imageTooldata[i].rulerHandles.rulerStart.xCord + 0.5) *
+                    this.axialSlice.finalTransform[0][0]);
+                ruler1y = (this.axialSlice.finalTransform[1][2] + (imageTooldata[i].rulerHandles.rulerStart.yCord + 0.5) *
+                    this.axialSlice.finalTransform[1][1]);
+                ruler2x = (this.axialSlice.finalTransform[0][2] + (imageTooldata[i].rulerHandles.rulerEnd.xCord + 0.5) *
+                    this.axialSlice.finalTransform[0][0]);
+                ruler2y = (this.axialSlice.finalTransform[1][2] + (imageTooldata[i].rulerHandles.rulerEnd.yCord + 0.5) *
+                    this.axialSlice.finalTransform[1][1]);
+
+                text = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                    imageTooldata[i].rulerHandles.rulerStart.xCord * screenSlice.xSize,
+                    imageTooldata[i].rulerHandles.rulerStart.yCord * screenSlice.ySize,
+                    imageTooldata[i].rulerHandles.rulerEnd.xCord * screenSlice.xSize,
+                    imageTooldata[i].rulerHandles.rulerEnd.yCord * screenSlice.ySize), false);
+
+            } else if (screenSlice === this.coronalSlice) {
+                ruler1x = (this.coronalSlice.finalTransform[0][2] + (imageTooldata[i].rulerHandles.rulerStart.xCord + 0.5) *
+                    this.coronalSlice.finalTransform[0][0]);
+                ruler1y = (this.coronalSlice.finalTransform[1][2] + (imageTooldata[i].rulerHandles.rulerStart.zCord + 0.5) *
+                    this.coronalSlice.finalTransform[1][1]);
+                ruler2x = (this.coronalSlice.finalTransform[0][2] + (imageTooldata[i].rulerHandles.rulerEnd.xCord + 0.5) *
+                    this.coronalSlice.finalTransform[0][0]);
+                ruler2y = (this.coronalSlice.finalTransform[1][2] + (imageTooldata[i].rulerHandles.rulerEnd.zCord + 0.5) *
+                    this.coronalSlice.finalTransform[1][1]);
+                text = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                    imageTooldata[i].rulerHandles.rulerStart.xCord * screenSlice.xSize,
+                    imageTooldata[i].rulerHandles.rulerStart.zCord * screenSlice.ySize,
+                    imageTooldata[i].rulerHandles.rulerEnd.xCord * screenSlice.xSize,
+                    imageTooldata[i].rulerHandles.rulerEnd.zCord * screenSlice.ySize), false);
+
+            } else if (screenSlice === this.sagittalSlice) {
+                ruler1x = (this.sagittalSlice.finalTransform[0][2] + (imageTooldata[i].rulerHandles.rulerStart.yCord + 0.5) *
+                    this.sagittalSlice.finalTransform[0][0]);
+                ruler1y = (this.sagittalSlice.finalTransform[1][2] + (imageTooldata[i].rulerHandles.rulerStart.zCord + 0.5) *
+                    this.sagittalSlice.finalTransform[1][1]);
+                ruler2x = (this.sagittalSlice.finalTransform[0][2] + (imageTooldata[i].rulerHandles.rulerEnd.yCord + 0.5) *
+                    this.sagittalSlice.finalTransform[0][0]);
+                ruler2y = (this.sagittalSlice.finalTransform[1][2] + (imageTooldata[i].rulerHandles.rulerEnd.zCord + 0.5) *
+                    this.sagittalSlice.finalTransform[1][1]);
+                text = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                    imageTooldata[i].rulerHandles.rulerStart.yCord * screenSlice.xSize,
+                    imageTooldata[i].rulerHandles.rulerStart.zCord * screenSlice.ySize,
+                    imageTooldata[i].rulerHandles.rulerEnd.yCord * screenSlice.xSize,
+                    imageTooldata[i].rulerHandles.rulerEnd.zCord * screenSlice.ySize), false);
+            }
+
+            this.context.setTransform(1, 0, 0, 1, 0, 0);
+            var color;
+            if (imageTooldata[i].toolActive) {
+                color = this.activeRulerColor;
+            }
+            else {
+                color = this.rulerColor; //"#FF1493";
+            }
+            this.context.strokeStyle = color;
+            this.context.fillStyle = color;
+            this.context.lineWidth = this.rulerWidth;
+            this.context.beginPath();
+            this.context.moveTo(ruler1x, ruler1y);
+            this.context.lineTo(ruler2x, ruler2y);
+            this.context.stroke();
+            this.context.closePath();
+
+            this.context.beginPath();
+            this.context.arc(ruler1x, ruler1y, 3, 0, 2 * Math.PI, false);
+            this.context.fillStyle = color;
+            this.context.fill();
+            this.context.stroke();
+            this.context.closePath();
+            this.context.beginPath();
+            this.context.arc(ruler2x, ruler2y, 3, 0, 2 * Math.PI, false);
+            this.context.fillStyle = color;
+            this.context.fill();
+            this.context.stroke();
+            this.context.closePath();
+
+
+            var suffix;
+            this.context.font = this.rulerFontSize + "px sans-serif"; //papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
+
+            switch (this.rulerUnit) {
+                case "cm":
+                    text = text / 10;
+                    suffix = ' cm';
+                    break;
+                case "inches":
+                    text = text / 25.4;
+                    suffix = ' in';
+                    break;
+                case "feet":
+                    text = text / 304.8;
+                    suffix = ' ft';
+                    break;
+                case "micrometer":
+                    text = text / 0.0010000;
+                    suffix = ' \xB5' + "m";
+                    break;
+                case "meter":
+                    text = text / 1000.0;
+                    suffix = ' m';
+                    break;
+                case "yd":
+                    text = text * 0.0010936132983377078;
+                    suffix = ' yd';
+                    break;
+                default:
+                    suffix = " mm";
+            }
+            text = this.Tools.roundToDecimal(text, 2);
+            metrics = this.context.measureText(text + suffix);
+            textWidth = metrics.width;
+            textHeight = this.rulerFontSize;
+            padding = 2;
+            xText = parseInt((ruler1x + ruler2x) / 2) - (textWidth / 2);
+            yText = parseInt((ruler1y + ruler2y) / 2) + (textHeight / 2);
+
+            this.context.fillStyle = "transparent"; //"#000000";//#ffffff
+            papaya.viewer.Viewer.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight + (padding * 2), 5, true, false);
+
+            this.context.strokeStyle = color;
+            this.context.fillStyle = color;
+
+            this.context.fillText(text + suffix, xText, yText);
+        }
+        this.context.restore();
+    }
+
+};
+
+papaya.viewer.Viewer.prototype.clipCanvas = function (currentSlice) {
+    this.context.save();
+    this.context.beginPath();
+    this.context.rect(currentSlice.screenOffsetX, currentSlice.screenOffsetY, currentSlice.screenDim - 1,
+        currentSlice.screenDim - 1);
+    this.context.closePath();
+    this.context.clip();
+
+}
 
 papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
     var xLoc, yStart, yEnd, yLoc, xStart, xEnd;
@@ -1568,7 +1693,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         yEnd = (this.axialSlice.finalTransform[1][2] + this.axialSlice.yDim * this.axialSlice.finalTransform[1][1]);
 
         this.context.moveTo(xLoc, yStart);
-        this.context.lineTo(xLoc, yEnd);       
+        this.context.lineTo(xLoc, yEnd);
         if (this.container.params.imageTools) {
             this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR_BLUE;
         } else {
@@ -1629,7 +1754,7 @@ papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
         xEnd = (this.coronalSlice.finalTransform[0][2] + this.coronalSlice.xDim *
             this.coronalSlice.finalTransform[0][0]);
         this.context.moveTo(xStart, yLoc);
-        this.context.lineTo(xEnd, yLoc);        
+        this.context.lineTo(xEnd, yLoc);
         if (this.container.params.imageTools) {
             this.context.strokeStyle = papaya.viewer.Viewer.CROSSHAIRS_COLOR_RED;
         } else {
@@ -2192,10 +2317,21 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
         me.handled = true;
         return;
     }
+    if (this.isRulerMode) {
+        if (this.selectedSlice === this.surfaceView) {
+            return;
+        }
+        if (this.selectedSlice != null && this.selectedSlice.getImageToolState('ruler') != undefined) {
+            var tooldata = this.selectedSlice.getImageToolState('ruler').imageDatas;
+
+            if (tooldata[this.Tools.selectedIndexLength] != undefined)
+                tooldata[this.Tools.selectedIndexLength].toolActive = false;
+        }
+    }
 
     if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
         if (me.handled !== true) {
-            if (!this.isWindowControl && !this.isZoomMode && !this.isStackMode && !this.isMagnifyMode && !this.isContextMode && (this.grabbedHandle === null) && (!this.surfaceView || (this.surfaceView.grabbedRulerPoint === -1))) {
+            if (!this.isWindowControl && !this.isZoomMode && !this.isStackMode && !this.isMagnifyMode && !this.isContextMode && !this.isRulerMode && (this.grabbedHandle === null) && (!this.surfaceView || (this.surfaceView.grabbedRulerPoint === -1))) {
                 this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
             }
 
@@ -2219,7 +2355,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
             this.controlsHiddenPrimed = false;
             this.isStackMode = false;
             this.isMagnifyMode = false;
-
+            this.isRulerMode = false;
             me.handled = true;
         }
 
@@ -2248,6 +2384,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
         this.controlsHidden = false;
         this.fadeInControls();
     }
+    this.drawViewer(true, true);
 };
 
 
@@ -2281,7 +2418,30 @@ papaya.viewer.Viewer.prototype.fadeInControls = function () {
     }
 };
 
-
+papaya.viewer.Viewer.prototype.selectedSliceOnClick = function () {
+    if (this.selectedSlice == this.axialSlice) {
+        this.selectedSliceAxialRed.css("display", "block");
+        this.selectedSliceCoronalBlue.css("display", "none");
+        this.selectedSliceSagitalGreen.css("display", "none");
+        this.selectedSliceSurfaceYellow.css("display", "none");
+    } else if (this.selectedSlice == this.coronalSlice) {
+        this.selectedSliceAxialRed.css("display", "none");
+        this.selectedSliceCoronalBlue.css("display", "block");
+        this.selectedSliceSagitalGreen.css("display", "none");
+        this.selectedSliceSurfaceYellow.css("display", "none");
+    }
+    else if (this.selectedSlice == this.sagittalSlice) {
+        this.selectedSliceAxialRed.css("display", "none");
+        this.selectedSliceCoronalBlue.css("display", "none");
+        this.selectedSliceSagitalGreen.css("display", "block");
+        this.selectedSliceSurfaceYellow.css("display", "none");
+    } else {
+        this.selectedSliceAxialRed.css("display", "none");
+        this.selectedSliceCoronalBlue.css("display", "none");
+        this.selectedSliceSagitalGreen.css("display", "none");
+        this.selectedSliceSurfaceYellow.css("display", "block");
+    }
+}
 
 papaya.viewer.Viewer.prototype.findClickedSlice = function (viewer, xLoc, yLoc) {
     xLoc = xLoc - this.canvasRect.left;
@@ -2300,6 +2460,9 @@ papaya.viewer.Viewer.prototype.findClickedSlice = function (viewer, xLoc, yLoc) 
         this.selectedSlice = this.surfaceView;
     } else {
         this.selectedSlice = null;
+    }
+    if (this.container.params.imageTools) {
+        this.selectedSliceOnClick();
     }
 };
 
@@ -2413,7 +2576,45 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
 
         }
         else if (this.isMagnifyMode) {
-            this.Tools.MagnifyToolEvent(this,me);
+            this.Tools.MagnifyToolEvent(this, me);
+        }
+        else if (this.isRulerMode) {
+            if (this.selectedSlice === this.surfaceView) {
+                return;
+            }
+            var cordTwo = {
+                xCord: 0,
+                yCord: 0,
+                zCord: 0
+            };
+            if (me.offsetX) {
+                cordTwo.xCord = me.offsetX,
+                    cordTwo.yCord = me.offsetY
+            } else {
+                var rect = me.target.getBoundingClientRect();
+
+                cordTwo.xCord = me.targetTouches[0].pageX - rect.left,
+                    cordTwo.xCord = me.targetTouches[0].pageY - rect.top
+            }
+
+            var returnCords = this.convertScreenToImageCoordinate(cordTwo.xCord, cordTwo.yCord, this.selectedSlice);
+            if (this.selectedSlice != null && this.selectedSlice.getImageToolState('ruler') != undefined) {
+                var tooldata = this.selectedSlice.getImageToolState('ruler').imageDatas;
+                if (tooldata[this.Tools.selectedIndexLength] != undefined) {
+                    var toolHandles = tooldata[this.Tools.selectedIndexLength].rulerHandles;
+                    Object.keys(toolHandles).forEach(function (name) {
+                        var rulerHandle = toolHandles[name];
+                        if (rulerHandle.toolActive == true) {
+                            rulerHandle.xCord = returnCords.x;
+                            rulerHandle.yCord = returnCords.y;
+                            rulerHandle.zCord = returnCords.z;
+                        }
+                    });
+                }
+            }
+            this.container.preferences.showRuler = "Yes";
+            this.drawViewer(false, true);
+
         }
         else {
             this.resetUpdateTimer(null);
@@ -3595,6 +3796,9 @@ papaya.viewer.Viewer.prototype.isShowingRuler = function () {
     return (this.container.preferences.showRuler === "Yes");
 };
 
+papaya.viewer.Viewer.prototype.isShowingOverlays = function () {
+    return (this.container.preferences.showOverlays === "Yes");
+}
 
 
 papaya.viewer.Viewer.prototype.isShowingOrientation = function () {
