@@ -1811,7 +1811,7 @@ papaya.viewer.Viewer.prototype.drawAngleOnSelectedScreeSlice = function (screenS
                     toolImageData[i].toolHandles.start.yCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.start.zCord * screenSlice.ySize), false);
             }
-            // Cosine law
+            
             var angle = Math.acos((Math.pow(sideALength, 2) + Math.pow(sideBLength, 2) - Math.pow(sideCLength, 2)) / (2 * sideALength * sideBLength));
             angle = angle * (180 / Math.PI);
 
@@ -1819,7 +1819,7 @@ papaya.viewer.Viewer.prototype.drawAngleOnSelectedScreeSlice = function (screenS
 
             if (angleValue) {
                 this.context.font = this.rulerFontSize + "px sans-serif";
-                var str = '00B0'; // degrees symbol
+                var str = '00B0';
                 text = angleValue.toString() + String.fromCharCode(parseInt(str, 16));
                 metrics = this.context.measureText(text);
                 textWidth = metrics.width;

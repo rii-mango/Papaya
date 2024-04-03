@@ -696,9 +696,7 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
         pointCord.yCord = me.targetTouches[0].pageY - clientRect.top;
     }
 
-    var firstPointSelect;
-
-    firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
+    var firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
 
     var cordOne = viewer.convertScreenToImageCoordinate(firstPointSelect.xCord, firstPointSelect.yCord, viewer.selectedSlice);
 
@@ -765,7 +763,7 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
         viewer.selectedSlice.setImageToolState('angle', angelObject);
         toolImageData = viewer.selectedSlice.getImageToolState('angle');
         if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
-
+            return;
         }
         else {
             toolImageData = toolImageData.imageDatas;
