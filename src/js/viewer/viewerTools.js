@@ -656,12 +656,9 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
         }
         viewer.selectedSlice.setImageToolState('ruler', rulerObject);
         var imageToolData = viewer.selectedSlice.getImageToolState('ruler');
-        if (imageToolData === undefined || imageToolData.imageDatas === undefined || imageToolData.imageDatas.length === 0) {
-
-        }
-        else {
+        if (imageToolData != undefined && imageToolData.imageDatas != undefined && imageToolData.imageDatas.length > 0) {
             imageToolData = imageToolData.imageDatas;
-        }
+        }       
         this.selectedIndexLength = imageToolData.length - 1;
     }
 };
@@ -756,10 +753,7 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
         }
         viewer.selectedSlice.setImageToolState('angle', angelObject);
         toolImageData = viewer.selectedSlice.getImageToolState('angle');
-        if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
-            return;
-        }
-        else {
+        if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {
             toolImageData = toolImageData.imageDatas;
         }
         this.selectedIndexAngleOnImage = toolImageData.length - 1;
