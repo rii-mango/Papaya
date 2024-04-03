@@ -1530,9 +1530,7 @@ papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screen
         return;
     }
     var imageTooldata = screenSlice.getImageToolState('ruler');
-    if (imageTooldata === undefined || imageTooldata.imageDatas === undefined || imageTooldata.imageDatas.length === 0) {
-    }
-    else {
+    if (imageTooldata != undefined && imageTooldata.imageDatas != undefined && imageTooldata.imageDatas.length != 0) {
         this.clipCanvas(screenSlice);
         var imageTooldata = imageTooldata.imageDatas;
         for (var i = 0; i < imageTooldata.length; i++) {
@@ -1685,10 +1683,7 @@ papaya.viewer.Viewer.prototype.drawAngleOnSelectedScreeSlice = function (screenS
     }
 
     var toolImageData = screenSlice.getImageToolState('angle');
-    if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
-
-    }
-    else {
+    if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length != 0) {
         this.clipCanvas(screenSlice);
         toolImageData = toolImageData.imageDatas;
         for (var i = 0; i < toolImageData.length; i++) {

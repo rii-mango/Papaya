@@ -617,10 +617,7 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
     var CordOne = viewer.convertScreenToImageCoordinate(pointsCordOne.xCord, pointsCordOne.yCord, viewer.selectedSlice);
     pointsCordOne = { xCord: CordOne.x, yCord: CordOne.y, zCord: CordOne.z };
     var imgaeTooldata = viewer.selectedSlice.getImageToolState('ruler');
-    if (imgaeTooldata === undefined || imgaeTooldata.imageDatas === undefined || imgaeTooldata.imageDatas.length === 0) {
-
-    }
-    else {
+    if (imgaeTooldata != undefined && imgaeTooldata.imageDatas != undefined && imgaeTooldata.imageDatas.length != 0) {
         var imgaeTooldata = imgaeTooldata.imageDatas;
         for (var i = 0; i < imgaeTooldata.length; i++) {
             var nearbyHandle = this.getToolHandleNearToImagePoint(imgaeTooldata[i].rulerHandles, pointsCordOne, 5);
@@ -656,7 +653,7 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
                     toolActive: true
                 }
             }
-        } 
+        }
         viewer.selectedSlice.setImageToolState('ruler', rulerObject);
         var imageToolData = viewer.selectedSlice.getImageToolState('ruler');
         if (imageToolData === undefined || imageToolData.imageDatas === undefined || imageToolData.imageDatas.length === 0) {
@@ -701,12 +698,9 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
     var cordOne = viewer.convertScreenToImageCoordinate(firstPointSelect.xCord, firstPointSelect.yCord, viewer.selectedSlice);
 
     firstPointSelect = { xCord: cordOne.x, yCord: cordOne.y, zCord: cordOne.z };
-  
-    var toolImageData = viewer.selectedSlice.getImageToolState('angle');
-    if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
 
-    }
-    else {
+    var toolImageData = viewer.selectedSlice.getImageToolState('angle');
+    if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length != 0) {
         var imageToolData = toolImageData.imageDatas;
         if (imageToolData.length != 0) {
             this.selectedIndexAngleOnImage = imageToolData.length - 1;
@@ -734,7 +728,7 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
             if (activeToolHandle != undefined && activeToolHandle != nearbyToolHandle)
                 activeToolHandle.toolActive = false;
         }
-    }               
+    }
     if (!this.imageNeedsUpdateForDrawTool) {
         var angelObject = {
             isWaitingForLine: false,
