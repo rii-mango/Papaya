@@ -143,6 +143,7 @@ var PAPAYA_SIDENAV_BUTTON_CROSSHAIR = "drawCrossHairImages",
     PAPAYA_SIDENAV_BUTTON_INVERT = "invertImageTool",
     PAPAYA_SIDENAV_BUTTON_PLAYCENE = "playClipImages",
     PAPAYA_SIDENAV_BUTTON_RULER = "drawRulerOnImages",
+    PAPAYA_SIDENAV_BUTTON_ANGLE ="drawAngleOnImages"
     PAPAYA_SIDENAV_BUTTON_RESET = "resetImages";
 
 //Button Side Nav Panel

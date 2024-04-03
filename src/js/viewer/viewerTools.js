@@ -34,8 +34,9 @@ papaya.viewer.Tools = papaya.viewer.Tools || function () {
     this.IsForwardCine = true;
     this.IsRepeatCine = true;
     this.sliderValue = 10;
-    this.imageNeedsUpdateForRuler = false;
+    this.imageNeedsUpdateForDrawTool = false;
     this.selectedIndexLength;
+    this.selectedIndexAngleOnImage;
 }
 
 papaya.viewer.Tools.prototype.GetToolOnMouseDown = function (button, viewer, me) {
@@ -96,6 +97,9 @@ papaya.viewer.Tools.prototype.GetToolOnMouseDown = function (button, viewer, me)
                 break;
             case PAPAYA_SIDENAV_BUTTON_RULER:
                 this.DrawRulerOnImageSlice(viewer, me);
+                break;
+            case PAPAYA_SIDENAV_BUTTON_ANGLE:
+                this.DrawAngleOnImageSlice(viewer, me);
                 break;
 
         }
@@ -190,9 +194,9 @@ papaya.viewer.Tools.prototype.MagnifyToolEvent = function (viewer, me) {
     viewer.drawViewer(false, true);
     viewer.magnifyCanvasContext = viewer.magnifyCanvas.getContext("2d");
     viewer.magnifyCanvasContext.setTransform(1, 0, 0, 1, 0, 0);
-    viewer.magnifyCanvasContext.clearRect(0, 0, 120, 120);
+    viewer.magnifyCanvasContext.clearRect(0, 0, 240, 240);
     viewer.magnifyCanvasContext.fillStyle = 'transparent';
-    viewer.magnifyCanvasContext.fillRect(0, 0, 120, 120);
+    viewer.magnifyCanvasContext.fillRect(0, 0, 240, 240);
     var initialPosotionCopied = this.GetCurrentCursorPosition(me, viewer);
     initialPosotionCopied.position.posX = initialPosotionCopied.position.posX - 37;
     initialPosotionCopied.position.posY = initialPosotionCopied.position.posY - 37;
@@ -558,15 +562,19 @@ papaya.viewer.Tools.prototype.ResetAllTools = function (viewer) {
     }
     if (viewer.mainImage != viewer.surfaceView) {
         viewer.mainImage.clearImageToolState('ruler');
+        viewer.mainImage.clearImageToolState('angle');
     }
     if (viewer.lowerImageTop != viewer.surfaceView) {
         viewer.lowerImageTop.clearImageToolState('ruler');
+        viewer.lowerImageTop.clearImageToolState('angle');
     }
     if (viewer.lowerImageBot != viewer.surfaceView) {
         viewer.lowerImageBot.clearImageToolState('ruler');
+        viewer.lowerImageBot.clearImageToolState('angle');
     }
     if (viewer.lowerImageBot2 != viewer.surfaceView) {
         viewer.lowerImageBot2.clearImageToolState('ruler');
+        viewer.lowerImageBot2.clearImageToolState('angle');
     }
     viewer.drawViewer(true, false);
 
@@ -579,11 +587,14 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
     if (viewer.selectedSlice === viewer.surfaceView) {
         return;
     }
-    this.imageNeedsUpdateForRuler = false;
+    this.imageNeedsUpdateForDrawTool = false;
     viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
     viewer.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
 
     viewer.findClickedSlice(viewer, viewer.previousMousePosition.x, viewer.previousMousePosition.y);
+    if (viewer.selectedSlice == viewer.surfaceView) {
+        return;
+    }
     var pointsCord = {
         xCords: 0,
         yCords: 0
@@ -599,7 +610,7 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
     var pointsCordOne = {
         xCord: 0,
         yCord: 0,
-        zCord:0
+        zCord: 0
 
     }
     pointsCordOne = { xCord: pointsCord.xCords, yCord: pointsCord.yCords };
@@ -612,7 +623,6 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
     else {
         var imgaeTooldata = imgaeTooldata.imageDatas;
         for (var i = 0; i < imgaeTooldata.length; i++) {
-            var activeHandle = this.getActiveToolHandle(imgaeTooldata[i].rulerHandles);
             var nearbyHandle = this.getToolHandleNearToImagePoint(imgaeTooldata[i].rulerHandles, pointsCordOne, 5);
             if (nearbyHandle !== undefined) {
                 this.selectedIndexLength = i;
@@ -621,15 +631,16 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
                 nearbyHandle.xCord = pointsCordOne.xCord
                 nearbyHandle.yCord = pointsCordOne.yCord;
                 nearbyHandle.zCord = pointsCordOne.zCord;
-                this.imageNeedsUpdateForRuler = true;
+                this.imageNeedsUpdateForDrawTool = true;
             }
+            var activeHandle = this.getActiveToolHandle(imgaeTooldata[i].rulerHandles);
             if (activeHandle != undefined && activeHandle != nearbyHandle)
                 activeHandle.toolActive = false;
         }
     }
-    if (!this.imageNeedsUpdateForRuler) {
+    if (!this.imageNeedsUpdateForDrawTool) {
 
-        var toolObj = {
+        var rulerObject = {
             toolActive: true,
             rulerHandles: {
                 rulerStart: {
@@ -645,8 +656,8 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
                     toolActive: true
                 }
             }
-        }
-        viewer.selectedSlice.setImageToolState('ruler', toolObj);
+        } 
+        viewer.selectedSlice.setImageToolState('ruler', rulerObject);
         var imageToolData = viewer.selectedSlice.getImageToolState('ruler');
         if (imageToolData === undefined || imageToolData.imageDatas === undefined || imageToolData.imageDatas.length === 0) {
 
@@ -656,6 +667,112 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
         }
         this.selectedIndexLength = imageToolData.length - 1;
     }
+};
+
+papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
+    this.imageNeedsUpdateForDrawTool = false;
+    viewer.container.preferences.showCrosshairs = "No";
+    viewer.isAngleMode = true;
+
+    viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
+    viewer.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
+
+    viewer.findClickedSlice(viewer, viewer.previousMousePosition.x, viewer.previousMousePosition.y);
+
+    if (viewer.selectedSlice == viewer.surfaceView) {
+        return;
+    }
+    var pointCord = {
+        xCord: 0,
+        yCord: 0
+    }
+
+    if (me.offsetX) {
+        pointCord.xCord = me.offsetX;
+        pointCord.yCord = me.offsetY;
+    } else {
+        var clientRect = me.target.getBoundingClientRect();
+        pointCord.xCord = me.targetTouches[0].pageX - clientRect.left;
+        pointCord.yCord = me.targetTouches[0].pageY - clientRect.top;
+    }
+
+    var firstPointSelect;
+
+    firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
+
+    var cordOne = viewer.convertScreenToImageCoordinate(firstPointSelect.xCord, firstPointSelect.yCord, viewer.selectedSlice);
+
+    firstPointSelect = { xCord: cordOne.x, yCord: cordOne.y, zCord: cordOne.z };
+  
+    var toolImageData = viewer.selectedSlice.getImageToolState('angle');
+    if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
+
+    }
+    else {
+        var imageToolData = toolImageData.imageDatas;
+        if (imageToolData.length != 0) {
+            this.selectedIndexAngleOnImage = imageToolData.length - 1;
+            if (imageToolData[this.selectedIndexAngleOnImage].toolHandles.end.toolActive && imageToolData[this.selectedIndexAngleOnImage].isWaitingForLine == true) {
+                imageToolData[this.selectedIndexAngleOnImage].toolHandles.end.toolActive = false;
+                imageToolData[this.selectedIndexAngleOnImage].isWaitingForLine = "complete";
+                viewer.isDragging = false;
+                this.imageNeedsUpdateForDrawTool = true;
+            }
+        }
+
+
+        for (var i = 0; i < imageToolData.length; i++) {
+            var activeToolHandle = this.getActiveToolHandle(imageToolData[i].toolHandles);
+            var nearbyToolHandle = this.getToolHandleNearToImagePoint(imageToolData[i].toolHandles, firstPointSelect, 5);
+            if (nearbyToolHandle !== undefined) {
+                this.selectedIndexAngleOnImage = i;
+                nearbyToolHandle.toolActive = true;
+                imageToolData[i].toolActive = true;
+                nearbyToolHandle.x = cordOne.x;
+                nearbyToolHandle.y = cordOne.y;
+                nearbyToolHandle.z = cordOne.z;
+                this.imageNeedsUpdateForDrawTool = true;
+            }
+            if (activeToolHandle != undefined && activeToolHandle != nearbyToolHandle)
+                activeToolHandle.toolActive = false;
+        }
+    }               
+    if (!this.imageNeedsUpdateForDrawTool) {
+        var angelObject = {
+            isWaitingForLine: false,
+            toolActive: true,
+            toolHandles: {
+                start: {
+                    xCord: cordOne.x,
+                    yCord: cordOne.y,
+                    zCord: cordOne.z,
+                    toolActive: false
+                },
+                middle: {
+                    xCord: cordOne.x,
+                    yCord: cordOne.y,
+                    zCord: cordOne.z,
+                    toolActive: true
+                },
+                end: {
+                    xCord: cordOne.x,
+                    yCord: cordOne.y,
+                    zCord: cordOne.z,
+                    toolActive: false
+                }
+            }
+        }
+        viewer.selectedSlice.setImageToolState('angle', angelObject);
+        toolImageData = viewer.selectedSlice.getImageToolState('angle');
+        if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
+
+        }
+        else {
+            toolImageData = toolImageData.imageDatas;
+        }
+        this.selectedIndexAngleOnImage = toolImageData.length - 1;
+    }
+
 };
 
 //CornerStone.js and CornerStoneMath.js functions for drawing Ruler as implemented in cornerStone.js

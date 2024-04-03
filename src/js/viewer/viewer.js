@@ -56,6 +56,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.isPanning = false;
     this.isStackMode = false;
     this.isRulerMode = false;
+    this.isAngleMode = false;
     this.didLongTouch = false;
     this.isLongTouch = false;
     this.zoomFactor = papaya.viewer.Viewer.ZOOM_FACTOR_MIN;
@@ -1305,6 +1306,10 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
         this.drawRuler();
     }
 
+    if (this.container.preferences.showAngle === "Yes") {
+        this.drawAngle();
+    }
+
     if (this.container.display) {
         this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
     }
@@ -1511,21 +1516,25 @@ papaya.viewer.Viewer.prototype.drawRuler = function () {
     this.drawRulerOnSelectedScreenSlice(this.lowerImageBot2);
 };
 
+papaya.viewer.Viewer.prototype.drawAngle = function () {
+    this.drawAngleOnSelectedScreeSlice(this.mainImage);
+    this.drawAngleOnSelectedScreeSlice(this.lowerImageTop);
+    this.drawAngleOnSelectedScreeSlice(this.lowerImageBot);
+    this.drawAngleOnSelectedScreeSlice(this.lowerImageBot2);
+
+};
 papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screenSlice) {
     var ruler1x, ruler1y, ruler2x, ruler2y, text, metrics, textWidth, textHeight, padding, xText, yText;
-
 
     if (screenSlice === this.surfaceView) {
         return;
     }
     var imageTooldata = screenSlice.getImageToolState('ruler');
     if (imageTooldata === undefined || imageTooldata.imageDatas === undefined || imageTooldata.imageDatas.length === 0) {
-        return;
     }
     else {
         this.clipCanvas(screenSlice);
         var imageTooldata = imageTooldata.imageDatas;
-
         for (var i = 0; i < imageTooldata.length; i++) {
 
             if (screenSlice === this.axialSlice) {
@@ -1581,7 +1590,7 @@ papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screen
                 color = this.activeRulerColor;
             }
             else {
-                color = this.rulerColor; //"#FF1493";
+                color = this.rulerColor;
             }
             this.context.strokeStyle = color;
             this.context.fillStyle = color;
@@ -1653,20 +1662,194 @@ papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screen
 
             this.context.fillText(text + suffix, xText, yText);
         }
-        this.context.restore();
     }
-
+    this.context.restore();
 };
 
 papaya.viewer.Viewer.prototype.clipCanvas = function (currentSlice) {
-    this.context.save();
-    this.context.beginPath();
-    this.context.rect(currentSlice.screenOffsetX, currentSlice.screenOffsetY, currentSlice.screenDim - 1,
-        currentSlice.screenDim - 1);
-    this.context.closePath();
-    this.context.clip();
+    if (currentSlice != null) {
+        this.context.save();
+        this.context.beginPath();
+        this.context.rect(currentSlice.screenOffsetX, currentSlice.screenOffsetY, currentSlice.screenDim - 1,
+            currentSlice.screenDim - 1);
+        this.context.closePath();
+        this.context.clip();
+    }
+};
 
-}
+papaya.viewer.Viewer.prototype.drawAngleOnSelectedScreeSlice = function (screenSlice) {
+    var ruler1x, ruler1y, ruler2x, ruler2y, ruler3x, ruler3y, text, metrics, textWidth, textHeight, padding, xText, yText;
+    //
+    if (screenSlice === this.surfaceView) {
+        return;
+    }
+
+    var toolImageData = screenSlice.getImageToolState('angle');
+    if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
+
+    }
+    else {
+        this.clipCanvas(screenSlice);
+        toolImageData = toolImageData.imageDatas;
+        for (var i = 0; i < toolImageData.length; i++) {
+
+
+            if (screenSlice === this.axialSlice) {
+                ruler1x = (this.axialSlice.finalTransform[0][2] + (toolImageData[i].toolHandles.start.xCord + 0.5) * this.axialSlice.finalTransform[0][0]);
+                ruler1y = (this.axialSlice.finalTransform[1][2] + (toolImageData[i].toolHandles.start.yCord + 0.5) * this.axialSlice.finalTransform[1][1]);
+                ruler2x = (this.axialSlice.finalTransform[0][2] + (toolImageData[i].toolHandles.middle.xCord + 0.5) * this.axialSlice.finalTransform[0][0]);
+                ruler2y = (this.axialSlice.finalTransform[1][2] + (toolImageData[i].toolHandles.middle.yCord + 0.5) * this.axialSlice.finalTransform[1][1]);
+                ruler3x = (this.axialSlice.finalTransform[0][2] + (toolImageData[i].toolHandles.end.xCord + 0.5) * this.axialSlice.finalTransform[0][0]);
+                ruler3y = (this.axialSlice.finalTransform[1][2] + (toolImageData[i].toolHandles.end.yCord + 0.5) * this.axialSlice.finalTransform[1][1]);
+            } else if (screenSlice === this.coronalSlice) {
+                ruler1x = (this.coronalSlice.finalTransform[0][2] + (toolImageData[i].toolHandles.start.xCord + 0.5) * this.coronalSlice.finalTransform[0][0]);
+                ruler1y = (this.coronalSlice.finalTransform[1][2] + (toolImageData[i].toolHandles.start.zCord + 0.5) * this.coronalSlice.finalTransform[1][1]);
+                ruler2x = (this.coronalSlice.finalTransform[0][2] + (toolImageData[i].toolHandles.middle.xCord + 0.5) * this.coronalSlice.finalTransform[0][0]);
+                ruler2y = (this.coronalSlice.finalTransform[1][2] + (toolImageData[i].toolHandles.middle.zCord + 0.5) * this.coronalSlice.finalTransform[1][1]);
+                ruler3x = (this.coronalSlice.finalTransform[0][2] + (toolImageData[i].toolHandles.end.xCord + 0.5) * this.coronalSlice.finalTransform[0][0]);
+                ruler3y = (this.coronalSlice.finalTransform[1][2] + (toolImageData[i].toolHandles.end.zCord + 0.5) * this.coronalSlice.finalTransform[1][1]);
+            } else if (screenSlice === this.sagittalSlice) {
+                ruler1x = (this.sagittalSlice.finalTransform[0][2] + (toolImageData[i].toolHandles.start.yCord + 0.5) * this.sagittalSlice.finalTransform[0][0]);
+                ruler1y = (this.sagittalSlice.finalTransform[1][2] + (toolImageData[i].toolHandles.start.zCord + 0.5) * this.sagittalSlice.finalTransform[1][1]);
+                ruler2x = (this.sagittalSlice.finalTransform[0][2] + (toolImageData[i].toolHandles.middle.yCord + 0.5) * this.sagittalSlice.finalTransform[0][0]);
+                ruler2y = (this.sagittalSlice.finalTransform[1][2] + (toolImageData[i].toolHandles.middle.zCord + 0.5) * this.sagittalSlice.finalTransform[1][1]);
+                ruler3x = (this.sagittalSlice.finalTransform[0][2] + (toolImageData[i].toolHandles.end.yCord + 0.5) * this.sagittalSlice.finalTransform[0][0]);
+                ruler3y = (this.sagittalSlice.finalTransform[1][2] + (toolImageData[i].toolHandles.end.zCord + 0.5) * this.sagittalSlice.finalTransform[1][1]);
+            }
+
+            this.context.setTransform(1, 0, 0, 1, 0, 0);
+
+            var color;
+            if (toolImageData[i].toolActive) {
+                color = this.activeRulerColor;
+            }
+            else {
+                color = this.rulerColor; //"#FF1493";
+            }
+            this.context.strokeStyle = color;
+            this.context.fillStyle = color;
+            this.context.lineWidth = this.rulerWidth; // 1.0;
+            // this.context.save();
+            this.context.beginPath();
+            this.context.moveTo(ruler1x, ruler1y);
+            this.context.lineTo(ruler2x, ruler2y);
+
+            this.context.lineTo(ruler3x, ruler3y);
+            this.context.stroke();
+            this.context.closePath();
+
+
+            this.context.beginPath();
+            this.context.arc(ruler1x, ruler1y, 3, 0, 2 * Math.PI);
+            this.context.fillStyle = color;
+            this.context.fill();
+            this.context.stroke();
+            this.context.closePath();
+            this.context.beginPath();
+            this.context.arc(ruler2x, ruler2y, 3, 0, 2 * Math.PI);
+            this.context.fillStyle = color;
+            this.context.fill();
+            this.context.stroke();
+            this.context.closePath();
+
+            this.context.beginPath();
+            this.context.arc(ruler3x, ruler3y, 3, 0, 2 * Math.PI);
+            this.context.fillStyle = color;
+            this.context.fill();
+            this.context.stroke();
+            this.context.closePath();
+
+            this.context.closePath();
+
+            var sideALength, sideBLength, sideCLength;
+            if (screenSlice === this.axialSlice) {
+                sideALength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                    toolImageData[i].toolHandles.start.xCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.start.yCord * screenSlice.ySize,
+                    toolImageData[i].toolHandles.middle.xCord *screenSlice.xSize,
+                    toolImageData[i].toolHandles.middle.yCord *screenSlice.ySize), false);
+                sideBLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                    toolImageData[i].toolHandles.middle.xCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.middle.yCord * screenSlice.ySize,
+                    toolImageData[i].toolHandles.end.xCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.end.yCord * screenSlice.ySize), false);
+                sideCLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                    toolImageData[i].toolHandles.end.xCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.end.yCord * screenSlice.ySize,
+                    toolImageData[i].toolHandles.start.xCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.start.yCord * screenSlice.ySize), false);
+            } else if (screenSlice === this.coronalSlice) {
+                sideALength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                    toolImageData[i].toolHandles.start.xCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.start.zCord * screenSlice.ySize,
+                    toolImageData[i].toolHandles.middle.xCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.middle.zCord * screenSlice.ySize), false);
+                sideBLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                    toolImageData[i].toolHandles.middle.xCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.middle.zCord * screenSlice.ySize,
+                    toolImageData[i].toolHandles.end.xCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.end.zCord * screenSlice.ySize), false);
+                sideCLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                    toolImageData[i].toolHandles.end.xCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.end.zCord * screenSlice.ySize,
+                    toolImageData[i].toolHandles.start.xCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.start.zCord * screenSlice.ySize), false);
+            } else if (screenSlice === this.sagittalSlice) {
+                sideALength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                    toolImageData[i].toolHandles.start.yCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.start.zCord * screenSlice.ySize,
+                    toolImageData[i].toolHandles.middle.yCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.middle.zCord * screenSlice.ySize), false);
+                sideBLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                    toolImageData[i].toolHandles.middle.yCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.middle.zCord * screenSlice.ySize,
+                    toolImageData[i].toolHandles.end.yCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.end.zCord * screenSlice.ySize), false);
+                sideCLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                    toolImageData[i].toolHandles.end.yCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.end.zCord * screenSlice.ySize,
+                    toolImageData[i].toolHandles.start.yCord * screenSlice.xSize,
+                    toolImageData[i].toolHandles.start.zCord * screenSlice.ySize), false);
+            }
+            // Cosine law
+            var angle = Math.acos((Math.pow(sideALength, 2) + Math.pow(sideBLength, 2) - Math.pow(sideCLength, 2)) / (2 * sideALength * sideBLength));
+            angle = angle * (180 / Math.PI);
+
+            var angleValue = this.Tools.roundToDecimal(angle, 2);
+
+            if (angleValue) {
+                this.context.font = this.rulerFontSize + "px sans-serif";
+                var str = '00B0'; // degrees symbol
+                text = angleValue.toString() + String.fromCharCode(parseInt(str, 16));
+                metrics = this.context.measureText(text);
+                textWidth = metrics.width;
+                textHeight = this.rulerFontSize;
+                padding = 2;
+                var distance = 15;
+                xText = parseInt(ruler2x);
+                yText = parseInt(ruler2y) + (textHeight / 2);
+
+                if (ruler2x < ruler1x) {
+                    xText -= distance + textWidth + 10;
+                } else {
+                    xText += distance;
+                }
+
+                this.context.fillStyle = "transparent";
+                papaya.viewer.Viewer.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight + (padding * 2), 5, true, false);
+              
+                this.context.strokeStyle = color;
+                this.context.fillStyle = color;
+
+                this.context.fillText(text, xText, yText);
+            }
+        }
+    }
+
+    this.context.restore();
+
+};
+
 
 papaya.viewer.Viewer.prototype.drawCrosshairs = function () {
     var xLoc, yStart, yEnd, yLoc, xStart, xEnd;
@@ -2328,10 +2511,24 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
                 tooldata[this.Tools.selectedIndexLength].toolActive = false;
         }
     }
+    if (this.isAngleMode) {
+        if (this.selectedSlice != null && this.selectedSlice.getImageToolState('angle') != undefined) {
+            var tooldata = this.selectedSlice.getImageToolState('angle').imageDatas;
+
+            if (tooldata[this.Tools.selectedIndexAngleOnImage].toolHandles.middle.toolActive && tooldata[this.Tools.selectedIndexAngleOnImage].isWaitingForLine == false) {
+                tooldata[this.Tools.selectedIndexAngleOnImage].toolHandles.middle.toolActive = false;
+                tooldata[this.Tools.selectedIndexAngleOnImage].toolHandles.end.toolActive = true;
+                tooldata[this.Tools.selectedIndexAngleOnImage].isWaitingForLine = true;
+                me.handled = true;
+            }
+            if (tooldata[this.Tools.selectedIndexAngleOnImage] != undefined && tooldata[this.Tools.selectedIndexAngleOnImage].isWaitingForLine == 'complete')
+                tooldata[this.Tools.selectedIndexAngleOnImage].toolActive = false;
+        }
+    }
 
     if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
         if (me.handled !== true) {
-            if (!this.isWindowControl && !this.isZoomMode && !this.isStackMode && !this.isMagnifyMode && !this.isContextMode && !this.isRulerMode && (this.grabbedHandle === null) && (!this.surfaceView || (this.surfaceView.grabbedRulerPoint === -1))) {
+            if (!this.isWindowControl && !this.isZoomMode && !this.isStackMode && !this.isMagnifyMode && !this.isContextMode && !this.isRulerMode && !this.isAngleMode && (this.grabbedHandle === null) && (!this.surfaceView || (this.surfaceView.grabbedRulerPoint === -1))) {
                 this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
             }
 
@@ -2356,6 +2553,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
             this.isStackMode = false;
             this.isMagnifyMode = false;
             this.isRulerMode = false;
+            this.isAngleMode = false;
             me.handled = true;
         }
 
@@ -2616,6 +2814,39 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
             this.drawViewer(false, true);
 
         }
+        else if (this.isAngleMode) {
+            var cordinate = {};
+            if (me.offsetX || me.offsetY) {
+                cordinate = {
+                    xCord: me.offsetX,
+                    yCord: me.offsetY
+                };
+            } else {
+                var clientRect = me.target.getBoundingClientRect();
+                cordinate = {
+                    xCord: me.targetTouches[0].pageX - clientRect.left,
+                    yCord: me.targetTouches[0].pageY - clientRect.top
+                }
+            }
+            if (this.selectedSlice != null) {
+                cordinate = this.convertScreenToImageCoordinate(cordinate.xCord, cordinate.yCord, this.selectedSlice);
+                if (this.selectedSlice.getImageToolState('angle') == undefined) {
+                    return;
+                }
+                var tooldata = this.selectedSlice.getImageToolState('angle').imageDatas;
+                var toolHandles = tooldata[this.Tools.selectedIndexAngleOnImage].toolHandles;
+                Object.keys(toolHandles).forEach(function (name) {
+                    var toolHandle = toolHandles[name];
+                    if (toolHandle.toolActive == true) {
+                        toolHandle.xCord = cordinate.x;
+                        toolHandle.yCord = cordinate.y;
+                        toolHandle.zCord = cordinate.z;
+                    }
+                });
+            }
+            this.container.preferences.showAngle = "Yes";
+            this.drawViewer(false, true);
+        }
         else {
             this.resetUpdateTimer(null);
 
@@ -2670,8 +2901,8 @@ papaya.viewer.Viewer.prototype.createMagnifyCanvas = function () {
     if (this.magnifyCanvas == null) {
         this.magnifyCanvas = this.temMagnifyCanvas;
         this.magnifyCanvas.setAttribute("id", "magnifyToolCanvas");
-        this.magnifyCanvas.height = 150;
-        this.magnifyCanvas.width = 150;
+        this.magnifyCanvas.height = 300;
+        this.magnifyCanvas.width = 300;
         this.magnifyCanvas.classList.add("magnifyToolsCanvse");
 
         this.magnifyCanvas.style.position = 'absolute';
@@ -2693,7 +2924,7 @@ papaya.viewer.Viewer.prototype.mouseDoubleClickEvent = function () {
 papaya.viewer.Viewer.prototype.mouseOutEvent = function (me) {
     papaya.Container.papayaLastHoveredViewer = null;
 
-    if (this.isDragging) {
+    if (this.isDragging && !this.isAngleMode) {
         this.mouseUpEvent(me);
     } else {
         if (this.container.display) {
