@@ -264,7 +264,7 @@ papaya.viewer.Viewer.getOffsetRect = function (elem) {
 
 
 // http://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
-papaya.viewer.Viewer.drawRoundRect = function (ctx, x, y, width, height, radius, fill, stroke) {
+papaya.viewer.Viewer.prototype.drawRoundRect = function (ctx, x, y, width, height, radius, fill, stroke) {
     if (typeof stroke === "undefined") {
         stroke = true;
     }
@@ -1652,7 +1652,7 @@ papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screen
             xText = parseInt((ruler1x + ruler2x) / 2) - (textWidth / 2);
             yText = parseInt((ruler1y + ruler2y) / 2) + (textHeight / 2);
 
-            this.context.fillStyle = "transparent"; //"#000000";//#ffffff
+            this.context.fillStyle = "transparent";
             papaya.viewer.Viewer.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight + (padding * 2), 5, true, false);
 
             this.context.strokeStyle = color;
@@ -1756,61 +1756,62 @@ papaya.viewer.Viewer.prototype.drawAngleOnSelectedScreeSlice = function (screenS
 
             this.context.closePath();
 
-            var sideALength, sideBLength, sideCLength;
+            var sidelengthFromFirstPoint, sidelengthFromSecondPoint, sidelengthFromThirdPoint;
             if (screenSlice === this.axialSlice) {
-                sideALength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sidelengthFromFirstPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.start.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.start.yCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.middle.xCord *screenSlice.xSize,
                     toolImageData[i].toolHandles.middle.yCord *screenSlice.ySize), false);
-                sideBLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sidelengthFromSecondPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.middle.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.middle.yCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.end.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.end.yCord * screenSlice.ySize), false);
-                sideCLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sidelengthFromThirdPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.end.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.end.yCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.start.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.start.yCord * screenSlice.ySize), false);
             } else if (screenSlice === this.coronalSlice) {
-                sideALength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sidelengthFromFirstPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.start.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.start.zCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.middle.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.middle.zCord * screenSlice.ySize), false);
-                sideBLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sidelengthFromSecondPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.middle.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.middle.zCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.end.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.end.zCord * screenSlice.ySize), false);
-                sideCLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sidelengthFromThirdPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.end.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.end.zCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.start.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.start.zCord * screenSlice.ySize), false);
             } else if (screenSlice === this.sagittalSlice) {
-                sideALength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sidelengthFromFirstPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.start.yCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.start.zCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.middle.yCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.middle.zCord * screenSlice.ySize), false);
-                sideBLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sidelengthFromSecondPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.middle.yCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.middle.zCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.end.yCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.end.zCord * screenSlice.ySize), false);
-                sideCLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sidelengthFromThirdPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.end.yCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.end.zCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.start.yCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.start.zCord * screenSlice.ySize), false);
             }
             
-            var angle = Math.acos((Math.pow(sideALength, 2) + Math.pow(sideBLength, 2) - Math.pow(sideCLength, 2)) / (2 * sideALength * sideBLength));
-            angle = angle * (180 / Math.PI);
+            var angleArc = Math.acos((Math.pow(sidelengthFromFirstPoint, 2) + Math.pow(sidelengthFromSecondPoint, 2) - Math.pow(sidelengthFromThirdPoint, 2)) / (2 * sidelengthFromFirstPoint * sidelengthFromSecondPoint));
 
-            var angleValue = this.Tools.roundToDecimal(angle, 2);
+            angleArc = angleArc * (180 / Math.PI);
+
+            var angleValue = this.Tools.roundToDecimal(angleArc, 2);
 
             if (angleValue) {
                 this.context.font = this.rulerFontSize + "px sans-serif";
@@ -1831,7 +1832,7 @@ papaya.viewer.Viewer.prototype.drawAngleOnSelectedScreeSlice = function (screenS
                 }
 
                 this.context.fillStyle = "transparent";
-                papaya.viewer.Viewer.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight + (padding * 2), 5, true, false);
+                this.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight + (padding * 2), 5, true, false);
               
                 this.context.strokeStyle = color;
                 this.context.fillStyle = color;
