@@ -23,6 +23,7 @@ papaya.viewer.Preferences = papaya.viewer.Preferences || function () {
     this.showSurfacePlanes = papaya.viewer.Preferences.DEFAULT_SHOW_SURFACE_PLANES;
     this.showSurfaceCrosshairs = papaya.viewer.Preferences.DEFAULT_SHOW_SURFACE_CROSSHAIRS;
     this.showOverlays = papaya.viewer.Preferences.DEFAULT_SHOW_IMAGE_OVERLAYS;
+    this.showAngle = papaya.viewer.Preferences.DEFAULT_SHOW_ANGLE;
 };
 
 
@@ -39,9 +40,11 @@ papaya.viewer.Preferences.DEFAULT_SCROLL = "Increment Slice";
 papaya.viewer.Preferences.DEFAULT_SMOOTH_DISPLAY = "Yes";
 papaya.viewer.Preferences.DEFAULT_RADIOLOGICAL = "No";
 papaya.viewer.Preferences.DEFAULT_SHOW_RULER = "No";
+papaya.viewer.Preferences.DEFAULT_SHOW_ANGLE = "No";
 papaya.viewer.Preferences.DEFAULT_SURFACE_BACKGROUND_COLOR = "Black";
 papaya.viewer.Preferences.DEFAULT_SHOW_SURFACE_PLANES = "Yes";
 papaya.viewer.Preferences.DEFAULT_SHOW_IMAGE_OVERLAYS = "Yes";
+
 
 
 /*** Prototype Methods ***/

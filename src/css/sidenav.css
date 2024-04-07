@@ -214,6 +214,10 @@
     text-align: center;
 }
 
+#drawAngleOnImages span {
+    transform: rotate(-90deg);
+}
+
 #mainImageOverlaysTopLeft {
     text-align: left;
     display: none;
