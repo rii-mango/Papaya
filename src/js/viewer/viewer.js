@@ -1624,7 +1624,7 @@ papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screen
 
 
             var suffix;
-            this.context.font = this.rulerFontSize + "px sans-serif"; //papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
+            this.context.font = this.rulerFontSize + "px sans-serif";
 
             var textSuffix = this.Tools.getScaleUnit(this.rulerUnit, text);
             text = this.Tools.roundToDecimal(textSuffix.text, 2);
@@ -1636,7 +1636,7 @@ papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screen
             xText = parseInt((ruler1x + ruler2x) / 2) - (textWidth / 2);
             yText = parseInt((ruler1y + ruler2y) / 2) + (textHeight / 2);
 
-            this.context.fillStyle = "transparent"; //"#000000";//#ffffff
+            this.context.fillStyle = "transparent"; 
             this.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight + (padding * 2), 5, true, false);
 
             this.context.strokeStyle = color;
@@ -1778,7 +1778,7 @@ papaya.viewer.Viewer.prototype.drawAngleOnSelectedScreeSlice = function (screenS
                     toolImageData[i].toolHandles.start.yCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.start.zCord * screenSlice.ySize), false);
             }
-            // Cosine law
+     
             var angleArc = Math.acos((Math.pow(sidelengthFromFirstPoint, 2) + Math.pow(sidelengthFromSecondPoint, 2) - Math.pow(sidelengthFromThirdPoint, 2)) / (2 * sidelengthFromFirstPoint * sidelengthFromSecondPoint));
             angleArc = angleArc * (180 / Math.PI);
 
@@ -1786,7 +1786,7 @@ papaya.viewer.Viewer.prototype.drawAngleOnSelectedScreeSlice = function (screenS
 
             if (angleValue) {
                 this.context.font = this.rulerFontSize + "px sans-serif";
-                var str = '00B0'; // degrees symbol
+                var str = '00B0'; 
                 text = angleValue.toString() + String.fromCharCode(parseInt(str, 16));
                 metrics = this.context.measureText(text);
                 textWidth = metrics.width;
