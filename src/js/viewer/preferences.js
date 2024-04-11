@@ -25,13 +25,14 @@ papaya.viewer.Preferences = papaya.viewer.Preferences || function () {
     this.showOverlays = papaya.viewer.Preferences.DEFAULT_SHOW_IMAGE_OVERLAYS;
     this.showAngle = papaya.viewer.Preferences.DEFAULT_SHOW_ANGLE;
     this.showRectangle = papaya.viewer.Preferences.DEFAULT_SHOW_RECTANGLE;
+    this.showEllipse = papaya.viewer.Preferences.DEFAULT_SHOW_ELLIPSE;
 };
 
 
 /*** Static Pseudo-constants ***/
 
 papaya.viewer.Preferences.ALL_PREFS = ["showCrosshairs", "atlasLocks", "showOrientation", "scrollBehavior",
-    "smoothDisplay", "radiological", "showRuler", "showAngle","showRectangle", "surfaceBackgroundColor", "showSurfacePlanes","showOverlays"];
+    "smoothDisplay", "radiological", "showRuler", "showAngle", "showRectangle","showEllipse", "surfaceBackgroundColor", "showSurfacePlanes","showOverlays"];
 papaya.viewer.Preferences.COOKIE_PREFIX = "papaya-";
 papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS = 365;
 papaya.viewer.Preferences.DEFAULT_SHOW_CROSSHAIRS = "Yes";
@@ -43,6 +44,7 @@ papaya.viewer.Preferences.DEFAULT_RADIOLOGICAL = "No";
 papaya.viewer.Preferences.DEFAULT_SHOW_RULER = "No";
 papaya.viewer.Preferences.DEFAULT_SHOW_ANGLE = "No";
 papaya.viewer.Preferences.DEFAULT_SHOW_RECTANGLE = "No";
+papaya.viewer.Preferences.DEFAULT_SHOW_ELLIPSE = "No";
 papaya.viewer.Preferences.DEFAULT_SURFACE_BACKGROUND_COLOR = "Black";
 papaya.viewer.Preferences.DEFAULT_SHOW_SURFACE_PLANES = "Yes";
 papaya.viewer.Preferences.DEFAULT_SHOW_IMAGE_OVERLAYS = "Yes";

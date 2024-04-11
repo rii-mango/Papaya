@@ -58,6 +58,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.isRulerMode = false;
     this.isAngleMode = false;
     this.isRectangleMode = false;
+    this.isEllipseMode = false;
     this.didLongTouch = false;
     this.isLongTouch = false;
     this.zoomFactor = papaya.viewer.Viewer.ZOOM_FACTOR_MIN;
@@ -264,7 +265,7 @@ papaya.viewer.Viewer.getOffsetRect = function (elem) {
 
 
 // http://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
-papaya.viewer.Viewer.prototype.drawRoundRect = function (ctx, x, y, width, height, radius, fill, stroke) {
+papaya.viewer.Viewer.drawRoundRect = function (ctx, x, y, width, height, radius, fill, stroke) {
     if (typeof stroke === "undefined") {
         stroke = true;
     }
@@ -1314,6 +1315,10 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
         this.drawRectangle();
     }
 
+    if (this.container.preferences.showEllipse === "Yes") {
+        this.drawEllipse();
+    }
+
     if (this.container.display) {
         this.container.display.drawDisplay(this.currentCoord.x, this.currentCoord.y, this.currentCoord.z);
     }
@@ -1522,7 +1527,6 @@ papaya.viewer.Viewer.prototype.drawAngle = function () {
     this.drawAngleOnSelectedScreeSlice(this.lowerImageTop);
     this.drawAngleOnSelectedScreeSlice(this.lowerImageBot);
     this.drawAngleOnSelectedScreeSlice(this.lowerImageBot2);
-
 };
 
 papaya.viewer.Viewer.prototype.drawRectangle = function () {
@@ -1532,6 +1536,13 @@ papaya.viewer.Viewer.prototype.drawRectangle = function () {
     this.drawReactangleOnSelectedScreeSlice(this.lowerImageBot2);
 };
 
+papaya.viewer.Viewer.prototype.drawEllipse = function () {
+    this.drawEllipseOnSelectedScreeSlice(this.mainImage);
+    this.drawEllipseOnSelectedScreeSlice(this.lowerImageTop);
+    this.drawEllipseOnSelectedScreeSlice(this.lowerImageBot);
+    this.drawEllipseOnSelectedScreeSlice(this.lowerImageBot2);
+};
+
 papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screenSlice) {
     var ruler1x, ruler1y, ruler2x, ruler2y, text, metrics, textWidth, textHeight, padding, xText, yText;
 
@@ -1539,8 +1550,9 @@ papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screen
         return;
     }
     var imageTooldata = screenSlice.getImageToolState('ruler');
-
-    if (imageTooldata != undefined && imageTooldata.imageDatas != undefined && imageTooldata.imageDatas.length > 0) {   
+    if (imageTooldata === undefined || imageTooldata.imageDatas === undefined || imageTooldata.imageDatas.length === 0) {
+    }
+    else {
         this.clipCanvas(screenSlice);
         var imageTooldata = imageTooldata.imageDatas;
         for (var i = 0; i < imageTooldata.length; i++) {
@@ -1624,7 +1636,7 @@ papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screen
 
 
             var suffix;
-            this.context.font = this.rulerFontSize + "px sans-serif";
+            this.context.font = this.rulerFontSize + "px sans-serif"; //papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
 
             var textSuffix = this.Tools.getScaleUnit(this.rulerUnit, text);
             text = this.Tools.roundToDecimal(textSuffix.text, 2);
@@ -1636,8 +1648,8 @@ papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screen
             xText = parseInt((ruler1x + ruler2x) / 2) - (textWidth / 2);
             yText = parseInt((ruler1y + ruler2y) / 2) + (textHeight / 2);
 
-            this.context.fillStyle = "transparent"; 
-            this.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight + (padding * 2), 5, true, false);
+            this.context.fillStyle = "transparent"; //"#000000";//#ffffff
+            papaya.viewer.Viewer.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight + (padding * 2), 5, true, false);
 
             this.context.strokeStyle = color;
             this.context.fillStyle = color;
@@ -1656,7 +1668,10 @@ papaya.viewer.Viewer.prototype.drawAngleOnSelectedScreeSlice = function (screenS
     }
 
     var toolImageData = screenSlice.getImageToolState('angle');
-    if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {  
+    if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
+
+    }
+    else {
         this.clipCanvas(screenSlice);
         toolImageData = toolImageData.imageDatas;
         for (var i = 0; i < toolImageData.length; i++) {
@@ -1728,82 +1743,82 @@ papaya.viewer.Viewer.prototype.drawAngleOnSelectedScreeSlice = function (screenS
 
             this.context.closePath();
 
-            var sidelengthFromFirstPoint, sidelengthFromSecondPoint, sidelengthFromThirdPoint;
+            var sideALength, sideBLength, sideCLength;
             if (screenSlice === this.axialSlice) {
-                sidelengthFromFirstPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sideALength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.start.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.start.yCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.middle.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.middle.yCord * screenSlice.ySize), false);
-                sidelengthFromSecondPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sideBLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.middle.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.middle.yCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.end.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.end.yCord * screenSlice.ySize), false);
-                sidelengthFromThirdPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sideCLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.end.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.end.yCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.start.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.start.yCord * screenSlice.ySize), false);
             } else if (screenSlice === this.coronalSlice) {
-                sidelengthFromFirstPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sideALength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.start.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.start.zCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.middle.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.middle.zCord * screenSlice.ySize), false);
-                sidelengthFromSecondPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sideBLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.middle.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.middle.zCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.end.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.end.zCord * screenSlice.ySize), false);
-                sidelengthFromThirdPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sideCLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.end.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.end.zCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.start.xCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.start.zCord * screenSlice.ySize), false);
             } else if (screenSlice === this.sagittalSlice) {
-                sidelengthFromFirstPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sideALength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.start.yCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.start.zCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.middle.yCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.middle.zCord * screenSlice.ySize), false);
-                sidelengthFromSecondPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sideBLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.middle.yCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.middle.zCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.end.yCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.end.zCord * screenSlice.ySize), false);
-                sidelengthFromThirdPoint = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
+                sideCLength = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
                     toolImageData[i].toolHandles.end.yCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.end.zCord * screenSlice.ySize,
                     toolImageData[i].toolHandles.start.yCord * screenSlice.xSize,
                     toolImageData[i].toolHandles.start.zCord * screenSlice.ySize), false);
             }
-     
-            var angleArc = Math.acos((Math.pow(sidelengthFromFirstPoint, 2) + Math.pow(sidelengthFromSecondPoint, 2) - Math.pow(sidelengthFromThirdPoint, 2)) / (2 * sidelengthFromFirstPoint * sidelengthFromSecondPoint));
-            angleArc = angleArc * (180 / Math.PI);
+            // Cosine law
+            var angle = Math.acos((Math.pow(sideALength, 2) + Math.pow(sideBLength, 2) - Math.pow(sideCLength, 2)) / (2 * sideALength * sideBLength));
+            angle = angle * (180 / Math.PI);
 
-            var angleValue = this.Tools.roundToDecimal(angleArc, 2);
+            var angleValue = this.Tools.roundToDecimal(angle, 2);
 
             if (angleValue) {
                 this.context.font = this.rulerFontSize + "px sans-serif";
-                var str = '00B0'; 
+                var str = '00B0'; // degrees symbol
                 text = angleValue.toString() + String.fromCharCode(parseInt(str, 16));
                 metrics = this.context.measureText(text);
                 textWidth = metrics.width;
                 textHeight = this.rulerFontSize;
-                padding = 2;
-                var distance = 15;
+                padding = 5;
+                var distance = 5;
                 xText = parseInt(ruler2x);
                 yText = parseInt(ruler2y) + (textHeight / 2);
 
                 if (ruler2x < ruler1x) {
-                    xText -= distance + textWidth + 10;
+                    xText -= distance + textWidth;
                 } else {
                     xText += distance;
                 }
 
                 this.context.fillStyle = "transparent";
-                this.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding), textHeight + (padding), 5, true, false);
+                papaya.viewer.Viewer.drawRoundRect(this.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding), textHeight + (padding), 5, true, false);
 
                 this.context.strokeStyle = color;
                 this.context.fillStyle = color;
@@ -1818,7 +1833,7 @@ papaya.viewer.Viewer.prototype.drawAngleOnSelectedScreeSlice = function (screenS
 };
 
 papaya.viewer.Viewer.prototype.drawReactangleOnSelectedScreeSlice = function (screenSlice) {
-    var ruler1x, ruler1y, ruler2x, ruler2y, text, metrics, textWidth, textHeight, padding, xText, yText;
+    var ruler1x, ruler1y, ruler2x, ruler2y, text, metrics, textWidth, textHeight, xText, yText;
 
     if (screenSlice === this.surfaceView) {
         return;
@@ -1962,6 +1977,155 @@ papaya.viewer.Viewer.prototype.drawReactangleOnSelectedScreeSlice = function (sc
         }
         this.context.restore();
     }
+
+};
+
+papaya.viewer.Viewer.prototype.drawEllipseOnSelectedScreeSlice = function (screenSlice) {
+    var ruler1x, ruler1y, ruler2x, ruler2y, text, metrics, textWidth, textHeight, xText, yText;
+
+    if (screenSlice === this.surfaceView) {
+        return;
+    }
+
+    var toolImagedata = screenSlice.getImageToolState('ellipse');
+    if (toolImagedata === undefined || toolImagedata.imageDatas === undefined || toolImagedata.imageDatas.length === 0) {
+        return;
+    }
+    else {
+        this.clipCanvas(screenSlice);
+        toolImagedata = toolImagedata.imageDatas;
+
+        for (var i = 0; i < toolImagedata.length; i++) {
+            if (screenSlice === this.axialSlice) {
+                ruler1x = (this.axialSlice.finalTransform[0][2] + (toolImagedata[i].toolHandles.start.xCord + 0.5) *
+                    this.axialSlice.finalTransform[0][0]);
+                ruler1y = (this.axialSlice.finalTransform[1][2] + (toolImagedata[i].toolHandles.start.yCord + 0.5) *
+                    this.axialSlice.finalTransform[1][1]);
+                ruler2x = (this.axialSlice.finalTransform[0][2] + (toolImagedata[i].toolHandles.end.xCord + 0.5) *
+                    this.axialSlice.finalTransform[0][0]);
+                ruler2y = (this.axialSlice.finalTransform[1][2] + (toolImagedata[i].toolHandles.end.yCord + 0.5) *
+                    this.axialSlice.finalTransform[1][1]);
+            } else if (screenSlice === this.coronalSlice) {
+                ruler1x = (this.coronalSlice.finalTransform[0][2] + (toolImagedata[i].toolHandles.start.xCord + 0.5) *
+                    this.coronalSlice.finalTransform[0][0]);
+                ruler1y = (this.coronalSlice.finalTransform[1][2] + (toolImagedata[i].toolHandles.start.zCord + 0.5) *
+                    this.coronalSlice.finalTransform[1][1]);
+                ruler2x = (this.coronalSlice.finalTransform[0][2] + (toolImagedata[i].toolHandles.end.xCord + 0.5) *
+                    this.coronalSlice.finalTransform[0][0]);
+                ruler2y = (this.coronalSlice.finalTransform[1][2] + (toolImagedata[i].toolHandles.end.zCord + 0.5) *
+                    this.coronalSlice.finalTransform[1][1]);
+            } else if (screenSlice === this.sagittalSlice) {
+                ruler1x = (this.sagittalSlice.finalTransform[0][2] + (toolImagedata[i].toolHandles.start.yCord + 0.5) *
+                    this.sagittalSlice.finalTransform[0][0]);
+                ruler1y = (this.sagittalSlice.finalTransform[1][2] + (toolImagedata[i].toolHandles.start.zCord + 0.5) *
+                    this.sagittalSlice.finalTransform[1][1]);
+                ruler2x = (this.sagittalSlice.finalTransform[0][2] + (toolImagedata[i].toolHandles.end.yCord + 0.5) *
+                    this.sagittalSlice.finalTransform[0][0]);
+                ruler2y = (this.sagittalSlice.finalTransform[1][2] + (toolImagedata[i].toolHandles.end.zCord + 0.5) *
+                    this.sagittalSlice.finalTransform[1][1]);
+
+            }
+            var canvasWidth = Math.abs(ruler1x - ruler2x);
+            var canvasHeight = Math.abs(ruler1y - ruler2y);
+            var canvasLeft = Math.min(ruler1x, ruler2x);
+            var canvasTop = Math.min(ruler1y, ruler2y);
+
+            var color;
+
+            if (toolImagedata[i].toolActive == true) {
+                color = this.activeRulerColor;
+            } else {
+                color = this.rulerColor;
+            }
+            this.context.strokeStyle = color;
+            this.context.fillStyle = color;
+            this.context.lineWidth = this.rulerWidth;
+            this.context.beginPath();
+            this.Tools.drawEllipseMode(this.context, canvasLeft, canvasTop, canvasWidth, canvasHeight);
+            this.context.stroke();
+            this.context.beginPath();
+            this.context.arc(ruler1x, ruler1y, 3, 0, 2 * Math.PI, false);
+            this.context.stroke();
+            this.context.fillStyle = color;
+            this.context.fill();
+            this.context.closePath();
+            this.context.beginPath();
+            this.context.arc(ruler2x, ruler2y, 3, 0, 2 * Math.PI, false);
+            this.context.stroke();
+            this.context.fillStyle = color;
+            this.context.fill();
+            this.context.closePath();
+
+            var firstPoint = this.convertScreenToImageCoordinate(ruler1x, ruler1y, screenSlice);
+            var secondPoint = this.convertScreenToImageCoordinate(ruler2x, ruler2y, screenSlice);
+            var ellipse = {};
+            if (screenSlice === this.axialSlice) {
+                ellipse = {
+                    left: Math.min(firstPoint.x, secondPoint.x),
+                    top: Math.min(firstPoint.y, secondPoint.y),
+                    width: Math.abs(firstPoint.x - secondPoint.x),
+                    height: Math.abs(firstPoint.y - secondPoint.y)
+                };
+            }
+            else if (screenSlice === this.coronalSlice) {
+                ellipse = {
+                    left: Math.min(firstPoint.x, secondPoint.x),
+                    top: Math.min(firstPoint.z, secondPoint.z),
+                    width: Math.abs(firstPoint.x - secondPoint.x),
+                    height: Math.abs(firstPoint.z - secondPoint.z)
+                };
+            }
+            else {
+                ellipse = {
+                    left: Math.min(firstPoint.y, secondPoint.y),
+                    top: Math.min(firstPoint.z, secondPoint.z),
+                    width: Math.abs(firstPoint.x - secondPoint.y),
+                    height: Math.abs(firstPoint.y - secondPoint.z)
+                };
+            }
+
+            var pixelData = screenSlice.imageDataDraw.data;
+            var byteArray = this.Tools.getStoredPixelData(pixelData, this.volume, ellipse.left, ellipse.top, ellipse.width, ellipse.height);
+            var meanStdDev = this.Tools.calculateStanderdMeanDeviation(byteArray, ellipse);
+            var stdDev = "Mean DEV.: " + meanStdDev.stdDev.toFixed(2);
+            var mean = "Mean: " + meanStdDev.mean.toFixed(2);
+            var area = this.Tools.roundToDecimal(Math.PI * (ellipse.width / 2) * (ellipse.height / 2), 2);
+
+            var textSuffix = this.Tools.getRectAndEllipseUnit(this.rulerUnit, area);
+            this.context.font = this.rulerFontSize + "px sans-serif";
+            var text = stdDev + " HU" + "\n" + mean + " HU" + "\n" + textSuffix.areaText;
+
+            this.context.strokeStyle = color;
+            this.context.fillStyle = color;
+
+            textWidth = 2;
+            textHeight = this.rulerFontSize;
+
+            var maxWidth = 100;
+            var words = text.split('\n');
+            var line = '';
+            var xText = parseInt((ruler1x + ruler2x) / 2) - (textWidth / 2);
+            var yText = parseInt((ruler1y + ruler2y) / 2) + (textHeight / 2);
+
+            for (var n = 0; n < words.length; n++) {
+                var testLine = line + words[n] + ' ';
+                metrics = this.context.measureText(testLine);
+                var testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {
+                    this.context.fillText(line, xText, yText);
+                    line = words[n] + ' ';
+                    yText += parseInt(textHeight);
+                }
+                else {
+                    line = testLine;
+                }
+            }
+            this.context.fillText(line, xText, yText);
+
+        }
+        this.context.restore();
+    }
+
 
 };
 
@@ -2649,9 +2813,20 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
                 toolImageData[this.Tools.selectedIndexRectangleOnImage].toolActive = false;
         }
     }
+    if (this.isEllipseMode) {
+        if (this.selectedSlice === this.surfaceView) {
+            return;
+        }
+        if (this.selectedSlice != null && this.selectedSlice.getImageToolState('ellipse') != undefined) {
+            var toolImageData = this.selectedSlice.getImageToolState('ellipse').imageDatas;
+
+            if (toolImageData[this.Tools.selectedIndexEllipseOnImage] != undefined)
+                toolImageData[this.Tools.selectedIndexEllipseOnImage].toolActive = false;
+        }
+    }
     if ((me.target.nodeName === "IMG") || (me.target.nodeName === "CANVAS")) {
         if (me.handled !== true) {
-            if (!this.isWindowControl && !this.isZoomMode && !this.isStackMode && !this.isMagnifyMode && !this.isContextMode && !this.isRulerMode && !this.isAngleMode && !this.isRectangleMode && (this.grabbedHandle === null) && (!this.surfaceView || (this.surfaceView.grabbedRulerPoint === -1))) {
+            if (!this.isWindowControl && !this.isZoomMode && !this.isStackMode && !this.isMagnifyMode && !this.isContextMode && !this.isRulerMode && !this.isAngleMode && !this.isRectangleMode && !this.isEllipseMode && (this.grabbedHandle === null) && (!this.surfaceView || (this.surfaceView.grabbedRulerPoint === -1))) {
                 this.updatePosition(this, papaya.utilities.PlatformUtils.getMousePositionX(me), papaya.utilities.PlatformUtils.getMousePositionY(me));
             }
 
@@ -2678,6 +2853,7 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
             this.isRulerMode = false;
             this.isAngleMode = false;
             this.isRectangleMode = false;
+            this.isEllipseMode = false;
             me.handled = true;
         }
 
@@ -3001,6 +3177,35 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                 });
             }
             this.container.preferences.showRectangle = "Yes"
+            this.drawViewer(false, true);
+        }
+        else if (this.isEllipseMode) {
+            if (this.selectedSlice === this.surfaceView) {
+                return;
+            }
+
+            var cordinateOne = {
+                x: me.offsetX,
+                y: me.offsetY
+            };
+            cordinateOne = this.convertScreenToImageCoordinate(cordinateOne.x, cordinateOne.y, this.selectedSlice);
+
+            if (this.selectedSlice.getImageToolState('ellipse') == undefined) {
+                return;
+            }
+            if (this.selectedSlice != null && this.selectedSlice.getImageToolState('ellipse') != undefined) {
+                var toolImageData = this.selectedSlice.getImageToolState('ellipse').imageDatas;
+                var toolHandles = toolImageData[this.Tools.selectedIndexEllipseOnImage].toolHandles;
+                Object.keys(toolHandles).forEach(function (name) {
+                    var toolHandle = toolHandles[name];
+                    if (toolHandle.toolActive == true) {
+                        toolHandle.xCord = cordinateOne.x;
+                        toolHandle.yCord = cordinateOne.y;
+                        toolHandle.zCord = cordinateOne.z;
+                    }
+                });
+            }
+            this.container.preferences.showEllipse = "Yes"
             this.drawViewer(false, true);
         }
         else {
