@@ -1327,7 +1327,7 @@ papaya.viewer.Tools.prototype.getStoredPixelData = function (pixelData, volume, 
     return storedPixelsData;
 }
 
-papaya.viewer.Tools.prototype.drawEllipseMode = function (context, x, y, w, h) {
+papaya.viewer.Tools.prototype.drawEllipseCurve = function (context, x, y, w, h) {
     var kappa = 0.5522848,
         ox = (w / 2) * kappa, 
         oy = (h / 2) * kappa,

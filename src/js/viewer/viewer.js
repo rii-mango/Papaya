@@ -2041,7 +2041,7 @@ papaya.viewer.Viewer.prototype.drawEllipseOnSelectedScreeSlice = function (scree
             this.context.fillStyle = color;
             this.context.lineWidth = this.rulerWidth;
             this.context.beginPath();
-            this.Tools.drawEllipseMode(this.context, canvasLeft, canvasTop, canvasWidth, canvasHeight);
+            this.Tools.drawEllipseCurve(this.context, canvasLeft, canvasTop, canvasWidth, canvasHeight);
             this.context.stroke();
             this.context.beginPath();
             this.context.arc(ruler1x, ruler1y, 3, 0, 2 * Math.PI, false);
