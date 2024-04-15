@@ -466,7 +466,7 @@ papaya.Container.CreateSideNevigation = function (containerHTML) {
     containerHTML.append('<div class="side-navpanel" style="display:none">Cene Controls <hr/><button id="reverseCene" title="Reverse Cene"><span class="fas fa-backward fa-2x"></span></button><div><input class="input-range" orient="vertical" type="range" step="1" value="10" min="1" max="100"> <span class="range-value"></span></div><button id="repeatCene" style="background-color:green;" title="Repeat Cene"><span class="fas fa-refresh fa-2x"></span></button></div>');
     var rulerLineSize = "<div>Line Size : <select id='" + PAPAYA_RULER_LINE_WIDTH + "'><option value='1' selected=selected>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option></select></div>";
     var rulerFontSize = "<div>Font Size : <select id='" + PAPAYA_RULER_FONT_SIZE + "'><option value='14' selected=selected>14</option><option value='16'>16</option><option value='18'>18</option><option value='20'>20</option><option value='25'>25</option></select></div>";
-    var rulerLengthSize = "<div>Length Unit : <select id='" + PAPAYA_RULER_LENGTH_UNIT + "'><option value='mm' selected=selected>Millimeters</option>" +
+    var rulerLengthSize = "<div>Length Unit : <select id='" + PAPAYA_RULER_LENGTH_UNIT + "'><option value='mm' selected=selected>Milimeters</option>" +
         '<option value = "cm" > Centimeters</option >' +
         '<option value="inches">Inches</option>' +
         '<option value="feet">Feet</option>' +
@@ -507,8 +507,10 @@ papaya.Container.CreateSideNevigation = function (containerHTML) {
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_PLAYCENE + "' title='Play Clip Tool'><span class='fas fa-play fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_RULER + "' name='drawtool' title='Draw Ruler Tool'><span class='fas fa-pencil-ruler fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_ANGLE + "' name='drawtool' title='Draw Angle Tool'><span class='fas fa-play fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_COBSANGLE + "' name='drawtool' title='Draw Cobs Angle Tool'><span class='fas fa-crop fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_REACTANGLE + "' name='drawtool' title='Draw Reactangle Tool'><span class='fas fa-square fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_ELLIPSE + "' name='drawtool' title='Draw Ellipse Tool'><span class='fas fa-circle fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_PROBE + "' name='drawtool' title='Draw Probe Tool'><span class='fas fa-dot-circle fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_RESET + "' title='Reset Tool'><span class='fas fa-redo fa-2x'></span></button>");
     var viwerTool = new papaya.viewer.Tools();
     viwerTool.ButtonClickEvent();
