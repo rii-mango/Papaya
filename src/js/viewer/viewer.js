@@ -267,35 +267,6 @@ papaya.viewer.Viewer.getOffsetRect = function (elem) {
 
 
 
-// http://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
-papaya.viewer.Viewer.drawRoundRect = function (ctx, x, y, width, height, radius, fill, stroke) {
-    if (typeof stroke === "undefined") {
-        stroke = true;
-    }
-    if (typeof radius === "undefined") {
-        radius = 5;
-    }
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    ctx.lineTo(x + width, y + height - radius);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    ctx.lineTo(x + radius, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-    ctx.closePath();
-    if (stroke) {
-        ctx.stroke();
-    }
-    if (fill) {
-        ctx.fill();
-    }
-};
-
-
-
 /*** Prototype Methods ***/
 
 papaya.viewer.Viewer.prototype.loadImage = function (refs, forceUrl, forceEncode, forceBinary) {
@@ -2429,10 +2400,7 @@ papaya.viewer.Viewer.prototype.drawPixelProbeOnSelectedScreeSlice = function (sc
     }
 
     var toolImagedata = screenSlice.getImageToolState('pixelprobe');
-    if (toolImagedata === undefined || toolImagedata.imageDatas === undefined || toolImagedata.imageDatas.length === 0) {
-        return;
-    }
-    else {
+    if (toolImagedata != undefined && toolImagedata.imageDatas != undefined && toolImagedata.imageDatas.length > 0) {
         this.clipCanvas(screenSlice);
         toolImagedata = toolImagedata.imageDatas;
 
@@ -2496,7 +2464,7 @@ papaya.viewer.Viewer.prototype.drawPixelProbeOnSelectedScreeSlice = function (sc
                 }
                 var volume = screenSlice.screenVolumes[0].volume;
                 var pixelData = screenSlice.imageDataDraw.data;
-                storedPixels = viewer.Tools.getStoredPixelData(pixelData,volume, x, y, 1, 1);
+                storedPixels = viewer.Tools.getStoredPixelData(pixelData, volume, x, y, 1, 1);
                 var sp = storedPixels[0];
                 var mo = sp * volume.header.imageRange.globalDataScaleSlope + volume.header.imageRange.globalDataScaleIntercept;
                 text = 'X: ' + x + ' ,Y: ' + y + ' ,Z: ' + z + ' ,HU: ' + parseFloat(mo.toFixed(3));
@@ -2510,7 +2478,7 @@ papaya.viewer.Viewer.prototype.drawPixelProbeOnSelectedScreeSlice = function (sc
                 yText = parseInt(ruler2y - textHeight);
 
                 viewer.context.fillStyle = "transparent";
-                papaya.viewer.Viewer.drawRoundRect(viewer.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight + (padding * 2), 5, true, false);
+                viewer.drawRoundRect(viewer.context, xText - padding, yText - textHeight - padding + 1, textWidth + (padding * 2), textHeight + (padding * 2), 5, true, false);
 
                 viewer.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
                 viewer.context.strokeStyle = color;
@@ -2520,9 +2488,10 @@ papaya.viewer.Viewer.prototype.drawPixelProbeOnSelectedScreeSlice = function (sc
 
         }
     }
-
+    this.context.restore();
 
 };
+
 
 papaya.viewer.Viewer.prototype.clipCanvas = function (currentSlice) {
     if (currentSlice != null) {

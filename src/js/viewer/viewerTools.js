@@ -672,17 +672,11 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
         pointsCord.xCords = me.targetTouches[0].pageX - rect.left;
         pointsCord.x = me.targetTouches[0].pageY - rect.top;
     }
-    var pointsCordOne = {
-        xCord: 0,
-        yCord: 0,
-        zCord: 0
-
-    }
-    pointsCordOne = { xCord: pointsCord.xCords, yCord: pointsCord.yCords };
+    var pointsCordOne = { xCord: pointsCord.xCords, yCord: pointsCord.yCords };
     var CordOne = viewer.convertScreenToImageCoordinate(pointsCordOne.xCord, pointsCordOne.yCord, viewer.selectedSlice);
     pointsCordOne = { xCord: CordOne.x, yCord: CordOne.y, zCord: CordOne.z };
     var imgaeTooldata = viewer.selectedSlice.getImageToolState('ruler');
-    if (imgaeTooldata != undefined && imgaeTooldata.imageDatas != undefined && imgaeTooldata.imageDatas.length > 0) {    
+    if (imgaeTooldata != undefined && imgaeTooldata.imageDatas != undefined && imgaeTooldata.imageDatas.length > 0) {
         var imgaeTooldata = imgaeTooldata.imageDatas;
         for (var i = 0; i < imgaeTooldata.length; i++) {
             var nearbyHandle = this.getToolHandleNearToImagePoint(imgaeTooldata[i].rulerHandles, pointsCordOne, 5);
@@ -721,8 +715,8 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
         }
         viewer.selectedSlice.setImageToolState('ruler', rulerObject);
         var imageToolData = viewer.selectedSlice.getImageToolState('ruler');
-        if (imageToolData != undefined && imageToolData.imageDatas != undefined && imageToolData.imageDatas.length> 0) {
-       
+        if (imageToolData != undefined && imageToolData.imageDatas != undefined && imageToolData.imageDatas.length > 0) {
+
             imageToolData = imageToolData.imageDatas;
         }
         this.selectedIndexLength = imageToolData.length - 1;
@@ -756,17 +750,15 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
         pointCord.yCord = me.targetTouches[0].pageY - clientRect.top;
     }
 
-    var firstPointSelect;
-
-    firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
+    var firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
 
     var cordOne = viewer.convertScreenToImageCoordinate(firstPointSelect.xCord, firstPointSelect.yCord, viewer.selectedSlice);
 
     firstPointSelect = { xCord: cordOne.x, yCord: cordOne.y, zCord: cordOne.z };
 
-    var toolImageData = viewer.selectedSlice.getImageToolState('angle');
+    var imageToolData = viewer.selectedSlice.getImageToolState('angle');
     if (imageToolData != undefined && imageToolData.imageDatas != undefined && imageToolData.imageDatas.length > 0) {
-        var imageToolData = toolImageData.imageDatas;
+        var imageToolData = imageToolData.imageDatas;
         if (imageToolData.length != 0) {
             this.selectedIndexAngleOnImage = imageToolData.length - 1;
             if (imageToolData[this.selectedIndexAngleOnImage].toolHandles.end.toolActive && imageToolData[this.selectedIndexAngleOnImage].isWaitingForLine == true) {
@@ -820,7 +812,7 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
             }
         }
         viewer.selectedSlice.setImageToolState('angle', angelObject);
-        toolImageData = viewer.selectedSlice.getImageToolState('angle');
+        var toolImageData = viewer.selectedSlice.getImageToolState('angle');
         if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {
             toolImageData = toolImageData.imageDatas;
         }
@@ -857,9 +849,7 @@ papaya.viewer.Tools.prototype.DrawReactanleOnImageSlice = function (viewer, me) 
         pointCord.yCord = me.targetTouches[0].pageY - clientRect.top;
     }
 
-    var firstPointSelect;
-
-    firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
+    var firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
 
     var cordOne = viewer.convertScreenToImageCoordinate(firstPointSelect.xCord, firstPointSelect.yCord, viewer.selectedSlice);
 
@@ -943,9 +933,7 @@ papaya.viewer.Tools.prototype.DrawEllipseOnImageSlice = function (viewer, me) {
         pointCord.yCord = me.targetTouches[0].pageY - clientRect.top;
     }
 
-    var firstPointSelect;
-
-    firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
+    var firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
 
     var cordOne = viewer.convertScreenToImageCoordinate(firstPointSelect.xCord, firstPointSelect.yCord, viewer.selectedSlice);
 
@@ -1026,9 +1014,7 @@ papaya.viewer.Tools.prototype.DrawCobsAngleOnImageSlice = function (viewer, me) 
         pointCord.yCord = me.targetTouches[0].pageY - clientRect.top;
     }
 
-    var firstPointSelect;
-
-    firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
+    var firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
 
     var cordOne = viewer.convertScreenToImageCoordinate(firstPointSelect.xCord, firstPointSelect.yCord, viewer.selectedSlice);
 
@@ -1191,7 +1177,7 @@ papaya.viewer.Tools.prototype.DrawPixelProbeOnImageSlice = function (viewer, me)
     if (!this.imageNeedsUpdateForDrawTool) {
         var probeObject = {
             toolActive: true,
-            toolHandles: {               
+            toolHandles: {
                 end: {
                     xCord: cordOne.x,
                     yCord: cordOne.y,
@@ -1318,7 +1304,7 @@ papaya.viewer.Tools.prototype.findClosestPointNearRularLine = function (lineSegm
     return closestPointNearLine;
 };
 
-papaya.viewer.Tools.prototype.checkForIntersectionOnLine = function (lineSegmentFirst, lineSegmentSecond,screenSlice, viewer) {
+papaya.viewer.Tools.prototype.checkForIntersectionOnLine = function (lineSegmentFirst, lineSegmentSecond, screenSlice, viewer) {
     //var distanceToPoint = point2.distanceTo(point1);
     var intersectionPointOneLine, lineSegmentOne, lineSegmentTwo;
     if (screenSlice === viewer.axialSlice) {
