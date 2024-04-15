@@ -792,9 +792,9 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
             toolActive: true,
             toolHandles: {
                 start: {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: false
                 },
                 middle: {
@@ -804,9 +804,9 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
                     toolActive: true
                 },
                 end: {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: false
                 }
             }
@@ -880,15 +880,15 @@ papaya.viewer.Tools.prototype.DrawReactanleOnImageSlice = function (viewer, me) 
             toolActive: true,
             toolHandles: {
                 start: {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: false
                 },
                 end: {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: true
                 }
             }
@@ -963,15 +963,15 @@ papaya.viewer.Tools.prototype.DrawEllipseOnImageSlice = function (viewer, me) {
             toolActive: true,
             toolHandles: {
                 start: {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: false
                 },
                 end: {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: true
                 }
             }
@@ -1048,15 +1048,15 @@ papaya.viewer.Tools.prototype.DrawCobsAngleOnImageSlice = function (viewer, me) 
                 toolActive: true,
                 toolHandles: {
                     startOne: {
-                        xCord: cordOne.x,
-                        yCord: cordOne.y,
-                        zCord: cordOne.z,
+                        xCord: firstPointSelect.xCord,
+                        yCord: firstPointSelect.yCord,
+                        zCord: firstPointSelect.zCord,
                         toolActive: false
                     },
                     endOne: {
-                        xCord: cordOne.x,
-                        yCord: cordOne.y,
-                        zCord: cordOne.z,
+                        xCord: firstPointSelect.xCord,
+                        yCord: firstPointSelect.yCord,
+                        zCord: firstPointSelect.zCord,
                         toolActive: true
                     }
                 }
@@ -1076,15 +1076,15 @@ papaya.viewer.Tools.prototype.DrawCobsAngleOnImageSlice = function (viewer, me) 
             if (cobsAngleData.isWaitingForLine == true) {
                 var cobsAngleObject = cobsAngleData;
                 cobsAngleObject.toolHandles.startTwo = {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: false
                 };
                 cobsAngleObject.toolHandles.endTwo = {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: true
                 };
                 this.selectedIndexCobsAngleOnImage = toolImageData.length - 1;
@@ -1095,15 +1095,15 @@ papaya.viewer.Tools.prototype.DrawCobsAngleOnImageSlice = function (viewer, me) 
                     toolActive: true,
                     toolHandles: {
                         startOne: {
-                            xCord: cordOne.x,
-                            yCord: cordOne.y,
-                            zCord: cordOne.z,
+                            xCord: firstPointSelect.xCord,
+                            yCord: firstPointSelect.yCord,
+                            zCord: firstPointSelect.zCord,
                             toolActive: false
                         },
                         endOne: {
-                            xCord: cordOne.x,
-                            yCord: cordOne.y,
-                            zCord: cordOne.z,
+                            xCord: firstPointSelect.xCord,
+                            yCord: firstPointSelect.yCord,
+                            zCord: firstPointSelect.zCord,
                             toolActive: true
                         }
                     }
