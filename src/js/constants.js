@@ -145,6 +145,7 @@ var PAPAYA_SIDENAV_BUTTON_CROSSHAIR = "drawCrossHairImages",
     PAPAYA_SIDENAV_BUTTON_RULER = "drawRulerOnImages",
     PAPAYA_SIDENAV_BUTTON_ANGLE = "drawAngleOnImages",
     PAPAYA_SIDENAV_BUTTON_REACTANGLE = "drawReactangleOnImages",
+    PAPAYA_SIDENAV_BUTTON_ELLIPSE = "drawEllipseOnImages",
     PAPAYA_SIDENAV_BUTTON_RESET = "resetImages";
 
 //Button Side Nav Panel
