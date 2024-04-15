@@ -62,7 +62,7 @@ papaya.viewer.Tools.prototype.GetToolOnMouseDown = function (button, viewer, me)
                 this.DrawCrosshairOnImage(viewer, me);
                 break;
             case PAPAYA_SIDENAV_BUTTON_MAGNIFY:
-                this.MagnifyToolEvent(viewer, me);
+                this.MagnifyToolMoveEvent(viewer, me);
                 break;
             case PAPAYA_SIDENAV_BUTTON_RULER:
                 this.DrawRulerOnImageSlice(viewer, me);
