@@ -69,13 +69,29 @@ Build using npm: `npm run build`
         params["myOverlayImage.nii.gz"] = {"min": 4, "max": 10};
     </script>
 </head>
-
 ...
 
 <div class="papaya" data-params="params"></div>
-
-
 ```
+**Rectangle**
+![image](https://github.com/rii-mango/Papaya/assets/11830418/2ea61e9e-f1ec-43dc-865c-b9ac917de0f1)
+
+**Play Cine**
+![image](https://github.com/rii-mango/Papaya/assets/11830418/8d63e9e2-a666-4b86-b802-99e3d144fc4a)
+
+**Magnify**
+![image](https://github.com/rii-mango/Papaya/assets/11830418/025c5fc1-b5a4-41cb-ada8-6ab861e61e38)
+
+**Ruler**
+![image](https://github.com/rii-mango/Papaya/assets/11830418/c84385e1-0007-44e8-9b9e-76697ed0ebc9)
+
+**Angle**
+![image](https://github.com/rii-mango/Papaya/assets/11830418/04dbcfb3-fd3f-4a0b-9a93-3e4d2eff2ccd)
+
+**Ellipse**
+![image](https://github.com/rii-mango/Papaya/assets/11830418/f245c669-3d90-4d27-af0b-90fb9ca85fe2)
+
+
 Acknowledgments
 -----
 Papaya uses:
