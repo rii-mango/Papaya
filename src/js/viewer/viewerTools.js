@@ -39,61 +39,30 @@ papaya.viewer.Tools = papaya.viewer.Tools || function () {
     this.selectedIndexAngleOnImage;
     this.selectedIndexRectangleOnImage;
     this.selectedIndexEllipseOnImage;
+    this.selectedIndexCobsAngleOnImage;
+    this.selectedIndexPixelProbeOnImage
 }
 
 papaya.viewer.Tools.prototype.GetToolOnMouseDown = function (button, viewer, me) {
     if (viewer.container.params.imageTools) {
         switch (button) {
-
             case PAPAYA_SIDENAV_BUTTON_STACK:
-                if (me.offsetY != undefined) {
-                    this.lastY = me.offsetY;
-                } else {
-                    var rect = me.target.getBoundingClientRect();
-                    var x = me.targetTouches[0].pageX - rect.left;
-                    var y = me.targetTouches[0].pageY - rect.top;
-                    this.lastY = y;
-                }
-                viewer.isStackMode = true;
-                viewer.container.preferences.showCrosshairs = "No"
-                this.GetSurfaceDisplayOnCanvas(viewer, me);
-
+                this.StackImagesInCanvas(viewer, me);
                 break;
             case PAPAYA_SIDENAV_BUTTON_PAN:
-                viewer.isPanning = true;
-                viewer.container.preferences.showCrosshairs = "No"
-                viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
-                viewer.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
-                this.setStartPanLocationToUpdate(viewer, viewer.convertScreenToImageCoordinateX(viewer.previousMousePosition.x, viewer.mainImage), viewer.convertScreenToImageCoordinateY(viewer.previousMousePosition.y, viewer.mainImage), viewer.mainImage.sliceDirection);
-                this.GetSurfaceDisplayOnCanvas(viewer, me);
-
+                this.PanImagesInCanvas(viewer, me);
                 break;
             case PAPAYA_SIDENAV_BUTTON_ZOOM:
-                viewer.isZoomMode = true;
-                viewer.container.preferences.showCrosshairs = "No";
-                viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
-                viewer.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
-                this.GetSurfaceDisplayOnCanvas(viewer, me);
-
+                this.ZoomImageInCanvas(viewer, me);
                 break;
             case PAPAYA_SIDENAV_BUTTON_WINDOWLEVEL:
-                viewer.isWindowControl = true;
-                viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
-                viewer.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
-                viewer.container.preferences.showCrosshairs = "No";
-                this.GetSurfaceDisplayOnCanvas(viewer, me);
-
+                this.AddWindowLevelToImageInCanvas(viewer, me);
                 break;
             case PAPAYA_SIDENAV_BUTTON_CROSSHAIR:
-                viewer.isCrosshairMode = true;
-                viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
-                viewer.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
-                viewer.container.preferences.showCrosshairs = "Yes";
-                viewer.findClickedSlice(viewer, viewer.previousMousePosition.x, viewer.previousMousePosition.y);
-                this.GetSurfaceDisplayOnCanvas(viewer, me);
+                this.DrawCrosshairOnImage(viewer, me);
                 break;
             case PAPAYA_SIDENAV_BUTTON_MAGNIFY:
-                this.MagnifyToolEvent(viewer, me);
+                this.MagnifyToolMoveEvent(viewer, me);
                 break;
             case PAPAYA_SIDENAV_BUTTON_RULER:
                 this.DrawRulerOnImageSlice(viewer, me);
@@ -107,15 +76,64 @@ papaya.viewer.Tools.prototype.GetToolOnMouseDown = function (button, viewer, me)
             case PAPAYA_SIDENAV_BUTTON_ELLIPSE:
                 this.DrawEllipseOnImageSlice(viewer, me);
                 break;
+            case PAPAYA_SIDENAV_BUTTON_COBSANGLE:
+                this.DrawCobsAngleOnImageSlice(viewer, me);
+                break;
+            case PAPAYA_SIDENAV_BUTTON_PROBE:
+                this.DrawPixelProbeOnImageSlice(viewer, me);
+                break;
         }
     } else {
-        viewer.isCrosshairMode = true;
-        viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
-        viewer.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
-        viewer.container.preferences.showCrosshairs = "Yes";
-        viewer.findClickedSlice(viewer, viewer.previousMousePosition.x, viewer.previousMousePosition.y);
-        this.GetSurfaceDisplayOnCanvas(viewer, me);
+        this.DrawCrosshairOnImage(viewer, me);
     }
+};
+
+papaya.viewer.Tools.prototype.StackImagesInCanvas = function (viewer, me) {
+    if (me.offsetY != undefined) {
+        this.lastY = me.offsetY;
+    } else {
+        var rect = me.target.getBoundingClientRect();
+        var x = me.targetTouches[0].pageX - rect.left;
+        var y = me.targetTouches[0].pageY - rect.top;
+        this.lastY = y;
+    }
+    viewer.isStackMode = true;
+    viewer.container.preferences.showCrosshairs = "No"
+    this.GetSurfaceDisplayOnCanvas(viewer, me);
+};
+
+papaya.viewer.Tools.prototype.PanImagesInCanvas = function (viewer, me) {
+    viewer.isPanning = true;
+    viewer.container.preferences.showCrosshairs = "No"
+    viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
+    viewer.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
+    this.setStartPanLocationToUpdate(viewer, viewer.convertScreenToImageCoordinateX(viewer.previousMousePosition.x, viewer.mainImage), viewer.convertScreenToImageCoordinateY(viewer.previousMousePosition.y, viewer.mainImage), viewer.mainImage.sliceDirection);
+    this.GetSurfaceDisplayOnCanvas(viewer, me);
+};
+
+papaya.viewer.Tools.prototype.ZoomImageInCanvas = function (viewer, me) {
+    viewer.isZoomMode = true;
+    viewer.container.preferences.showCrosshairs = "No";
+    viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
+    viewer.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
+    this.GetSurfaceDisplayOnCanvas(viewer, me);
+};
+
+papaya.viewer.Tools.prototype.AddWindowLevelToImageInCanvas = function (viewer, me) {
+    viewer.isWindowControl = true;
+    viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
+    viewer.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
+    viewer.container.preferences.showCrosshairs = "No";
+    this.GetSurfaceDisplayOnCanvas(viewer, me);
+};
+
+papaya.viewer.Tools.prototype.DrawCrosshairOnImage = function (viewer, me) {
+    viewer.isCrosshairMode = true;
+    viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
+    viewer.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
+    viewer.container.preferences.showCrosshairs = "Yes";
+    viewer.findClickedSlice(viewer, viewer.previousMousePosition.x, viewer.previousMousePosition.y);
+    this.GetSurfaceDisplayOnCanvas(viewer, me);
 };
 
 papaya.viewer.Tools.prototype.setStartPanLocationToUpdate = function (viewer, xLoc, yLoc, sliceDirection) {
@@ -186,7 +204,7 @@ papaya.viewer.Tools.prototype.GetCurrentCursorPosition = function (me, viewer) {
     return { position };
 };
 
-papaya.viewer.Tools.prototype.MagnifyToolEvent = function (viewer, me) {
+papaya.viewer.Tools.prototype.MagnifyToolMoveEvent = function (viewer, me) {
     viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
     viewer.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
     viewer.isMagnifyMode = true;
@@ -233,6 +251,44 @@ papaya.viewer.Tools.prototype.MagnifyToolEvent = function (viewer, me) {
     }
 };
 
+papaya.viewer.Tools.prototype.DrawToolOnMouseMoveEvent = function (viewer, me, toolName, imageIndex) {
+
+    if (viewer.selectedSlice === viewer.surfaceView) {
+        return;
+    }
+    var cordinate = {};
+    if (me.offsetX || me.offsetY) {
+        cordinate = {
+            xCord: me.offsetX,
+            yCord: me.offsetY
+        };
+    } else {
+        var clientRect = me.target.getBoundingClientRect();
+        cordinate = {
+            xCord: me.targetTouches[0].pageX - clientRect.left,
+            yCord: me.targetTouches[0].pageY - clientRect.top
+        }
+    }
+    if (viewer.selectedSlice != null && viewer.selectedSlice.getImageToolState(toolName) != undefined) {
+        cordinate = viewer.convertScreenToImageCoordinate(cordinate.xCord, cordinate.yCord, viewer.selectedSlice);
+        var tooldata = viewer.selectedSlice.getImageToolState(toolName).imageDatas;
+        var toolHandles = tooldata[imageIndex].toolHandles;
+        if (toolHandles == undefined && tooldata[imageIndex].rulerHandles != undefined) {
+            toolHandles = tooldata[imageIndex].rulerHandles;
+        }
+        if (toolHandles != undefined) {
+            Object.keys(toolHandles).forEach(function (name) {
+                var toolHandle = toolHandles[name];
+                if (toolHandle.toolActive == true) {
+                    toolHandle.xCord = cordinate.x;
+                    toolHandle.yCord = cordinate.y;
+                    toolHandle.zCord = cordinate.z;
+                }
+            });
+        }
+    }
+};
+
 papaya.viewer.Tools.prototype.ButtonClickEvent = function () {
     $("." + PAPAYA_SIDENAVIGATION_CSS + " button").on("click", function (event) {
         //Only Click Event
@@ -274,7 +330,7 @@ papaya.viewer.Tools.prototype.ButtonClickEvent = function () {
                         if ($("#" + papayaContainers[0].viewer.Tools.lastSelectedButton).attr("name") == "drawtool") {
                             $("." + PAPAYA_SIDETOOL_CONFIGURATION_CSS).css("display", "block");
                             $("." + PAPAYA_SIDETOOL_CONFIGURATION_CSS).css("top", parseFloat($(this).offset().top)).css("left", parseFloat($("." + PAPAYA_SIDENAVIGATION_CSS).css("left")) - (parseFloat($("." + PAPAYA_SIDETOOL_CONFIGURATION_CSS).width()) + 12) + "px")
-                          
+
                         } else {
                             $("." + PAPAYA_SIDETOOL_CONFIGURATION_CSS).css("display", "none");
                         }
@@ -616,22 +672,14 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
         pointsCord.xCords = me.targetTouches[0].pageX - rect.left;
         pointsCord.x = me.targetTouches[0].pageY - rect.top;
     }
-    var pointsCordOne = {
-        xCord: 0,
-        yCord: 0,
-        zCord: 0
-
-    }
-    pointsCordOne = { xCord: pointsCord.xCords, yCord: pointsCord.yCords };
+    var pointsCordOne = { xCord: pointsCord.xCords, yCord: pointsCord.yCords };
     var CordOne = viewer.convertScreenToImageCoordinate(pointsCordOne.xCord, pointsCordOne.yCord, viewer.selectedSlice);
     pointsCordOne = { xCord: CordOne.x, yCord: CordOne.y, zCord: CordOne.z };
     var imgaeTooldata = viewer.selectedSlice.getImageToolState('ruler');
-    if (imgaeTooldata != undefined && imgaeTooldata.imageDatas != undefined && imgaeTooldata.imageDatas.length > 0) {   
+    if (imgaeTooldata != undefined && imgaeTooldata.imageDatas != undefined && imgaeTooldata.imageDatas.length > 0) {
         var imgaeTooldata = imgaeTooldata.imageDatas;
         for (var i = 0; i < imgaeTooldata.length; i++) {
             var nearbyHandle = this.getToolHandleNearToImagePoint(imgaeTooldata[i].rulerHandles, pointsCordOne, 5);
-            var activeHandle = this.getActiveToolHandle(imgaeTooldata[i].rulerHandles);
-
             if (nearbyHandle !== undefined) {
                 this.selectedIndexLength = i;
                 nearbyHandle.toolActive = true;
@@ -641,6 +689,7 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
                 nearbyHandle.zCord = pointsCordOne.zCord;
                 this.imageNeedsUpdateForDrawTool = true;
             }
+            var activeHandle = this.getActiveToolHandle(imgaeTooldata[i].rulerHandles);
             if (activeHandle != undefined && activeHandle != nearbyHandle)
                 activeHandle.toolActive = false;
         }
@@ -666,10 +715,8 @@ papaya.viewer.Tools.prototype.DrawRulerOnImageSlice = function (viewer, me) {
         }
         viewer.selectedSlice.setImageToolState('ruler', rulerObject);
         var imageToolData = viewer.selectedSlice.getImageToolState('ruler');
-        if (imageToolData === undefined || imageToolData.imageDatas === undefined || imageToolData.imageDatas.length === 0) {
+        if (imageToolData != undefined && imageToolData.imageDatas != undefined && imageToolData.imageDatas.length > 0) {
 
-        }
-        else {
             imageToolData = imageToolData.imageDatas;
         }
         this.selectedIndexLength = imageToolData.length - 1;
@@ -703,17 +750,15 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
         pointCord.yCord = me.targetTouches[0].pageY - clientRect.top;
     }
 
-    var firstPointSelect;
-
-    firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
+    var firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
 
     var cordOne = viewer.convertScreenToImageCoordinate(firstPointSelect.xCord, firstPointSelect.yCord, viewer.selectedSlice);
 
     firstPointSelect = { xCord: cordOne.x, yCord: cordOne.y, zCord: cordOne.z };
 
-    var toolImageData = viewer.selectedSlice.getImageToolState('angle');
-    if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {   
-        var imageToolData = toolImageData.imageDatas;
+    var imageToolData = viewer.selectedSlice.getImageToolState('angle');
+    if (imageToolData != undefined && imageToolData.imageDatas != undefined && imageToolData.imageDatas.length > 0) {
+        var imageToolData = imageToolData.imageDatas;
         if (imageToolData.length != 0) {
             this.selectedIndexAngleOnImage = imageToolData.length - 1;
             if (imageToolData[this.selectedIndexAngleOnImage].toolHandles.end.toolActive && imageToolData[this.selectedIndexAngleOnImage].isWaitingForLine == true) {
@@ -724,10 +769,9 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
             }
         }
 
+
         for (var i = 0; i < imageToolData.length; i++) {
             var nearbyToolHandle = this.getToolHandleNearToImagePoint(imageToolData[i].toolHandles, firstPointSelect, 5);
-            var activeToolHandle = this.getActiveToolHandle(imageToolData[i].toolHandles);
-
             if (nearbyToolHandle !== undefined) {
                 this.selectedIndexAngleOnImage = i;
                 nearbyToolHandle.toolActive = true;
@@ -737,6 +781,7 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
                 nearbyToolHandle.zCord = firstPointSelect.zCord;
                 this.imageNeedsUpdateForDrawTool = true;
             }
+            var activeToolHandle = this.getActiveToolHandle(imageToolData[i].toolHandles);
             if (activeToolHandle != undefined && activeToolHandle != nearbyToolHandle)
                 activeToolHandle.toolActive = false;
         }
@@ -747,9 +792,9 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
             toolActive: true,
             toolHandles: {
                 start: {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: false
                 },
                 middle: {
@@ -759,16 +804,16 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
                     toolActive: true
                 },
                 end: {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: false
                 }
             }
         }
         viewer.selectedSlice.setImageToolState('angle', angelObject);
-        toolImageData = viewer.selectedSlice.getImageToolState('angle');
-        if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {      
+        var toolImageData = viewer.selectedSlice.getImageToolState('angle');
+        if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {
             toolImageData = toolImageData.imageDatas;
         }
         this.selectedIndexAngleOnImage = toolImageData.length - 1;
@@ -811,21 +856,22 @@ papaya.viewer.Tools.prototype.DrawReactanleOnImageSlice = function (viewer, me) 
     firstPointSelect = { xCord: cordOne.x, yCord: cordOne.y, zCord: cordOne.z };
 
     var toolImageData = viewer.selectedSlice.getImageToolState('rectangle');
-    if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {   
+    if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {
+
         var toolImageData = toolImageData.imageDatas;
         for (var i = 0; i < toolImageData.length; i++) {
-            var nearbyHandle = this.getToolHandleNearToImagePoint(toolImageData[i].toolHandles, firstPointSelect, 5);
-            var activeHandle = this.getActiveToolHandle(toolImageData[i].toolHandles);
-            if (nearbyHandle !== undefined) {
+            var nearbyToolHandle = this.getToolHandleNearToImagePoint(toolImageData[i].toolHandles, firstPointSelect, 5);
+            if (nearbyToolHandle !== undefined) {
                 this.selectedIndexRectangleOnImage = i;
-                nearbyHandle.toolActive = true;
+                nearbyToolHandle.toolActive = true;
                 toolImageData[i].toolActive = true;
-                nearbyHandle.xCord = firstPointSelect.xCord;
-                nearbyHandle.yCord = firstPointSelect.yCord;
-                nearbyHandle.zCord = firstPointSelect.zCord;
+                nearbyToolHandle.xCord = firstPointSelect.xCord;
+                nearbyToolHandle.yCord = firstPointSelect.yCord;
+                nearbyToolHandle.zCord = firstPointSelect.zCord;
                 this.imageNeedsUpdateForDrawTool = true;
             }
-            if (activeHandle != undefined && activeHandle != nearbyHandle)
+            var activeHandle = this.getActiveToolHandle(toolImageData[i].toolHandles);
+            if (activeHandle != undefined && activeHandle != nearbyToolHandle)
                 activeHandle.toolActive = false;
         }
     }
@@ -848,11 +894,14 @@ papaya.viewer.Tools.prototype.DrawReactanleOnImageSlice = function (viewer, me) 
             }
         }
         viewer.selectedSlice.setImageToolState('rectangle', rectangleObject);
-        var toolImageData = viewer.selectedSlice.getImageToolState('rectangle');
-        if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) { 
-            toolImageData = toolImageData.imageDatas;
+        var toolImagedata = viewer.selectedSlice.getImageToolState('rectangle');
+        if (toolImagedata === undefined || toolImagedata.imageDatas === undefined || toolImagedata.imageDatas.length === 0) {
+
         }
-        this.selectedIndexRectangleOnImage = toolImageData.length - 1;
+        else {
+            toolImagedata = toolImagedata.imageDatas;
+        }
+        this.selectedIndexRectangleOnImage = toolImagedata.length - 1;
     }
 
 };
@@ -891,21 +940,21 @@ papaya.viewer.Tools.prototype.DrawEllipseOnImageSlice = function (viewer, me) {
     firstPointSelect = { xCord: cordOne.x, yCord: cordOne.y, zCord: cordOne.z };
 
     var toolImageData = viewer.selectedSlice.getImageToolState('ellipse');
-    if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {   
+    if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {
         var toolImageData = toolImageData.imageDatas;
         for (var i = 0; i < toolImageData.length; i++) {
-            var nearbyHandle = this.getToolHandleNearToImagePoint(toolImageData[i].toolHandles, firstPointSelect, 5);
-            if (nearbyHandle !== undefined) {
+            var nearbyToolHandle = this.getToolHandleNearToImagePoint(toolImageData[i].toolHandles, firstPointSelect, 5);
+            if (nearbyToolHandle !== undefined) {
                 this.selectedIndexEllipseOnImage = i;
-                nearbyHandle.toolActive = true;
+                nearbyToolHandle.toolActive = true;
                 toolImageData[i].toolActive = true;
-                nearbyHandle.xCord = firstPointSelect.xCord;
-                nearbyHandle.yCord = firstPointSelect.yCord;
-                nearbyHandle.zCord = firstPointSelect.zCord;
+                nearbyToolHandle.xCord = firstPointSelect.xCord;
+                nearbyToolHandle.yCord = firstPointSelect.yCord;
+                nearbyToolHandle.zCord = firstPointSelect.zCord;
                 this.imageNeedsUpdateForDrawTool = true;
             }
             var activeHandle = this.getActiveToolHandle(toolImageData[i].toolHandles);
-            if (activeHandle != undefined && activeHandle != nearbyHandle)
+            if (activeHandle != undefined && activeHandle != nearbyToolHandle)
                 activeHandle.toolActive = false;
         }
     }
@@ -929,8 +978,7 @@ papaya.viewer.Tools.prototype.DrawEllipseOnImageSlice = function (viewer, me) {
         }
         viewer.selectedSlice.setImageToolState('ellipse', ellipseObject);
         var toolImageData = viewer.selectedSlice.getImageToolState('ellipse');
-        if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {  
-       
+        if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {
             toolImageData = toolImageData.imageDatas;
         }
         this.selectedIndexEllipseOnImage = toolImageData.length - 1;
@@ -939,13 +987,222 @@ papaya.viewer.Tools.prototype.DrawEllipseOnImageSlice = function (viewer, me) {
 
 };
 
+papaya.viewer.Tools.prototype.DrawCobsAngleOnImageSlice = function (viewer, me) {
+    this.imageNeedsUpdateForDrawTool = false;
+    viewer.container.preferences.showCrosshairs = "No";
+    viewer.isCobsAngleMode = true;
+
+    viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
+    viewer.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
+
+    viewer.findClickedSlice(viewer, viewer.previousMousePosition.x, viewer.previousMousePosition.y);
+
+    if (viewer.selectedSlice == viewer.surfaceView) {
+        return;
+    }
+    var pointCord = {
+        xCord: 0,
+        yCord: 0
+    }
+
+    if (me.offsetX) {
+        pointCord.xCord = me.offsetX;
+        pointCord.yCord = me.offsetY;
+    } else {
+        var clientRect = me.target.getBoundingClientRect();
+        pointCord.xCord = me.targetTouches[0].pageX - clientRect.left;
+        pointCord.yCord = me.targetTouches[0].pageY - clientRect.top;
+    }
+
+    var firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
+
+    var cordOne = viewer.convertScreenToImageCoordinate(firstPointSelect.xCord, firstPointSelect.yCord, viewer.selectedSlice);
+
+    firstPointSelect = { xCord: cordOne.x, yCord: cordOne.y, zCord: cordOne.z };
+
+    var toolImageData = viewer.selectedSlice.getImageToolState('cobsangle');
+    if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {
+        var toolImageData = toolImageData.imageDatas;
+        for (var i = 0; i < toolImageData.length; i++) {
+            var nearbyToolHandle = this.getToolHandleNearToImagePoint(toolImageData[i].toolHandles, firstPointSelect, 5);
+            if (nearbyToolHandle !== undefined) {
+                this.selectedIndexCobsAngleOnImage = i;
+                nearbyToolHandle.toolActive = true;
+                toolImageData[i].toolActive = true;
+                nearbyToolHandle.xCord = firstPointSelect.xCord;
+                nearbyToolHandle.yCord = firstPointSelect.yCord;
+                nearbyToolHandle.zCord = firstPointSelect.zCord;
+                this.imageNeedsUpdateForDrawTool = true;
+            }
+            var activeHandle = this.getActiveToolHandle(toolImageData[i].toolHandles);
+            if (activeHandle != undefined && activeHandle != nearbyToolHandle)
+                activeHandle.toolActive = false;
+        }
+    }
+    if (!this.imageNeedsUpdateForDrawTool) {
+        var toolImageData = viewer.selectedSlice.getImageToolState('cobsangle');
+        if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
+
+            var cobsAngleObject = {
+                isWaitingForLine: false,
+                toolActive: true,
+                toolHandles: {
+                    startOne: {
+                        xCord: firstPointSelect.xCord,
+                        yCord: firstPointSelect.yCord,
+                        zCord: firstPointSelect.zCord,
+                        toolActive: false
+                    },
+                    endOne: {
+                        xCord: firstPointSelect.xCord,
+                        yCord: firstPointSelect.yCord,
+                        zCord: firstPointSelect.zCord,
+                        toolActive: true
+                    }
+                }
+            }
+            viewer.selectedSlice.setImageToolState('cobsangle', cobsAngleObject);
+
+            var toolImagedata = viewer.selectedSlice.getImageToolState('cobsangle');
+            if (toolImagedata != undefined && toolImagedata.imageDatas != undefined && toolImagedata.imageDatas.length > 0) {
+                toolImagedata = toolImagedata.imageDatas;
+            }
+            this.selectedIndexCobsAngleOnImage = toolImagedata.length - 1;
+        }
+        else {
+            toolImageData = toolImageData.imageDatas;
+
+            var cobsAngleData = toolImageData[toolImageData.length - 1];
+            if (cobsAngleData.isWaitingForLine == true) {
+                var cobsAngleObject = cobsAngleData;
+                cobsAngleObject.toolHandles.startTwo = {
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
+                    toolActive: false
+                };
+                cobsAngleObject.toolHandles.endTwo = {
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
+                    toolActive: true
+                };
+                this.selectedIndexCobsAngleOnImage = toolImageData.length - 1;
+            }
+            else if (cobsAngleData.isWaitingForLine == false || cobsAngleData.isWaitingForLine == "complete") {
+                var cobsAngleObject = {
+                    isWaitingForLine: false,
+                    toolActive: true,
+                    toolHandles: {
+                        startOne: {
+                            xCord: firstPointSelect.xCord,
+                            yCord: firstPointSelect.yCord,
+                            zCord: firstPointSelect.zCord,
+                            toolActive: false
+                        },
+                        endOne: {
+                            xCord: firstPointSelect.xCord,
+                            yCord: firstPointSelect.yCord,
+                            zCord: firstPointSelect.zCord,
+                            toolActive: true
+                        }
+                    }
+                }
+                viewer.selectedSlice.setImageToolState('cobsangle', cobsAngleObject);
+                toolImageData = viewer.selectedSlice.getImageToolState('cobsangle');
+                if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {
+                    toolImageData = toolImageData.imageDatas;
+                }
+                this.selectedIndexCobsAngleOnImage = toolImageData.length - 1;
+            }
+        }
+    }
+
+};
+
+papaya.viewer.Tools.prototype.DrawPixelProbeOnImageSlice = function (viewer, me) {
+    this.selectedIndexPixelProbeOnImage = false;
+    viewer.container.preferences.showCrosshairs = "No";
+    viewer.isPixelProbeMode = true;
+
+    viewer.previousMousePosition.x = papaya.utilities.PlatformUtils.getMousePositionX(me);
+    viewer.previousMousePosition.y = papaya.utilities.PlatformUtils.getMousePositionY(me);
+
+    viewer.findClickedSlice(viewer, viewer.previousMousePosition.x, viewer.previousMousePosition.y);
+
+    if (viewer.selectedSlice == viewer.surfaceView) {
+        return;
+    }
+    var pointCord = {
+        xCord: 0,
+        yCord: 0
+    }
+
+    if (me.offsetX) {
+        pointCord.xCord = me.offsetX;
+        pointCord.yCord = me.offsetY;
+    } else {
+        var clientRect = me.target.getBoundingClientRect();
+        pointCord.xCord = me.targetTouches[0].pageX - clientRect.left;
+        pointCord.yCord = me.targetTouches[0].pageY - clientRect.top;
+    }
+
+    var firstPointSelect;
+
+    firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
+
+    var cordOne = viewer.convertScreenToImageCoordinate(firstPointSelect.xCord, firstPointSelect.yCord, viewer.selectedSlice);
+
+    firstPointSelect = { xCord: cordOne.x, yCord: cordOne.y, zCord: cordOne.z };
+
+    var toolImageData = viewer.selectedSlice.getImageToolState('pixelprobe');
+    if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {
+        var toolImageData = toolImageData.imageDatas;
+        for (var i = 0; i < toolImageData.length; i++) {
+            var nearbyToolHandle = this.getToolHandleNearToImagePoint(toolImageData[i].toolHandles, firstPointSelect, 5);
+            if (nearbyToolHandle !== undefined) {
+                this.selectedIndexPixelProbeOnImage = i;
+                nearbyToolHandle.toolActive = true;
+                toolImageData[i].toolActive = true;
+                nearbyToolHandle.xCord = firstPointSelect.xCord;
+                nearbyToolHandle.yCord = firstPointSelect.yCord;
+                nearbyToolHandle.zCord = firstPointSelect.zCord;
+                this.imageNeedsUpdateForDrawTool = true;
+            }
+            var activeHandle = this.getActiveToolHandle(toolImageData[i].toolHandles);
+            if (activeHandle != undefined && activeHandle != nearbyToolHandle)
+                activeHandle.toolActive = false;
+        }
+    }
+    if (!this.imageNeedsUpdateForDrawTool) {
+        var probeObject = {
+            toolActive: true,
+            toolHandles: {
+                end: {
+                    xCord: cordOne.x,
+                    yCord: cordOne.y,
+                    zCord: cordOne.z,
+                    toolActive: true
+                }
+            }
+        }
+        viewer.selectedSlice.setImageToolState('pixelprobe', probeObject);
+        var toolImageData = viewer.selectedSlice.getImageToolState('pixelprobe');
+        if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {
+            toolImageData = toolImageData.imageDatas;
+        }
+        this.selectedIndexPixelProbeOnImage = toolImageData.length - 1;
+    }
+
+
+};
 //CornerStone.js and CornerStoneMath.js functions for drawing Ruler as implemented in cornerStone.js
 papaya.viewer.Tools.prototype.findClosestPoint = function (sources, target) {
     var distances = [];
     var minDistance;
-
+    var tools = this;
     sources.forEach(function (source, index) {
-        var d = distance(source, target);
+        var d = tools.distance(source, target);
 
         distances.push(d);
 
@@ -970,7 +1227,6 @@ papaya.viewer.Tools.prototype.distanceSquared = function (from, to) {
     var delta = this.subtract(from, to);
     return delta.x * delta.x + delta.y * delta.y;
 }
-
 papaya.viewer.Tools.prototype.subtract = function (lhs, rhs) {
     return {
         x: lhs.xCord - rhs.xCord,
@@ -1048,33 +1304,33 @@ papaya.viewer.Tools.prototype.findClosestPointNearRularLine = function (lineSegm
     return closestPointNearLine;
 };
 
-papaya.viewer.Tools.prototype.checkForIntersectionOnLine = function (lineSegmentFirst, lineSegmentSecond) {
+papaya.viewer.Tools.prototype.checkForIntersectionOnLine = function (lineSegmentFirst, lineSegmentSecond, screenSlice, viewer) {
     //var distanceToPoint = point2.distanceTo(point1);
     var intersectionPointOneLine, lineSegmentOne, lineSegmentTwo;
-    if (this.mainImage === this.axialSlice) {
-        intersectionPoint = this.checkLineIntersection(lineSegmentFirst, lineSegmentSecond);
-    } else if (this.mainImage === this.coronalSlice) {
-        lineSegment1temp = { start: { x: lineSegmentFirst.start.x, y: lineSegmentFirst.start.z }, end: { x: lineSegmentFirst.end.x, y: lineSegmentFirst.end.z } };
-        lineSegment2temp = { start: { x: lineSegmentSecond.start.x, y: lineSegmentSecond.start.z }, end: { x: lineSegmentSecond.end.x, y: lineSegmentSecond.end.z } };
-        intersectionPoint = this.checkLineIntersection(lineSegmentOne, lineSegment2temp);
-    } else if (this.mainImage === this.sagittalSlice) {
-        lineSegment1temp = { start: { x: lineSegmentFirst.start.y, y: lineSegmentFirst.start.z }, end: { x: lineSegmentFirst.end.y, y: lineSegmentFirst.end.z } };
-        lineSegment2temp = { start: { x: lineSegmentSecond.start.y, y: lineSegmentSecond.start.z }, end: { x: lineSegmentSecond.end.y, y: lineSegmentSecond.end.z } };
-        intersectionPoint = this.checkLineIntersection(lineSegmentOne, lineSegment2temp);
+    if (screenSlice === viewer.axialSlice) {
+        intersectionPointOneLine = this.checkLineIntersection(lineSegmentFirst, lineSegmentSecond);
+    } else if (screenSlice === viewer.coronalSlice) {
+        lineSegmentOne = { start: { xCord: lineSegmentFirst.start.xCord, yCord: lineSegmentFirst.start.zCord }, end: { xCord: lineSegmentFirst.end.xCord, yCord: lineSegmentFirst.end.zCord } };
+        lineSegmentTwo = { start: { xCord: lineSegmentSecond.start.xCord, yCord: lineSegmentSecond.start.zCord }, end: { xCord: lineSegmentSecond.end.xCord, yCord: lineSegmentSecond.end.zCord } };
+        intersectionPointOneLine = this.checkLineIntersection(lineSegmentOne, lineSegmentTwo);
+    } else if (screenSlice === viewer.sagittalSlice) {
+        lineSegmentOne = { start: { xCord: lineSegmentFirst.start.yCord, yCord: lineSegmentFirst.start.zCord }, end: { xCord: lineSegmentFirst.end.yCord, yCord: lineSegmentFirst.end.zCord } };
+        lineSegmentTwo = { start: { xCord: lineSegmentSecond.start.yCord, yCord: lineSegmentSecond.start.zCord }, end: { xCord: lineSegmentSecond.end.yCord, yCord: lineSegmentSecond.end.zCord } };
+        intersectionPointOneLine = this.checkLineIntersection(lineSegmentOne, lineSegmentTwo);
     }
-    return intersectionPoint;
+    return intersectionPointOneLine;
 };
 
 papaya.viewer.Tools.prototype.checkLineIntersection = function (lineSegmentFirst, lineSegmentSecond) {
     // x1, y1, x2, y2, x3, y3, x4, y4
-    var x1 = lineSegmentFirst.start.x,
-        y1 = lineSegmentFirst.start.y,
-        x2 = lineSegmentFirst.end.x,
-        y2 = lineSegmentFirst.end.y,
-        x3 = lineSegmentSecond.start.x,
-        y3 = lineSegmentSecond.start.y,
-        x4 = lineSegmentSecond.end.x,
-        y4 = lineSegmentSecond.end.y;
+    var x1 = lineSegmentFirst.start.xCord,
+        y1 = lineSegmentFirst.start.yCord,
+        x2 = lineSegmentFirst.end.xCord,
+        y2 = lineSegmentFirst.end.yCord,
+        x3 = lineSegmentSecond.start.xCord,
+        y3 = lineSegmentSecond.start.yCord,
+        x4 = lineSegmentSecond.end.xCord,
+        y4 = lineSegmentSecond.end.yCord;
     // if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans for whether line segment 1 or line segment 2 contain the point
     var denominator, a, b, numeratorFirst, numeratorSecond, result = {
         xCord: null,
@@ -1088,8 +1344,8 @@ papaya.viewer.Tools.prototype.checkLineIntersection = function (lineSegmentFirst
     }
     a = y1 - y3;
     b = x1 - x3;
-    numerator1 = ((x4 - x3) * a) - ((y4 - y3) * b);
-    numerator2 = ((x2 - x1) * a) - ((y2 - y1) * b);
+    numeratorFirst = ((x4 - x3) * a) - ((y4 - y3) * b);
+    numeratorSecond = ((x2 - x1) * a) - ((y2 - y1) * b);
     a = numeratorFirst / denominator;
     b = numeratorSecond / denominator;
 
@@ -1329,11 +1585,11 @@ papaya.viewer.Tools.prototype.getStoredPixelData = function (pixelData, volume, 
 
 papaya.viewer.Tools.prototype.drawEllipseCurve = function (context, x, y, w, h) {
     var kappa = 0.5522848,
-        ox = (w / 2) * kappa, 
+        ox = (w / 2) * kappa,
         oy = (h / 2) * kappa,
-        xe = x + w, 
-        ye = y + h, 
-        xm = x + w / 2, 
+        xe = x + w,
+        ye = y + h,
+        xm = x + w / 2,
         ym = y + h / 2;
     context.beginPath();
     context.moveTo(x, ym);

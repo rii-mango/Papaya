@@ -507,8 +507,10 @@ papaya.Container.CreateSideNevigation = function (containerHTML) {
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_PLAYCENE + "' title='Play Clip Tool'><span class='fas fa-play fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_RULER + "' name='drawtool' title='Draw Ruler Tool'><span class='fas fa-pencil-ruler fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_ANGLE + "' name='drawtool' title='Draw Angle Tool'><span class='fas fa-play fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_COBSANGLE + "' name='drawtool' title='Draw Cobs Angle Tool'><span class='fas fa-crop fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_REACTANGLE + "' name='drawtool' title='Draw Reactangle Tool'><span class='fas fa-square fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_ELLIPSE + "' name='drawtool' title='Draw Ellipse Tool'><span class='fas fa-circle fa-2x'></span></button>");
+    $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_PROBE + "' name='drawtool' title='Draw Probe Tool'><span class='fas fa-dot-circle fa-2x'></span></button>");
     $("." + PAPAYA_SIDENAVIGATION_CSS).append("<button id='" + PAPAYA_SIDENAV_BUTTON_RESET + "' title='Reset Tool'><span class='fas fa-redo fa-2x'></span></button>");
     var viwerTool = new papaya.viewer.Tools();
     viwerTool.ButtonClickEvent();
