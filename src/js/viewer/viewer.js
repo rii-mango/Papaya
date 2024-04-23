@@ -1561,35 +1561,6 @@ papaya.viewer.Viewer.prototype.drawOrientation = function () {
             papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE);
     }
 };
-
-papaya.viewer.Viewer.prototype.drawRuler = function () {
-    this.drawRulerOnSelectedScreenSlice(this.mainImage);
-    this.drawRulerOnSelectedScreenSlice(this.lowerImageTop);
-    this.drawRulerOnSelectedScreenSlice(this.lowerImageBot);
-    this.drawRulerOnSelectedScreenSlice(this.lowerImageBot2);
-};
-
-papaya.viewer.Viewer.prototype.drawAngle = function () {
-    this.drawAngleOnSelectedScreenSlice(this.mainImage);
-    this.drawAngleOnSelectedScreenSlice(this.lowerImageTop);
-    this.drawAngleOnSelectedScreenSlice(this.lowerImageBot);
-    this.drawAngleOnSelectedScreenSlice(this.lowerImageBot2);
-};
-
-papaya.viewer.Viewer.prototype.drawRectangle = function () {
-    this.drawReactangleOnSelectedScreenSlice(this.mainImage);
-    this.drawReactangleOnSelectedScreenSlice(this.lowerImageTop);
-    this.drawReactangleOnSelectedScreenSlice(this.lowerImageBot);
-    this.drawReactangleOnSelectedScreenSlice(this.lowerImageBot2);
-};
-
-papaya.viewer.Viewer.prototype.drawEllipse = function () {
-    this.drawEllipseOnSelectedScreenSlice(this.mainImage);
-    this.drawEllipseOnSelectedScreenSlice(this.lowerImageTop);
-    this.drawEllipseOnSelectedScreenSlice(this.lowerImageBot);
-    this.drawEllipseOnSelectedScreenSlice(this.lowerImageBot2);
-};
-
 papaya.viewer.Viewer.prototype.drawCobsAngle = function () {
     this.drawCobsAngleOnSelectedScreenSlice(this.mainImage);
     this.drawCobsAngleOnSelectedScreenSlice(this.lowerImageTop);

@@ -686,19 +686,14 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
         pointCord.yCord = me.targetTouches[0].pageY - clientRect.top;
     }
 
-    var firstPointSelect;
-
-    firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
+    var firstPointSelect = { xCord: pointCord.xCord, yCord: pointCord.yCord };
 
     var cordOne = viewer.convertScreenToImageCoordinate(firstPointSelect.xCord, firstPointSelect.yCord, viewer.selectedSlice);
 
     firstPointSelect = { xCord: cordOne.x, yCord: cordOne.y, zCord: cordOne.z };
 
     var toolImageData = viewer.selectedSlice.getImageToolState('angle');
-    if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
-
-    }
-    else {
+    if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {  
         var imageToolData = toolImageData.imageDatas;
         if (imageToolData.length != 0) {
             this.selectedIndexAngleOnImage = imageToolData.length - 1;
@@ -717,9 +712,9 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
                 this.selectedIndexAngleOnImage = i;
                 nearbyToolHandle.toolActive = true;
                 imageToolData[i].toolActive = true;
-                nearbyToolHandle.x = cordOne.x;
-                nearbyToolHandle.y = cordOne.y;
-                nearbyToolHandle.z = cordOne.z;
+                nearbyToolHandle.xCord = firstPointSelect.xCord;
+                nearbyToolHandle.yCord = firstPointSelect.yCord;
+                nearbyToolHandle.zCord = firstPointSelect.zCord;
                 this.imageNeedsUpdateForDrawTool = true;
             }
             var activeToolHandle = this.getActiveToolHandle(imageToolData[i].toolHandles);
@@ -733,31 +728,28 @@ papaya.viewer.Tools.prototype.DrawAngleOnImageSlice = function (viewer, me) {
             toolActive: true,
             toolHandles: {
                 start: {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord:firstPointSelect.xCord,
+                    yCord:firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: false
                 },
                 middle: {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: true
                 },
                 end: {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: false
                 }
             }
         }
         viewer.selectedSlice.setImageToolState('angle', angelObject);
         toolImageData = viewer.selectedSlice.getImageToolState('angle');
-        if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
-
-        }
-        else {
+        if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {       
             toolImageData = toolImageData.imageDatas;
         }
         this.selectedIndexAngleOnImage = toolImageData.length - 1;
@@ -801,10 +793,7 @@ papaya.viewer.Tools.prototype.DrawCobsAngleOnImageSlice = function (viewer, me) 
     firstPointSelect = { xCord: cordOne.x, yCord: cordOne.y, zCord: cordOne.z };
 
     var toolImageData = viewer.selectedSlice.getImageToolState('cobsangle');
-    if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
-
-    }
-    else {
+    if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {
         var toolImageData = toolImageData.imageDatas;
         for (var i = 0; i < toolImageData.length; i++) {
             var nearbyHandle = this.getToolHandleNearToImagePoint(toolImageData[i].toolHandles, firstPointSelect, 5);
@@ -831,15 +820,15 @@ papaya.viewer.Tools.prototype.DrawCobsAngleOnImageSlice = function (viewer, me) 
                 toolActive: true,
                 toolHandles: {
                     startOne: {
-                        xCord: cordOne.x,
-                        yCord: cordOne.y,
-                        zCord: cordOne.z,
+                        xCord: firstPointSelect.xCord,
+                        yCord: firstPointSelect.yCord,
+                        zCord: firstPointSelect.zCord,
                         toolActive: false
                     },
                     endOne: {
-                        xCord: cordOne.x,
-                        yCord: cordOne.y,
-                        zCord: cordOne.z,
+                        xCord: firstPointSelect.xCord,
+                        yCord: firstPointSelect.yCord,
+                        zCord: firstPointSelect.zCord,
                         toolActive: true
                     }
                 }
@@ -847,10 +836,7 @@ papaya.viewer.Tools.prototype.DrawCobsAngleOnImageSlice = function (viewer, me) 
             viewer.selectedSlice.setImageToolState('cobsangle', cobsAngleObject);
 
             var toolImagedata = viewer.selectedSlice.getImageToolState('cobsangle');
-            if (toolImagedata === undefined || toolImagedata.imageDatas === undefined || toolImagedata.imageDatas.length === 0) {
-
-            }
-            else {
+            if (toolImagedata != undefined && toolImagedata.imageDatas != undefined && toolImagedata.imageDatas.length > 0) {
                 toolImagedata = toolImagedata.imageDatas;
             }
             this.selectedIndexCobsAngleOnImage = toolImagedata.length - 1;
@@ -862,15 +848,15 @@ papaya.viewer.Tools.prototype.DrawCobsAngleOnImageSlice = function (viewer, me) 
             if (cobsAngleData.isWaitingForLine == true) {
                 var cobsAngleObject = cobsAngleData;
                 cobsAngleObject.toolHandles.startTwo = {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: false
                 };
                 cobsAngleObject.toolHandles.endTwo = {
-                    xCord: cordOne.x,
-                    yCord: cordOne.y,
-                    zCord: cordOne.z,
+                    xCord: firstPointSelect.xCord,
+                    yCord: firstPointSelect.yCord,
+                    zCord: firstPointSelect.zCord,
                     toolActive: true
                 };
                 this.selectedIndexCobsAngleOnImage = toolImageData.length - 1;
@@ -881,25 +867,23 @@ papaya.viewer.Tools.prototype.DrawCobsAngleOnImageSlice = function (viewer, me) 
                     toolActive: true,
                     toolHandles: {
                         startOne: {
-                            xCord: cordOne.x,
-                            yCord: cordOne.y,
-                            zCord: cordOne.z,
+                            xCord: firstPointSelect.xCord,
+                            yCord: firstPointSelect.yCord,
+                            zCord: firstPointSelect.zCord,
                             toolActive: false
                         },
                         endOne: {
-                            xCord: cordOne.x,
-                            yCord: cordOne.y,
-                            zCord: cordOne.z,
+                            xCord: firstPointSelect.xCord,
+                            yCord: firstPointSelect.yCord,
+                            zCord: firstPointSelect.zCord,
                             toolActive: true
                         }
                     }
                 }
                 viewer.selectedSlice.setImageToolState('cobsangle', cobsAngleObject);
                 toolImageData = viewer.selectedSlice.getImageToolState('cobsangle');
-                if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
-
-                }
-                else {
+                if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {
+                
                     toolImageData = toolImageData.imageDatas;
                 }
                 this.selectedIndexCobsAngleOnImage = toolImageData.length - 1;
