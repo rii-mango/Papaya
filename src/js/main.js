@@ -463,10 +463,10 @@ papaya.Container.buildContainer = function (containerHTML, params, replaceIndex)
 papaya.Container.CreateSideNevigation = function (containerHTML) {
 
     containerHTML.append('<div class="side-navbar"></div>');
-    containerHTML.append('<div class="side-navpanel" style="display:none">Cene Controls <hr/><button id="reverseCene" title="Reverse Cene"><span class="fas fa-backward fa-2x"></span></button><div><input class="input-range" orient="vertical" type="range" step="1" value="10" min="1" max="100"> <span class="range-value"></span></div><button id="repeatCene" style="background-color:green;" title="Repeat Cene"><span class="fas fa-refresh fa-2x"></span></button></div>');
+    containerHTML.append('<div class="side-navpanel" style="display:none">Cene Controls <hr/><button id="reverseCene" title="Reverse Cene"><span class="fas fa-backward fa-2x"></span></button><div><input class="input-range" orient="vertical" type="range" step="1" value="10" min="1" max="100"> <span class="range-value"></span></div><button id="repeatCene" style="background-color:green;" title="Repeat Cene"><span class="fas fa-refresh fa-2x"></span></button><hr/><label>Sync Cine</label><hr/><input type="checkbox" class="syncCine"></div>');
     var rulerLineSize = "<div>Line Size : <select id='" + PAPAYA_RULER_LINE_WIDTH + "'><option value='1' selected=selected>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option></select></div>";
     var rulerFontSize = "<div>Font Size : <select id='" + PAPAYA_RULER_FONT_SIZE + "'><option value='14' selected=selected>14</option><option value='16'>16</option><option value='18'>18</option><option value='20'>20</option><option value='25'>25</option></select></div>";
-    var rulerLengthSize = "<div>Length Unit : <select id='" + PAPAYA_RULER_LENGTH_UNIT + "'><option value='mm' selected=selected>Millimeters</option>" +
+    var rulerLengthSize = "<div>Length Unit : <select id='" + PAPAYA_RULER_LENGTH_UNIT + "'><option value='mm' selected=selected>Milimeters</option>" +
         '<option value = "cm" > Centimeters</option >' +
         '<option value="inches">Inches</option>' +
         '<option value="feet">Feet</option>' +

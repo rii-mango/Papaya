@@ -34,7 +34,7 @@ papaya.viewer.Preferences = papaya.viewer.Preferences || function () {
 /*** Static Pseudo-constants ***/
 
 papaya.viewer.Preferences.ALL_PREFS = ["showCrosshairs", "atlasLocks", "showOrientation", "scrollBehavior",
-    "smoothDisplay", "radiological", "showRuler", "showAngle", "showRectangle", "showCobsAngle", "showPixelProbe", "showEllipse","surfaceBackgroundColor", "showSurfacePlanes","showOverlays"];
+    "smoothDisplay", "radiological", "showRuler", "showAngle", "showRectangle","showEllipse","surfaceBackgroundColor", "showSurfacePlanes","showOverlays"];
 papaya.viewer.Preferences.COOKIE_PREFIX = "papaya-";
 papaya.viewer.Preferences.COOKIE_EXPIRY_DAYS = 365;
 papaya.viewer.Preferences.DEFAULT_SHOW_CROSSHAIRS = "Yes";
