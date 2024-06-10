@@ -133,6 +133,13 @@ var PAPAYA_MAIN_IMAGE_OVERLAYS_TOP_LEFT = "mainImageOverlaysTopLeft",
     PAPAYA_MAIN_IMAGE_OVERLAYS_BOTTOM_LEFT = "mainImageOverlaysBottomLeft",
     PAPAYA_MAIN_IMAGE_OVERLAYS_BOTTOM_RIGHT = "mainImageOverlaysBottomRight";
 
+//Lower Image Top
+var PAPAYA_LOWER_IMAGE_TOP_OVERLAYS_BOTTOM_RIGHT = "lowerImageTopOverlaysBottomRight";
+//Lower Image Bottom
+var PAPAYA_LOWER_IMAGE_BOTTOM_OVERLAYS_BOTTOM_RIGHT = "lowerImageBottomOverlaysBottomRight";
+//Lower Image Top
+var PAPAYA_LOWER_IMAGE_BOTTOM_TWO_OVERLAYS_BOTTOM_RIGHT = "lowerImageBottomTwoOverlaysBottomRight";
+
 //Buttons Side Nav
 var PAPAYA_SIDENAV_BUTTON_CROSSHAIR = "drawCrossHairImages",
     PAPAYA_SIDENAV_BUTTON_STACK = "stackImages",
@@ -152,5 +159,13 @@ var PAPAYA_SIDENAV_BUTTON_CROSSHAIR = "drawCrossHairImages",
 
 //Button Side Nav Panel
 var PAPAYA_NAVPANEL_BUTTON_REVERSE = "reverseCene",
-    PAPAYA_NAVPANEL_BUTTON_REPEAT = "repeatCene";
+    PAPAYA_NAVPANEL_BUTTON_REPEAT = "repeatCene",
+    PAPAYA_NAVPANEL_BUTTON_SYNCCINE = "syncCine";
+
+var PAPAYA_TOOL_RULER = "ruler",
+    PAPAYA_TOOL_ANGLE = "angle",
+    PAPAYA_TOOL_RECTANGLE = "rectangle",
+    PAPAYA_TOOL_ELLIPSE = "ellipse",
+    PAPAYA_TOOL_COBSANGLE = "cobsangle",
+    PAPAYA_TOOL_PIXELPROBE = "pixelprobe";
 

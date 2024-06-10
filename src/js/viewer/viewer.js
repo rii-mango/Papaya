@@ -51,6 +51,7 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
     this.isDragging = false;
     this.isWindowControl = false;
     this.isZoomMode = false;
+    this.isToolDrawMode = false;
     this.isContextMode = false;
     this.isMagnifyMode = false;
     this.isPanning = false;
@@ -109,6 +110,9 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
         $(container.containerHtml).append('<div id="' + PAPAYA_MAIN_IMAGE_OVERLAYS_TOP_RIGHT + '" class="overlays"></div>');
         $(container.containerHtml).append('<div id="' + PAPAYA_MAIN_IMAGE_OVERLAYS_BOTTOM_LEFT + '" class="overlays"></div>');
         $(container.containerHtml).append('<div id="' + PAPAYA_MAIN_IMAGE_OVERLAYS_BOTTOM_RIGHT + '" class="overlays"></div>');
+        $(container.containerHtml).append('<div id="' + PAPAYA_LOWER_IMAGE_TOP_OVERLAYS_BOTTOM_RIGHT + '" class="overlays"></div>');
+        $(container.containerHtml).append('<div id="' + PAPAYA_LOWER_IMAGE_BOTTOM_OVERLAYS_BOTTOM_RIGHT + '" class="overlays"></div>');
+        $(container.containerHtml).append('<div id="' + PAPAYA_LOWER_IMAGE_BOTTOM_TWO_OVERLAYS_BOTTOM_RIGHT + '" class="overlays"></div>');
         //Crosshairs
         this.crossHairAxialRed = $("#" + PAPAYA_CROSSHAIR_DIV_AXIAL_RED);
         this.crossHairSagitalGreen = $("#" + PAPAYA_CROSSHAIR_DIV_SAGITTAL_BLUE);
@@ -124,6 +128,11 @@ papaya.viewer.Viewer = papaya.viewer.Viewer || function (container, width, heigh
         this.mainImageOverlaysTopRight = $("#" + PAPAYA_MAIN_IMAGE_OVERLAYS_TOP_RIGHT);
         this.mainImageOverlaysBottomLeft = $("#" + PAPAYA_MAIN_IMAGE_OVERLAYS_BOTTOM_LEFT);
         this.mainImageOverlaysBottomRight = $("#" + PAPAYA_MAIN_IMAGE_OVERLAYS_BOTTOM_RIGHT);
+
+        this.lowerImageTopOverlayBottomRight = $("#" + PAPAYA_LOWER_IMAGE_TOP_OVERLAYS_BOTTOM_RIGHT);
+        this.lowerImageBotOverlayBottomRight = $("#" + PAPAYA_LOWER_IMAGE_BOTTOM_OVERLAYS_BOTTOM_RIGHT);
+        this.lowerImageBotTwoOverlayBottomRight = $("#" + PAPAYA_LOWER_IMAGE_BOTTOM_TWO_OVERLAYS_BOTTOM_RIGHT);
+
     }
     this.paddingTop = 0;
 
@@ -263,6 +272,35 @@ papaya.viewer.Viewer.getOffsetRect = function (elem) {
     var left = box.left + scrollLeft - clientLeft;
 
     return { top: Math.round(top), left: Math.round(left) };
+};
+
+
+
+// http://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
+papaya.viewer.Viewer.drawRoundRect = function (ctx, x, y, width, height, radius, fill, stroke) {
+    if (typeof stroke === "undefined") {
+        stroke = true;
+    }
+    if (typeof radius === "undefined") {
+        radius = 5;
+    }
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+    if (stroke) {
+        ctx.stroke();
+    }
+    if (fill) {
+        ctx.fill();
+    }
 };
 
 
@@ -1277,27 +1315,39 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
         this.drawCrosshairs();
     }
 
-    if (this.container.preferences.showRuler === "Yes") {
-        this.drawRuler();
+    if (this.container.preferences.showRuler === "Yes") {      
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_RULER, this, this.mainImage);
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_RULER, this, this.lowerImageTop);
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_RULER, this, this.lowerImageBot);
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_RULER, this, this.lowerImageBot2);
     }
 
     if (this.container.preferences.showAngle === "Yes") {
-        this.drawAngle();
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_ANGLE, this, this.mainImage);
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_ANGLE, this, this.lowerImageTop);
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_ANGLE, this, this.lowerImageBot);
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_ANGLE, this, this.lowerImageBot2);
     }
 
     if (this.container.preferences.showRectangle === "Yes") {
-        this.drawRectangle();
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_RECTANGLE, this, this.mainImage);
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_RECTANGLE, this, this.lowerImageTop);
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_RECTANGLE, this, this.lowerImageBot);
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_RECTANGLE, this, this.lowerImageBot2);
     }
 
     if (this.container.preferences.showEllipse === "Yes") {
-        this.drawEllipse();
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_ELLIPSE, this, this.mainImage);
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_ELLIPSE, this, this.lowerImageTop);
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_ELLIPSE, this, this.lowerImageBot);
+        this.Tools.drawToolOnCanvasSlice(PAPAYA_TOOL_ELLIPSE, this, this.lowerImageBot2);
     }
 
     if (this.container.preferences.showCobsAnlge === "Yes") {
         this.drawCobsAngle();
     }
 
-    if (this.container.preferences.showPixelProbe = "Yes") {
+    if (this.container.preferences.showPixelProbe == "Yes") {
         this.drawPixelProbe();
     }
 
@@ -1327,6 +1377,9 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
             this.mainImageOverlaysTopRight.html(divContent).css("display", "block");
             this.mainImageOverlaysBottomLeft.html(divContent).css("display", "block");
             this.mainImageOverlaysBottomRight.html(divContent).css("display", "block");
+            this.lowerImageTopOverlayBottomRight.html("").css("display", "block");
+            this.lowerImageBotOverlayBottomRight.html("").css("display", "block");
+            this.lowerImageBotTwoOverlayBottomRight.html("").css("display", "block");
 
             var leftTop = this.mainImageOverlaysTopLeft.find("div");
             var spanCount = 0;
@@ -1368,12 +1421,25 @@ papaya.viewer.Viewer.prototype.drawViewer = function (force, skipUpdate) {
                     this.mainImageOverlaysBottomRight.append("<div>" + imageLocation + "</div>");;
                 }
             }
+            if (this.lowerImageTop != this.surfaceView) {
+                this.lowerImageTopOverlayBottomRight.append('<div><span style="color:#B5CBD3">Image Counts </span><span style="color:gray"> : </span> <span style="width:20px;">' + this.lowerImageTop.currentSlice + "</span> of " + this.lowerImageTop.sliceCounts + '</div>');
+            }
+            if (this.lowerImageBot != this.surfaceView) {
+                this.lowerImageBotOverlayBottomRight.append('<div><span style="color:#B5CBD3">Image Counts </span><span style="color:gray"> : </span> <span style="width:20px;">' + this.lowerImageBot.currentSlice + "</span> of " + this.lowerImageBot.sliceCounts + '</div>');
+            }
+            if (this.lowerImageBot2 != null) {
+                if (this.lowerImageBot2 != this.surfaceView) {
+                    this.lowerImageBotTwoOverlayBottomRight.append('<div><span style="color:#B5CBD3">Image Counts </span><span style="color:gray"> : </span> <span style="width:20px;">' + this.lowerImageBot2.currentSlice + "</span> of " + this.lowerImageBot2.sliceCounts + '</div>');
+                }
+            }
         }
         else {
             this.mainImageOverlaysTopLeft.css("display", "none");
             this.mainImageOverlaysTopRight.css("display", "none");
             this.mainImageOverlaysBottomLeft.css("display", "none");
             this.mainImageOverlaysBottomRight.css("display", "none");
+            this.lowerImageTopOverlayBottomRight.css("display", "none");
+            this.lowerImageBotOverlayBottomRight.css("display", "none");
         }
     }
 
@@ -1395,19 +1461,19 @@ papaya.viewer.Viewer.prototype.drawScreenSlice = function (slice) {
         this.context.fillRect(slice.screenOffsetX, slice.screenOffsetY, slice.screenDim, slice.screenDim);
         this.context.drawImage(slice.canvas, slice.screenOffsetX, slice.screenOffsetY);
 
-        //if (this.container.preferences.showRuler === "Yes") {
-        //    if (this.surfaceView === this.mainImage) {
-        //        this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
-        //        textWidth = this.context.measureText("Ruler Length: ").width;
-        //        textWidthExample = this.context.measureText("Ruler Length: 000.00").width;
-        //        offset = (textWidthExample / 2);
+        if (this.container.preferences.showRuler === "Yes") {
+            if (this.surfaceView === this.mainImage) {
+                this.context.font = papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + "px sans-serif";
+                textWidth = this.context.measureText("Ruler Length: ").width;
+                textWidthExample = this.context.measureText("Ruler Length: 000.00").width;
+                offset = (textWidthExample / 2);
 
-        //        this.context.fillStyle = "#ffb3db";
-        //        this.context.fillText("Ruler Length:  ", slice.screenDim / 2 - (offset / 2), papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + padding);
-        //        this.context.fillStyle = "#FFFFFF";
-        //        this.context.fillText(this.surfaceView.getRulerLength().toFixed(2), (slice.screenDim / 2) + textWidth - (offset / 2), papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + padding);
-        //    }
-        //}
+                this.context.fillStyle = "#ffb3db";
+                this.context.fillText("Ruler Length:  ", slice.screenDim / 2 - (offset / 2), papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + padding);
+                this.context.fillStyle = "#FFFFFF";
+                this.context.fillText(this.surfaceView.getRulerLength().toFixed(2), (slice.screenDim / 2) + textWidth - (offset / 2), papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE + padding);
+            }
+        }
     } else {
         this.context.fillStyle = papaya.viewer.Viewer.BACKGROUND_COLOR;
         this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -1495,35 +1561,6 @@ papaya.viewer.Viewer.prototype.drawOrientation = function () {
             papaya.viewer.Viewer.ORIENTATION_MARKER_SIZE);
     }
 };
-
-papaya.viewer.Viewer.prototype.drawRuler = function () {
-    this.drawRulerOnSelectedScreenSlice(this.mainImage);
-    this.drawRulerOnSelectedScreenSlice(this.lowerImageTop);
-    this.drawRulerOnSelectedScreenSlice(this.lowerImageBot);
-    this.drawRulerOnSelectedScreenSlice(this.lowerImageBot2);
-};
-
-papaya.viewer.Viewer.prototype.drawAngle = function () {
-    this.drawAngleOnSelectedScreenSlice(this.mainImage);
-    this.drawAngleOnSelectedScreenSlice(this.lowerImageTop);
-    this.drawAngleOnSelectedScreenSlice(this.lowerImageBot);
-    this.drawAngleOnSelectedScreenSlice(this.lowerImageBot2);
-};
-
-papaya.viewer.Viewer.prototype.drawRectangle = function () {
-    this.drawReactangleOnSelectedScreenSlice(this.mainImage);
-    this.drawReactangleOnSelectedScreenSlice(this.lowerImageTop);
-    this.drawReactangleOnSelectedScreenSlice(this.lowerImageBot);
-    this.drawReactangleOnSelectedScreenSlice(this.lowerImageBot2);
-};
-
-papaya.viewer.Viewer.prototype.drawEllipse = function () {
-    this.drawEllipseOnSelectedScreenSlice(this.mainImage);
-    this.drawEllipseOnSelectedScreenSlice(this.lowerImageTop);
-    this.drawEllipseOnSelectedScreenSlice(this.lowerImageBot);
-    this.drawEllipseOnSelectedScreenSlice(this.lowerImageBot2);
-};
-
 papaya.viewer.Viewer.prototype.drawCobsAngle = function () {
     this.drawCobsAngleOnSelectedScreenSlice(this.mainImage);
     this.drawCobsAngleOnSelectedScreenSlice(this.lowerImageTop);
@@ -1552,50 +1589,50 @@ papaya.viewer.Viewer.prototype.drawRulerOnSelectedScreenSlice = function (screen
         for (var i = 0; i < imageTooldata.length; i++) {
 
             if (screenSlice === this.axialSlice) {
-                ruler1x = (this.axialSlice.finalTransform[0][2] + (imageTooldata[i].rulerHandles.rulerStart.xCord + 0.5) *
+                ruler1x = (this.axialSlice.finalTransform[0][2] + (imageTooldata[i].toolHandles.start.xCord + 0.5) *
                     this.axialSlice.finalTransform[0][0]);
-                ruler1y = (this.axialSlice.finalTransform[1][2] + (imageTooldata[i].rulerHandles.rulerStart.yCord + 0.5) *
+                ruler1y = (this.axialSlice.finalTransform[1][2] + (imageTooldata[i].toolHandles.start.yCord + 0.5) *
                     this.axialSlice.finalTransform[1][1]);
-                ruler2x = (this.axialSlice.finalTransform[0][2] + (imageTooldata[i].rulerHandles.rulerEnd.xCord + 0.5) *
+                ruler2x = (this.axialSlice.finalTransform[0][2] + (imageTooldata[i].toolHandles.end.xCord + 0.5) *
                     this.axialSlice.finalTransform[0][0]);
-                ruler2y = (this.axialSlice.finalTransform[1][2] + (imageTooldata[i].rulerHandles.rulerEnd.yCord + 0.5) *
+                ruler2y = (this.axialSlice.finalTransform[1][2] + (imageTooldata[i].toolHandles.end.yCord + 0.5) *
                     this.axialSlice.finalTransform[1][1]);
 
                 text = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
-                    imageTooldata[i].rulerHandles.rulerStart.xCord * screenSlice.xSize,
-                    imageTooldata[i].rulerHandles.rulerStart.yCord * screenSlice.ySize,
-                    imageTooldata[i].rulerHandles.rulerEnd.xCord * screenSlice.xSize,
-                    imageTooldata[i].rulerHandles.rulerEnd.yCord * screenSlice.ySize), false);
+                    imageTooldata[i].toolHandles.start.xCord * screenSlice.xSize,
+                    imageTooldata[i].toolHandles.start.yCord * screenSlice.ySize,
+                    imageTooldata[i].toolHandles.end.xCord * screenSlice.xSize,
+                    imageTooldata[i].toolHandles.end.yCord * screenSlice.ySize), false);
 
             } else if (screenSlice === this.coronalSlice) {
-                ruler1x = (this.coronalSlice.finalTransform[0][2] + (imageTooldata[i].rulerHandles.rulerStart.xCord + 0.5) *
+                ruler1x = (this.coronalSlice.finalTransform[0][2] + (imageTooldata[i].toolHandles.start.xCord + 0.5) *
                     this.coronalSlice.finalTransform[0][0]);
-                ruler1y = (this.coronalSlice.finalTransform[1][2] + (imageTooldata[i].rulerHandles.rulerStart.zCord + 0.5) *
+                ruler1y = (this.coronalSlice.finalTransform[1][2] + (imageTooldata[i].toolHandles.start.zCord + 0.5) *
                     this.coronalSlice.finalTransform[1][1]);
-                ruler2x = (this.coronalSlice.finalTransform[0][2] + (imageTooldata[i].rulerHandles.rulerEnd.xCord + 0.5) *
+                ruler2x = (this.coronalSlice.finalTransform[0][2] + (imageTooldata[i].toolHandles.end.xCord + 0.5) *
                     this.coronalSlice.finalTransform[0][0]);
-                ruler2y = (this.coronalSlice.finalTransform[1][2] + (imageTooldata[i].rulerHandles.rulerEnd.zCord + 0.5) *
+                ruler2y = (this.coronalSlice.finalTransform[1][2] + (imageTooldata[i].toolHandles.end.zCord + 0.5) *
                     this.coronalSlice.finalTransform[1][1]);
                 text = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
-                    imageTooldata[i].rulerHandles.rulerStart.xCord * screenSlice.xSize,
-                    imageTooldata[i].rulerHandles.rulerStart.zCord * screenSlice.ySize,
-                    imageTooldata[i].rulerHandles.rulerEnd.xCord * screenSlice.xSize,
-                    imageTooldata[i].rulerHandles.rulerEnd.zCord * screenSlice.ySize), false);
+                    imageTooldata[i].toolHandles.start.xCord * screenSlice.xSize,
+                    imageTooldata[i].toolHandles.start.zCord * screenSlice.ySize,
+                    imageTooldata[i].toolHandles.end.xCord * screenSlice.xSize,
+                    imageTooldata[i].toolHandles.end.zCord * screenSlice.ySize), false);
 
             } else if (screenSlice === this.sagittalSlice) {
-                ruler1x = (this.sagittalSlice.finalTransform[0][2] + (imageTooldata[i].rulerHandles.rulerStart.yCord + 0.5) *
+                ruler1x = (this.sagittalSlice.finalTransform[0][2] + (imageTooldata[i].toolHandles.start.yCord + 0.5) *
                     this.sagittalSlice.finalTransform[0][0]);
-                ruler1y = (this.sagittalSlice.finalTransform[1][2] + (imageTooldata[i].rulerHandles.rulerStart.zCord + 0.5) *
+                ruler1y = (this.sagittalSlice.finalTransform[1][2] + (imageTooldata[i].toolHandles.start.zCord + 0.5) *
                     this.sagittalSlice.finalTransform[1][1]);
-                ruler2x = (this.sagittalSlice.finalTransform[0][2] + (imageTooldata[i].rulerHandles.rulerEnd.yCord + 0.5) *
+                ruler2x = (this.sagittalSlice.finalTransform[0][2] + (imageTooldata[i].toolHandles.end.yCord + 0.5) *
                     this.sagittalSlice.finalTransform[0][0]);
-                ruler2y = (this.sagittalSlice.finalTransform[1][2] + (imageTooldata[i].rulerHandles.rulerEnd.zCord + 0.5) *
+                ruler2y = (this.sagittalSlice.finalTransform[1][2] + (imageTooldata[i].toolHandles.end.zCord + 0.5) *
                     this.sagittalSlice.finalTransform[1][1]);
                 text = papaya.utilities.StringUtils.formatNumber(papaya.utilities.MathUtils.lineDistance(
-                    imageTooldata[i].rulerHandles.rulerStart.yCord * screenSlice.xSize,
-                    imageTooldata[i].rulerHandles.rulerStart.zCord * screenSlice.ySize,
-                    imageTooldata[i].rulerHandles.rulerEnd.yCord * screenSlice.xSize,
-                    imageTooldata[i].rulerHandles.rulerEnd.zCord * screenSlice.ySize), false);
+                    imageTooldata[i].toolHandles.start.yCord * screenSlice.xSize,
+                    imageTooldata[i].toolHandles.start.zCord * screenSlice.ySize,
+                    imageTooldata[i].toolHandles.end.yCord * screenSlice.xSize,
+                    imageTooldata[i].toolHandles.end.zCord * screenSlice.ySize), false);
             }
 
             this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -1662,10 +1699,8 @@ papaya.viewer.Viewer.prototype.drawAngleOnSelectedScreenSlice = function (screen
     }
 
     var toolImageData = screenSlice.getImageToolState('angle');
-    if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
+    if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {
 
-    }
-    else {
         this.clipCanvas(screenSlice);
         toolImageData = toolImageData.imageDatas;
         for (var i = 0; i < toolImageData.length; i++) {
@@ -1733,8 +1768,6 @@ papaya.viewer.Viewer.prototype.drawAngleOnSelectedScreenSlice = function (screen
             this.context.fillStyle = color;
             this.context.fill();
             this.context.stroke();
-            this.context.closePath();
-
             this.context.closePath();
 
             var sideALength, sideBLength, sideCLength;
@@ -1834,10 +1867,8 @@ papaya.viewer.Viewer.prototype.drawReactangleOnSelectedScreenSlice = function (s
     }
 
     var toolImagedata = screenSlice.getImageToolState('rectangle');
-    if (toolImagedata === undefined || toolImagedata.imageDatas === undefined || toolImagedata.imageDatas.length === 0) {
-        return;
-    }
-    else {
+
+    if (toolImagedata != undefined && toolImagedata.imageDatas != undefined && toolImagedata.imageDatas.length > 0) {
         this.clipCanvas(screenSlice);
         toolImagedata = toolImagedata.imageDatas;
 
@@ -1871,10 +1902,7 @@ papaya.viewer.Viewer.prototype.drawReactangleOnSelectedScreenSlice = function (s
                     this.sagittalSlice.finalTransform[1][1]);
 
             }
-            var canvasWidth = Math.abs(ruler1x - ruler2x);
-            var canvasHeight = Math.abs(ruler1y - ruler2y);
-            var canvasLeft = Math.min(ruler1x, ruler2x);
-            var canvasTop = Math.min(ruler1y, ruler2y);
+           
 
             var color;
 
@@ -1887,6 +1915,10 @@ papaya.viewer.Viewer.prototype.drawReactangleOnSelectedScreenSlice = function (s
             this.context.fillStyle = color;
             this.context.lineWidth = this.rulerWidth;
             this.context.beginPath();
+            var canvasWidth = Math.abs(ruler1x - ruler2x);
+            var canvasHeight = Math.abs(ruler1y - ruler2y);
+            var canvasLeft = Math.min(ruler1x, ruler2x);
+            var canvasTop = Math.min(ruler1y, ruler2y);
             this.context.rect(canvasLeft, canvasTop, canvasWidth, canvasHeight);
             this.context.stroke();
             this.context.beginPath();
@@ -1982,10 +2014,7 @@ papaya.viewer.Viewer.prototype.drawEllipseOnSelectedScreenSlice = function (scre
     }
 
     var toolImagedata = screenSlice.getImageToolState('ellipse');
-    if (toolImagedata === undefined || toolImagedata.imageDatas === undefined || toolImagedata.imageDatas.length === 0) {
-        return;
-    }
-    else {
+    if (toolImagedata != undefined && toolImagedata.imageDatas != undefined && toolImagedata.imageDatas.length > 0) {
         this.clipCanvas(screenSlice);
         toolImagedata = toolImagedata.imageDatas;
 
@@ -2035,7 +2064,7 @@ papaya.viewer.Viewer.prototype.drawEllipseOnSelectedScreenSlice = function (scre
             this.context.fillStyle = color;
             this.context.lineWidth = this.rulerWidth;
             this.context.beginPath();
-            this.Tools.drawEllipseCurve(this.context, canvasLeft, canvasTop, canvasWidth, canvasHeight);
+            this.Tools.drawEllipseMode(this.context, canvasLeft, canvasTop, canvasWidth, canvasHeight);
             this.context.stroke();
             this.context.beginPath();
             this.context.arc(ruler1x, ruler1y, 3, 0, 2 * Math.PI, false);
@@ -2131,10 +2160,7 @@ papaya.viewer.Viewer.prototype.drawCobsAngleOnSelectedScreenSlice = function (sc
     }
 
     var toolImageData = screenSlice.getImageToolState('cobsangle');
-    if (toolImageData === undefined || toolImageData.imageDatas === undefined || toolImageData.imageDatas.length === 0) {
-        return;
-    }
-    else {
+    if (toolImageData != undefined && toolImageData.imageDatas != undefined && toolImageData.imageDatas.length > 0) {
         this.clipCanvas(screenSlice);
         toolImageData = toolImageData.imageDatas;
 
@@ -2391,7 +2417,6 @@ papaya.viewer.Viewer.prototype.drawCobsAngleOnSelectedScreenSlice = function (sc
     }
 };
 
-
 papaya.viewer.Viewer.prototype.drawPixelProbeOnSelectedScreeSlice = function (screenSlice) {
     var ruler2x, ruler2y, text, metrics, textWidth, textHeight, xText, yText;
 
@@ -2488,10 +2513,9 @@ papaya.viewer.Viewer.prototype.drawPixelProbeOnSelectedScreeSlice = function (sc
 
         }
     }
-    this.context.restore();
+
 
 };
-
 
 papaya.viewer.Viewer.prototype.clipCanvas = function (currentSlice) {
     if (currentSlice != null) {
@@ -3174,8 +3198,8 @@ papaya.viewer.Viewer.prototype.mouseUpEvent = function (me) {
         if (this.selectedSlice != null && this.selectedSlice.getImageToolState('ruler') != undefined) {
             var tooldata = this.selectedSlice.getImageToolState('ruler').imageDatas;
 
-            if (tooldata[this.Tools.selectedIndexLength] != undefined)
-                tooldata[this.Tools.selectedIndexLength].toolActive = false;
+            if (tooldata[this.Tools.selectedIndexRulerOnImage] != undefined)
+                tooldata[this.Tools.selectedIndexRulerOnImage].toolActive = false;
         }
     }
     if (this.isAngleMode) {
@@ -3502,7 +3526,7 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                 this.Tools.MagnifyToolMoveEvent(this, me);
                 break;
             case PAPAYA_SIDENAV_BUTTON_RULER:
-                this.Tools.DrawToolOnMouseMoveEvent(this, me, 'ruler', this.Tools.selectedIndexLength);
+                this.Tools.DrawToolOnMouseMoveEvent(this, me, 'ruler', this.Tools.selectedIndexRulerOnImage);
                 this.container.preferences.showRuler = "Yes";
                 this.drawViewer(false, true);
                 break;
@@ -3513,22 +3537,22 @@ papaya.viewer.Viewer.prototype.mouseMoveEvent = function (me) {
                 break;
             case PAPAYA_SIDENAV_BUTTON_REACTANGLE:
                 this.Tools.DrawToolOnMouseMoveEvent(this, me, 'rectangle', this.Tools.selectedIndexRectangleOnImage);
-                this.container.preferences.showRectangle = "Yes"
+                this.container.preferences.showRectangle = "Yes";
                 this.drawViewer(false, true);
                 break;
             case PAPAYA_SIDENAV_BUTTON_ELLIPSE:
                 this.Tools.DrawToolOnMouseMoveEvent(this, me, 'ellipse', this.Tools.selectedIndexEllipseOnImage);
-                this.container.preferences.showEllipse = "Yes"
+                this.container.preferences.showEllipse = "Yes";
                 this.drawViewer(false, true);
                 break;
             case PAPAYA_SIDENAV_BUTTON_COBSANGLE:
                 this.Tools.DrawToolOnMouseMoveEvent(this, me, 'cobsangle', this.Tools.selectedIndexCobsAngleOnImage);
-                this.container.preferences.showCobsAnlge = "Yes"
+                this.container.preferences.showCobsAnlge = "Yes";
                 this.drawViewer(false, true);
                 break;
             case PAPAYA_SIDENAV_BUTTON_PROBE:
                 this.Tools.DrawToolOnMouseMoveEvent(this, me, 'pixelprobe', this.Tools.selectedIndexPixelProbeOnImage);
-                this.container.preferences.showPixelProbe = "Yes"
+                this.container.preferences.showPixelProbe = "Yes";
                 this.drawViewer(false, true);
                 break;
             default:
