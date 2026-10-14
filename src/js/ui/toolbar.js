@@ -982,7 +982,7 @@ papaya.ui.Toolbar.prototype.updateTitleBar = function (title) {
     var elem = this.container.titlebarHtml[0];
 
     if (elem) {
-        elem.innerHTML = title;
+        elem.textContent = title;
     }
 
     this.container.titlebarHtml.css({top: (0)});
